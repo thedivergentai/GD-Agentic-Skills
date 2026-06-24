@@ -170,6 +170,34 @@ npx skills add thedivergentai/gd-agentic-skills/skills/godot-characterbody-2d
 
 ---
 
+## 🛠️ Troubleshooting
+
+### "I installed a skill but it isn't showing up in Claude Code"
+
+`npx skills add` stores skills in a **shared agent directory** (`~/.agents/skills/<skill-name>/`) and then links them into each agent's own skills folder. Claude Code only discovers skills that live under one of:
+
+- `~/.claude/skills/<skill-name>/` — **global** (available in every project)
+- `<your-project>/.claude/skills/<skill-name>/` — **project-local**
+
+If the link into `~/.claude/skills/` was not created during install, the files still exist in `~/.agents/skills/` but Claude Code never scans them — so the skill is silently missing from `/skills`.
+
+**Fix — create the missing link, then restart:**
+
+```bash
+# Global (recommended for godot-master — usable across all projects)
+ln -s "$HOME/.agents/skills/godot-master" "$HOME/.claude/skills/godot-master"
+```
+
+Swap `godot-master` for any micro-skill name you installed.
+
+> [!IMPORTANT]
+> Claude Code loads its skill list **once at session start**. After linking (or any fresh install), **restart Claude Code / open a new session** before the skill appears. Verify with `/skills`, then invoke with `/godot-master`.
+
+> [!TIP]
+> Add the `-g` flag to install globally in one step (`npx skills add thedivergentai/gd-agentic-skills/skills/godot-master -g`). Without it, the skill installs **project-locally** into the *current* directory's `./.claude/skills/`, so it only appears when you launch Claude Code from that same folder.
+
+---
+
 ## 🧠 Context Management: Performance Guidelines
 
 To keep your AI agent fast and accurate, follow these "Expert Efficiency" rules:
