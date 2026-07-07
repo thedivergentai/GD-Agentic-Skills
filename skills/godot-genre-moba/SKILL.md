@@ -1,4 +1,4 @@
----
+﻿---
 name: godot-genre-moba
 description: "Expert blueprint for MOBA games including lane logic (minion wave spawning every 30s), tower aggro priority (hero attacking ally over minion over hero), click-to-move controls (RTS-style raycasting), hero ability systems (QWER cooldowns, mana cost), fog of war (SubViewport projections), and authoritative networking (server validates damage). Use for competitive 5v5 or arena games. Trigger keywords: MOBA, lane_manager, minion_waves, tower_aggro, click_to_move, ability_cooldowns, fog_of_war, comeback_mechanics."
 ---
@@ -6,7 +6,7 @@ description: "Expert blueprint for MOBA games including lane logic (minion wave 
 ## Godot 4.7 Baseline
 
 - Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
 - **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
 
 # Genre: MOBA (Multiplayer Online Battle Arena)

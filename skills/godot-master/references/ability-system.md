@@ -1,4 +1,4 @@
----
+﻿---
 name: godot-ability-system
 description: "Expert patterns for RPG/action ability systems including cooldown strategies, combo systems, ability chaining, skill trees with prerequisites, upgrade paths, and resource management. Use when implementing unlockable abilities, character progression, or complex skill systems. Trigger keywords: PlayerAbility, AbilityManager, cooldown, SkillTree, SkillNode, prerequisites, can_use, execute, ComboSystem, ability_chain, global_cooldown, charge_system, upgrade_path."
 ---
@@ -6,7 +6,7 @@ description: "Expert patterns for RPG/action ability systems including cooldown 
 ## Godot 4.7 Baseline
 
 - Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
 - **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
 
 # Ability System

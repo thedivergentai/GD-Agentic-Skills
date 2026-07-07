@@ -1,4 +1,4 @@
----
+﻿---
 name: godot-combat-system
 description: "Expert patterns for combat systems including hitbox/hurtbox architecture, damage calculation (DamageData class), health components, combat state machines, combo systems, ability cooldowns, and damage popups. Use for action games, RPGs, or fighting games. Trigger keywords: Hitbox, Hurtbox, DamageData, HealthComponent, combat_state, combo_system, ability_cooldown, invincibility_frames, damage_popup."
 ---
@@ -6,7 +6,7 @@ description: "Expert patterns for combat systems including hitbox/hurtbox archit
 ## Godot 4.7 Baseline
 
 - Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
 - **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
 
 # Combat System

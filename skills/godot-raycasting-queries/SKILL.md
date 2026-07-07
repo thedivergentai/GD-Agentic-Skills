@@ -1,4 +1,4 @@
----
+﻿---
 name: godot-raycasting-queries
 description: "Expert blueprint for physics queries using RayCast, ShapeCast, and DirectSpaceState. Covers hit detection, volume overlap, mouse picking, and high-performance server-side intersection queries. Use when implementing projectiles, LOS, terrain grounding, or AI sensors. Keywords raycast, shapecast, direct_space_state, intersect_ray, intersect_shape, PhysicsRayQueryParameters, collision mask, mouse picking."
 ---
@@ -6,7 +6,7 @@ description: "Expert blueprint for physics queries using RayCast, ShapeCast, and
 ## Godot 4.7 Baseline
 
 - Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
 - **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
 
 # Raycasting and Physics Queries

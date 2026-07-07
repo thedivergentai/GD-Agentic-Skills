@@ -1,4 +1,4 @@
----
+﻿---
 name: godot-adapt-mobile-to-desktop
 description: "Expert patterns for scaling mobile games to desktop including mouse/keyboard controls, increased resolution and graphical fidelity, expanded UI layouts, settings menus, window management, and platform-specific features. Use when creating desktop ports or cross-platform releases. Trigger keywords: mouse_controls, keyboard_shortcuts, resolution_scaling, graphics_settings, fullscreen_toggle, window_modes, Steam_integration, desktop_optimization."
 ---
@@ -6,7 +6,7 @@ description: "Expert patterns for scaling mobile games to desktop including mous
 ## Godot 4.7 Baseline
 
 - Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
 - **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
 
 # Adapt: Mobile to Desktop

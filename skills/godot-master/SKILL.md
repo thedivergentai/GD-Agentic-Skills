@@ -520,5 +520,4 @@ Unity uses `int` or `Enum` for performance. Godot uses `StringName`.
 ## Reference
 - [Godot 4.7 Official Documentation](https://docs.godotengine.org/en/4.7/)
 - [Godot 4.7 Migration Guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html)
-- [GDSkills 4.7 Migration Digest](../../docs/internal/godot-4.7-migration-digest.md)
 - [Godot Engine GitHub Discussions](https://github.com/godotengine/godot/discussions)

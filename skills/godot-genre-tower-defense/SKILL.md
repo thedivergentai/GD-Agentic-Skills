@@ -1,4 +1,4 @@
----
+﻿---
 name: godot-genre-tower-defense
 description: "Expert blueprint for tower defense games (Bloons TD, Kingdom Rush, Fieldrunners) covering wave management, tower targeting logic, path algorithms, economy balance, and mazing mechanics. Use when building TD, lane defense, or tower placement strategy games. Keywords tower defense, wave spawner, pathfinding, targeting priority, mazing, NavigationServer baking."
 ---
@@ -6,7 +6,7 @@ description: "Expert blueprint for tower defense games (Bloons TD, Kingdom Rush,
 ## Godot 4.7 Baseline
 
 - Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
 - **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
 
 # Genre: Tower Defense

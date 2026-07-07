@@ -1,4 +1,4 @@
----
+﻿---
 name: godot-genre-rts
 description: "Expert blueprint for real-time strategy games including unit selection (drag box, shift-add), command systems (move, attack, gather), pathfinding (NavigationAgent2D with RVO avoidance), fog of war (SubViewport mask shader), resource economy (gather/build loop), and AI opponents (behavior trees, utility AI). Use for base-building RTS or tactical combat games. Trigger keywords: RTS, unit_selection, command_system, fog_of_war, pathfinding_RVO, resource_economy, command_queue."
 ---
@@ -6,7 +6,7 @@ description: "Expert blueprint for real-time strategy games including unit selec
 ## Godot 4.7 Baseline
 
 - Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
 - **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
 
 # Genre: Real-Time Strategy (RTS)

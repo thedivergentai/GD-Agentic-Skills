@@ -1,4 +1,4 @@
----
+﻿---
 name: godot-signal-architecture
 description: "Expert blueprint for signal-driven architecture using \"Signal Up, Call Down\" pattern for loose coupling. Covers typed signals, signal chains, one-shot connections, and AutoLoad event buses. Use when implementing event systems OR decoupling nodes. Keywords signal, emit, connect, CONNECT_ONE_SHOT, CONNECT_REFERENCE_COUNTED, event bus, AutoLoad, decoupling."
 ---
@@ -6,7 +6,7 @@ description: "Expert blueprint for signal-driven architecture using \"Signal Up,
 ## Godot 4.7 Baseline
 
 - Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
 - **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
 
 # Signal Architecture

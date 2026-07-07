@@ -1,4 +1,4 @@
----
+﻿---
 name: godot-adapt-2d-to-3d
 description: "Expert patterns for migrating 2D games to 3D including node type conversions, camera systems (third-person, first-person, orbit), physics layer migration, sprite-to-model art pipeline, and control scheme adaptations. Use when porting 2D projects to 3D or adding 3D elements. Trigger keywords: CharacterBody2D to CharacterBody3D, Area2D to Area3D, Camera2D to Camera3D, Vector2 to Vector3, collision_layer migration, sprite to MeshInstance3D, 2D to 3D conversion."
 ---
@@ -6,7 +6,7 @@ description: "Expert patterns for migrating 2D games to 3D including node type c
 ## Godot 4.7 Baseline
 
 - Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
 - **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
 
 # Adapt: 2D to 3D

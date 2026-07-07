@@ -1,4 +1,4 @@
----
+﻿---
 name: godot-resource-data-patterns
 description: "Expert blueprint for data-oriented design using Resource/RefCounted classes (item databases, character stats, reusable data structures). Covers typed arrays, serialization, nested resources, and resource caching. Use when implementing data systems OR inventory/stats/dialogue databases. Keywords Resource, RefCounted, ItemData, CharacterStats, database, serialization, @export, typed arrays."
 ---
@@ -6,7 +6,7 @@ description: "Expert blueprint for data-oriented design using Resource/RefCounte
 ## Godot 4.7 Baseline
 
 - Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
 - **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
 
 # Resource & Data Patterns

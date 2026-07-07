@@ -1,4 +1,4 @@
----
+﻿---
 name: godot-rpg-stats
 description: "Expert blueprint for RPG stat systems (attributes, leveling, modifiers, damage formulas) using Resource-based stats, stackable modifiers, and derived stat calculations. Use when implementing character progression OR equipment/buff systems. Keywords stats, attributes, leveling, modifiers, CharacterStats, derived stats, damage calculation, XP."
 ---
@@ -6,7 +6,7 @@ description: "Expert blueprint for RPG stat systems (attributes, leveling, modif
 ## Godot 4.7 Baseline
 
 - Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
 - **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
 
 # RPG Stats

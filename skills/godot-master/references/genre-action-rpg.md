@@ -1,4 +1,4 @@
----
+﻿---
 name: godot-genre-action-rpg
 description: "Comprehensive blueprint for Action RPGs including real-time combat (hitbox/hurtbox, stat-based damage), character progression (RPG stats, leveling, skill trees), loot systems (procedural item generation, affixes, rarity tiers), equipment systems (gear slots, stat modifiers), and ability systems (cooldowns, mana cost, AOE). Based on expert ARPG design from Diablo, Path of Exile, Souls-like developers. Trigger keywords: action_rpg, loot_generator, rpg_stats, skill_tree, hitbox_combat, item_affixes, equipment_slots, ability_cooldown, stat_scaling."
 ---
@@ -6,7 +6,7 @@ description: "Comprehensive blueprint for Action RPGs including real-time combat
 ## Godot 4.7 Baseline
 
 - Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
 - **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
 
 # Genre: Action RPG

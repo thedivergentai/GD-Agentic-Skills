@@ -1,4 +1,4 @@
----
+﻿---
 name: godot-game-loop-time-trial
 description: Expert patterns for racing mechanics, checkpoint tracking, and ghost recording/playback in Godot 4. Use when building racing games, speed-run platformers, or arcade trials.
 ---
@@ -6,7 +6,7 @@ description: Expert patterns for racing mechanics, checkpoint tracking, and ghos
 ## Godot 4.7 Baseline
 
 - Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
 - **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
 
 # Time Trial Loop: Arcade Precision

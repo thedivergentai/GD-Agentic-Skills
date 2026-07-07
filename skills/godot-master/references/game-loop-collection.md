@@ -1,4 +1,4 @@
----
+﻿---
 name: godot-game-loop-collection
 description: Use when implementing collection quests, scavenger hunts, or "find all X" objectives.
 ---
@@ -6,7 +6,7 @@ description: Use when implementing collection quests, scavenger hunts, or "find 
 ## Godot 4.7 Baseline
 
 - Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
 - **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
 
 # Collection Game Loops

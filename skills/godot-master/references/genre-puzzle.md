@@ -1,4 +1,4 @@
----
+﻿---
 name: godot-genre-puzzle
 description: "Expert blueprint for puzzle games including undo systems (Command pattern for state reversal), grid-based logic (Sokoban-style mechanics), non-verbal tutorials (teach through level design), win condition checking, state management, and visual feedback (instant confirmation of valid moves). Use for logic puzzles, physics puzzles, or match-3 games. Trigger keywords: puzzle_game, undo_system, command_pattern, grid_logic, non_verbal_tutorial, state_management."
 ---
@@ -6,7 +6,7 @@ description: "Expert blueprint for puzzle games including undo systems (Command 
 ## Godot 4.7 Baseline
 
 - Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
 - **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
 
 # Genre: Puzzle

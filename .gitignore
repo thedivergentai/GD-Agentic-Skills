@@ -59,9 +59,8 @@ Desktop.ini
 export/
 builds/
 *.tmp
-.scripts/
 .notes/
 .docs/
 .audit/
-.reference/
+docs/internal/
 .venv/
