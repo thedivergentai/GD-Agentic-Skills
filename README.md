@@ -1,7 +1,7 @@
 # GD Agentic Skills: The Godot 4 Mastery Ecosystem
 
 <div align="center">
-  <img src="assets/hero_banner.webp" alt="The Director's Cut Update - Godot 4.7 Domain Skills - v0.0.8" width="100%" />
+  <img src="assets/hero_banner.webp" alt="GD Agentic Skills - Godot 4.x Mastery Library" width="100%" />
 
 <br/>
 
