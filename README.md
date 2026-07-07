@@ -55,6 +55,15 @@
 - **godot-master**: Full mirror sync of domain skill references and bundled scripts for 4.7.
 - **Persona Squad**: Anara, Aurelius, and Builder updated for 4.7 scoring, never-lists, and `GODOT_PATH` CLI overrides.
 
+<br/>
+
+---
+
+<details>
+<summary><b>📜 Update Archive</b></summary>
+
+<br/>
+
 <div align="center">
   <img src="assets/banner_0_0_7.webp" alt="The Analyze, Audit, Build! Update - v0.0.7" width="100%" />
 </div>
@@ -64,13 +73,6 @@
 - **MCP Clean-up & Direct Building**: Defunct `MCP Setup` and `MCP Builder` skills have been removed; we now use Auditor and Builder to construct and compile projects directly via the Godot CLI, maximizing native efficiency.
 - **Full Skills Audit**: Completed a comprehensive and rigorous audit of all microskills to elevate the knowledge depth and execution quality to the highest agentic standard.
 - **Lead Architect Sync**: Synchronized all audited advancements with the central `godot-master` hub, making the orchestrator smarter, faster, and more robust.
-
-<br/>
-
----
-
-<details>
-<summary><b>📜 Update Archive</b></summary>
 
 <br/>
 
