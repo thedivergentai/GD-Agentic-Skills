@@ -1,7 +1,7 @@
 extends Node
 class_name StatusDepletionManager
 
-## Expert Status Management (Godot 4.6).
+## Expert Status Management (Godot 4.7).
 ## Continuous depletion of Hunger, Thirst, and Health using physics delta.
 
 var stats: Dictionary = {

@@ -21,47 +21,51 @@ Expert guidance for player-controlled 2D movement using Godot's physics system.
 - **NEVER use `queue_free()` on characters every frame** — Use object pooling for bullets or enemies to avoid SceneTree performance spikes.
 ---
 
+## Godot 4.7: CharacterBody2D
+
+- Jolt 3D changes do not apply to 2D, but one-way **direction** on `CollisionShape2D` affects platformer feel — align with movement normals.
+
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [frame_perfect_coyote_time.gd](../scripts/characterbody_2d_frame_perfect_coyote_time.gd)
+### [frame_perfect_coyote_time.gd](scripts/frame_perfect_coyote_time.gd)
 Professional platformer mechanics: Coyote Time (jump after fall) and Input Buffering.
 
-### [slope_stair_snapping.gd](../scripts/characterbody_2d_slope_stair_snapping.gd)
+### [slope_stair_snapping.gd](scripts/slope_stair_snapping.gd)
 Advanced procedural stair-climbing and smooth slope snapping logic.
 
-### [variable_jump_height.gd](../scripts/characterbody_2d_variable_jump_height.gd)
+### [variable_jump_height.gd](scripts/variable_jump_height.gd)
 Customizable 'Short Hop' vs 'Full Jump' implementation based on input duration.
 
-### [wall_slide_jump_refined.gd](../scripts/characterbody_2d_wall_slide_jump_refined.gd)
+### [wall_slide_jump_refined.gd](scripts/wall_slide_jump_refined.gd)
 Responsive Wall Slide and Wall Jump mechanics with proper push-back forces.
 
-### [dash_state_controller.gd](../scripts/characterbody_2d_dash_state_controller.gd)
+### [dash_state_controller.gd](scripts/dash_state_controller.gd)
 State-based dash logic with invincibility frames and customizable cooldowns.
 
-### [subpixel_movement_rounding.gd](../scripts/characterbody_2d_subpixel_movement_rounding.gd)
+### [subpixel_movement_rounding.gd](scripts/subpixel_movement_rounding.gd)
 Expert pattern for maintaining pixel-perfect visuals in low-res games while keeping smooth physics.
 
-### [performance_character_pooling.gd](../scripts/characterbody_2d_performance_character_pooling.gd)
+### [performance_character_pooling.gd](scripts/performance_character_pooling.gd)
 Logic for optimizing 100+ active characters using visibility-based physics toggling.
 
-### [impulse_response_handler.gd](../scripts/characterbody_2d_impulse_response_handler.gd)
+### [impulse_response_handler.gd](scripts/impulse_response_handler.gd)
 Expert handling of external forces (Knockback, Blow-back, Wind) integrated with `move_and_slide`.
 
-### [aerial_drift_acceleration.gd](../scripts/characterbody_2d_aerial_drift_acceleration.gd)
+### [aerial_drift_acceleration.gd](scripts/aerial_drift_acceleration.gd)
 Precise air control and acceleration logic for professional platformer feel.
 
-### [ceiling_bonk_detection.gd](../scripts/characterbody_2d_ceiling_bonk_detection.gd)
+### [ceiling_bonk_detection.gd](scripts/ceiling_bonk_detection.gd)
 Fixing 'sticky head' syndrome by correctly handling vertical momentum on ceiling hits.
 
-### [expert_physics_2d.gd](../scripts/characterbody_2d_expert_physics_2d.gd)
+### [expert_physics_2d.gd](scripts/expert_physics_2d.gd)
 Complete platformer movement with coyote time, jump buffering, smooth acceleration/friction, and sub-pixel stabilization. Uses move_toward for precise control.
 
-### [dash_controller.gd](../scripts/characterbody_2d_dash_controller.gd)
+### [dash_controller.gd](scripts/dash_controller.gd)
 Frame-perfect dash with I-frames, cooldown, and momentum preservation.
 
-### [wall_jump_controller.gd](../scripts/characterbody_2d_wall_jump_controller.gd)
+### [wall_jump_controller.gd](scripts/wall_jump_controller.gd)
 Wall slide, cling, and directional wall jump with auto-correction.
 
 > **Do First**: Read expert_physics_2d.gd for platformer foundation before adding dash/wall-jump.
@@ -483,4 +487,4 @@ func _draw() -> void:
 
 
 ### Related
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

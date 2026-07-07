@@ -53,6 +53,10 @@ Visual controller for managing character expressions and entry animations during
 - **NEVER hardcode portrait paths** — Assign textures directly to the `DialogueNode` resource in the inspector or use a central `PortraitDatabase`.
 ---
 
+## Godot 4.7: Dialogue UI
+
+- RichTextLabel `add_image`/`update_image` use `width_unit`/`height_unit` (`ImageUnit`) — update portrait and inline image helpers.
+
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.

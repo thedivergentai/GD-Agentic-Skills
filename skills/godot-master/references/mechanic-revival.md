@@ -3,6 +3,12 @@ name: godot-mechanic-revival
 description: Use when implementing player death, resurrection, or "second chance" mechanics.
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Revival & Resurrection Mechanics
 
 ## Overview
@@ -30,43 +36,43 @@ This skill provides a robust framework for handling player mortality and return.
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [revival_global_manager.gd](../scripts/mechanic_revival_revival_global_manager.gd)
+### [revival_global_manager.gd](scripts/revival_global_manager.gd)
 Expert singleton for managing the global respawn loop and death transitions.
 
-### [revival_checkpoint_persistence.gd](../scripts/mechanic_revival_revival_checkpoint_persistence.gd)
+### [revival_checkpoint_persistence.gd](scripts/revival_checkpoint_persistence.gd)
 Resource-based system for saving last checkpoint and world state to disk.
 
-### [revival_health_restitution.gd](../scripts/mechanic_revival_revival_health_restitution.gd)
+### [revival_health_restitution.gd](scripts/revival_health_restitution.gd)
 Professional I-frame and health replenishment logic for post-revive stability.
 
-### [revival_soul_grave.gd](../scripts/mechanic_revival_revival_soul_grave.gd)
+### [revival_soul_grave.gd](scripts/revival_soul_grave.gd)
 Expert 'Soul Retrieval' mechanic for spawning graves at death coordinates.
 
-### [revival_checkpoint_validator.gd](../scripts/mechanic_revival_revival_checkpoint_validator.gd)
+### [revival_checkpoint_validator.gd](scripts/revival_checkpoint_validator.gd)
 Progress-aware validator that prevents backtracking from overwriting newer checkpoints.
 
-### [revival_death_timer.gd](../scripts/mechanic_revival_revival_death_timer.gd)
+### [revival_death_timer.gd](scripts/revival_death_timer.gd)
 Professional respawn delay manager with UI and animation hooks.
 
-### [revival_ghost_mode.gd](../scripts/mechanic_revival_revival_ghost_mode.gd)
+### [revival_ghost_mode.gd](scripts/revival_ghost_mode.gd)
 Expert 'Spirit World' transition logic involving collision layer swapping.
 
-### [revival_state_reset_guard.gd](../scripts/mechanic_revival_revival_state_reset_guard.gd)
+### [revival_state_reset_guard.gd](scripts/revival_state_reset_guard.gd)
 Essential utility for purging velocity and state locks upon player respawn.
 
-### [revival_checkpoint_visuals.gd](../scripts/mechanic_revival_revival_checkpoint_visuals.gd)
+### [revival_checkpoint_visuals.gd](scripts/revival_checkpoint_visuals.gd)
 Material-swapping logic for providing clear 'Active' feedback to players.
 
-### [revival_auto_save_manager.gd](../scripts/mechanic_revival_revival_auto_save_manager.gd)
+### [revival_auto_save_manager.gd](scripts/revival_auto_save_manager.gd)
 Automatic save-trigger logic for ensuring checkpoint persistence.
 
-### [revival_spectral_shader.gdshader](../scripts/mechanic_revival_revival_spectral_shader.gdshader)
+### [revival_spectral_shader.gdshader](scripts/revival_spectral_shader.gdshader)
 Translucent, glowing "ghost" effect for downed players.
 
-### [revival_async_restorer.gd](../scripts/mechanic_revival_revival_async_restorer.gd)
+### [revival_async_restorer.gd](scripts/revival_async_restorer.gd)
 Smooth stat restoration logic using Tweens for organic recovery.
 
-### [revival_death_analytics.gd](../scripts/mechanic_revival_revival_death_analytics.gd)
+### [revival_death_analytics.gd](scripts/revival_death_analytics.gd)
 Persistent logging of death telemetry (cause, location, time) for balancing.
 
 ---
@@ -84,4 +90,4 @@ Use **Death Analytics** to find "Difficulty Spikes".
 - **Optimization**: Export these logs to a heatmap tool to identify areas where players are struggling.
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

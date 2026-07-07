@@ -80,6 +80,12 @@ void fragment() {
 3. Shader → New Shader
 4. Paste code
 
+## Godot 4.7: Shaders
+
+- `LinearToSRGB` visual shader node no longer clamps to `[0,1]` on Mobile/Forward+.
+- **Drawable Texture API** for custom render targets.
+- `get_format()` on `ImageTexture` / `PortableCompressedTexture2D` moved to **Texture2D** base.
+
 ## Common 2D Effects
 
 ### Dissolve Effect

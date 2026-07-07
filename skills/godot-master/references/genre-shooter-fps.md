@@ -3,6 +3,12 @@ name: godot-genre-shooter-fps
 description: "Expert blueprint for First-Person Shooters (Doom, Quake, Battlefield, Overwatch) focusing on physics-based movement, acceleration/friction, camera sway, weapon bobbing, and high-precision hit registration. Use when building tight, responsive FPS combat with advanced camera mechanics. Keywords FPS, movement physics, weapon bobbing, camera sway, hitscan, ground detection, air control."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Genre: Shooter (FPS/TPS)
 
 Gunplay feel, responsive combat, and competitive balance define shooters.
@@ -40,19 +46,19 @@ Gunplay feel, responsive combat, and competitive balance define shooters.
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [advanced_weapon_controller.gd](../scripts/genre_shooter_fps_advanced_weapon_controller.gd) - Professional-grade weapon system with deterministic recoil, bloom, and dual hitscan/projectile modes.
+- [advanced_weapon_controller.gd](scripts/advanced_weapon_controller.gd) - Professional-grade weapon system with deterministic recoil, bloom, and dual hitscan/projectile modes.
 
 ### Modular Components
-- [fps_camera_look.gd](../scripts/genre_shooter_fps_fps_camera_look.gd) - Asynchronous mouse look for zero-latency aiming using raw input.
-- [hitscan_weapon_query.gd](../scripts/genre_shooter_fps_hitscan_weapon_query.gd) - Nodeless physics raycast pattern for instant hit registration.
-- [fps_movement_logic.gd](../scripts/genre_shooter_fps_fps_movement_logic.gd) - Physics-based movement with acceleration, friction, and gravity scaling.
-- [weapon_bobbing_system.gd](../scripts/genre_shooter_fps_weapon_bobbing_system.gd) - Procedural bobbing and sway using sine-wave oscillation.
-- [bullet_decal_spawner.gd](../scripts/genre_shooter_fps_bullet_decal_spawner.gd) - Dynamic surface decal projection for impact effects.
-- [weapon_spread_calc.gd](../scripts/genre_shooter_fps_weapon_spread_calc.gd) - Gaussian/Normal distribution logic for bullet clustering.
-- [server_projectile_instance.gd](../scripts/genre_shooter_fps_server_projectile_instance.gd) - High-volume visual bullets using RenderingServer RIDs.
-- [weapon_state_machine.gd](../scripts/genre_shooter_fps_weapon_state_machine.gd) - Optimized state transitions for fire, reload, and idle.
-- [player_anim_bridge.gd](../scripts/genre_shooter_fps_player_anim_bridge.gd) - Local velocity bridge for syncing movement with AnimationTree.
-- [frame_perfect_input.gd](../scripts/genre_shooter_fps_frame_perfect_input.gd) - Buffered semi-automatic input handling to prevent dropped shots.
+- [fps_camera_look.gd](scripts/fps_camera_look.gd) - Asynchronous mouse look for zero-latency aiming using raw input.
+- [hitscan_weapon_query.gd](scripts/hitscan_weapon_query.gd) - Nodeless physics raycast pattern for instant hit registration.
+- [fps_movement_logic.gd](scripts/fps_movement_logic.gd) - Physics-based movement with acceleration, friction, and gravity scaling.
+- [weapon_bobbing_system.gd](scripts/weapon_bobbing_system.gd) - Procedural bobbing and sway using sine-wave oscillation.
+- [bullet_decal_spawner.gd](scripts/bullet_decal_spawner.gd) - Dynamic surface decal projection for impact effects.
+- [weapon_spread_calc.gd](scripts/weapon_spread_calc.gd) - Gaussian/Normal distribution logic for bullet clustering.
+- [server_projectile_instance.gd](scripts/server_projectile_instance.gd) - High-volume visual bullets using RenderingServer RIDs.
+- [weapon_state_machine.gd](scripts/weapon_state_machine.gd) - Optimized state transitions for fire, reload, and idle.
+- [player_anim_bridge.gd](scripts/player_anim_bridge.gd) - Local velocity bridge for syncing movement with AnimationTree.
+- [frame_perfect_input.gd](scripts/frame_perfect_input.gd) - Buffered semi-automatic input handling to prevent dropped shots.
 
 ---
 
@@ -475,4 +481,4 @@ func _process(delta: float) -> void:
 
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

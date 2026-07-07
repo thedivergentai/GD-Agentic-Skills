@@ -1,7 +1,7 @@
 extends Area3D
 class_name HomingProjectile3D
 
-## Expert Homing Projectile (Godot 4.6).
+## Expert Homing Projectile (Godot 4.7).
 ## Uses Quaternion slerp for smooth tracking and handles 'Target Lost' gracefully.
 
 @export var speed: float = 15.0

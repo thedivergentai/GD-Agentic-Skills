@@ -1,7 +1,7 @@
 extends Node
 class_name LapCheckpointManager
 
-## Expert Lap Manager (Godot 4.6).
+## Expert Lap Manager (Godot 4.7).
 ## Sequence-validated checkpoints to prevent cheating.
 
 signal lap_completed(total_laps: int)

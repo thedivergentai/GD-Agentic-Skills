@@ -1,7 +1,7 @@
 extends RigidBody3D
 class_name RaycastVehicleController
 
-## Expert Raycast Vehicle (Godot 4.6).
+## Expert Raycast Vehicle (Godot 4.7).
 ## Manual suspension and friction for crisp arcade feel.
 
 @export var spring_stiffness: float = 30.0

@@ -1,7 +1,7 @@
 extends Node
 class_name VisibilityManager
 
-## Expert Visibility Logic (Godot 4.6).
+## Expert Visibility Logic (Godot 4.7).
 ## Manages environmental stealth modifiers (shadows, bushes, lockers).
 
 var global_visibility_mult: float = 1.0

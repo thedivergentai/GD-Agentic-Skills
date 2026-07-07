@@ -3,6 +3,12 @@ name: godot-genre-moba
 description: "Expert blueprint for MOBA games including lane logic (minion wave spawning every 30s), tower aggro priority (hero attacking ally over minion over hero), click-to-move controls (RTS-style raycasting), hero ability systems (QWER cooldowns, mana cost), fog of war (SubViewport projections), and authoritative networking (server validates damage). Use for competitive 5v5 or arena games. Trigger keywords: MOBA, lane_manager, minion_waves, tower_aggro, click_to_move, ability_cooldowns, fog_of_war, comeback_mechanics."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Genre: MOBA (Multiplayer Online Battle Arena)
 
 Expert blueprint for MOBAs emphasizing competitive balance and strategic depth.
@@ -41,20 +47,20 @@ Expert blueprint for MOBAs emphasizing competitive balance and strategic depth.
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [skill_shot_indicator.gd](../scripts/genre_moba_skill_shot_indicator.gd) - Mouse-driven targeting system for range, width, and direction visualization.
-- [tower_priority_aggro.gd](../scripts/genre_moba_tower_priority_aggro.gd) - Advanced AI for defensive towers following competitive priority rules.
+- [skill_shot_indicator.gd](scripts/skill_shot_indicator.gd) - Mouse-driven targeting system for range, width, and direction visualization.
+- [tower_priority_aggro.gd](scripts/tower_priority_aggro.gd) - Advanced AI for defensive towers following competitive priority rules.
 
 ### Modular Components
-- [server_minion_sync.gd](../scripts/genre_moba_server_minion_sync.gd) - Authoritative sync for high-count units using compressed byte arrays.
-- [fog_visibility_check.gd](../scripts/genre_moba_fog_visibility_check.gd) - Physics raycasting for high-performance Line-of-Sight checks.
-- [fog_grid_mask.gd](../scripts/genre_moba_fog_grid_mask.gd) - TileMap-driven visibility masking system using Vector2i grid logic.
-- [status_effect_data.gd](../scripts/genre_moba_status_effect_data.gd) - Lightweight Resource container forDefining buffs, debuffs, and stuns.
-- [status_effect_manager.gd](../scripts/genre_moba_status_effect_manager.gd) - Modular logic for applying and managing unique status effect instances.
-- [decoupled_ability_damage.gd](../scripts/genre_moba_decoupled_ability_damage.gd) - Inter-hero combat interaction using safe duck-typing patterns.
-- [hero_state_machine.gd](../scripts/genre_moba_hero_state_machine.gd) - Optimized StringName-based state machine for hero logic.
-- [async_arena_baker.gd](../scripts/genre_moba_async_arena_baker.gd) - Background thread-safe navigation mesh updates for dynamic arenas.
-- [ability_ui_binder.gd](../scripts/genre_moba_ability_ui_binder.gd) - Signal-based UI decoupling for ability cooldown tracking.
-- [minion_flow_calculator.gd](../scripts/genre_moba_minion_flow_calculator.gd) - Parallelized pathing and intelligence using WorkerThreadPool.
+- [server_minion_sync.gd](scripts/server_minion_sync.gd) - Authoritative sync for high-count units using compressed byte arrays.
+- [fog_visibility_check.gd](scripts/fog_visibility_check.gd) - Physics raycasting for high-performance Line-of-Sight checks.
+- [fog_grid_mask.gd](scripts/fog_grid_mask.gd) - TileMap-driven visibility masking system using Vector2i grid logic.
+- [status_effect_data.gd](scripts/status_effect_data.gd) - Lightweight Resource container forDefining buffs, debuffs, and stuns.
+- [status_effect_manager.gd](scripts/status_effect_manager.gd) - Modular logic for applying and managing unique status effect instances.
+- [decoupled_ability_damage.gd](scripts/decoupled_ability_damage.gd) - Inter-hero combat interaction using safe duck-typing patterns.
+- [hero_state_machine.gd](scripts/hero_state_machine.gd) - Optimized StringName-based state machine for hero logic.
+- [async_arena_baker.gd](scripts/async_arena_baker.gd) - Background thread-safe navigation mesh updates for dynamic arenas.
+- [ability_ui_binder.gd](scripts/ability_ui_binder.gd) - Signal-based UI decoupling for ability cooldown tracking.
+- [minion_flow_calculator.gd](scripts/minion_flow_calculator.gd) - Parallelized pathing and intelligence using WorkerThreadPool.
 
 ---
 
@@ -258,4 +264,4 @@ func _physics_process(_delta: float) -> void:
 
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

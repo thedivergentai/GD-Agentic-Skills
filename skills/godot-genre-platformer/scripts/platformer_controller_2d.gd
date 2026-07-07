@@ -1,7 +1,7 @@
 extends CharacterBody2D
 class_name ExpertPlatformerController
 
-## Expert Platformer Physics (Godot 4.6).
+## Expert Platformer Physics (Godot 4.7).
 ## Implements Coyote Time and Jump Buffering for perfect feel.
 
 @export var speed: float = 300.0

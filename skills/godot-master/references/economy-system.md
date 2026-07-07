@@ -3,40 +3,46 @@ name: godot-economy-system
 description: "Expert patterns for game economies including currency management (multi-currency, wallet system), shop systems (buy/sell prices, stock limits), dynamic pricing (supply/demand), loot tables (weighted drops, rarity tiers), and economic balance (inflation control, currency sinks). Use for RPGs, trading games, or resource management systems. Trigger keywords: EconomyManager, currency, shop_item, loot_table, dynamic_pricing, buy_sell_spread, currency_sink, inflation, item_rarity."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Economy System
 
 Expert guidance for designing balanced game economies with currency, shops, and loot.
 
 ## Available Scripts
 
-### [currency_resource.gd](../scripts/economy_system_currency_resource.gd)
+### [currency_resource.gd](scripts/currency_resource.gd)
 Specialized data container for defining distinct denominations (Gold, Gems, XP) with UI metadata.
 
-### [wallet_manager_singleton.gd](../scripts/economy_system_wallet_manager_singleton.gd)
+### [wallet_manager_singleton.gd](scripts/wallet_manager_singleton.gd)
 Centralized AutoLoad orchestrator for managing balances and processing secure transactions.
 
-### [shop_item_data.gd](../scripts/economy_system_shop_item_data.gd)
+### [shop_item_data.gd](scripts/shop_item_data.gd)
 Resource-based definition for purchasables, including pricing, currency types, and stock limits.
 
-### [shop_system_logic.gd](../scripts/economy_system_shop_system_logic.gd)
+### [shop_system_logic.gd](scripts/shop_system_logic.gd)
 Decoupled logic for handling buy/sell exchanges between the Wallet and Inventory systems.
 
-### [dynamic_price_modifier.gd](../scripts/economy_system_dynamic_price_modifier.gd)
+### [dynamic_price_modifier.gd](scripts/dynamic_price_modifier.gd)
 Injection pattern for applying temporary discounts or markups based on world state (e.g. Sales).
 
-### [currency_label_sync.gd](../scripts/economy_system_currency_label_sync.gd)
+### [currency_label_sync.gd](scripts/currency_label_sync.gd)
 Reactive UI hook for automatically updating currency displays when balances change.
 
-### [loot_drop_economy_bridge.gd](../scripts/economy_system_loot_drop_economy_bridge.gd)
+### [loot_drop_economy_bridge.gd](scripts/loot_drop_economy_bridge.gd)
 Bridge node for capturing loot events and adding funds to the player's wallet.
 
-### [economy_persistence_handler.gd](../scripts/economy_system_economy_persistence_handler.gd)
+### [economy_persistence_handler.gd](scripts/economy_persistence_handler.gd)
 Expert logic for serializing financial states into secure, loadable dictionaries.
 
-### [currency_pickup_effect.gd](../scripts/economy_system_currency_pickup_effect.gd)
+### [currency_pickup_effect.gd](scripts/currency_pickup_effect.gd)
 Visual feedback controller that triggers particles or animations upon financial gain.
 
-### [trade_contract_resource.gd](../scripts/economy_system_trade_contract_resource.gd)
+### [trade_contract_resource.gd](scripts/trade_contract_resource.gd)
 Advanced barter system definition for multi-item "Quid Pro Quo" transactions.
 
 ## NEVER Do in Economy Systems
@@ -251,4 +257,4 @@ func get_value() -> int:
 ```
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

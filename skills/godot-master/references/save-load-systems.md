@@ -3,6 +3,12 @@ name: godot-save-load-systems
 description: "Expert blueprint for save/load systems using JSON/binary serialization, PERSIST group pattern, versioning, and migration. Covers player progress, settings, game state persistence, and error recovery. Use when implementing save systems OR data persistence. Keywords save, load, JSON, FileAccess, user://, serialization, version migration, PERSIST group."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Save/Load Systems
 
 JSON serialization, version migration, and PERSIST group patterns define robust data persistence.
@@ -31,13 +37,13 @@ JSON serialization, version migration, and PERSIST group patterns define robust 
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [save_load_patterns.gd](../scripts/save_load_systems_save_load_patterns.gd)
+### [save_load_patterns.gd](scripts/save_load_patterns.gd)
 10 Expert patterns: PERSIST group serialization, binary snapshots, JSON safe-parsing, and threaded loading.
 
-### [save_migration_manager.gd](../scripts/save_load_systems_save_migration_manager.gd)
+### [save_migration_manager.gd](scripts/save_migration_manager.gd)
 Expert save file versioning with automatic migration between schema versions.
 
-### [save_system_encryption.gd](../scripts/save_load_systems_save_system_encryption.gd)
+### [save_system_encryption.gd](scripts/save_system_encryption.gd)
 AES-256 encrypted saves with compression to prevent casual save editing.
 
 ---
@@ -365,4 +371,4 @@ func load_with_validation() -> Variant:
 ```
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

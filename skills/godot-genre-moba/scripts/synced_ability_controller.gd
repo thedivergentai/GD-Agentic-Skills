@@ -1,6 +1,6 @@
 extends CharacterBody3D
 
-## Expert MOBA Cooldown Sync (Godot 4.6).
+## Expert MOBA Cooldown Sync (Godot 4.7).
 ## Server Authority + Client Prediction.
 
 @export var current_cooldown: float = 0.0 # Synced via MultiplayerSynchronizer

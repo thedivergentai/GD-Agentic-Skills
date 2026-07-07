@@ -3,6 +3,12 @@ name: godot-genre-sandbox
 description: "Expert blueprint for sandbox games (Minecraft, Terraria, Garry's Mod) with physics-based interactions, cellular automata, emergent gameplay, and creative tools. Use when building open-world creation games with voxels, element systems, player-created structures, or procedural worlds. Keywords voxel, sandbox, cellular automata, MultiMesh, chunk management, emergent behavior, creative mode."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Genre: Sandbox
 
 Physical simulation, emergent play, and player creativity define this genre.

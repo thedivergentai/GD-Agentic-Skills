@@ -3,6 +3,12 @@ name: godot-genre-open-world
 description: "Expert blueprint for open world games including chunk-based streaming (load/unload regions dynamically), floating origin (prevent precision jitter beyond 5000 units), HLOD (hierarchical LOD for distant meshes), persistent state (track entity changes across unloaded chunks), POI discovery systems (compass, markers), and threaded loading (prevent stutters). Use for RPGs, sandboxes, or exploration games. Trigger keywords: open_world, chunk_streaming, floating_origin, HLOD, persistent_state, POI_discovery, threaded_loading."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Genre: Open World
 
 Expert blueprint for open worlds balancing scale, performance, and player engagement.
@@ -38,20 +44,20 @@ Expert blueprint for open worlds balancing scale, performance, and player engage
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [world_streamer.gd](../scripts/genre_open_world_world_streamer.gd) - Professional-grade chunk management and streaming engine with background threading.
-- [floating_origin_shifter.gd](../scripts/genre_open_world_floating_origin_shifter.gd) - World-offset correction system to prevent floating-point precision jitter.
+- [world_streamer.gd](scripts/world_streamer.gd) - Professional-grade chunk management and streaming engine with background threading.
+- [floating_origin_shifter.gd](scripts/floating_origin_shifter.gd) - World-offset correction system to prevent floating-point precision jitter.
 
 ### Modular Components
-- [async_chunk_loader.gd](../scripts/genre_open_world_async_chunk_loader.gd) - Background world streaming system using threaded resource loading.
-- [multimesh_foliage_manager.gd](../scripts/genre_open_world_multimesh_foliage_manager.gd) - Server-side GPU batching for thousands of landscape entities.
-- [hlod_configurator.gd](../scripts/genre_open_world_hlod_visibility_config.gd) - Distance-based mesh swapping and imposter management using VisibilityRange.
-- [hlod_visibility_config.gd](../scripts/genre_open_world_hlod_visibility_config.gd) - Distance-based geometry swapping using VisibilityRange (HLOD).
-- [binary_save_manager.gd](../scripts/genre_open_world_binary_save_manager.gd) - High-performance serialization for large-scale world persistence.
-- [chunk_limited_pathfinder.gd](../scripts/genre_open_world_chunk_limited_pathfinder.gd) - NavigationServer-level query limits to optimize AI in dense worlds.
-- [server_prop_spawner.gd](../scripts/genre_open_world_server_prop_spawner.gd) - Extreme optimization using RenderingServer RIDs to bypass SceneTree.
-- [dynamic_lod_adjuster.gd](../scripts/genre_open_world_dynamic_lod_adjuster.gd) - Real-time adaptive performance scaling for global mesh LOD.
-- [group_weather_broadcaster.gd](../scripts/genre_open_world_group_weather_broadcaster.gd) - Efficient decoupled environmental updates using SceneTree grouping.
-- [landscape_height_query.gd](../scripts/genre_open_world_landscape_height_query.gd) - Nodeless physics floor-height queries for large-scale landscapes.
+- [async_chunk_loader.gd](scripts/async_chunk_loader.gd) - Background world streaming system using threaded resource loading.
+- [multimesh_foliage_manager.gd](scripts/multimesh_foliage_manager.gd) - Server-side GPU batching for thousands of landscape entities.
+- [hlod_configurator.gd](scripts/hlod_visibility_config.gd) - Distance-based mesh swapping and imposter management using VisibilityRange.
+- [hlod_visibility_config.gd](scripts/hlod_visibility_config.gd) - Distance-based geometry swapping using VisibilityRange (HLOD).
+- [binary_save_manager.gd](scripts/binary_save_manager.gd) - High-performance serialization for large-scale world persistence.
+- [chunk_limited_pathfinder.gd](scripts/chunk_limited_pathfinder.gd) - NavigationServer-level query limits to optimize AI in dense worlds.
+- [server_prop_spawner.gd](scripts/server_prop_spawner.gd) - Extreme optimization using RenderingServer RIDs to bypass SceneTree.
+- [dynamic_lod_adjuster.gd](scripts/dynamic_lod_adjuster.gd) - Real-time adaptive performance scaling for global mesh LOD.
+- [group_weather_broadcaster.gd](scripts/group_weather_broadcaster.gd) - Efficient decoupled environmental updates using SceneTree grouping.
+- [landscape_height_query.gd](scripts/landscape_height_query.gd) - Nodeless physics floor-height queries for large-scale landscapes.
 
 ---
 
@@ -244,4 +250,4 @@ func _process(_delta: float) -> void:
 ```
 
 
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

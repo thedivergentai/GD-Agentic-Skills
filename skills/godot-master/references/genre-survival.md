@@ -3,6 +3,12 @@ name: godot-genre-survival
 description: "Expert blueprint for survival games (Minecraft, Don't Starve, The Forest, Rust) covering needs systems, resource gathering, crafting recipes, base building, and progression balancing. Use when building open-world survival, crafting-focused, or resource management games. Keywords survival, needs system, crafting, inventory, hunger, resource gathering, base building."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Genre: Survival
 
 Resource scarcity, needs management, and progression through crafting define survival games.
@@ -35,15 +41,15 @@ Resource scarcity, needs management, and progression through crafting define sur
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [inventory_slot_resource.gd](../scripts/genre_survival_inventory_slot_resource.gd) - Data-driven inventory slot model using Resources for seamless serialization and durability tracking.
-- [survival_patterns.gd](../scripts/genre_survival_survival_patterns.gd) - 10 Essential Survival Expert Patterns (Decay scaling, Environment tweens, MultiMesh optimization).
+- [inventory_slot_resource.gd](scripts/inventory_slot_resource.gd) - Data-driven inventory slot model using Resources for seamless serialization and durability tracking.
+- [survival_patterns.gd](scripts/survival_patterns.gd) - 10 Essential Survival Expert Patterns (Decay scaling, Environment tweens, MultiMesh optimization).
 
 ### Modular Components
-- [interactable.gd](../scripts/genre_survival_interactable.gd) - Universal interface for harvesting, picking up items, and world triggers.
-- [inventory_data.gd](../scripts/genre_survival_inventory_data.gd) - Core business logic for grid-based inventories and stacking.
-- [inventory_slot_data.gd](../scripts/genre_survival_inventory_slot_data.gd) - Lightweight data container for UI-to-Logic inventory communication.
-- [inventory_data.gd](../scripts/genre_survival_inventory_data.gd) - High-performance Resource-based storage with stack limits and metadata support.
-- [inventory_data.gd](../scripts/genre_survival_inventory_data.gd) - Master item definition for weight, stack-size, and consumption effects (Resource-based).
+- [interactable.gd](scripts/interactable.gd) - Universal interface for harvesting, picking up items, and world triggers.
+- [inventory_data.gd](scripts/inventory_data.gd) - Core business logic for grid-based inventories and stacking.
+- [inventory_slot_data.gd](scripts/inventory_slot_data.gd) - Lightweight data container for UI-to-Logic inventory communication.
+- [inventory_data.gd](scripts/inventory_data.gd) - High-performance Resource-based storage with stack limits and metadata support.
+- [inventory_data.gd](scripts/inventory_data.gd) - Master item definition for weight, stack-size, and consumption effects (Resource-based).
 
 ---
 
@@ -255,4 +261,4 @@ func get_biome_at_coordinate(x: float, y: float) -> String:
 ```
 
 
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

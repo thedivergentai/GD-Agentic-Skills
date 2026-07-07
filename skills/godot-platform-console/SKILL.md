@@ -28,6 +28,10 @@ Controller-first design, certification compliance, and locked frame rates define
 
 ---
 
+## Godot 4.7: Console Input
+
+- Use `InputEvent.DEVICE_ID_*` constants — never assume device `0` is mouse/keyboard.
+
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.

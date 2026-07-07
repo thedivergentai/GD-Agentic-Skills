@@ -1,13 +1,13 @@
 # GD Agentic Skills: The Godot 4 Mastery Ecosystem
 
 <div align="center">
-  <img src="assets/hero_banner.webp" alt="GD Agentic Skills - Godot 4.x Mastery Library" width="100%" />
+  <img src="assets/hero_banner.webp" alt="The Director's Cut Update - Godot 4.7 Domain Skills - v0.0.8" width="100%" />
 
 <br/>
 
 [![GitHub Stars](https://img.shields.io/github/stars/thedivergentai/gd-agentic-skills?style=for-the-badge&logo=github&color=58A6FF)](https://github.com/thedivergentai/gd-agentic-skills/stargazers)
 [![License](https://img.shields.io/badge/License-LGPL--3.0-blue?style=for-the-badge)](LICENSE)
-[![Godot Version](https://img.shields.io/badge/Godot-4.5%2B-478CBF?style=for-the-badge&logo=godotengine&logoColor=white)](https://godotengine.org/)
+[![Godot Version](https://img.shields.io/badge/Godot-4.7%2B-478CBF?style=for-the-badge&logo=godotengine&logoColor=white)](https://godotengine.org/)
 [![Skills](https://img.shields.io/badge/Skills-96-green?style=for-the-badge)](skills_index.json)
 [![Last Commit](https://img.shields.io/github/last-commit/thedivergentai/gd-agentic-skills?style=for-the-badge&color=purple)](https://github.com/thedivergentai/gd-agentic-skills/commits/main)
 [![Installs](https://img.shields.io/endpoint?url=https://skills.sh/api/badge/thedivergentai/gd-agentic-skills&style=for-the-badge&label=INSTALLS&color=F39C12)](https://skills.sh/thedivergentai/gd-agentic-skills)
@@ -24,7 +24,7 @@
 
 > **March 19, 2026**
 > 
-> Hey everyone, Divergent AI here! I'm super happy that I'm seeing the project getting some love. It's motivated me to come back at it with a really strong update for you all. I've spent many hours working on updating all microskills to be completely packed with top expert-level knowledge as learned directly from the robot's mouth—the Godot documentation.
+> Hey everyone, Divergent AI here! I'm super happy that I'm seeing the project getting some love. It's motivated me to come back at it with a really strong update for you all. I've spent many hours working on updating all Domain Skills to be completely packed with top expert-level knowledge as learned directly from the robot's mouth—the Godot documentation.
 > 
 > <details>
 > <summary><b>Read the full message...</b></summary>
@@ -45,6 +45,15 @@
 ---
 
 ## 📜 Updates
+
+<div align="center">
+  <img src="assets/banner_0_0_8.webp" alt="The Director's Cut Update - v0.0.8" width="100%" />
+</div>
+
+- **Godot 4.7 Director's Cut**: Full library upgrade to Godot 4.7+ — AreaLight3D, HDR output, Asset Store, built-in virtual joystick, and migration digest for 4.6→4.7 projects.
+- **Domain Skills**: Renamed "Micro-Skills" to **Domain Skills** — 92 modular topic skills, each with 4.7 baseline and targeted migration deltas.
+- **godot-master**: Full mirror sync of domain skill references and bundled scripts for 4.7.
+- **Persona Squad**: Anara, Aurelius, and Builder updated for 4.7 scoring, never-lists, and `GODOT_PATH` CLI overrides.
 
 <div align="center">
   <img src="assets/banner_0_0_7.webp" alt="The Analyze, Audit, Build! Update - v0.0.7" width="100%" />
@@ -133,9 +142,9 @@
 
 ## 📍 Quick Navigation
 
-| 🚀 Get Started | 🏆 Godot Master | 🧩 Micro-Skills | 🤖 Agent Protocol | ⭐ Star History |
+| 🚀 Get Started | 🏆 Godot Master | 🧩 Domain Skills | 🤖 Agent Protocol | ⭐ Star History |
 |:---:|:---:|:---:|:---:|:---:|
-| [Install](#-quick-start) | [All-in-One System](#-godot-master--your-lead-architect) | [Bite-Size Modules](#-micro-skills--bite-size-power) | [DIA Loop](#-for-agents--the-discovery-ingestion-application-protocol) | [Growth Chart](#-star-history) |
+| [Install](#-quick-start) | [All-in-One System](#-godot-master--your-lead-architect) | [Bite-Size Modules](#-domain-skills--bite-size-power) | [DIA Loop](#-for-agents--the-discovery-ingestion-application-protocol) | [Growth Chart](#-star-history) |
 
 ---
 
@@ -160,7 +169,7 @@ npx skills add thedivergentai/gd-agentic-skills/skills/godot-master
 ```
 
 ### 🧩 Path B: The Specialist (Existing Projects)
-If you need a specific feature (e.g., 2D movement, inventory), install only that **Micro-Skill**.
+If you need a specific feature (e.g., 2D movement, inventory), install only that **Domain Skill**.
 ```bash
 npx skills add thedivergentai/gd-agentic-skills/skills/godot-characterbody-2d
 ```
@@ -175,10 +184,10 @@ npx skills add thedivergentai/gd-agentic-skills/skills/godot-characterbody-2d
 To keep your AI agent fast and accurate, follow these "Expert Efficiency" rules:
 
 ### 1. The "Power of One" Rule
-Either use **`godot-master`** (which orchestrates the other 95 skills via references) OR use individual **micro-skills**. 
+Either use **`godot-master`** (which orchestrates the other 95 skills via references) OR use individual **Domain Skills**. 
 
 *   **Godot Master** is an "Orchestrator" skill. It is dense (~15k tokens) but provides a complete blueprint. Use it when the "Big Picture" matters.
-*   **Micro-Skills** are "Surgical" skills (~2-5k tokens). They are fast, reliable, and keep the agent focused on one specific API.
+*   **Domain Skills** are "Surgical" skills (~2-5k tokens). They are fast, reliable, and keep the agent focused on one specific API.
 
 ### 2. Why "Install All" Fails
 Installing 96 skills simultaneously creates a **"Metadata Flood"**:
@@ -198,7 +207,7 @@ The **[godot-master](skills/godot-master/SKILL.md)** skill is the crown jewel of
 
 ### 🎯 What Makes Godot Master Special?
 
-Unlike individual micro-skills that focus on isolated features, **godot-master** is your *system architect*. It provides:
+Unlike individual Domain Skills that focus on isolated features, **godot-master** is your *system architect*. It provides:
 
 **📚 Comprehensive Knowledge Base**
 - **96 Reference Documents**: Complete markdown guides for every skill, from foundations to advanced genres
@@ -229,7 +238,7 @@ graph TD
 
 **Critical Rule**: Signals travel UP only. Presentation layer never modifies Data directly. Infrastructure speaks exclusively through signals.
 
-### 🔄 When to Use Godot Master vs Micro-Skills
+### 🔄 When to Use Godot Master vs Domain Skills
 
 ```mermaid
 flowchart LR
@@ -239,7 +248,7 @@ flowchart LR
     Q2 -->|Yes| MASTER
     Q2 -->|No| Q3{Building a<br/>complete system?}
     Q3 -->|Yes| MASTER
-    Q3 -->|No| MICRO[Use micro-skill:<br/>targeted implementation]
+    Q3 -->|No| MICRO[Use Domain Skill:<br/>targeted implementation]
     
     MASTER --> DESC1[✓ Full workflow context<br/>✓ Decision frameworks<br/>✓ Anti-patterns<br/>✓ Performance budgets]
     MICRO --> DESC2[✓ Quick implementation<br/>✓ Focused feature<br/>✓ Standalone pattern]
@@ -262,7 +271,7 @@ flowchart LR
 - Optimizing draw calls or script time
 - Porting between platforms
 
-**Use micro-skills when:**
+**Use Domain Skills when:**
 - Adding a specific feature to an existing codebase
 - Learning a targeted Godot API pattern
 - Implementing standalone functionality (UI component, particle effect, save system)
@@ -281,11 +290,11 @@ skills/godot-master/SKILL.md
 
 ---
 
-## 🧩 Micro-Skills — Bite-Size Power
+## 🧩 Domain Skills — Bite-Size Power
 
-Individual micro-skills are **modular add-ons** for targeted functionality. Each is atomic, self-contained, and production-ready—perfect for when you need a specific implementation pattern without the full architectural context.
+Individual Domain Skills are **modular add-ons** for targeted functionality. Each is atomic, self-contained, and production-ready—perfect for when you need a specific implementation pattern without the full architectural context.
 
-Think of micro-skills as your **component library**: Drop them into your project for instant, expert-level functionality.
+Think of Domain Skills as your **component library**: Drop them into your project for instant, expert-level functionality.
 
 <details>
 <summary><b>🏗️ Architecture & Foundation (11 skills)</b></summary>

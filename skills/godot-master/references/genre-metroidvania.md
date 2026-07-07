@@ -3,6 +3,12 @@ name: godot-genre-metroidvania
 description: "Expert blueprint for Metroidvanias including ability-gated exploration (locks/keys), interconnected world design (backtracking with shortcuts), persistent state tracking (collectibles, boss defeats), room transitions (seamless loading), map systems (grid-based revelation), and ability versatility (combat + traversal). Use for exploration platformers or action-adventure games. Trigger keywords: metroidvania, ability_gating, interconnected_world, backtracking, map_system, persistent_state, room_transition, soft_locks."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Genre: Metroidvania
 
 Expert blueprint for Metroidvanias balancing exploration, progression, and backtracking rewards.
@@ -36,20 +42,20 @@ Expert blueprint for Metroidvanias balancing exploration, progression, and backt
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [minimap_fog.gd](../scripts/genre_metroidvania_minimap_fog.gd) - Grid-based fog of war that tracks visited rooms and persists via global save data.
-- [progression_gate_manager.gd](../scripts/genre_metroidvania_progression_gate_manager.gd) - Central manager for ability-gated progression (Locks/Keys) and world persistence.
+- [minimap_fog.gd](scripts/minimap_fog.gd) - Grid-based fog of war that tracks visited rooms and persists via global save data.
+- [progression_gate_manager.gd](scripts/progression_gate_manager.gd) - Central manager for ability-gated progression (Locks/Keys) and world persistence.
 
 ### Modular Components
-- [platformer_jump_buffer.gd](../scripts/genre_metroidvania_platformer_jump_buffer.gd) - Modular coyote time and jump buffering for high-fidelity movement.
-- [background_room_streamer.gd](../scripts/genre_metroidvania_background_room_streamer.gd) - Thread-safe background room preloading using `ResourceLoader`.
-- [safe_scene_switcher.gd](../scripts/genre_metroidvania_safe_scene_switcher.gd) - Deferred scene transition pattern for stable cross-room world-state switching.
-- [minimap_fog_revealer.gd](../scripts/genre_metroidvania_minimap_fog_revealer.gd) - Vector2i-based fog-of-war clearing logic synced to player position.
-- [persistent_progression_system.gd](../scripts/genre_metroidvania_persistent_progression_system.gd) - Autoload pattern for tracking global ability/collectible flags.
-- [ability_state_machine.gd](../scripts/genre_metroidvania_ability_state_machine.gd) - Optimized `StringName` pattern matching for traversal/combat states.
-- [fast_wall_detector.gd](../scripts/genre_metroidvania_fast_wall_detector.gd) - Direct `PhysicsServer` queries for performance-optimized wall detection.
-- [save_station_broadcast.gd](../scripts/genre_metroidvania_save_station_broadcast.gd) - Group-based entity resetting and healing logic on save interaction.
-- [decoupled_hazard_logic.gd](../scripts/genre_metroidvania_decoupled_hazard_logic.gd) - Interface-style pattern for generic damage interaction.
-- [smooth_room_camera_transition.gd](../scripts/genre_metroidvania_smooth_room_camera_transition.gd) - Tween-based camera limit interpolation for seamless room movement.
+- [platformer_jump_buffer.gd](scripts/platformer_jump_buffer.gd) - Modular coyote time and jump buffering for high-fidelity movement.
+- [background_room_streamer.gd](scripts/background_room_streamer.gd) - Thread-safe background room preloading using `ResourceLoader`.
+- [safe_scene_switcher.gd](scripts/safe_scene_switcher.gd) - Deferred scene transition pattern for stable cross-room world-state switching.
+- [minimap_fog_revealer.gd](scripts/minimap_fog_revealer.gd) - Vector2i-based fog-of-war clearing logic synced to player position.
+- [persistent_progression_system.gd](scripts/persistent_progression_system.gd) - Autoload pattern for tracking global ability/collectible flags.
+- [ability_state_machine.gd](scripts/ability_state_machine.gd) - Optimized `StringName` pattern matching for traversal/combat states.
+- [fast_wall_detector.gd](scripts/fast_wall_detector.gd) - Direct `PhysicsServer` queries for performance-optimized wall detection.
+- [save_station_broadcast.gd](scripts/save_station_broadcast.gd) - Group-based entity resetting and healing logic on save interaction.
+- [decoupled_hazard_logic.gd](scripts/decoupled_hazard_logic.gd) - Interface-style pattern for generic damage interaction.
+- [smooth_room_camera_transition.gd](scripts/smooth_room_camera_transition.gd) - Tween-based camera limit interpolation for seamless room movement.
 
 ---
 
@@ -233,8 +239,8 @@ func travel_to_node(scene_path: String, spawn_id: StringName) -> void:
 
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)
 
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

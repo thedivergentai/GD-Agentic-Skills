@@ -1,6 +1,6 @@
-# 📜 Aurelius Expert Audit Standards (Godot 4.6+)
+# 📜 Aurelius Expert Audit Standards (Godot 4.7+)
 
-This document defines the technical benchmarks for the **Aurelius Protocol**. These standards represent the "Gold Standard" for professional-grade Godot 4.6 development.
+This document defines the technical benchmarks for the **Aurelius Protocol**. These standards represent the "Gold Standard" for professional-grade Godot 4.7 development.
 
 ---
 
@@ -22,7 +22,7 @@ This document defines the technical benchmarks for the **Aurelius Protocol**. Th
 
 ---
 
-## ⚡ Performance Protocol (Godot 4.6 Nuances)
+## ⚡ Performance Protocol (Godot 4.7 Nuances)
 
 ### 1. The "Main Thread" Sanctuary
 *   **Standard**: Any operation taking > 2ms (e.g., massive JSON parsing, long-distance pathfinding) MUST be offloaded.
@@ -50,4 +50,4 @@ This document defines the technical benchmarks for the **Aurelius Protocol**. Th
 | **Loading** | `load("res://path")` | `preload("res://path")` or `ResourceLoader` background tasks. |
 
 ---
-*Reference version 2.0.0 | Aurelius Protocol Authorized | Godot 4.6+ Verified*
+*Reference version 2.0.0 | Aurelius Protocol Authorized | Godot 4.7+ Verified*

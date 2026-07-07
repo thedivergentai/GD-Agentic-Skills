@@ -1,7 +1,7 @@
 extends Node
 class_name SandboxWorldSerializer
 
-## Expert Sandbox Serialization (Godot 4.6).
+## Expert Sandbox Serialization (Godot 4.7).
 ## Serializes all player-placed 'Persist' nodes to JSON.
 
 const SAVE_PATH = "user://sandbox_world.json"

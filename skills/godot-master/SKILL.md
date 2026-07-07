@@ -1,11 +1,19 @@
 ---
 name: godot-master
-description: "Consolidated expert library for professional Godot 4.x game and application development. Orchestrates 94 specialized blueprints through architectural workflows, anti-pattern catalogs, performance budgets, and Server API patterns. Use when: (1) starting a new Godot project, (2) designing game or app architecture, (3) building entity/component systems, (4) debugging performance or physics issues, (5) choosing between 2D/3D approaches, (6) implementing multiplayer, (7) optimizing draw calls or script time, (8) porting between platforms. Primary entry point for ALL Godot development tasks."
+description: "Consolidated expert library for professional Godot 4.7+ game and application development. Orchestrates 92 Domain Skills through architectural workflows, anti-pattern catalogs, performance budgets, and Server API patterns. Use when: (1) starting a new Godot project, (2) designing game or app architecture, (3) building entity/component systems, (4) debugging performance or physics issues, (5) choosing between 2D/3D approaches, (6) implementing multiplayer, (7) optimizing draw calls or script time, (8) porting between platforms, (9) migrating from 4.6 to 4.7. Primary entry point for ALL Godot development tasks. Keywords: Godot 4.7, AreaLight3D, HDR, Asset Store, godot-master."
 ---
 
 # Godot Master: Lead Architect Knowledge Hub
 
 Every section earns its tokens by focusing on **Knowledge Delta** — the gap between what Claude already knows and what a senior Godot engineer knows from shipping real products.
+
+## Godot 4.7 Director's Cut
+
+All Domain Skill references target **Godot 4.7+** (stable, 2026-06-18). Key orchestration deltas:
+- **AreaLight3D** for rectangular soft lights; route horror/UI glow through [3D Lighting](references/3d-lighting.md).
+- **HDR output** on major platforms — coordinate [Platform Desktop](references/platform-desktop.md) + rendering settings.
+- **Asset Store** replaces Asset Library for third-party content.
+- **RichTextLabel ImageUnit**, input device ID constants, and Jolt physics behavior — see migration digest before auditing 4.6 projects.
 
 ---
 
@@ -82,6 +90,10 @@ Expert systems are defined not by their isolation, but by their **Payload Synthe
 | **Horror / Stealth** | Tension Management | **READ**: [Genre Horror](references/genre-horror.md) → [Genre Stealth](references/genre-stealth.md) → [Audio](references/audio-systems.md). | Atmosphere, player vulnerability |
 | **Card / Board Game** | Rule Enforcement | **READ**: [Genre Card Game](references/genre-card-game.md) → [Turn System](references/turn-system.md). | Deterministic state, UI heavy |
 | **Simulation / RTS** | Batch Processing | **READ**: [Genre Simulation](references/genre-simulation.md) → [Genre RTS](references/genre-rts.md) → [Performance](references/performance-optimization.md). | High unit counts, O(1) logic |
+| **HDR / Cinematic Visuals** | Display Pipeline | **READ**: [3D Lighting](references/3d-lighting.md) → [Platform Desktop](references/platform-desktop.md) → [Shaders](references/shaders-basics.md). Enable viewport HDR in Project Settings. | Platform-specific tonemapping tuning |
+| **Rectangular Area Lights** | AreaLight3D | **READ**: [3D Lighting](references/3d-lighting.md) → [3D Materials](references/3d-materials.md). Prefer AreaLight3D over emissive+GI hacks. | Forward+ renderer required for full quality |
+| **Mobile Touch Controls** | Native Joystick | **READ**: [Platform Mobile](references/platform-mobile.md) → [Adapt Desk→Mobile](references/adapt-desktop-to-mobile.md). Use built-in virtual joystick (4.7+). | Less plugin dependency |
+| **Addon / Asset Discovery** | Asset Store | **READ**: [Project Foundations](references/project-foundations.md) → [Export Builds](references/export-builds.md). Asset Store replaces Asset Library. | Beta store UI — verify licensing per addon |
 
 ### The "When NOT to Use a Node" Decision
 One of the most impactful expert-only decisions. The Godot docs explicitly say "avoid using nodes for everything":
@@ -506,5 +518,7 @@ Unity uses `int` or `Enum` for performance. Godot uses `StringName`.
 ---
 
 ## Reference
-- [Godot 4.x Official Documentation](https://docs.godotengine.org/en/stable/)
+- [Godot 4.7 Official Documentation](https://docs.godotengine.org/en/4.7/)
+- [Godot 4.7 Migration Guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html)
+- [GDSkills 4.7 Migration Digest](../../docs/internal/godot-4.7-migration-digest.md)
 - [Godot Engine GitHub Discussions](https://github.com/godotengine/godot/discussions)

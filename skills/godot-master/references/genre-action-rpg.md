@@ -3,6 +3,12 @@ name: godot-genre-action-rpg
 description: "Comprehensive blueprint for Action RPGs including real-time combat (hitbox/hurtbox, stat-based damage), character progression (RPG stats, leveling, skill trees), loot systems (procedural item generation, affixes, rarity tiers), equipment systems (gear slots, stat modifiers), and ability systems (cooldowns, mana cost, AOE). Based on expert ARPG design from Diablo, Path of Exile, Souls-like developers. Trigger keywords: action_rpg, loot_generator, rpg_stats, skill_tree, hitbox_combat, item_affixes, equipment_slots, ability_cooldown, stat_scaling."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Genre: Action RPG
 
 Expert blueprint for action RPGs emphasizing real-time combat, character builds, loot, and progression.
@@ -43,20 +49,20 @@ Expert blueprint for action RPGs emphasizing real-time combat, character builds,
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [damage_label_manager.gd](../scripts/genre_action_rpg_damage_label_manager.gd) - High-performance pooled system for floating damage numbers and critical hits.
-- [telegraphed_enemy.gd](../scripts/genre_action_rpg_telegraphed_enemy.gd) - Advanced AI component for Soul-like wind-ups, AOE indicators, and timed attacks.
+- [damage_label_manager.gd](scripts/damage_label_manager.gd) - High-performance pooled system for floating damage numbers and critical hits.
+- [telegraphed_enemy.gd](scripts/telegraphed_enemy.gd) - Advanced AI component for Soul-like wind-ups, AOE indicators, and timed attacks.
 
 ### Modular Components
-- [character_stats_resource.gd](../scripts/genre_action_rpg_character_stats_resource.gd) - Modular data container for base RPG attributes and scaling logic.
-- [entity_stat_duplicator.gd](../scripts/genre_action_rpg_entity_stat_duplicator.gd) - Pattern for ensuring unique death/health state for instanced enemies.
-- [duck_typed_hitbox.gd](../scripts/genre_action_rpg_duck_typed_hitbox.gd) - Safe combat interaction system for players, enemies, and props.
-- [combat_log_connector.gd](../scripts/genre_action_rpg_combat_log_connector.gd) - Signal-binding logic for decoupled combat event logging.
-- [aoe_physics_query.gd](../scripts/genre_action_rpg_aoe_physics_query.gd) - Performance-optimized AoE detection using direct PhysicsServer queries.
-- [hierarchical_state_base.gd](../scripts/genre_action_rpg_hierarchical_state_base.gd) - Robust base for managing complex ARPG character behavior.
-- [animation_condition_sync.gd](../scripts/genre_action_rpg_animation_condition_sync.gd) - Safe synchronization logic for AnimationTree Advance Conditions.
-- [threaded_inventory_loader.gd](../scripts/genre_action_rpg_threaded_inventory_loader.gd) - WorkerThreadPool-driven background parsing for large inventories.
-- [typed_inventory_storage.gd](../scripts/genre_action_rpg_typed_inventory_storage.gd) - High-performance strongly-typed dictionary for item storage.
-- [high_speed_aggro_broadcaster.gd](../scripts/genre_action_rpg_high_speed_aggro_broadcaster.gd) - Group-based broadcasting pattern for instant localized AI alerts.
+- [character_stats_resource.gd](scripts/character_stats_resource.gd) - Modular data container for base RPG attributes and scaling logic.
+- [entity_stat_duplicator.gd](scripts/entity_stat_duplicator.gd) - Pattern for ensuring unique death/health state for instanced enemies.
+- [duck_typed_hitbox.gd](scripts/duck_typed_hitbox.gd) - Safe combat interaction system for players, enemies, and props.
+- [combat_log_connector.gd](scripts/combat_log_connector.gd) - Signal-binding logic for decoupled combat event logging.
+- [aoe_physics_query.gd](scripts/aoe_physics_query.gd) - Performance-optimized AoE detection using direct PhysicsServer queries.
+- [hierarchical_state_base.gd](scripts/hierarchical_state_base.gd) - Robust base for managing complex ARPG character behavior.
+- [animation_condition_sync.gd](scripts/animation_condition_sync.gd) - Safe synchronization logic for AnimationTree Advance Conditions.
+- [threaded_inventory_loader.gd](scripts/threaded_inventory_loader.gd) - WorkerThreadPool-driven background parsing for large inventories.
+- [typed_inventory_storage.gd](scripts/typed_inventory_storage.gd) - High-performance strongly-typed dictionary for item storage.
+- [high_speed_aggro_broadcaster.gd](scripts/high_speed_aggro_broadcaster.gd) - Group-based broadcasting pattern for instant localized AI alerts.
 
 ---
 
@@ -621,4 +627,4 @@ func flush_to_disk() -> void:
 
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

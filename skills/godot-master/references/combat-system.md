@@ -3,6 +3,12 @@ name: godot-combat-system
 description: "Expert patterns for combat systems including hitbox/hurtbox architecture, damage calculation (DamageData class), health components, combat state machines, combo systems, ability cooldowns, and damage popups. Use for action games, RPGs, or fighting games. Trigger keywords: Hitbox, Hurtbox, DamageData, HealthComponent, combat_state, combo_system, ability_cooldown, invincibility_frames, damage_popup."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Combat System
 
 Expert guidance for building flexible, component-based combat systems.
@@ -31,10 +37,10 @@ Expert guidance for building flexible, component-based combat systems.
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [combat_system_patterns.gd](../scripts/combat_system_combat_system_patterns.gd)
+### [combat_system_patterns.gd](scripts/combat_system_patterns.gd)
 10 Expert patterns: Safe duck-typing, hitstun tweens, nodeless AoE shape casting, and frame-perfect sync.
 
-### [hitbox_hurtbox.gd](../scripts/combat_system_hitbox_hurtbox.gd)
+### [hitbox_hurtbox.gd](scripts/hitbox_hurtbox.gd)
 Component-based hitbox with hit-stop and knockback logic.
 
 ---
@@ -359,4 +365,4 @@ static func set_hitbox_color(shape: CollisionShape3D, is_attack: bool) -> void:
 ```
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

@@ -3,6 +3,12 @@ name: godot-genre-sandbox
 description: "Expert blueprint for sandbox games (Minecraft, Terraria, Garry's Mod) with physics-based interactions, cellular automata, emergent gameplay, and creative tools. Use when building open-world creation games with voxels, element systems, player-created structures, or procedural worlds. Keywords voxel, sandbox, cellular automata, MultiMesh, chunk management, emergent behavior, creative mode."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Genre: Sandbox
 
 Physical simulation, emergent play, and player creativity define this genre.
@@ -34,12 +40,12 @@ Physical simulation, emergent play, and player creativity define this genre.
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [voxel_chunk_manager.gd](../scripts/genre_sandbox_voxel_chunk_manager.gd) - Professional chunk management using `MultiMeshInstance3D` with batch update logic.
-- [cellular_automata_liquid.gd](../scripts/genre_sandbox_cellular_automata_liquid.gd) - Optimized simulation of liquids and powders using property-based density checks.
-- [voxel_world.gd](../scripts/genre_sandbox_voxel_world.gd) - Top-level world controller for grid state, tool-based editing, and chunk lifecycle.
+- [voxel_chunk_manager.gd](scripts/voxel_chunk_manager.gd) - Professional chunk management using `MultiMeshInstance3D` with batch update logic.
+- [cellular_automata_liquid.gd](scripts/cellular_automata_liquid.gd) - Optimized simulation of liquids and powders using property-based density checks.
+- [voxel_world.gd](scripts/voxel_world.gd) - Top-level world controller for grid state, tool-based editing, and chunk lifecycle.
 
 ### Modular Components
-- [sandbox_patterns.gd](../scripts/genre_sandbox_sandbox_patterns.gd) - Utility collection for async chunk loading, multithreading, and origin shifting.
+- [sandbox_patterns.gd](scripts/sandbox_patterns.gd) - Utility collection for async chunk loading, multithreading, and origin shifting.
 
 ## Architecture Patterns
 
@@ -297,4 +303,4 @@ static func import_blueprint_from_clipboard() -> Dictionary:
 ```
 
 
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

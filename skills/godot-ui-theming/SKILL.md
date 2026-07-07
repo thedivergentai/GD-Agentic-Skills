@@ -66,6 +66,12 @@ Bi-directional (RTL/LTR) UI support. Swaps theme variants dynamically based on l
 3. Assign to root Control node
 4. All children inherit theme
 
+## Godot 4.7: UI Theming
+
+- **Control offset transform** for inspector-driven visual tweaks without relayout.
+- `ResourceImporterDynamicFont.hinting` default changed to **3** — verify font crispness on target DPI.
+- **GradientTexture2D** supports **conic** gradients.
+
 ## StyleBox Pattern
 
 ```gdscript

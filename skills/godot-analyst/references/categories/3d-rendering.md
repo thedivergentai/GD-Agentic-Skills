@@ -1,6 +1,6 @@
 # Anara Rubric: 3D Rendering
 ## Pillar Overview
-The three-dimensional manifestation of the vision. This rubric assesses the efficiency and visual quality of the project's 3D assets, lighting, and rendering pipeline in Godot 4.6.
+The three-dimensional manifestation of the vision. This rubric assesses the efficiency and visual quality of the project's 3D assets, lighting, and rendering pipeline in Godot 4.7.
 
 ---
 

@@ -3,6 +3,12 @@ name: godot-turn-system
 description: "Expert blueprint for turn-based combat with turn order, action points, phase management, and timeline systems for strategy/RPG games. Covers speed-based initiative, interrupts, and simultaneous turns. Use when implementing turn-based combat OR tactical systems. Keywords turn-based, initiative, action points, phase, round, turn order, combat."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Turn System
 
 Turn order calculation, action points, phase management, and timeline systems define turn-based combat.
@@ -35,11 +41,11 @@ Turn order calculation, action points, phase management, and timeline systems de
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [active_time_battle.gd](../scripts/turn_system_active_time_battle.gd) - Framework for ATB systems with dynamic progress bars and async action support.
-- [timeline_turn_manager.gd](../scripts/turn_system_timeline_turn_manager.gd) - Advanced manager for timeline-based turns with interrupts and predictive visualization.
+- [active_time_battle.gd](scripts/active_time_battle.gd) - Framework for ATB systems with dynamic progress bars and async action support.
+- [timeline_turn_manager.gd](scripts/timeline_turn_manager.gd) - Advanced manager for timeline-based turns with interrupts and predictive visualization.
 
 ### Modular Components
-- [turn_system_patterns.gd](../scripts/turn_system_turn_system_patterns.gd) - Collection of patterns for match state machines, UndoRedo, and A* Grid setup.
+- [turn_system_patterns.gd](scripts/turn_system_patterns.gd) - Collection of patterns for match state machines, UndoRedo, and A* Grid setup.
 
 ---
 
@@ -185,4 +191,4 @@ func _on_action_hover(target: Enemy):
 ```
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

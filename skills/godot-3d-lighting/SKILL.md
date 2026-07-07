@@ -23,6 +23,12 @@ Expert guidance for realistic 3D lighting with shadows and global illumination.
 
 ---
 
+## Godot 4.7: AreaLight3D
+
+- **AreaLight3D** provides rectangular area lights with soft shadows — prefer over emissive-material + GI workarounds for screens, glowing panels, and billboards.
+- **HDR output** is supported on all major platforms; enable in Project Settings → Rendering → Viewport for true HDR display chain.
+- **NEVER** use emissive-only fake panels when AreaLight3D gives correct falloff and shadow softness in Forward+.
+
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.

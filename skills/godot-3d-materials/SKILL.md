@@ -22,6 +22,11 @@ Expert guidance for PBR materials and StandardMaterial3D in Godot.
 
 ---
 
+## Godot 4.7: Materials
+
+- **AreaLight3D** pairs with emissive materials for physically correct rectangular emitters.
+- `Texture2D.get_format()` unified on base class for portable compressed textures.
+
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.

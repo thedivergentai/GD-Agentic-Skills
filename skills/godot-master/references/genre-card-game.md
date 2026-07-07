@@ -3,6 +3,12 @@ name: godot-genre-card-game
 description: "Expert blueprint for digital card games (CCG/Deckbuilders) including card data structures (Resource-based), deck management (draw/discard/reshuffle), turn logic, hand layout (arcing), drag-and-drop UI, effect resolution (Command pattern), and visual polish (godot-tweening, shaders). Use for CCG, deckbuilders, or tactical card games. Trigger keywords: card_game, deck_manager, card_data, hand_layout, drag_drop_cards, effect_resolution, command_pattern, draw_pile, discard_pile."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Genre: Card Game
 
 Expert blueprint for digital card games with data-driven design and juicy UI.
@@ -32,19 +38,19 @@ Expert blueprint for digital card games with data-driven design and juicy UI.
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [card_effect_resolution.gd](../scripts/genre_card_game_card_effect_resolution.gd) - Stack-based effect resolver (LIFO/FIFO) handling nested triggers and counter-play.
+- [card_effect_resolution.gd](scripts/card_effect_resolution.gd) - Stack-based effect resolver (LIFO/FIFO) handling nested triggers and counter-play.
 
 ### Modular Components
-- [card_data_resource.gd](../scripts/genre_card_game_card_data_resource.gd) - Data-driven card definitions allowing Inspector-based design.
-- [deck_shuffle_bag.gd](../scripts/genre_card_game_deck_shuffle_bag.gd) - Secure randomization patterns for uniform card distribution.
-- [turn_state_machine.gd](../scripts/genre_card_game_turn_state_machine.gd) - Managing rigid phases (Draw, Play, Combat) via state matching.
-- [card_drag_drop.gd](../scripts/genre_card_game_card_drag_drop.gd) - Implementation of native `_get_drag_data()` for Control nodes.
-- [board_query_filter.gd](../scripts/genre_card_game_board_query_filter.gd) - Functional `filter()` patterns for querying board metadata.
-- [card_tween_manager.gd](../scripts/genre_card_game_card_tween_manager.gd) - Managing interruptible card juice and board transitions.
-- [reactive_card_ui.gd](../scripts/genre_card_game_reactive_card_ui.gd) - Resource-signal driven UI for automatic visual state updates.
-- [board_state_dictionary.gd](../scripts/genre_card_game_board_state_dictionary.gd) - Grid-based tracking (Vector2i) decoupled from Node order.
-- [match_state_resetter.gd](../scripts/genre_card_game_match_state_resetter.gd) - Clean-up pattern for in-match temporary Resource modifications.
-- [deck_builder_validator.gd](../scripts/genre_card_game_deck_builder_validator.gd) - Backend logic for deck-building constraints and mana curves.
+- [card_data_resource.gd](scripts/card_data_resource.gd) - Data-driven card definitions allowing Inspector-based design.
+- [deck_shuffle_bag.gd](scripts/deck_shuffle_bag.gd) - Secure randomization patterns for uniform card distribution.
+- [turn_state_machine.gd](scripts/turn_state_machine.gd) - Managing rigid phases (Draw, Play, Combat) via state matching.
+- [card_drag_drop.gd](scripts/card_drag_drop.gd) - Implementation of native `_get_drag_data()` for Control nodes.
+- [board_query_filter.gd](scripts/board_query_filter.gd) - Functional `filter()` patterns for querying board metadata.
+- [card_tween_manager.gd](scripts/card_tween_manager.gd) - Managing interruptible card juice and board transitions.
+- [reactive_card_ui.gd](scripts/reactive_card_ui.gd) - Resource-signal driven UI for automatic visual state updates.
+- [board_state_dictionary.gd](scripts/board_state_dictionary.gd) - Grid-based tracking (Vector2i) decoupled from Node order.
+- [match_state_resetter.gd](scripts/match_state_resetter.gd) - Clean-up pattern for in-match temporary Resource modifications.
+- [deck_builder_validator.gd](scripts/deck_builder_validator.gd) - Backend logic for deck-building constraints and mana curves.
 
 ---
 
@@ -262,4 +268,4 @@ func draw_card(new_card: Resource) -> void:
 ```
 
 
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

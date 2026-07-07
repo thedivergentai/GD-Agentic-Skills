@@ -17,6 +17,10 @@ Expert guidance for porting desktop games to mobile platforms.
 
 ---
 
+## Godot 4.7: Desktop→Mobile
+
+- Use built-in **virtual joystick** instead of third-party touch plugins where possible.
+
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.

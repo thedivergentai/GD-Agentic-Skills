@@ -63,4 +63,5 @@ builds/
 .notes/
 .docs/
 .audit/
+.reference/
 .venv/

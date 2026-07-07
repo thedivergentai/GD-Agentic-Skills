@@ -36,6 +36,10 @@ Expert blueprint for platformers emphasizing movement feel, level design, and pl
 
 ---
 
+## Godot 4.7: Platformer
+
+- One-way collision **direction** is shape-relative — tune `CollisionShape2D` direction for angled platforms.
+
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns

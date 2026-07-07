@@ -3,6 +3,12 @@ name: godot-2d-animation
 description: "Expert patterns for 2D animation in Godot using AnimatedSprite2D and skeletal cutout rigs. Use when implementing sprite frame animations, procedural animation (squash/stretch), cutout bone hierarchies, or frame-perfect timing systems. Trigger keywords: AnimatedSprite2D, SpriteFrames, animation_finished, animation_looped, frame_changed, frame_progress, set_frame_and_progress, cutout animation, skeletal 2D, Bone2D, procedural animation, animation state machine, advance(0)."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # 2D Animation
 
 Expert-level guidance for frame-based and skeletal 2D animation in Godot.
@@ -25,34 +31,34 @@ Expert-level guidance for frame-based and skeletal 2D animation in Godot.
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [animation_sync.gd](../scripts/2d_animation_animation_sync.gd)
+### [animation_sync.gd](scripts/animation_sync.gd)
 Method track triggers for frame-perfect logic (SFX/VFX hitboxes), signal-driven async gameplay orchestration, and AnimationTree blend space management. Use when syncing gameplay events to animation frames.
 
-### [animation_state_sync.gd](../scripts/2d_animation_animation_state_sync.gd)
+### [animation_state_sync.gd](scripts/animation_state_sync.gd)
 Frame-perfect state-driven animation with transition queueing - essential for responsive character animation.
 
-### [shader_hook.gd](../scripts/2d_animation_shader_hook.gd)
+### [shader_hook.gd](scripts/shader_hook.gd)
 Animating ShaderMaterial uniforms via AnimationPlayer property tracks. Covers hit flash, dissolve effects, and instance uniforms for batched sprites. Use for visual feedback tied to animation states.
 
-### [procedural_squash_stretch.gd](../scripts/2d_animation_procedural_squash_stretch.gd)
+### [procedural_squash_stretch.gd](scripts/procedural_squash_stretch.gd)
 Dynamic physics-driven deformation. Provides `lerp` logic for smoothing out sudden impact squashes and directional stretches based on high-velocity movement.
 
-### [skeleton_2d_rig_helper.gd](../scripts/2d_animation_skeleton_2d_rig_helper.gd)
+### [skeleton_2d_rig_helper.gd](scripts/skeleton_2d_rig_helper.gd)
 Programmatic rig management. Tuning FABRIK/CCDIK modification stacks and updating bone rest poses at runtime for procedural limb goal-reaching.
 
-### [animation_tree_step.gd](../scripts/2d_animation_animation_tree_step.gd)
+### [animation_tree_step.gd](scripts/animation_tree_step.gd)
 Expert state machine control. Utilizes `AnimationNodeStateMachinePlayback.travel()` to leverage the engine's internal A* pathfinding for multi-state transitions.
 
-### [one_frame_sync_fix.gd](../scripts/2d_animation_one_frame_sync_fix.gd)
+### [one_frame_sync_fix.gd](scripts/one_frame_sync_fix.gd)
 Eliminates the "One-Frame Glitch" by using `advance(0)` to force the engine to apply animation poses immediately alongside property changes like `flip_h`.
 
-### [gpu_mesh_optimizer.gd](../scripts/2d_animation_gpu_mesh_optimizer.gd)
+### [gpu_mesh_optimizer.gd](scripts/gpu_mesh_optimizer.gd)
 Architectural pattern for bypassing GPU fill-rate bottlenecks. Demonstrates when to convert large sprites into specialized 2D meshes to avoid transparent pixel overhead.
 
-### [multimesh_swarm_anim.gd](../scripts/2d_animation_multimesh_swarm_anim.gd)
+### [multimesh_swarm_anim.gd](scripts/multimesh_swarm_anim.gd)
 Optimization for thousands of entities. Offloads animation logic (sine waves, flight patterns) to the GPU vertex shader to eliminate CPU node processing.
 
-### [tween_lifecycle_manager.gd](../scripts/2d_animation_tween_lifecycle_manager.gd)
+### [tween_lifecycle_manager.gd](scripts/tween_lifecycle_manager.gd)
 Safe and memory-efficient `Tween` orchestration. Handles interruption cleanup and property-fight prevention in fast-paced gameplay loops.
 
 ---
@@ -446,4 +452,4 @@ func unload_high_res_anim() -> void:
 ```
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

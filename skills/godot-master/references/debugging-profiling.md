@@ -3,6 +3,12 @@ name: godot-debugging-profiling
 description: "Expert debugging workflows including print debugging (push_warning, push_error, assert), breakpoints (conditional breakpoints), Godot Debugger (stack trace, variables, remote debug), profiler (time profiler, memory monitor), error handling patterns, and performance optimization. Use for bug fixing, performance tuning, or development diagnostics. Trigger keywords: breakpoint, print_debug, push_error, assert, profiler, remote_debug, memory_leak, orphan_nodes, Performance.get_monitor."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Debugging & Profiling
 
 Expert guidance for finding and fixing bugs efficiently with Godot's debugging tools.
@@ -30,34 +36,34 @@ Expert guidance for finding and fixing bugs efficiently with Godot's debugging t
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [high_precision_benchmarker.gd](../scripts/debugging_profiling_high_precision_benchmarker.gd)
+### [high_precision_benchmarker.gd](scripts/high_precision_benchmarker.gd)
 Micrometer-precision execution timing using `Time.get_ticks_usec()`, essential for identifying CPU micro-bottlenecks.
 
-### [orphan_node_detector.gd](../scripts/debugging_profiling_orphan_node_detector.gd)
+### [orphan_node_detector.gd](scripts/orphan_node_detector.gd)
 Automated detection and logging of "Orphan Nodes" (nodes removed from tree but not freed) using internal Performance monitors.
 
-### [advanced_backtrace_recorder.gd](../scripts/debugging_profiling_advanced_backtrace_recorder.gd)
+### [advanced_backtrace_recorder.gd](scripts/advanced_backtrace_recorder.gd)
 Capturing detailed script backtraces programmatically, including local variable snapshots for deep crash reporting.
 
-### [engine_error_interceptor.gd](../scripts/debugging_profiling_engine_error_interceptor.gd)
+### [engine_error_interceptor.gd](scripts/engine_error_interceptor.gd)
 Intercepting underlying C++ engine errors and piping them to custom backend logs or analytics services.
 
-### [custom_editor_monitor.gd](../scripts/debugging_profiling_custom_editor_monitor.gd)
+### [custom_editor_monitor.gd](scripts/custom_editor_monitor.gd)
 Exposing game-specific performance metrics (AI counts, bullet physics) directly to the Godot Editor's Debugger > Monitors tab.
 
-### [debugger_tab_plugin.gd](../scripts/debugging_profiling_debugger_tab_plugin.gd)
+### [debugger_tab_plugin.gd](scripts/debugger_tab_plugin.gd)
 Project-specific debugger extensions that inject custom visual tabs and data into the Godot bottom panel.
 
-### [thread_safe_logger.gd](../scripts/debugging_profiling_thread_safe_logger.gd)
+### [thread_safe_logger.gd](scripts/thread_safe_logger.gd)
 Mutext-locked logger subclass for thread-safe writing of logs from worker threads to external files.
 
-### [custom_debug_draw.gd](../scripts/debugging_profiling_custom_debug_draw.gd)
+### [custom_debug_draw.gd](scripts/custom_debug_draw.gd)
 Pro-level visualization patterns for non-visual data like pathfinding nodes, physics raycasts, and local AI influence maps.
 
-### [break_on_condition.gd](../scripts/debugging_profiling_break_on_condition.gd)
+### [break_on_condition.gd](scripts/break_on_condition.gd)
 Hardcoded breakpoint triggers for halting execution on invalid logic states in a team-agnostic manner.
 
-### [remote_debug_console.gd](../scripts/debugging_profiling_remote_debug_console.gd)
+### [remote_debug_console.gd](scripts/remote_debug_console.gd)
 In-game command console for debugging mobile and console builds where standard terminal output is inaccessible.
 
 > **Do NOT Load** debug_overlay.gd in release builds - wrap usage in `if OS.is_debug_build()`.
@@ -317,11 +323,11 @@ Ensuring safe access to the SceneTree and data from worker threads.
 ### 4. Memory-Leak-Tracker (Transient Scenes)
 Identifying leaks in scenes that are instantiated and freed frequently.
 - **Orphan Detection**: Periodically check `Node.get_orphan_node_ids()`. If the count grows indefinitely after closing transient scenes, you have a leak.
-- **ObjectDB Snapshots**: Use the Godot 4.6 ObjectDB Profiler to take "Before" and "After" snapshots. Diffing these reveals exactly which `RefCounted` objects are causing circular reference leaks.
+- **ObjectDB Snapshots**: Use the Godot 4.7 ObjectDB Profiler to take "Before" and "After" snapshots. Diffing these reveals exactly which `RefCounted` objects are causing circular reference leaks.
 
 ## Reference
 - [Godot Docs: Debugger](https://docs.godotengine.org/en/stable/tutorials/scripting/debug/debugger_panel.html)
 
 
 ### Related
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

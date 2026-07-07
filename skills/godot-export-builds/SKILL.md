@@ -25,6 +25,12 @@ Expert guidance for building and distributing Godot games across platforms.
 - **NEVER bake shaders on export for Dedicated Servers** — The Shader Baker (Godot 4.5+) is for visual clients. Enabling it for headless servers is wasted build time.
 ---
 
+## Godot 4.7: Import & Export
+
+- `EditorSceneFormatImporter` constants moved to **ImportFlags** enum — update importer scripts.
+- **Asset Store** replaces Asset Library in editor — document addon acquisition via new store UI.
+- **HDR export**: verify viewport HDR settings per platform in export presets.
+
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.

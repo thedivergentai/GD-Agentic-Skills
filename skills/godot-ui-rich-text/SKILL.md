@@ -62,6 +62,13 @@ $RichTextLabel.bbcode_enabled = true
 $RichTextLabel.text = "[b]Bold[/b] and [i]italic[/i] text"
 ```
 
+## Godot 4.7: RichTextLabel ImageUnit
+
+- `width_in_percent` / `height_in_percent` **removed** — use `width_unit` / `height_unit` with `RichTextLabel.ImageUnit` enum.
+- `ImageUpdateMask.UPDATE_WIDTH_IN_PERCENT` renamed to `UPDATE_WIDTH_UNIT`.
+- `add_image` / `update_image` width and height are now **float**, not int.
+- **NEVER** pass `true`/`false` for percent flags — use `RichTextLabel.ImageUnit` values (default changed from `false` to `0`).
+
 ## Common Tags
 
 ```bbcode

@@ -29,6 +29,22 @@ The library just got a major IQ boost. 🧠 Say hello to our new **Expert-Grade 
 
 ---
 
+---
+
+## 🚀 Major Release: v0.0.8 — The Director's Cut Update
+**July 7, 2026**
+
+<div align="center">
+  <img src="assets/banner_0_0_8.webp" alt="The Director's Cut Update - v0.0.8" width="100%" />
+</div>
+
+- **Godot 4.7 Upgrade**: All 92 Domain Skills updated to Godot 4.7+ with migration digest, targeted API deltas (AreaLight3D, HDR, Asset Store, ImageUnit, Jolt physics), and version string sweep.
+- **godot-master Sync**: Full mirror refresh of domain skill references and bundled scripts for 4.7.
+- **Domain Skills Rename**: "Micro-Skills" renamed to **Domain Skills** across public documentation.
+- **Persona Squad 4.7**: Anara modernity scoring, Aurelius 4.7 never-list sector, Builder `GODOT_PATH` env overrides.
+
+---
+
 ## 🚀 Major Release: v0.0.7 — The Analyze, Audit, Build! Update
 **May 20, 2026**
 

@@ -3,6 +3,12 @@ name: godot-adapt-single-to-multiplayer
 description: "Expert patterns for adding multiplayer to single-player games including client-server architecture, authoritative server design, MultiplayerSynchronizer, lag compensation (client prediction, server reconciliation), input buffering, and anti-cheat measures. Use when retrofitting multiplayer, porting to online play, or designing networked gameplay. Trigger keywords: MultiplayerPeer, ENetMultiplayerPeer, SceneMultiplayer, MultiplayerSynchronizer, rpc, rpc_id, multiplayer_authority, client_prediction, server_reconciliation, lag_compensation, rollback."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Adapt: Single to Multiplayer
 
 Expert guidance for retrofitting multiplayer into single-player games.

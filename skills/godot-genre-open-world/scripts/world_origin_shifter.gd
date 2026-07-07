@@ -1,7 +1,7 @@
 extends Node
 class_name WorldOriginShifter
 
-## Expert Origin Shifting (Godot 4.6).
+## Expert Origin Shifting (Godot 4.7).
 ## Resets world origin to (0,0,0) to prevent jitter.
 
 @export var world_root: Node3D

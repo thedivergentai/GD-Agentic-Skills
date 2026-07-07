@@ -3,6 +3,12 @@ name: godot-genre-rts
 description: "Expert blueprint for real-time strategy games including unit selection (drag box, shift-add), command systems (move, attack, gather), pathfinding (NavigationAgent2D with RVO avoidance), fog of war (SubViewport mask shader), resource economy (gather/build loop), and AI opponents (behavior trees, utility AI). Use for base-building RTS or tactical combat games. Trigger keywords: RTS, unit_selection, command_system, fog_of_war, pathfinding_RVO, resource_economy, command_queue."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Genre: Real-Time Strategy (RTS)
 
 Expert blueprint for RTS games balancing strategy, micromanagement, and performance.
@@ -39,20 +45,20 @@ Expert blueprint for RTS games balancing strategy, micromanagement, and performa
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [selection_manager_marquee_2d.gd](../scripts/genre_rts_selection_manager_marquee_2d.gd) - Professional-grade unit selection system with drag-box, unit filtering, and shift-add support.
+- [selection_manager_marquee_2d.gd](scripts/selection_manager_marquee_2d.gd) - Professional-grade unit selection system with drag-box, unit filtering, and shift-add support.
 
 ### Modular Components
-- [rts_army_manager.gd](../scripts/genre_rts_rts_army_manager.gd) - Multithreaded AI update system for managing mass units on background cores.
-- [selection_manager_raycast_3d.gd](../scripts/genre_rts_selection_manager_raycast_3d.gd) - Optimized 3D selection using direct PhysicsServer raycasting.
-- [rts_path_query_pool.gd](../scripts/genre_rts_rts_path_query_pool.gd) - Pooled Navigation query system to prevent memory allocations.
-- [navigation_mask_helper.gd](../scripts/genre_rts_navigation_mask_helper.gd) - Bitmask utilities for dynamic navigation layers and avoidance.
-- [rts_targeting_logic.gd](../scripts/genre_rts_rts_targeting_logic.gd) - Distance-squared performance optimization for mass enemy filtering.
-- [rts_group_commander.gd](../scripts/genre_rts_rts_group_commander.gd) - SceneTree group broadcasting pattern for decoupled mass units.
-- [rts_unit_stat_duplicator.gd](../scripts/genre_rts_rts_unit_stat_duplicator.gd) - Pattern for deep duplicating unit data for isolation.
-- [rts_unit.gd](../scripts/genre_rts_rts_unit.gd) - Comprehensive unit controller with state management and navigation integration.
-- [building_grid_astar.gd](../scripts/genre_rts_building_grid_astar.gd) - High-speed grid-based pathfinding for building placement.
-- [fog_of_war_tile_mask.gd](../scripts/genre_rts_fog_of_war_tile_mask.gd) - Efficient Fog of War clearing using the TileMapLayer API and Vector2i.
-- [rendering_ghost_spawner.gd](../scripts/genre_rts_rendering_ghost_spawner.gd) - Optimized placement ghosts using RenderingServer RIDs.
+- [rts_army_manager.gd](scripts/rts_army_manager.gd) - Multithreaded AI update system for managing mass units on background cores.
+- [selection_manager_raycast_3d.gd](scripts/selection_manager_raycast_3d.gd) - Optimized 3D selection using direct PhysicsServer raycasting.
+- [rts_path_query_pool.gd](scripts/rts_path_query_pool.gd) - Pooled Navigation query system to prevent memory allocations.
+- [navigation_mask_helper.gd](scripts/navigation_mask_helper.gd) - Bitmask utilities for dynamic navigation layers and avoidance.
+- [rts_targeting_logic.gd](scripts/rts_targeting_logic.gd) - Distance-squared performance optimization for mass enemy filtering.
+- [rts_group_commander.gd](scripts/rts_group_commander.gd) - SceneTree group broadcasting pattern for decoupled mass units.
+- [rts_unit_stat_duplicator.gd](scripts/rts_unit_stat_duplicator.gd) - Pattern for deep duplicating unit data for isolation.
+- [rts_unit.gd](scripts/rts_unit.gd) - Comprehensive unit controller with state management and navigation integration.
+- [building_grid_astar.gd](scripts/building_grid_astar.gd) - High-speed grid-based pathfinding for building placement.
+- [fog_of_war_tile_mask.gd](scripts/fog_of_war_tile_mask.gd) - Efficient Fog of War clearing using the TileMapLayer API and Vector2i.
+- [rendering_ghost_spawner.gd](scripts/rendering_ghost_spawner.gd) - Optimized placement ghosts using RenderingServer RIDs.
 
 ---
 
@@ -314,4 +320,4 @@ void fragment() {
 ```
 
 
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

@@ -9,40 +9,40 @@ Theme resources, StyleBox styling, font management, and override system define c
 
 ## Available Scripts
 
-### [global_theme_manager.gd](../scripts/ui_theming_global_theme_manager.gd)
+### [global_theme_manager.gd](scripts/global_theme_manager.gd)
 Expert theme manager with dynamic switching, theme variants, and fallback handling.
 
-### [ui_scale_manager.gd](../scripts/ui_theming_ui_scale_manager.gd)
+### [ui_scale_manager.gd](scripts/ui_scale_manager.gd)
 Runtime theme switching and DPI/Resolution scale management.
 
-### [theme_swapper.gd](../scripts/ui_theming_theme_swapper.gd)
+### [theme_swapper.gd](scripts/theme_swapper.gd)
 Dynamic Dark/Light mode implementation using cascading theme root propagation.
 
-### [danger_button_assignment.gd](../scripts/ui_theming_danger_button_assignment.gd)
+### [danger_button_assignment.gd](scripts/danger_button_assignment.gd)
 Expert use of `theme_type_variation` for semantic UI styling without scene duplication.
 
-### [dynamic_stylebox_color.gd](../scripts/ui_theming_dynamic_stylebox_color.gd)
+### [dynamic_stylebox_color.gd](scripts/dynamic_stylebox_color.gd)
 Safe runtime StyleBox modification. Demonstrates the critical `duplicate()` pattern for isolated overrides.
 
-### [procedural_theme_safe.gd](../scripts/ui_theming_procedural_theme_safe.gd)
+### [procedural_theme_safe.gd](scripts/procedural_theme_safe.gd)
 Reliable theming for generated UI elements using `NOTIFICATION_THEME_CHANGED`.
 
-### [custom_chart_drawing.gd](../scripts/ui_theming_custom_chart_drawing.gd)
+### [custom_chart_drawing.gd](scripts/custom_chart_drawing.gd)
 Pattern for reading active Theme properties (colors, fonts) in custom `_draw()` logic.
 
-### [theme_isolation.gd](../scripts/ui_theming_theme_isolation.gd)
+### [theme_isolation.gd](scripts/theme_isolation.gd)
 Ensuring HUD consistency by isolating nodes from parent themes and referencing Project Defaults.
 
-### [pulsating_ui_theme.gd](../scripts/ui_theming_pulsating_ui_theme.gd)
+### [pulsating_ui_theme.gd](scripts/pulsating_ui_theme.gd)
 Animating UI styles via Tweens. Targets StyleBox properties directly after duplication.
 
-### [crisp_ui_scaler.gd](../scripts/ui_theming_crisp_ui_scaler.gd)
+### [crisp_ui_scaler.gd](scripts/crisp_ui_scaler.gd)
 High-quality resolution-independent scaling using `content_scale_factor` to maintain font crispness.
 
-### [memory_safe_custom_drawing.gd](../scripts/ui_theming_memory_safe_custom_drawing.gd)
+### [memory_safe_custom_drawing.gd](scripts/memory_safe_custom_drawing.gd)
 Fixing the "disappearing stylebox" bug by caching resources at the class level for the RenderingServer.
 
-### [rtl_theme_mirroring.gd](../scripts/ui_theming_rtl_theme_mirroring.gd)
+### [rtl_theme_mirroring.gd](scripts/rtl_theme_mirroring.gd)
 Bi-directional (RTL/LTR) UI support. Swaps theme variants dynamically based on layout direction.
 
 ## NEVER Do in UI Theming
@@ -65,6 +65,12 @@ Bi-directional (RTL/LTR) UI support. Swaps theme variants dynamically based on l
 2. Create new Theme resource
 3. Assign to root Control node
 4. All children inherit theme
+
+## Godot 4.7: UI Theming
+
+- **Control offset transform** for inspector-driven visual tweaks without relayout.
+- `ResourceImporterDynamicFont.hinting` default changed to **3** — verify font crispness on target DPI.
+- **GradientTexture2D** supports **conic** gradients.
 
 ## StyleBox Pattern
 
@@ -142,4 +148,4 @@ Ensuring UI textures are optimized for rendering performance.
 
 
 ### Related
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

@@ -1,6 +1,6 @@
 extends Node
 
-## Expert RTS Economy (Godot 4.6).
+## Expert RTS Economy (Godot 4.7).
 ## Global Singleton for decoupled resource management.
 
 signal budget_updated(res_id: String, new_total: int)

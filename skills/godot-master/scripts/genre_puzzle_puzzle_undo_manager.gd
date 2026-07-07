@@ -1,7 +1,7 @@
 extends Node
 class_name PuzzleUndoManager
 
-## Expert Undo/Redo (Godot 4.6).
+## Expert Undo/Redo (Godot 4.7).
 ## Leverages the built-in UndoRedo class for command tracking.
 
 var history := UndoRedo.new()

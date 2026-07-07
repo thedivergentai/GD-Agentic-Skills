@@ -1,6 +1,6 @@
 extends Node
 
-## Expert Affection Tracker (Godot 4.6).
+## Expert Affection Tracker (Godot 4.7).
 ## Global Singleton for decoupled relationship management.
 
 signal affection_updated(npc_id: String, new_val: int, change: int)

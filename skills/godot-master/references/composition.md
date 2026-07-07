@@ -3,6 +3,12 @@ name: godot-composition
 description: "Expert architectural standards for building scalable Godot GAMES (RPGs, Platformers, Shooters) using the Composition pattern (Entity-Component). Use when designing player controllers, NPCs, enemies, weapons, or complex gameplay systems. Enforces \"Has-A\" relationships for game entities. Trigger keywords: Entity-Component, ECS, Gameplay, Actors, NPCs, Enemies, Weapons, Hitboxes, Game Loop, Level Design."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Godot Composition Architecture
 
 ## Core Philosophy
@@ -19,34 +25,34 @@ In Godot, Nodes **are** components. A complex entity (Player) is simply an Orche
 
 ## Available Scripts
 
-### [health_component.gd](../scripts/composition_health_component.gd)
+### [health_component.gd](scripts/health_component.gd)
 Specialized Node for managing lifespan, damage logic, and death signals across any entity.
 
-### [hit_box_component.gd](../scripts/composition_hit_box_component.gd)
+### [hit_box_component.gd](scripts/hit_box_component.gd)
 Area-based component for intercepting damage and delegating it to a HealthComponent.
 
-### [hurt_box_component.gd](../scripts/composition_hurt_box_component.gd)
+### [hurt_box_component.gd](scripts/hurt_box_component.gd)
 Area-based component for dealing damage specifically to HitBoxComponents.
 
-### [velocity_component.gd](../scripts/composition_velocity_component.gd)
+### [velocity_component.gd](scripts/velocity_component.gd)
 Encapsulated movement and acceleration logic for reuse across Players and Enemies.
 
-### [interaction_component.gd](../scripts/composition_interaction_component.gd)
+### [interaction_component.gd](scripts/interaction_component.gd)
 Decoupled interaction handler using injecting `Callable` logic for context-aware actions.
 
-### [follower_component.gd](../scripts/composition_follower_component.gd)
+### [follower_component.gd](scripts/follower_component.gd)
 Decoupled tracking logic using `NodePath` injection for smooth entity following.
 
-### [state_component_vsm.gd](../scripts/composition_state_component_vsm.gd)
+### [state_component_vsm.gd](scripts/state_component_vsm.gd)
 Component-based state machine pattern using child nodes as individual states.
 
-### [status_effect_component.gd](../scripts/composition_status_effect_component.gd)
+### [status_effect_component.gd](scripts/status_effect_component.gd)
 Managing temporary modifiers (buffs/debuffs) by stacking effect scenes as children.
 
-### [visual_sync_component.gd](../scripts/composition_visual_sync_component.gd)
+### [visual_sync_component.gd](scripts/visual_sync_component.gd)
 Separating logical state (velocity/direction) from visual representation (sprite flipping).
 
-### [composition_root_init.gd](../scripts/composition_composition_root_init.gd)
+### [composition_root_init.gd](scripts/composition_root_init.gd)
 The "Orchestrator" pattern for wiring and connecting components in a parent node.
 
 ## NEVER Do in Composition
@@ -268,4 +274,4 @@ Nodes are lightweight. Do not fear adding 10-20 nodes per entity. The organizati
 
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

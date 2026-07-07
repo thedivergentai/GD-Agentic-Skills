@@ -3,40 +3,46 @@ name: godot-raycasting-queries
 description: "Expert blueprint for physics queries using RayCast, ShapeCast, and DirectSpaceState. Covers hit detection, volume overlap, mouse picking, and high-performance server-side intersection queries. Use when implementing projectiles, LOS, terrain grounding, or AI sensors. Keywords raycast, shapecast, direct_space_state, intersect_ray, intersect_shape, PhysicsRayQueryParameters, collision mask, mouse picking."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Raycasting and Physics Queries
 
 Physics queries allow for instantaneous detection of objects using lines (rays), volumes (shapes), or points.
 
 ## Available Scripts
 
-### [direct_space_state_raycast.gd](../scripts/raycasting_queries_direct_space_state_raycast.gd)
+### [direct_space_state_raycast.gd](scripts/direct_space_state_raycast.gd)
 Expert usage of `PhysicsDirectSpaceState2D/3D` for bypassing node-based overhead in high-frequency queries.
 
-### [shapecast_ground_detection.gd](../scripts/raycasting_queries_shapecast_ground_detection.gd)
+### [shapecast_ground_detection.gd](scripts/shapecast_ground_detection.gd)
 Reliable ground/footing detection using volume-based `ShapeCast` instead of thin rays.
 
-### [multiple_hit_piercing_ray.gd](../scripts/raycasting_queries_multiple_hit_piercing_ray.gd)
+### [multiple_hit_piercing_ray.gd](scripts/multiple_hit_piercing_ray.gd)
 Implementing piercing projectiles that detect and return multiple hits in a single line.
 
-### [field_of_view_scanner.gd](../scripts/raycasting_queries_field_of_view_scanner.gd)
+### [field_of_view_scanner.gd](scripts/field_of_view_scanner.gd)
 AI sensor logic using a fan of raycasts to detect targets within a FOV cone.
 
-### [raycast_reflection_logic.gd](../scripts/raycasting_queries_raycast_reflection_logic.gd)
+### [raycast_reflection_logic.gd](scripts/raycast_reflection_logic.gd)
 Calculating bounces for lasers or bullets using collision normal reflection.
 
-### [point_in_shape_query.gd](../scripts/raycasting_queries_point_in_shape_query.gd)
+### [point_in_shape_query.gd](scripts/point_in_shape_query.gd)
 Checking for overlapping physics bodies at a single point (Explosion epicenters).
 
-### [rest_info_3d_stuck_fix.gd](../scripts/raycasting_queries_rest_info_3d_stuck_fix.gd)
+### [rest_info_3d_stuck_fix.gd](scripts/rest_info_3d_stuck_fix.gd)
 Using `get_rest_info` to detect stuck objects and resolve overlaps immediately.
 
-### [mouse_pick_3d_query.gd](../scripts/raycasting_queries_mouse_pick_3d_query.gd)
+### [mouse_pick_3d_query.gd](scripts/mouse_pick_3d_query.gd)
 Converting 2D screen coordinates to 3D world rays for point-and-click interaction.
 
-### [water_buoyancy_surface_calc.gd](../scripts/raycasting_queries_water_buoyancy_surface_calc.gd)
+### [water_buoyancy_surface_calc.gd](scripts/water_buoyancy_surface_calc.gd)
 Finding water surface height for buoyancy systems using high-to-low raycasting.
 
-### [query_exclusion_optimization.gd](../scripts/raycasting_queries_query_exclusion_optimization.gd)
+### [query_exclusion_optimization.gd](scripts/query_exclusion_optimization.gd)
 Optimizing performance by excluding specific RIDs (Resource IDs) from intersection checks.
 
 ## NEVER Do in Physics Queries
@@ -170,4 +176,4 @@ func dispatch_rays(data_bytes: PackedByteArray) -> PackedByteArray:
 
 ### Related
 - `godot-2d-physics`, `godot-physics-3d`
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

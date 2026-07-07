@@ -26,38 +26,42 @@ description: "Expert blueprint for VR platforms (Meta Quest, PSVR, SteamVR, Pico
 
 ---
 
+## Godot 4.7: OpenXR
+
+- `OpenXRExtensionWrapper._on_register_metadata` adds `interaction_profile_metadata` parameter — update all extension wrappers.
+
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [vr_openxr_initializer.gd](../scripts/platform_vr_vr_openxr_initializer.gd)
+### [vr_openxr_initializer.gd](scripts/vr_openxr_initializer.gd)
 Expert OpenXR initialization with driver support and feature verification.
 
-### [vr_hand_gesture_detector.gd](../scripts/platform_vr_vr_hand_gesture_detector.gd)
+### [vr_hand_gesture_detector.gd](scripts/vr_hand_gesture_detector.gd)
 Pinch and Grab recognition using `XRHandModifier3D` for hand tracking.
 
-### [vr_locomotion_handler.gd](../scripts/platform_vr_vr_locomotion_handler.gd)
+### [vr_locomotion_handler.gd](scripts/vr_locomotion_handler.gd)
 Expert Snap Turn and Comfort Vignette (Shader-less) implementation.
 
-### [vr_passthrough_manager.gd](../scripts/platform_vr_vr_passthrough_manager.gd)
+### [vr_passthrough_manager.gd](scripts/vr_passthrough_manager.gd)
 Alpha blending and underlay setup for Mixed Reality (AR/VR) transitions.
 
-### [vr_performance_config.gd](../scripts/platform_vr_vr_performance_config.gd)
+### [vr_performance_config.gd](scripts/vr_performance_config.gd)
 Expert Foveated Rendering and Variable Rate Shading (VRS) setup.
 
-### [vr_haptic_sequencer.gd](../scripts/platform_vr_vr_haptic_sequencer.gd)
+### [vr_haptic_sequencer.gd](scripts/vr_haptic_sequencer.gd)
 Complex haptic pulse sequencing using `XRController3D` triggers.
 
-### [vr_physics_hand_controller.gd](../scripts/platform_vr_vr_physics_hand_controller.gd)
+### [vr_physics_hand_controller.gd](scripts/vr_physics_hand_controller.gd)
 Non-clipping, physics-following hands that respect environmental solid.
 
-### [vr_safety_guardian_warner.gd](../scripts/platform_vr_vr_safety_guardian_warner.gd)
+### [vr_safety_guardian_warner.gd](scripts/vr_safety_guardian_warner.gd)
 Guardian/Chaperone boundary distance warning logic using `XRServer`.
 
-### [vr_headset_focus_guard.gd](../scripts/platform_vr_vr_headset_focus_guard.gd)
+### [vr_headset_focus_guard.gd](scripts/vr_headset_focus_guard.gd)
 Headset-aware pause logic for focus loss (System Menu / Headset Off).
 
-### [vr_input_action_mapper.gd](../scripts/platform_vr_vr_input_action_mapper.gd)
+### [vr_input_action_mapper.gd](scripts/vr_input_action_mapper.gd)
 OpenXR Action Map abstraction to decouple logic from hwardware buttons.
 
 ---
@@ -162,4 +166,4 @@ func _on_grab(action_name: String) -> void:
 
 
 ### Related
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

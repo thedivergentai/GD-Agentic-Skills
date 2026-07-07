@@ -26,6 +26,10 @@ description: "Expert blueprint for VR platforms (Meta Quest, PSVR, SteamVR, Pico
 
 ---
 
+## Godot 4.7: OpenXR
+
+- `OpenXRExtensionWrapper._on_register_metadata` adds `interaction_profile_metadata` parameter — update all extension wrappers.
+
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.

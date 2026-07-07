@@ -1,6 +1,6 @@
 extends Area3D
 
-## Expert MOBA Targeting (Godot 4.6).
+## Expert MOBA Targeting (Godot 4.7).
 ## Group-weighted priority selection.
 
 func get_best_target() -> Node3D:

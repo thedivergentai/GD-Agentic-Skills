@@ -1,7 +1,7 @@
 extends Node
 class_name DialogueExpressionParser
 
-## Expert Dialogue Logic (Godot 4.6).
+## Expert Dialogue Logic (Godot 4.7).
 ## Evaluates complex conditions at runtime using the Expression class.
 
 func can_show_choice(condition: String, player_stats: Dictionary) -> bool:

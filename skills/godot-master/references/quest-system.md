@@ -3,40 +3,46 @@ name: godot-quest-system
 description: "Expert blueprint for quest  tracking systems (objectives, progress, rewards, branching chains) using Resource-based quests, signal-driven updates, and AutoLoad managers. Use when implementing RPG quests or mission systems. Keywords quest, objectives, Quest Resource, QuestObjective, signal-driven, branching, rewards, AutoLoad."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Quest System
 
 Resource-based data, signal-driven updates, and AutoLoad coordination define scalable quest architectures.
 
 ## Available Scripts
 
-### [quest_resource.gd](../scripts/quest_system_quest_resource.gd)
+### [quest_resource.gd](scripts/quest_resource.gd)
 Data-driven quest definition using Resources for modular objectives and branching rewards.
 
-### [quest_manager_singleton.gd](../scripts/quest_system_quest_manager_singleton.gd)
+### [quest_manager_singleton.gd](scripts/quest_manager_singleton.gd)
 Centralized AutoLoad orchestrator for tracking active quests and broadcasting status updates.
 
-### [kill_objective_trigger.gd](../scripts/quest_system_kill_objective_trigger.gd)
+### [kill_objective_trigger.gd](scripts/kill_objective_trigger.gd)
 Decoupled trigger logic that bridges game events (enemies dying) to the Quest System.
 
-### [quest_ui_tracker.gd](../scripts/quest_system_quest_ui_tracker.gd)
+### [quest_ui_tracker.gd](scripts/quest_ui_tracker.gd)
 Reactive VBox UI that dynamically adds and removes objective labels based on manager signals.
 
-### [branching_quest_data.gd](../scripts/quest_system_branching_quest_data.gd)
+### [branching_quest_data.gd](scripts/branching_quest_data.gd)
 Extended quest logic for handling multiple outcomes and player-driven narrative paths.
 
-### [ quest_giver_dialogue_hook.gd](../scripts/quest_system_quest_giver_dialogue_hook.gd)
+### [ quest_giver_dialogue_hook.gd](scripts/quest_giver_dialogue_hook.gd)
 Hook for integrating NPCs with the quest system, allowing for conditional dialogue branches.
 
-### [quest_persistence_loader.gd](../scripts/quest_system_quest_persistence_loader.gd)
+### [quest_persistence_loader.gd](scripts/quest_persistence_loader.gd)
 Expert patterns for serializing quest IDs and progress counts for persistent save states.
 
-### [timed_quest_challenge.gd](../scripts/quest_system_timed_quest_challenge.gd)
+### [timed_quest_challenge.gd](scripts/timed_quest_challenge.gd)
 Template for time-limited challenges with automatic failure conditions and UI signals.
 
-### [hidden_objective_logic.gd](../scripts/quest_system_hidden_objective_logic.gd)
+### [hidden_objective_logic.gd](scripts/hidden_objective_logic.gd)
 Background objective tracker for secret achievements or non-visible quest progress.
 
-### [localized_quest_description.gd](../scripts/quest_system_localized_quest_description.gd)
+### [localized_quest_description.gd](scripts/localized_quest_description.gd)
 Strategy for supporting multi-language quest text using `tr()` keys instead of hardcoded strings.
 
 ## NEVER Do in Quest Systems
@@ -270,4 +276,4 @@ func safely_add_progress(id: StringName, amount: int) -> void:
 ```
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

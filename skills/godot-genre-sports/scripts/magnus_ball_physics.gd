@@ -1,7 +1,7 @@
 extends RigidBody3D
 class_name MagnusBallPhysics
 
-## Expert Physical Ball (Godot 4.6).
+## Expert Physical Ball (Godot 4.7).
 ## Implements realistic bounce, friction, and the Magnus Effect (spin-lift).
 
 @export var magnus_coefficient: float = 0.5

@@ -1,7 +1,7 @@
 extends Node
 class_name ModularInventoryController
 
-## Expert Inventory System (Godot 4.6).
+## Expert Inventory System (Godot 4.7).
 ## Uses ItemResources for data and InventorySlots for state tracking.
 
 var slots: Array[InventorySlot] = []

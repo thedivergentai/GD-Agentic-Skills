@@ -26,6 +26,11 @@ Expert guidance for Godot's audio engine and mixing architecture.
 
 ---
 
+## Godot 4.7: Audio Breaking Changes
+
+- `AudioEffectSpectrumAnalyzer.tap_back_pos` **removed** — migrate analyzers to alternative tap APIs.
+- `AudioStreamPlayer` default `area_mask` is now **0** (disabled), not layer 1. If using `Area2D`/`Area3D` `audio_bus_override`, explicitly set `area_mask` to layer 1 or your bus layer.
+
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.

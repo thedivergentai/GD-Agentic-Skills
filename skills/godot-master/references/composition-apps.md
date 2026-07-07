@@ -92,6 +92,11 @@ Components should process the data given to them.
 - **NEVER skip signal cleanup** — Connecting signals dynamically without disconnecting can lead to memory leaks or multiple execution bugs.
 - **NEVER let Logic know about Visuals** — A `CombatComponent` should never call `AnimationPlayer.play()`. It emits `attack_performed`, and a `Syncer` or `Orchestrator` handles the visual response.
 
+## Godot 4.7: App UI
+
+- **Control offset transform** for non-destructive visual tweaks in tool UIs.
+- Editor-style **searchable dropdowns** pattern applicable to in-app pickers.
+
 ## Code Structure Example (General App)
 
 ### Component: `clipboard_copier.gd`
@@ -185,34 +190,34 @@ func get_comp(key: StringName) -> Node:
 ```
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)
 
-### [comp_orchestrator_base.gd](../scripts/composition_apps_comp_orchestrator_base.gd)
+### [comp_orchestrator_base.gd](scripts/comp_orchestrator_base.gd)
 Central hub for signal delegation and component wiring. Logic-free manager.
 
-### [comp_base_component.gd](../scripts/composition_apps_comp_base_component.gd)
+### [comp_base_component.gd](scripts/comp_base_component.gd)
 Foundational component with type-safe signals and auto-group registration.
 
-### [comp_health_component.gd](../scripts/composition_apps_comp_health_component.gd)
+### [comp_health_component.gd](scripts/comp_health_component.gd)
 Context-agnostic health/damage logic that works on players, enemies, or barrels.
 
-### [comp_hitbox_component.gd](../scripts/composition_apps_comp_hitbox_component.gd)
+### [comp_hitbox_component.gd](scripts/comp_hitbox_component.gd)
 Area-based collision interface that bridges physical hits to the HealthComponent.
 
-### [comp_ability_sequencer.gd](../scripts/composition_apps_comp_ability_sequencer.gd)
+### [comp_ability_sequencer.gd](scripts/comp_ability_sequencer.gd)
 Dynamic ability manager that executes child 'Ability' nodes via unified interfaces.
 
-### [comp_data_driven_config.gd](../scripts/composition_apps_comp_data_driven_config.gd)
+### [comp_data_driven_config.gd](scripts/comp_data_driven_config.gd)
 Late-binding configuration loader for hot-swapping behavior via Resources (`.tres`).
 
-### [comp_dependency_injector.gd](../scripts/composition_apps_comp_dependency_injector.gd)
+### [comp_dependency_injector.gd](scripts/comp_dependency_injector.gd)
 Expert injection pattern for passing refs to dynamic components without `get_node`.
 
-### [comp_persistence_component.gd](../scripts/composition_apps_comp_persistence_component.gd)
+### [comp_persistence_component.gd](scripts/comp_persistence_component.gd)
 Automated save/load registration for modular node persistence.
 
-### [comp_logic_visual_syncer.gd](../scripts/composition_apps_comp_logic_visual_syncer.gd)
+### [comp_logic_visual_syncer.gd](scripts/comp_logic_visual_syncer.gd)
 Decoupling agent that syncs gameplay logic state to visual animations/VFX.
 
-### [comp_rock_test_boilerplate.gd](../scripts/composition_apps_comp_rock_test_boilerplate.gd)
+### [comp_rock_test_boilerplate.gd](scripts/comp_rock_test_boilerplate.gd)
 Architectural validator to ensure components are truly decoupled.

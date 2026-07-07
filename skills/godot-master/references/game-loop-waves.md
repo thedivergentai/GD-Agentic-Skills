@@ -3,6 +3,12 @@ name: godot-game-loop-waves
 description: Expert patterns for managing combat waves, difficulty scaling, and automated enemy spawning in Godot 4. Use when building wave-based shooters, tower defense, or arena games.
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Wave Loop: Combat Pacing
 
 > [!NOTE]
@@ -74,16 +80,16 @@ Manage enemy variety using a Dictionary-based composition strategy in your `Wave
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [wave_loop_patterns.gd](../scripts/game_loop_waves_wave_loop_patterns.gd)
+### [wave_loop_patterns.gd](scripts/wave_loop_patterns.gd)
 10 Expert patterns: MultiMesh swarms, async pathfinding, background preloading, and server-side physics mobs.
 
-### [wave_manager.gd](../scripts/game_loop_waves_wave_manager.gd)
+### [wave_manager.gd](scripts/wave_manager.gd)
 Orchestrates the timeline, delays between waves, and tracks "Victory" conditions.
 
-### [wave_resource.gd](../scripts/game_loop_waves_wave_resource.gd)
+### [wave_resource.gd](scripts/wave_resource.gd)
 Data containers for wave compositions and difficulty settings.
 
-### [wave_weighted_spawner.gd](../scripts/game_loop_waves_wave_weighted_spawner.gd)
+### [wave_weighted_spawner.gd](scripts/wave_weighted_spawner.gd)
 Spatial spawner using weighted random selection for enemy variety.
 
 ---
@@ -101,4 +107,4 @@ Decouple your wave data from the UI using a `CanvasLayer` and signals.
 - **Health Bars**: Use a `TextureProgressBar` on a `CanvasLayer` for bosses, or `Sprite3D` with a viewport texture for individual enemy health bars.
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

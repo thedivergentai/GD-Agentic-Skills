@@ -3,40 +3,46 @@ name: godot-tweening
 description: "Expert blueprint for programmatic animation using Tween for smooth property transitions, UI effects, camera movements, and juice. Covers easing functions, parallel tweens, chaining, and lifecycle management. Use when implementing UI animations OR procedural movement. Keywords Tween, easing, interpolation, EASE_IN_OUT, TRANS_CUBIC, tween_property, tween_callback."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Tweening
 
 Tween property animation, easing curves, chaining, and lifecycle management define smooth programmatic motion.
 
 ## Available Scripts
 
-### [safe_tween_interruption.gd](../scripts/tweening_safe_tween_interruption.gd)
+### [safe_tween_interruption.gd](scripts/safe_tween_interruption.gd)
 Expert logic for killing active tweens before starting new ones to prevent property conflicts.
 
-### [parallel_popup_animation.gd](../scripts/tweening_parallel_popup_animation.gd)
+### [parallel_popup_animation.gd](scripts/parallel_popup_animation.gd)
 Using `set_parallel(true)` and `chain()` for complex multi-property UI transitions.
 
-### [text_counter_method_tween.gd](../scripts/tweening_text_counter_method_tween.gd)
+### [text_counter_method_tween.gd](scripts/text_counter_method_tween.gd)
 Animating non-property values (like score strings) using `tween_method`.
 
-### [custom_curve_tween.gd](../scripts/tweening_custom_curve_tween.gd)
+### [custom_curve_tween.gd](scripts/custom_curve_tween.gd)
 Driving property interpolation using visual `Curve` resources for bespoke easing.
 
-### [camera_shake_tween_logic.gd](../scripts/tweening_camera_shake_tween_logic.gd)
+### [camera_shake_tween_logic.gd](scripts/camera_shake_tween_logic.gd)
 Implementing procedural screen shake using randomized looping tweens.
 
-### [time_scale_ignored_ui.gd](../scripts/tweening_time_scale_ignored_ui.gd)
+### [time_scale_ignored_ui.gd](scripts/time_scale_ignored_ui.gd)
 Ensuring menu animations continue playing when `Engine.time_scale` is set to 0.
 
-### [nested_subtween_cutscene.gd](../scripts/tweening_nested_subtween_cutscene.gd)
+### [nested_subtween_cutscene.gd](scripts/nested_subtween_cutscene.gd)
 Hierarchical cutscene management using `tween_subtween` for composable timelines.
 
-### [relative_recoil_tween.gd](../scripts/tweening_relative_recoil_tween.gd)
+### [relative_recoil_tween.gd](scripts/relative_recoil_tween.gd)
 Using `as_relative()` and `from_current()` for dynamic movement offsets (recoil/nudges).
 
-### [staggered_inventory_entry.gd](../scripts/tweening_staggered_inventory_entry.gd)
+### [staggered_inventory_entry.gd](scripts/staggered_inventory_entry.gd)
 Animating collections of items sequentially using a single Tween object.
 
-### [looped_hover_vfx.gd](../scripts/tweening_looped_hover_vfx.gd)
+### [looped_hover_vfx.gd](scripts/looped_hover_vfx.gd)
 Creating infinite ping-pong ambient effects to replace heavy AnimationPlayers.
 
 ## NEVER Do in Tweening
@@ -330,4 +336,4 @@ func play_mini_cutscene(actor: Sprite2D):
 
 
 ### Related
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

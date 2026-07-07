@@ -1,6 +1,6 @@
 extends Node
 
-## Expert Metroidvania Persistence (Godot 4.6).
+## Expert Metroidvania Persistence (Godot 4.7).
 ## Global state for doors, items, and save rooms.
 
 var opened_doors: Dictionary = {} # StringName -> bool

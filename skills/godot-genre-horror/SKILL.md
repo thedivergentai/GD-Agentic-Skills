@@ -39,6 +39,10 @@ Expert blueprint for horror games balancing tension, atmosphere, and player agen
 
 ---
 
+## Godot 4.7: Horror Lighting
+
+- **AreaLight3D** for flickering panels, TV glow, and rectangular soft shadows without GI hacks.
+
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns

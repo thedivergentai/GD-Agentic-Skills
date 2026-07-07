@@ -92,6 +92,11 @@ Components should process the data given to them.
 - **NEVER skip signal cleanup** — Connecting signals dynamically without disconnecting can lead to memory leaks or multiple execution bugs.
 - **NEVER let Logic know about Visuals** — A `CombatComponent` should never call `AnimationPlayer.play()`. It emits `attack_performed`, and a `Syncer` or `Orchestrator` handles the visual response.
 
+## Godot 4.7: App UI
+
+- **Control offset transform** for non-destructive visual tweaks in tool UIs.
+- Editor-style **searchable dropdowns** pattern applicable to in-app pickers.
+
 ## Code Structure Example (General App)
 
 ### Component: `clipboard_copier.gd`

@@ -84,6 +84,11 @@ Instead of grouping by *type* (e.g., `/scripts`, `/sprites`), group by *feature*
 - Always include a `.gitignore` tailored for Godot (ignoring `.godot/` folder and import artifacts).
 - Use `.gdignore` in folders that Godot should not scan/import (e.g., raw design source files).
 
+## Godot 4.7: Foundations
+
+- **Asset Store** replaces Asset Library for third-party content discovery.
+- New projects use `canvas_items` + `expand` stretch defaults — account for in UI layout tests.
+
 ## Workflow: Scaffolding a New Project
 
 When asked to "Setup a project" or "Start a new game":

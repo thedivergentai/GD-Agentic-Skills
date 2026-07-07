@@ -1,7 +1,7 @@
 extends Node
 class_name SportsUmpireLogic
 
-## Expert Sports Umpire (Godot 4.6).
+## Expert Sports Umpire (Godot 4.7).
 ## Manages game state and scoring using a State Machine and Area3D signals.
 
 enum State { PRE_GAME, ACTIVE, POST_GOAL, GAME_OVER }

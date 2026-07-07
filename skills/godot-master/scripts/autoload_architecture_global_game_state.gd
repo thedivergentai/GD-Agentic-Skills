@@ -1,7 +1,7 @@
 class_name GlobalGameState
 extends Node
 
-## Expert Global State Machine (Godot 4.6).
+## Expert Global State Machine (Godot 4.7).
 ## Uses deferred transitions to prevent frame-locked race conditions.
 
 signal state_changed(old_state: State, new_state: State)

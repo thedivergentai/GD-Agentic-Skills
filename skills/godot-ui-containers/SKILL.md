@@ -76,6 +76,12 @@ Advanced sizing logic using `SIZE_EXPAND_FILL` and `stretch_ratio` for weighted 
 $VBoxContainer.add_theme_constant_override("separation", 10)
 ```
 
+## Godot 4.7: Control
+
+- **Offset transform** on Control nodes — visual offset without breaking layout constraints.
+- **TextureRect** can tile **AtlasTexture** regions as repeating textures.
+- Line drawing: antialiasing feather removed — lines render thinner; increase width if needed.
+
 ## Responsive Layout
 
 ```gdscript

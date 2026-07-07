@@ -1,7 +1,7 @@
 extends Node
 class_name RhythmScoringSystem
 
-## Expert Rhythm Scoring (Godot 4.6).
+## Expert Rhythm Scoring (Godot 4.7).
 ## Precise hit detection using millisecond offsets.
 
 const PERFECT_LIMIT = 0.02 # 20ms

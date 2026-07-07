@@ -3,6 +3,12 @@ name: godot-genre-romance
 description: "Expert blueprint for romance games and dating sims (Tokimeki Memorial, Monster Prom, Persona social links) focusing on affection systems, multi-stat relationships, dated events, and route branching. Use when building relationship-centric games, social simulations, or otome games. Keywords romance, dating sim, affection system, relationship stats, date events, character routes, love interest."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Genre: Romance & Dating Sim
 
 Romance games are built on the "Affection Economy"—the management of player time and resources to influence NPC attraction, trust, and intimacy.
@@ -41,12 +47,12 @@ Romance games are built on the "Affection Economy"—the management of player ti
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [romance_affection_manager.gd](../scripts/genre_romance_affection_manager.gd) - Multi-axis (Attraction/Trust/amic_pricing_modifier.gd Attraction/Trust/Comfort) tracking and gift logic.
-- [romance_date_event_system.gd](../scripts/genre_romance_date_event_system.gd) - Variety-aware dating logic with repetition penalties.
-- [romance_route_manager.gd](../scripts/genre_romance_route_manager.gd) - Flag-based route branching and CG gallery persistence.
+- [romance_affection_manager.gd](scripts/affection_manager.gd) - Multi-axis (Attraction/Trust/amic_pricing_modifier.gd Attraction/Trust/Comfort) tracking and gift logic.
+- [romance_date_event_system.gd](scripts/date_event_system.gd) - Variety-aware dating logic with repetition penalties.
+- [romance_route_manager.gd](scripts/route_manager.gd) - Flag-based route branching and CG gallery persistence.
 
 ### Modular Components
-- [romance_patterns.gd](../scripts/genre_romance_romance_patterns.gd) - Reusable UI helpers: Typewriter tweens and heart-burst pulses.
+- [romance_patterns.gd](scripts/romance_patterns.gd) - Reusable UI helpers: Typewriter tweens and heart-burst pulses.
 
 ---
 
@@ -202,5 +208,5 @@ func on_player_date_started(dating_name: String):
 
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
-- Sub-specialty: [godot-genre-visual-novel](genre-visual-novel.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Sub-specialty: [godot-genre-visual-novel](../godot-genre-visual-novel/SKILL.md)

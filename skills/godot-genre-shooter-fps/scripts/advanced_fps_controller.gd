@@ -1,7 +1,7 @@
 extends CharacterBody3D
 class_name AdvancedFPSController
 
-## Expert FPS Controller (Godot 4.6).
+## Expert FPS Controller (Godot 4.7).
 ## Smooth movement with ground/air-aware interpolation and head-bob.
 
 @export var walk_speed: float = 8.0

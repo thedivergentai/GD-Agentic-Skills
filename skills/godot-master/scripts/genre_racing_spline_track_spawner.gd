@@ -1,7 +1,7 @@
 extends Path3D
 class_name SplineTrackSpawner
 
-## Expert Track Spawner (Godot 4.6).
+## Expert Track Spawner (Godot 4.7).
 ## Places obstacles/points perfectly along a Curve3D.
 
 @export var obstacle_scene: PackedScene

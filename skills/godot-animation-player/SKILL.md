@@ -21,6 +21,11 @@ Expert guidance for Godot's timeline-based keyframe animation system.
 
 ---
 
+## Godot 4.7: Animation
+
+- Animation editor tracks can be **collapsed** for dense timelines.
+- `Animation.length` metadata is **double** precision (was float).
+
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.

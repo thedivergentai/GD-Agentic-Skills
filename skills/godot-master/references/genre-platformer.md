@@ -36,23 +36,27 @@ Expert blueprint for platformers emphasizing movement feel, level design, and pl
 
 ---
 
+## Godot 4.7: Platformer
+
+- One-way collision **direction** is shape-relative — tune `CollisionShape2D` direction for angled platforms.
+
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [advanced_platformer_controller.gd](../scripts/genre_platformer_advanced_platformer_controller.gd) - Professional-grade `CharacterBody2D` controller with Coyote Time, Jump Buffering, and variable height.
+- [advanced_platformer_controller.gd](scripts/advanced_platformer_controller.gd) - Professional-grade `CharacterBody2D` controller with Coyote Time, Jump Buffering, and variable height.
 
 ### Modular Components
-- [coyote_timer.gd](../scripts/genre_platformer_coyote_timer.gd) - Grace period logic for jumps after leaving a floor's edge.
-- [jump_buffer.gd](../scripts/genre_platformer_jump_buffer.gd) - Input queuing system for ultra-responsive landing jumps.
-- [player_ground_controller.gd](../scripts/genre_platformer_player_ground_controller.gd) - Advanced movement with floor constant speed and slope-aware snapping.
-- [variable_jump.gd](../scripts/genre_platformer_variable_jump.gd) - Scalable jump height using velocity cutoff on button release.
-- [wall_slide_sensor.gd](../scripts/genre_platformer_wall_slide_sensor.gd) - Nodeless wall detection using high-performance physics raycasts.
-- [ledge_grab_sensor.gd](../scripts/genre_platformer_ledge_grab_sensor.gd) - PhysicsShapeQuery-based ledge detection without Area2D nodes.
-- [custom_collision_slider.gd](../scripts/genre_platformer_custom_collision_slider.gd) - Manual sliding response for high-speed inter-frame precision.
-- [synchronized_platform.gd](../scripts/genre_platformer_synchronized_platform.gd) - `AnimatableBody2D` config for physics-synced movement.
-- [fast_projectile_ccd.gd](../scripts/genre_platformer_fast_projectile_ccd.gd) - Continuous Collision Detection setup to prevent tunneling.
-- [platformer_animation_sync.gd](../scripts/genre_platformer_platformer_animation_sync.gd) - Boolean-safe sync between physics states and AnimationTree.
-- [platformer_camera.gd](../scripts/genre_platformer_platformer_camera.gd) - Camera smoothing and look-ahead logic for platforming focus.
+- [coyote_timer.gd](scripts/coyote_timer.gd) - Grace period logic for jumps after leaving a floor's edge.
+- [jump_buffer.gd](scripts/jump_buffer.gd) - Input queuing system for ultra-responsive landing jumps.
+- [player_ground_controller.gd](scripts/player_ground_controller.gd) - Advanced movement with floor constant speed and slope-aware snapping.
+- [variable_jump.gd](scripts/variable_jump.gd) - Scalable jump height using velocity cutoff on button release.
+- [wall_slide_sensor.gd](scripts/wall_slide_sensor.gd) - Nodeless wall detection using high-performance physics raycasts.
+- [ledge_grab_sensor.gd](scripts/ledge_grab_sensor.gd) - PhysicsShapeQuery-based ledge detection without Area2D nodes.
+- [custom_collision_slider.gd](scripts/custom_collision_slider.gd) - Manual sliding response for high-speed inter-frame precision.
+- [synchronized_platform.gd](scripts/synchronized_platform.gd) - `AnimatableBody2D` config for physics-synced movement.
+- [fast_projectile_ccd.gd](scripts/fast_projectile_ccd.gd) - Continuous Collision Detection setup to prevent tunneling.
+- [platformer_animation_sync.gd](scripts/platformer_animation_sync.gd) - Boolean-safe sync between physics states and AnimationTree.
+- [platformer_camera.gd](scripts/platformer_camera.gd) - Camera smoothing and look-ahead logic for platforming focus.
 
 ---
 
@@ -317,8 +321,8 @@ func _on_body_entered(body: Node2D) -> void:
 
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)
 
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

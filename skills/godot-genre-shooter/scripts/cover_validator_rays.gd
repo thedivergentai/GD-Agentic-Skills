@@ -1,7 +1,7 @@
 extends Node3D
 class_name CoverValidatorRays
 
-## Expert Cover Detection (Godot 4.6).
+## Expert Cover Detection (Godot 4.7).
 ## Uses a cluster of RayCasts to detect cover height and peeking.
 
 @onready var ray_low: RayCast3D = $RayLow

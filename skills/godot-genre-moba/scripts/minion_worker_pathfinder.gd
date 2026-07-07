@@ -1,6 +1,6 @@
 extends Node
 
-## Expert MOBA Pathfinding (Godot 4.6).
+## Expert MOBA Pathfinding (Godot 4.7).
 ## Multi-threaded deterministic minion navigation.
 
 var minion_list: Array[Node3D] = []

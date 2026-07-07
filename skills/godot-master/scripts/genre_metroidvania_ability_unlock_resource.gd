@@ -1,7 +1,7 @@
 class_name AbilityResource
 extends Resource
 
-## Expert Ability Logic (Godot 4.6).
+## Expert Ability Logic (Godot 4.7).
 ## Resource-based ability definitions and fly-in UI logic.
 
 @export var id: StringName = &"double_jump"

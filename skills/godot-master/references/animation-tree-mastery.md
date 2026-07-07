@@ -22,38 +22,43 @@ Expert guidance for Godot's advanced animation blending and state machines.
 
 ---
 
+## Godot 4.7: AnimationTree
+
+- `LookAtModifier3D.relative` default is now **false** (was true).
+- Blend space `add_blend_point` accepts optional **name** parameter for labeled points.
+
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [sync_parameter_manager.gd](../scripts/animation_tree_mastery_sync_parameter_manager.gd)
+### [sync_parameter_manager.gd](scripts/sync_parameter_manager.gd)
 Expert management of `AnimationTree` parameters with guards to prevent redundant updates and GPU cache churn.
 
-### [reactive_oneshot_vfx.gd](../scripts/animation_tree_mastery_reactive_oneshot_vfx.gd)
+### [reactive_oneshot_vfx.gd](scripts/reactive_oneshot_vfx.gd)
 Using `AnimationNodeOneShot` for high-priority reactive animations like recoil, blinks, and hit reactions.
 
-### [dynamic_timescale_control.gd](../scripts/animation_tree_mastery_dynamic_timescale_control.gd)
+### [dynamic_timescale_control.gd](scripts/dynamic_timescale_control.gd)
 Runtime manipulation of playback speed for bullet-time effects or movement haste multipliers.
 
-### [advanced_transition_masking.gd](../scripts/animation_tree_mastery_advanced_transition_masking.gd)
+### [advanced_transition_masking.gd](scripts/advanced_transition_masking.gd)
 Procedural bone filtering (masking) for nodes like `Add2` to separate upper/lower body animations.
 
-### [statemachine_travel_code.gd](../scripts/animation_tree_mastery_statemachine_travel_code.gd)
+### [statemachine_travel_code.gd](scripts/statemachine_travel_code.gd)
 Programmatic control of `AnimationNodeStateMachinePlayback` using `travel()` and `start()`.
 
-### [blendtree_logic_mixing.gd](../scripts/animation_tree_mastery_blendtree_logic_mixing.gd)
+### [blendtree_logic_mixing.gd](scripts/blendtree_logic_mixing.gd)
 Complex mixing patterns for `BlendTree` nodes to create interactive combat layers.
 
-### [root_motion_animtree_sync.gd](../scripts/animation_tree_mastery_root_motion_animtree_sync.gd)
+### [root_motion_animtree_sync.gd](scripts/root_motion_animtree_sync.gd)
 Expert 3D CharacterBody motion extraction optimized specifically for `AnimationTree` nodes.
 
-### [sync_group_layering.gd](../scripts/animation_tree_mastery_sync_group_layering.gd)
+### [sync_group_layering.gd](scripts/sync_group_layering.gd)
 Using Sync Groups to keep multi-layered animations (e.g. walk and reload) perfectly aligned.
 
-### [nested_tree_architecture.gd](../scripts/animation_tree_mastery_nested_tree_architecture.gd)
+### [nested_tree_architecture.gd](scripts/nested_tree_architecture.gd)
 Pattern for managing hierarchical State Machines and nested node parameter paths.
 
-### [runtime_tree_debugging.gd](../scripts/animation_tree_mastery_runtime_tree_debugging.gd)
+### [runtime_tree_debugging.gd](scripts/runtime_tree_debugging.gd)
 Interactive tool for visualizing current states, transition paths, and blend values in real-time.
 
 ---
@@ -469,4 +474,4 @@ func _ready() -> void:
 ```
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

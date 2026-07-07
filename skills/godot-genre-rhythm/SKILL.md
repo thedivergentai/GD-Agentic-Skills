@@ -3,6 +3,12 @@ name: godot-genre-rhythm
 description: "Expert blueprint for rhythm games including audio synchronization (BPM conductor, latency compensation with AudioServer.get_time_since_last_mix), note highways (scroll speed, timing windows), judgment systems (Perfect/Great/Good/Bad/Miss), scoring with combo multipliers, input processing (lane-based, hold note detection), and chart/beatmap loading. Based on DDR/osu!/Beat Saber research. Trigger keywords: rhythm_game, audio_sync, timing_judgment, note_highway, combo_system, BPM_conductor, latency_compensation."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Genre: Rhythm
 
 Expert blueprint for rhythm games emphasizing audio-visual synchronization and flow state.

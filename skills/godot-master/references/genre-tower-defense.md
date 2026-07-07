@@ -3,6 +3,12 @@ name: godot-genre-tower-defense
 description: "Expert blueprint for tower defense games (Bloons TD, Kingdom Rush, Fieldrunners) covering wave management, tower targeting logic, path algorithms, economy balance, and mazing mechanics. Use when building TD, lane defense, or tower placement strategy games. Keywords tower defense, wave spawner, pathfinding, targeting priority, mazing, NavigationServer baking."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Genre: Tower Defense
 
 Strategic placement, resource management, and escalating difficulty define tower defense.
@@ -43,12 +49,12 @@ Strategic placement, resource management, and escalating difficulty define tower
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [wave_manager.gd](../scripts/genre_tower_defense_wave_manager.gd) - Professional wave orchestrator with Resource-based enemy composition and cleanup.
-- [tower.gd](../scripts/genre_tower_defense_tower.gd) - Base turret class with FSM state management and firing logic.
-- [tower_targeting_system.gd](../scripts/genre_tower_defense_tower_targeting_system.gd) - Autonomous priority logic (First/Last/Strongest/Weakest) for efficient targeting.
+- [wave_manager.gd](scripts/wave_manager.gd) - Professional wave orchestrator with Resource-based enemy composition and cleanup.
+- [tower.gd](scripts/tower.gd) - Base turret class with FSM state management and firing logic.
+- [tower_targeting_system.gd](scripts/tower_targeting_system.gd) - Autonomous priority logic (First/Last/Strongest/Weakest) for efficient targeting.
 
 ### Modular Components
-- [tower_defense_patterns.gd](../scripts/genre_tower_defense_tower_defense_patterns.gd) - Collection of patterns for furthest-target logic and PhysicsServer projectile optimization.
+- [tower_defense_patterns.gd](scripts/tower_defense_patterns.gd) - Collection of patterns for furthest-target logic and PhysicsServer projectile optimization.
 
 ---
 
@@ -263,4 +269,4 @@ func _physics_process(delta: float) -> void:
 ```
 
 
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

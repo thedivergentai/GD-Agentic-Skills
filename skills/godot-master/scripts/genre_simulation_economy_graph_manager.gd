@@ -1,7 +1,7 @@
 extends Node
 class_name EconomyGraphManager
 
-## Expert Economy Simulation (Godot 4.6).
+## Expert Economy Simulation (Godot 4.7).
 ## Manages resource stocks and production recipes as a data-driven DAG.
 
 var stocks: Dictionary = {} # Store resource counts

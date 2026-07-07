@@ -1,13 +1,11 @@
 ---
 name: godot-builder
-description: "Expert-level toolkit for modular Godot 4.x CLI automation and headless build orchestration. 
-Use this skill when you need to: (1) Build complex scene trees or UI layouts programmatically, (2) Automate expert 3D asset pipelines (glTF -> Collision), 
-(3) Optimize procedural geometry headlessly (CSG -> Static Mesh), or (4) Engineer production-grade CI/CD pipelines with engine module stripping and delta patching."
+description: "Expert-level toolkit for modular Godot 4.7+ CLI automation and headless build orchestration. Use when you need to: (1) Build complex scene trees or UI layouts programmatically, (2) Automate expert 3D asset pipelines (glTF -> Collision), (3) Optimize procedural geometry headlessly (CSG -> Static Mesh), or (4) Engineer production-grade CI/CD pipelines. Set GODOT_PATH env var for custom engine location. Keywords: Godot CLI, headless, CI, export, builder, 4.7."
 ---
 
 # Godot Builder Skill
 
-The `godot-builder` skill provides an expert-grade foundation for programmatic game development and headless automation using the Godot 4.6.1-stable CLI.
+The `godot-builder` skill provides an expert-grade foundation for programmatic game development and headless automation using the Godot 4.7-stable CLI. Override paths via `GODOT_PATH` and `GODOT_CONSOLE_PATH` environment variables.
 
 ## Expert Automation Mindset
 
@@ -45,7 +43,7 @@ The `godot-builder` skill provides an expert-grade foundation for programmatic g
 
 ---
 
-## Automation & CI/CD Pipelines (Godot 4.6)
+## Automation & CI/CD Pipelines (Godot 4.7)
 
 Professional Godot building requires a "Zero-Touch" philosophy for assets and binary exports.
 

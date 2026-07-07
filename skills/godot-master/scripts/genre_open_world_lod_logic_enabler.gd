@@ -1,7 +1,7 @@
 extends Node3D
 class_name LODLogicEnabler
 
-## Expert LOD Logic (Godot 4.6).
+## Expert LOD Logic (Godot 4.7).
 ## Performance-first logic throttling based on distance.
 
 @export var ai_node: Node3D

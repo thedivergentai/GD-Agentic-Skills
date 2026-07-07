@@ -1,7 +1,7 @@
 extends Node
 class_name PuzzleStateValidator
 
-## Expert Puzzle Validation (Godot 4.6).
+## Expert Puzzle Validation (Godot 4.7).
 ## Uses recursive dictionary comparisons for win conditions.
 
 signal solved

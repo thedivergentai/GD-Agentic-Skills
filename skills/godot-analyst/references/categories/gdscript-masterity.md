@@ -1,6 +1,6 @@
 # Anara Rubric: GDScript Mastery
 ## Pillar Overview
-The performance heart of the vision. This rubric assesses the project's adherence to the highest standards of GDScript in Godot 4.6+, focusing on type safety, architectural flow, and engine-level optimization.
+The performance heart of the vision. This rubric assesses the project's adherence to the highest standards of GDScript in Godot 4.7+, focusing on type safety, architectural flow, and engine-level optimization.
 
 ---
 

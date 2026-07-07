@@ -1,6 +1,6 @@
 extends Node
 
-## Expert Minigame Orchestrator (Godot 4.6).
+## Expert Minigame Orchestrator (Godot 4.7).
 ## State-driven transitions between minigames.
 
 enum Phase { INTRO, PLAY, RESULTS }

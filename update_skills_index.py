@@ -1,6 +1,8 @@
 import os
 import json
 import re
+import sys
+import argparse
 
 # Use relative paths for portability, or absolute if preferred
 SKILLS_DIR = os.path.join(os.path.dirname(__file__), "skills")
@@ -81,5 +83,35 @@ def update_index():
     except Exception as e:
         print(f"Error writing output file: {e}")
 
+def validate_index():
+    """Warn about descriptions missing trigger keywords or stale Godot version strings."""
+    warnings = 0
+    if not os.path.exists(OUTPUT_FILE):
+        print("skills_index.json not found. Run without --validate first.")
+        sys.exit(1)
+    with open(OUTPUT_FILE, encoding="utf-8") as f:
+        skills = json.load(f)
+    for skill in skills:
+        name = skill.get("name", "")
+        desc = skill.get("description", "")
+        keywords = skill.get("keywords", [])
+        if not re.search(r"(?:Trigger keywords|Keywords|Use when)", desc, re.I):
+            print(f"WARN [{name}]: description lacks trigger keywords / 'Use when'")
+            warnings += 1
+        if not keywords:
+            print(f"WARN [{name}]: no keywords extracted")
+            warnings += 1
+        if re.search(r"4\.[0-5](?:\+)?", desc) and "4.7" not in desc:
+            print(f"WARN [{name}]: description may reference stale Godot version")
+            warnings += 1
+    print(f"Validation complete: {warnings} warning(s) across {len(skills)} skills.")
+    return warnings
+
 if __name__ == "__main__":
-    update_index()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--validate", action="store_true", help="Validate existing skills_index.json")
+    args = parser.parse_args()
+    if args.validate:
+        validate_index()
+    else:
+        update_index()

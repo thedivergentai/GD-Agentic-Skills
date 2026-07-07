@@ -28,38 +28,42 @@ Controller-first design, certification compliance, and locked frame rates define
 
 ---
 
+## Godot 4.7: Console Input
+
+- Use `InputEvent.DEVICE_ID_*` constants — never assume device `0` is mouse/keyboard.
+
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [certification_manager.gd](../scripts/platform_console_certification_manager.gd)
+### [certification_manager.gd](scripts/certification_manager.gd)
 Expert TRC/TCR compliance (focus loss, controller disconnects).
 
-### [performance_scaler_fsr.gd](../scripts/platform_console_performance_scaler_fsr.gd)
+### [performance_scaler_fsr.gd](scripts/performance_scaler_fsr.gd)
 Dynamic Resolution Scaling and FSR 2.2 management for console performance.
 
-### [server_side_projectile.gd](../scripts/platform_console_server_side_projectile.gd)
+### [server_side_projectile.gd](scripts/server_side_projectile.gd)
 Direct RenderingServer/PhysicsServer bypass for high-frequency objects.
 
-### [async_save_manager.gd](../scripts/platform_console_async_save_manager.gd)
+### [async_save_manager.gd](scripts/async_save_manager.gd)
 Atomic, corruption-resistant threaded save system.
 
-### [controller_prompt_mapper.gd](../scripts/platform_console_controller_prompt_mapper.gd)
+### [controller_prompt_mapper.gd](scripts/controller_prompt_mapper.gd)
 GUID-based button prompt detection (PlayStation/Xbox/Switch).
 
-### [memory_budget_guard.gd](../scripts/platform_console_memory_budget_guard.gd)
+### [memory_budget_guard.gd](scripts/memory_budget_guard.gd)
 Strict RAM monitoring for platform-specific hardware budgets.
 
-### [platform_dialog_invoker.gd](../scripts/platform_console_platform_dialog_invoker.gd)
+### [platform_dialog_invoker.gd](scripts/platform_dialog_invoker.gd)
 Native OS dialog and virtual keyboard abstraction.
 
-### [background_data_prefetcher.gd](../scripts/platform_console_background_data_prefetcher.gd)
+### [background_data_prefetcher.gd](scripts/background_data_prefetcher.gd)
 Asset pre-fetching using WorkerThreadPool to avoid level-load stutters.
 
-### [achievement_offline_queue.gd](../scripts/platform_console_achievement_offline_queue.gd)
+### [achievement_offline_queue.gd](scripts/achievement_offline_queue.gd)
 Achievement/Trophy caching with offline persistence.
 
-### [console_boot_config.gd](../scripts/platform_console_console_boot_config.gd)
+### [console_boot_config.gd](scripts/console_boot_config.gd)
 Hardware-aware hardware initialization and rendering overrides.
 
 ---
@@ -169,4 +173,4 @@ func _on_joy_changed(id: int, connected: bool) -> void:
 
 
 ### Related
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

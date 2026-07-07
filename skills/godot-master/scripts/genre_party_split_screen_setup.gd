@@ -1,6 +1,6 @@
 extends GridContainer
 
-## Expert Split-Screen Layout (Godot 4.6).
+## Expert Split-Screen Layout (Godot 4.7).
 ## Standard 2-4 player grid configuration.
 
 func setup(players: int) -> void:

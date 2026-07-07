@@ -1,7 +1,7 @@
 extends Node3D
 class_name VisionCone3D
 
-## Expert Vision Cone (Godot 4.6).
+## Expert Vision Cone (Godot 4.7).
 ## Combines Dot Product angle checks with Physics Raycasts for LoS.
 
 @export var fov: float = 90.0

@@ -1,7 +1,7 @@
 extends Node
 class_name SimulationTickController
 
-## Expert Simulation Controller (Godot 4.6).
+## Expert Simulation Controller (Godot 4.7).
 ## Decoupled simulation 'ticks' with independent time scaling.
 
 signal sim_tick

@@ -1,7 +1,7 @@
 extends CanvasLayer
 class_name RomanceMoodManager
 
-## Expert Mood Orchestrator (Godot 4.6).
+## Expert Mood Orchestrator (Godot 4.7).
 ## Manages atmospheric filters and character transitions.
 
 @export var mood_overlay: ColorRect

@@ -20,26 +20,32 @@ Expert guidance for level design with GridMaps, CSG, and environmental setup.
 
 ---
 
+## Godot 4.7: 3D Editor Workflow
+
+- **Path3D** supports snap-to-colliders for path point placement on geometry.
+- **3D vertex snapping** with vertex/origin base setting (editor B key workflow).
+- `EditorSceneFormatImporter` uses **ImportFlags** enum for import constants.
+
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [collision_gen.gd](../scripts/3d_world_building_collision_gen.gd)
+### [collision_gen.gd](scripts/collision_gen.gd)
 Automatic collision shape generation from meshes. Use when importing models without collision or for procedural geometry.
 
-### [gridmap_runtime_builder.gd](../scripts/3d_world_building_gridmap_runtime_builder.gd)
+### [gridmap_runtime_builder.gd](scripts/gridmap_runtime_builder.gd)
 Runtime GridMap tile placement with batch operations and auto-navigation baking.
 
-### [csg_bake_tool.gd](../scripts/3d_world_building_csg_bake_tool.gd)
+### [csg_bake_tool.gd](scripts/csg_bake_tool.gd)
 EditorScript to bake CSG geometry to static meshes with proper materials and collision. Use when finalizing level prototypes.
 
-### [safe_csg_baking.gd](../scripts/3d_world_building_safe_csg_baking.gd)
+### [safe_csg_baking.gd](scripts/safe_csg_baking.gd)
 Expert technique for safe CSG baking. Awaits the end of the frame before extracting baked meshes to avoid empty data.
 
-### [lod_manager.gd](../scripts/3d_world_building_lod_manager.gd)
+### [lod_manager.gd](scripts/lod_manager.gd)
 Level-of-detail switching based on camera distance. Manages mesh swapping and visibility for large outdoor scenes.
 
-### [occlusion_setup.gd](../scripts/3d_world_building_occlusion_setup.gd)
+### [occlusion_setup.gd](scripts/occlusion_setup.gd)
 OccluderInstance3D configuration for manual occlusion culling. Use for indoor levels with many rooms.
 
 ---
@@ -489,4 +495,4 @@ func _process(_delta: float) -> void:
 ```
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

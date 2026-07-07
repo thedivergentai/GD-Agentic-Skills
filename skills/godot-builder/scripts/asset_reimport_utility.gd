@@ -1,7 +1,7 @@
 @tool
 extends EditorScript
 
-## Expert Asset Re-import Utility (Godot 4.6).
+## Expert Asset Re-import Utility (Godot 4.7).
 ## Programmatically enforces 'Lossless' compression for PNGs across the project.
 
 func _run() -> void:

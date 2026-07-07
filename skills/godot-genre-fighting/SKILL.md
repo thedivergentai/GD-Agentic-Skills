@@ -3,6 +3,12 @@ name: godot-genre-fighting
 description: "Expert blueprint for fighting games including frame data (startup/active/recovery frames, advantage on hit/block), hitbox/hurtbox systems, input buffering (5-10 frames), motion input detection (QCF, DP), combo systems (damage scaling, cancel hierarchy), character states (idle/attacking/hitstun/blockstun), and rollback netcode. Based on FGC competitive design. Trigger keywords: fighting_game, frame_data, hitbox_hurtbox, input_buffer, motion_inputs, combo_system, rollback_netcode, cancel_system, advantage_frames."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Genre: Fighting Game
 
 Expert blueprint for 2D/3D fighters emphasizing frame-perfect combat and competitive balance.

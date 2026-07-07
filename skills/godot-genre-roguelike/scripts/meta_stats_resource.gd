@@ -1,7 +1,7 @@
 extends Resource
 class_name MetaStatsResource
 
-## Expert Meta-Progression (Godot 4.6).
+## Expert Meta-Progression (Godot 4.7).
 ## Encrypted persistent stats for cross-run upgrades.
 
 @export var max_health_bonus: int = 0

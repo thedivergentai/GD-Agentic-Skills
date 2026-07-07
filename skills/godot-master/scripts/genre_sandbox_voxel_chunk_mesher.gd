@@ -1,7 +1,7 @@
 extends MeshInstance3D
 class_name VoxelChunkMesher
 
-## Expert Voxel Meshing (Godot 4.6).
+## Expert Voxel Meshing (Godot 4.7).
 ## Uses SurfaceTool with background threading (WorkerThreadPool).
 
 const CHUNK_SIZE = 16

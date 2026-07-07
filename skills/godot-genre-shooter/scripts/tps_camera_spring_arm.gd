@@ -1,7 +1,7 @@
 extends SpringArm3D
 class_name TPSCameraSpringArm
 
-## Expert TPS Camera (Godot 4.6).
+## Expert TPS Camera (Godot 4.7).
 ## Collision-aware SpringArm with dynamic shoulder swapping.
 
 @export var shoulder_offset: float = 0.6

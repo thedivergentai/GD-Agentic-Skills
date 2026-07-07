@@ -1,7 +1,7 @@
 extends Node
 class_name StatModifierPowerup
 
-## Expert Powerup System (Godot 4.6).
+## Expert Powerup System (Godot 4.7).
 ## Manages temporary stat buffs with automatic duration reverting.
 
 var base_stats: Dictionary = { "speed": 10.0, "power": 5.0 }

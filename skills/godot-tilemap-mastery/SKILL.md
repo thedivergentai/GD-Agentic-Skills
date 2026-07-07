@@ -3,6 +3,12 @@ name: godot-tilemap-mastery
 description: "Expert blueprint for TileMapLayer and TileSet systems for efficient 2D level design. Covers terrain autotiling, physics layers, custom data, navigation integration, and runtime manipulation. Use when building grid-based levels OR implementing destructible tiles. Keywords TileMapLayer, TileSet, terrain, autotiling, atlas, physics layer, custom data."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # TileMap Mastery
 
 TileMapLayer grids, TileSet atlases, terrain autotiling, and custom data define efficient 2D level systems.

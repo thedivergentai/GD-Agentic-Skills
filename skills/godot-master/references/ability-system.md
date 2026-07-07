@@ -3,6 +3,12 @@ name: godot-ability-system
 description: "Expert patterns for RPG/action ability systems including cooldown strategies, combo systems, ability chaining, skill trees with prerequisites, upgrade paths, and resource management. Use when implementing unlockable abilities, character progression, or complex skill systems. Trigger keywords: PlayerAbility, AbilityManager, cooldown, SkillTree, SkillNode, prerequisites, can_use, execute, ComboSystem, ability_chain, global_cooldown, charge_system, upgrade_path."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Ability System
 
 Expert guidance for building flexible, extensible ability systems.
@@ -24,13 +30,13 @@ Expert guidance for building flexible, extensible ability systems.
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [ability_manager.gd](../scripts/ability_system_ability_manager.gd)
+### [ability_manager.gd](scripts/ability_manager.gd)
 Ability orchestration with cooldown registry, can_use checks, and visual cooldown progress. Decoupled from character logic for use on players, enemies, or turrets.
 
-### [ability_resource.gd](../scripts/ability_system_ability_resource.gd)
+### [ability_resource.gd](scripts/ability_resource.gd)
 Scriptable ability resource base class with metadata, stats, and effects array. Virtual execute() method for inheritance (ProjectileAbility, BuffAbility).
 
-### [buff_stat.gd](../scripts/ability_system_buff_stat.gd)
+### [buff_stat.gd](scripts/buff_stat.gd)
 Resource-Driven Buff System setup. Extends Resource and creates highly modular, drag-and-drop ability data.
 
 ---
@@ -610,4 +616,4 @@ func _rebuild_graph() -> void:
 ```
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

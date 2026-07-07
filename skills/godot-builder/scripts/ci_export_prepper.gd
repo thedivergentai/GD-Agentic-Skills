@@ -1,7 +1,7 @@
 #!/usr/bin/env -S godot -s
 extends SceneTree
 
-## Expert CI/CD Export Prepper (Godot 4.6).
+## Expert CI/CD Export Prepper (Godot 4.7).
 ## Headless script for versioning and build preparation.
 
 func _init() -> void:

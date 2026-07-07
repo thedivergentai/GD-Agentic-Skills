@@ -27,62 +27,67 @@ Expert guidance for collision detection, triggers, and raycasting in Godot 2D.
 
 ---
 
+## Godot 4.7: 2D Physics
+
+- `body_set_shape_as_one_way_collision` adds **direction** parameter — set relative to shape orientation for one-way platforms.
+- `CollisionShape2D` supports one-way collision **direction relative to the shape** (not just global up).
+
 ## Available Scripts
 
 > **MANDATORY**: Read the script matching your use case before implementation.
 
-### [collision_setup.gd](../scripts/2d_physics_collision_setup.gd)
+### [collision_setup.gd](scripts/collision_setup.gd)
 Programmatic layer/mask management with named layer constants and debug visualization.
 
-### [physics_query_cache.gd](../scripts/2d_physics_physics_query_cache.gd)
+### [physics_query_cache.gd](scripts/physics_query_cache.gd)
 Frame-based caching for PhysicsDirectSpaceState2D queries - eliminates redundant expensive queries.
 
-### [custom_physics.gd](../scripts/2d_physics_custom_physics.gd)
+### [custom_physics.gd](scripts/custom_physics.gd)
 Custom physics integration patterns for CharacterBody2D. Covers non-standard gravity, forces, and manual stepping. Use for non-standard physics behavior.
 
-### [physics_queries.gd](../scripts/2d_physics_physics_queries.gd)
+### [physics_queries.gd](scripts/physics_queries.gd)
 PhysicsDirectSpaceState2D query patterns for raycasting, point queries, and shape queries. Use for line-of-sight, ground detection, or area scanning.
 
-### [physics_server_swarm.gd](../scripts/2d_physics_physics_server_swarm.gd)
+### [physics_server_swarm.gd](scripts/physics_server_swarm.gd)
 Low-level `PhysicsServer2D` usage for thousands of moving objects. Bypasses node overhead for massive performance gains in bullet hells or swarms.
 
-### [substepping_logic.gd](../scripts/2d_physics_substepping_logic.gd)
+### [substepping_logic.gd](scripts/substepping_logic.gd)
 Manual physics sub-stepping for high-velocity projectiles. Ensures frame-perfect collision for objects moving faster than the physics tick.
 
-### [safe_rigidbody_state.gd](../scripts/2d_physics_safe_rigidbody_state.gd)
+### [safe_rigidbody_state.gd](scripts/safe_rigidbody_state.gd)
 Thread-safe `RigidBody2D` modification using `_integrate_forces`. Ideal for teleporting bodies or applying custom impulses without jitter.
 
-### [physics_direct_query.gd](../scripts/2d_physics_physics_direct_query.gd)
+### [physics_direct_query.gd](scripts/physics_direct_query.gd)
 Lighweight environment sensing using `PhysicsDirectSpaceState2D`. Performs ray queries without the overhead of RayCast2D nodes.
 
-### [collision_bitmask_helper.gd](../scripts/2d_physics_collision_bitmask_helper.gd)
+### [collision_bitmask_helper.gd](scripts/collision_bitmask_helper.gd)
 Clean architectural pattern for managing complex collision layers/masks using bitwise Enums and helpers.
 
-### [raycast_vision_stack.gd](../scripts/2d_physics_raycast_vision_stack.gd)
+### [raycast_vision_stack.gd](scripts/raycast_vision_stack.gd)
 Optimized multicasting vision system for AI. Reuses a single RayCast2D to check multiple angles in one physics frame.
 
-### [shapecast_aoe.gd](../scripts/2d_physics_shapecast_aoe.gd)
+### [shapecast_aoe.gd](scripts/shapecast_aoe.gd)
 Robust AOE detection using `ShapeCast2D`. Provides instant collision information without the signal-lag of Area2D.
 
-### [custom_gravity_override.gd](../scripts/2d_physics_custom_gravity_override.gd)
+### [custom_gravity_override.gd](scripts/custom_gravity_override.gd)
 Logic for localized gravity zones (Water, Space, Wind) and manual character-weight simulation.
 
-### [collision_debouncer.gd](../scripts/2d_physics_collision_debouncer.gd)
+### [collision_debouncer.gd](scripts/collision_debouncer.gd)
 Expert pattern for preventing signal spam when multi-shape bodies enter triggers.
 
-### [jitter_interpolation_fix.gd](../scripts/2d_physics_jitter_interpolation_fix.gd)
+### [jitter_interpolation_fix.gd](scripts/jitter_interpolation_fix.gd)
 Standard configuration and runtime adjustments to ensure smooth character movement on high-refresh-rate monitors.
 
-### [physics_server_direct_body.gd](../scripts/2d_physics_physics_server_direct_body.gd)
+### [physics_server_direct_body.gd](scripts/physics_server_direct_body.gd)
 Direct PhysicsServer2D RID management for peak performance in massive physics simulations.
 
-### [move_and_collide_precision.gd](../scripts/2d_physics_move_and_collide_precision.gd)
+### [move_and_collide_precision.gd](scripts/move_and_collide_precision.gd)
 Expert bounce and friction logic implementation for precision-critical movement.
 
-### [continuous_collision_detection.gd](../scripts/2d_physics_continuous_collision_detection.gd)
+### [continuous_collision_detection.gd](scripts/continuous_collision_detection.gd)
 Advanced CCD management for preventing bullet tunneling at extremely high velocities.
 
-### [performance_batch_mover.gd](../scripts/2d_physics_performance_batch_mover.gd)
+### [performance_batch_mover.gd](scripts/performance_batch_mover.gd)
 Optimized batch movement for multiple static/animatable bodies using riders-aware logic.
 
 ---
@@ -489,4 +494,4 @@ func _draw() -> void:
 
 
 ### Related
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

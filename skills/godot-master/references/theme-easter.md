@@ -3,6 +3,12 @@ name: godot-theme-easter
 description: Use when applying a specific Easter holiday theme (Eggs, Bunnies, Pastels) to a game.
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Easter Theme (Aesthetics & Juice)
 
 ## Overview
@@ -10,40 +16,40 @@ This skill provides the assets and logic to "Easter-fy" a game. It focuses on th
 
 ## Core Components (Expert Easter Tools)
 
-### [easter_squash_stretch_juice.gd](../scripts/theme_easter_easter_squash_stretch_juice.gd)
+### [easter_squash_stretch_juice.gd](scripts/easter_squash_stretch_juice.gd)
 Expert 'Squash and Stretch' logic for organic egg-like interactions using Tweens.
 
-### [easter_runtime_ui_themer.gd](../scripts/theme_easter_easter_runtime_ui_themer.gd)
+### [easter_runtime_ui_themer.gd](scripts/easter_runtime_ui_themer.gd)
 Runtime theme injector for applying mass pastel styles across the UI tree.
 
-### [easter_shimmer_vfx_emitter.gd](../scripts/theme_easter_easter_shimmer_vfx_emitter.gd)
+### [easter_shimmer_vfx_emitter.gd](scripts/easter_shimmer_vfx_emitter.gd)
 Professional 'Hidden Item' shimmer effect with additive blending and scale curves.
 
-### [easter_seasonal_activation_gate.gd](../scripts/theme_easter_easter_seasonal_activation_gate.gd)
+### [easter_seasonal_activation_gate.gd](scripts/easter_seasonal_activation_gate.gd)
 Date-aware manager for automatic activation of seasonal event content.
 
-### [easter_egg_collection_tracker.gd](../scripts/theme_easter_easter_egg_collection_tracker.gd)
+### [easter_egg_collection_tracker.gd](scripts/easter_egg_collection_tracker.gd)
 Expert registry for tracking hidden items with signal-based progression signals.
 
-### [easter_mesh_painter_override.gd](../scripts/theme_easter_easter_mesh_painter_override.gd)
+### [easter_mesh_painter_override.gd](scripts/easter_mesh_painter_override.gd)
 Seasonal 3D material swapper using surface overrides to preserve base assets.
 
-### [easter_wobble_physics_body.gd](../scripts/theme_easter_easter_wobble_physics_body.gd)
+### [easter_wobble_physics_body.gd](scripts/easter_wobble_physics_body.gd)
 Instability-driven physics body for 'Egg-like' wobbly movement.
 
-### [easter_camera_pop_juice.gd](../scripts/theme_easter_easter_camera_pop_juice.gd)
+### [easter_camera_pop_juice.gd](scripts/easter_camera_pop_juice.gd)
 Immersive FOV 'kick' logic to emphasize collection or pop events.
 
-### [easter_confetti_canon_vfx.gd](../scripts/theme_easter_easter_confetti_canon_vfx.gd)
+### [easter_confetti_canon_vfx.gd](scripts/easter_confetti_canon_vfx.gd)
 Celebratory confetti explosion with multi-colored pastel flakes.
 
-### [easter_pastel_color_palette.gd](../scripts/theme_easter_easter_pastel_color_palette.gd)
+### [easter_pastel_color_palette.gd](scripts/easter_pastel_color_palette.gd)
 Static utility containing curated, harmonious Easter color tokens.
 
-### [easter_custom_cursor_manager.gd](../scripts/theme_easter_easter_custom_cursor_manager.gd)
+### [easter_custom_cursor_manager.gd](scripts/easter_custom_cursor_manager.gd)
 Expert logic for swapping system mouse cursors with themed Easter icons.
 
-### [easter_seasonal_audio_swapper.gd](../scripts/theme_easter_easter_seasonal_audio_swapper.gd)
+### [easter_seasonal_audio_swapper.gd](scripts/easter_seasonal_audio_swapper.gd)
 Dynamic audio resource loader that replaces standard UI sounds with seasonal variants.
 
 ## Visual Guidelines

@@ -1,7 +1,7 @@
 extends Node2D
 class_name GridTweenMover
 
-## Expert Grid Movement (Godot 4.6).
+## Expert Grid Movement (Godot 4.7).
 ## Separates logic (Vector2i) from visuals (Tween).
 
 @export var tile_map: TileMapLayer

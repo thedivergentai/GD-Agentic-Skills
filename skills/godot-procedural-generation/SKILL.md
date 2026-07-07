@@ -97,6 +97,10 @@ func generate_dungeon(width: int, height: int, fill_percent: float = 0.4) -> Arr
     return grid
 ```
 
+## Godot 4.7: Procedural 3D
+
+- **Path3D snap-to-colliders** for spline-based road/river generation on terrain colliders.
+
 ## Perlin Noise Terrain
 
 ```gdscript

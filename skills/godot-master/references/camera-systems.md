@@ -3,6 +3,12 @@ name: godot-camera-systems
 description: "Expert patterns for 2D/3D camera control including smooth following (lerp, position_smoothing), camera shake (trauma system), screen shake with frequency parameters, deadzone/drag for platformers, look-ahead prediction, and camera transitions. Use for player cameras, cinematic sequences, or multi-camera systems. Trigger keywords: Camera2D, Camera3D, SpringArm3D, position_smoothing, camera_shake, trauma_system, look_ahead, drag_margin, camera_limits, camera_transition."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Camera Systems
 
 Expert guidance for creating smooth, responsive cameras in 2D and 3D games.
@@ -26,34 +32,34 @@ Expert guidance for creating smooth, responsive cameras in 2D and 3D games.
 
 > **MANDATORY**: Read before implementing camera behaviors.
 
-### [camera_shake_trauma_pro.gd](../scripts/camera_systems_camera_shake_trauma_pro.gd)
+### [camera_shake_trauma_pro.gd](scripts/camera_shake_trauma_pro.gd)
 Advanced noise-based screenshake (Trauma system) for organic, non-jittery explosions and impacts.
 
-### [cinematic_framing_logic.gd](../scripts/camera_systems_cinematic_framing_logic.gd)
+### [cinematic_framing_logic.gd](scripts/cinematic_framing_logic.gd)
 Rule of Thirds and Lead Room management in code, ensuring high-quality cinematic composition.
 
-### [camera_state_machine.gd](../scripts/camera_systems_camera_state_machine.gd)
+### [camera_state_machine.gd](scripts/camera_state_machine.gd)
 Managing transitions between 'Follow', 'Static', and 'Cinematic' camera states with Tweens.
 
-### [minimap_viewport_manager.gd](../scripts/camera_systems_minimap_viewport_manager.gd)
+### [minimap_viewport_manager.gd](scripts/minimap_viewport_manager.gd)
 SubViewport optimization for Mini-maps and UI overlays. Reduces render updates for better FPS.
 
-### [split_screen_setup.gd](../scripts/camera_systems_split_screen_setup.gd)
+### [split_screen_setup.gd](scripts/split_screen_setup.gd)
 Dynamic split-screen architecture for local multiplayer, handling viewport stretching and audio listeners.
 
-### [remote_transform_decoupling.gd](../scripts/camera_systems_remote_transform_decoupling.gd)
+### [remote_transform_decoupling.gd](scripts/remote_transform_decoupling.gd)
 Decoupling camera position from player rotation/scale using `RemoteTransform2D` for high-speed stability.
 
-### [zoom_damping_controller.gd](../scripts/camera_systems_zoom_damping_controller.gd)
+### [zoom_damping_controller.gd](scripts/zoom_damping_controller.gd)
 Non-linear, smooth zoom logic with tactical overview bounds and mouse-wheel support.
 
-### [spring_lerp_camera_3d.gd](../scripts/camera_systems_spring_lerp_camera_3d.gd)
+### [spring_lerp_camera_3d.gd](scripts/spring_lerp_camera_3d.gd)
 Physics-stable 3D follow camera using spring-mass interpolation to reduce follow-latency jitter.
 
-### [first_person_sway.gd](../scripts/camera_systems_first_person_sway.gd)
+### [first_person_sway.gd](scripts/first_person_sway.gd)
 Procedural 8-figure head bob and weapon sway logic for immersive First-Person systems.
 
-### [deadzone_drag_margins.gd](../scripts/camera_systems_deadzone_drag_margins.gd)
+### [deadzone_drag_margins.gd](scripts/deadzone_drag_margins.gd)
 Platformer-specific deadzone management using code to control follow-margins and drag-center behavior.
 
 ---
@@ -404,4 +410,4 @@ func _draw() -> void:
 
 
 ### Related
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

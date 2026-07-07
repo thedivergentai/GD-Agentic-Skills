@@ -3,6 +3,12 @@ name: godot-genre-stealth
 description: "Expert blueprint for stealth games (Splinter Cell, Hitman, Dishonored, Thief) covering AI detection systems, vision cones, sound propagation, alert states, light/shadow mechanics, and systemic design. Use when building stealth-action, tactical infiltration, or immersive sim games requiring enemy awareness systems. Keywords vision cone, detection, alert state, sound propagation, light level, systemic AI, gradual detection."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Genre: Stealth
 
 Player choice, systemic AI, and clear communication define stealth games.
@@ -40,10 +46,10 @@ Player choice, systemic AI, and clear communication define stealth games.
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [stealth_ai_controller.gd](../scripts/genre_stealth_stealth_ai_controller.gd) - Professional-grade NPC controller with composite vision, sound paths, and alert state logic.
+- [stealth_ai_controller.gd](scripts/stealth_ai_controller.gd) - Professional-grade NPC controller with composite vision, sound paths, and alert state logic.
 
 ### Modular Components
-- [stealth_patterns.gd](../scripts/genre_stealth_stealth_patterns.gd) - Collection of patterns for PhysicsServer raycasting, noise bus routing, and avoidance masking.
+- [stealth_patterns.gd](scripts/stealth_patterns.gd) - Collection of patterns for PhysicsServer raycasting, noise bus routing, and avoidance masking.
 
 ---
 
@@ -428,4 +434,4 @@ void fragment() {
 
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

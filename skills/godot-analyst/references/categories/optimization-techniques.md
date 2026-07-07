@@ -1,6 +1,6 @@
 # Anara Rubric: Optimization Techniques
 ## Pillar Overview
-The efficiency of the soul. This rubric measures the project's implementation of high-performance logic, asset-management, and rendering optimizations in Godot 4.6.
+The efficiency of the soul. This rubric measures the project's implementation of high-performance logic, asset-management, and rendering optimizations in Godot 4.7.
 
 ---
 

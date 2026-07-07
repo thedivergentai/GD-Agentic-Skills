@@ -3,6 +3,12 @@ name: godot-debugging-profiling
 description: "Expert debugging workflows including print debugging (push_warning, push_error, assert), breakpoints (conditional breakpoints), Godot Debugger (stack trace, variables, remote debug), profiler (time profiler, memory monitor), error handling patterns, and performance optimization. Use for bug fixing, performance tuning, or development diagnostics. Trigger keywords: breakpoint, print_debug, push_error, assert, profiler, remote_debug, memory_leak, orphan_nodes, Performance.get_monitor."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Debugging & Profiling
 
 Expert guidance for finding and fixing bugs efficiently with Godot's debugging tools.
@@ -317,7 +323,7 @@ Ensuring safe access to the SceneTree and data from worker threads.
 ### 4. Memory-Leak-Tracker (Transient Scenes)
 Identifying leaks in scenes that are instantiated and freed frequently.
 - **Orphan Detection**: Periodically check `Node.get_orphan_node_ids()`. If the count grows indefinitely after closing transient scenes, you have a leak.
-- **ObjectDB Snapshots**: Use the Godot 4.6 ObjectDB Profiler to take "Before" and "After" snapshots. Diffing these reveals exactly which `RefCounted` objects are causing circular reference leaks.
+- **ObjectDB Snapshots**: Use the Godot 4.7 ObjectDB Profiler to take "Before" and "After" snapshots. Diffing these reveals exactly which `RefCounted` objects are causing circular reference leaks.
 
 ## Reference
 - [Godot Docs: Debugger](https://docs.godotengine.org/en/stable/tutorials/scripting/debug/debugger_panel.html)

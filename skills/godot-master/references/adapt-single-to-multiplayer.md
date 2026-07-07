@@ -3,6 +3,12 @@ name: godot-adapt-single-to-multiplayer
 description: "Expert patterns for adding multiplayer to single-player games including client-server architecture, authoritative server design, MultiplayerSynchronizer, lag compensation (client prediction, server reconciliation), input buffering, and anti-cheat measures. Use when retrofitting multiplayer, porting to online play, or designing networked gameplay. Trigger keywords: MultiplayerPeer, ENetMultiplayerPeer, SceneMultiplayer, MultiplayerSynchronizer, rpc, rpc_id, multiplayer_authority, client_prediction, server_reconciliation, lag_compensation, rollback."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Adapt: Single to Multiplayer
 
 Expert guidance for retrofitting multiplayer into single-player games.
@@ -30,37 +36,37 @@ Expert guidance for retrofitting multiplayer into single-player games.
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [net_prediction_reconciliation.gd](../scripts/adapt_single_to_multiplayer_net_prediction_reconciliation.gd)
+### [net_prediction_reconciliation.gd](scripts/net_prediction_reconciliation.gd)
 Expert CharacterBody3D prediction with input-buffer replaying for server reconciliation.
 
-### [net_snapshot_interpolation.gd](../scripts/adapt_single_to_multiplayer_net_snapshot_interpolation.gd)
+### [net_snapshot_interpolation.gd](scripts/net_snapshot_interpolation.gd)
 Professional snapshot interpolation logic for smoothing peer movement via jitter buffers.
 
-### [net_auth_server_validator.gd](../scripts/adapt_single_to_multiplayer_net_auth_server_validator.gd)
+### [net_auth_server_validator.gd](scripts/net_auth_server_validator.gd)
 Authoritative server validator for anti-cheat (Position, Speed, and Action checks).
 
-### [net_rpc_rate_limiter.gd](../scripts/adapt_single_to_multiplayer_net_rpc_rate_limiter.gd)
+### [net_rpc_rate_limiter.gd](scripts/net_rpc_rate_limiter.gd)
 Expert rate-limiter to prevent RPC flooding and macro-abuse by clients.
 
-### [net_interest_management.gd](../scripts/adapt_single_to_multiplayer_net_interest_management.gd)
+### [net_interest_management.gd](scripts/net_interest_management.gd)
 Distance-based visibility management to optimize binary bandwidth per-peer.
 
-### [net_delta_compression_sync.gd](../scripts/adapt_single_to_multiplayer_net_delta_compression_sync.gd)
+### [net_delta_compression_sync.gd](scripts/net_delta_compression_sync.gd)
 Expert quantization and significance-checking logic for delta-compression.
 
-### [net_upnp_discovery_logic.gd](../scripts/adapt_single_to_multiplayer_net_upnp_discovery_logic.gd)
+### [net_upnp_discovery_logic.gd](scripts/net_upnp_discovery_logic.gd)
 Robust script for P2P network discovery and automatic port forwarding via UPNP.
 
-### [net_debug_overlay_monitor.gd](../scripts/adapt_single_to_multiplayer_net_debug_overlay_monitor.gd)
+### [net_debug_overlay_monitor.gd](scripts/net_debug_overlay_monitor.gd)
 In-game diagnostic overlay reporting RTT (Ping), Packet Loss, and Jitter.
 
-### [net_lag_compensation.gd](../scripts/adapt_single_to_multiplayer_net_lag_compensation.gd)
+### [net_lag_compensation.gd](scripts/net_lag_compensation.gd)
 Expert server-side state rewinding (Lag Compensation) for accurate hit-registration.
 
-### [net_lobby_late_join_sync.gd](../scripts/adapt_single_to_multiplayer_net_lobby_late_join_sync.gd)
+### [net_lobby_late_join_sync.gd](scripts/net_lobby_late_join_sync.gd)
 Professional state-initialization logic to bridge 'Late Joiners' into a synced session.
 
-### [net_latency_simulator.gd](../scripts/adapt_single_to_multiplayer_net_latency_simulator.gd)
+### [net_latency_simulator.gd](scripts/net_latency_simulator.gd)
 Editor-only tool for simulating high-ping and loss conditions for stress-testing.
 
 ---
@@ -442,4 +448,4 @@ Visualizing the packet timeline is critical for debugging jitter. Propose an ove
 - **RTT (Round Trip Time)**: Real-time graph of latency spikes.
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

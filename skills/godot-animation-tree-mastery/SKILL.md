@@ -22,6 +22,11 @@ Expert guidance for Godot's advanced animation blending and state machines.
 
 ---
 
+## Godot 4.7: AnimationTree
+
+- `LookAtModifier3D.relative` default is now **false** (was true).
+- Blend space `add_blend_point` accepts optional **name** parameter for labeled points.
+
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.

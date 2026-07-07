@@ -1,6 +1,6 @@
 extends Node
 
-## Expert Local Input Manager (Godot 4.6).
+## Expert Local Input Manager (Godot 4.7).
 ## Gamepad hotplugging and player ID mapping.
 
 var player_map = {} # PlayerID -> DeviceID

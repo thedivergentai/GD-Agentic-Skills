@@ -1,7 +1,7 @@
 class_name MinimapFog
 extends SubViewport
 
-## Expert Minimap Fog (Godot 4.6).
+## Expert Minimap Fog (Godot 4.7).
 ## TileMapLayer-based discovery and fog-of-war.
 
 @export var fog_layer: TileMapLayer

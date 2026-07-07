@@ -1,7 +1,7 @@
 extends Node
 class_name AsyncTurnManager
 
-## Expert Turn Manager (Godot 4.6).
+## Expert Turn Manager (Godot 4.7).
 ## Asynchronous loop using 'await' to sync actions and animations.
 
 var entities: Array[Node] = []

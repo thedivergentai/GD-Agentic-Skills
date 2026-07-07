@@ -1,7 +1,7 @@
 @tool
 extends EditorScript
 
-## Expert Orphan Asset Scanner (Godot 4.6).
+## Expert Orphan Asset Scanner (Godot 4.7).
 ## Recursively traces dependencies to identify unused 'slop' resources.
 
 var _used: Dictionary = {}

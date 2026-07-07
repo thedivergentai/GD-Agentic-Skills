@@ -1,7 +1,7 @@
 extends Node
 class_name NoteOrchestrator
 
-## Expert Note Orchestrator (Godot 4.6).
+## Expert Note Orchestrator (Godot 4.7).
 ## Spawns and positions notes purely based on timeline math.
 
 @export var conductor: RhythmConductor

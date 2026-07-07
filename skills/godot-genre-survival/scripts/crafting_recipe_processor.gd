@@ -1,7 +1,7 @@
 extends Node
 class_name CraftingRecipeProcessor
 
-## Expert Crafting System (Godot 4.6).
+## Expert Crafting System (Godot 4.7).
 ## Two-pass validation and consumption logic for item recipes.
 
 @export var inventory: ModularInventoryController

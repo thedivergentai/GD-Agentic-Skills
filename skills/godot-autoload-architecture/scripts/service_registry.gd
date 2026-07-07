@@ -1,7 +1,7 @@
 class_name ServiceRegistry
 extends Node
 
-## Expert Service Locator (Godot 4.6).
+## Expert Service Locator (Godot 4.7).
 ## Prevents Global Namespace Pollution by centralizing dependencies.
 
 var _services: Dictionary = {}

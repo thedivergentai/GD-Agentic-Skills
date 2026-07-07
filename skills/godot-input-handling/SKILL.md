@@ -56,6 +56,11 @@ Demonstrating the correct use of `_unhandled_input` to prevent gameplay logic fr
 
 ---
 
+## Godot 4.7: Input Device IDs
+
+- Mouse and keyboard are no longer device ID `0` — use `InputEvent.DEVICE_ID_MOUSE` and `InputEvent.DEVICE_ID_KEYBOARD`.
+- **NEVER** compare `event.device == 0` for mouse/keyboard; joypads may legitimately use ID 0.
+
 ## Input Propagation & Isolation
 Godot propagates input events in a specific order. Understanding this is key to isolating UI from gameplay.
 

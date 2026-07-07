@@ -5,12 +5,14 @@ import platform
 class GodotBase:
     def __init__(self, godot_path=None, godot_console_path=None):
         self.os_type = platform.system().lower()
+        env_godot = os.environ.get("GODOT_PATH")
+        env_console = os.environ.get("GODOT_CONSOLE_PATH")
         if self.os_type == 'windows':
-            self.godot_path = godot_path or r"D:\Godot\Godot_v4.6.1-stable_win64.exe"
-            self.godot_console_path = godot_console_path or r"D:\Godot\Godot_v4.6.1-stable_win64_console.exe"
+            self.godot_path = godot_path or env_godot or r"D:\Godot\Godot_v4.7-stable_win64.exe"
+            self.godot_console_path = godot_console_path or env_console or r"D:\Godot\Godot_v4.7-stable_win64_console.exe"
         else:
-            self.godot_path = godot_path or "godot"
-            self.godot_console_path = self.godot_path 
+            self.godot_path = godot_path or env_godot or "godot"
+            self.godot_console_path = godot_console_path or env_console or self.godot_path
 
     def normalize(self, path):
         return os.path.abspath(path).replace("\\", "/")

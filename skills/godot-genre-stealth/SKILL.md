@@ -3,6 +3,12 @@ name: godot-genre-stealth
 description: "Expert blueprint for stealth games (Splinter Cell, Hitman, Dishonored, Thief) covering AI detection systems, vision cones, sound propagation, alert states, light/shadow mechanics, and systemic design. Use when building stealth-action, tactical infiltration, or immersive sim games requiring enemy awareness systems. Keywords vision cone, detection, alert state, sound propagation, light level, systemic AI, gradual detection."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Genre: Stealth
 
 Player choice, systemic AI, and clear communication define stealth games.

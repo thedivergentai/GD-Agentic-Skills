@@ -3,6 +3,12 @@ name: godot-game-loop-time-trial
 description: Expert patterns for racing mechanics, checkpoint tracking, and ghost recording/playback in Godot 4. Use when building racing games, speed-run platformers, or arcade trials.
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Time Trial Loop: Arcade Precision
 
 > [!NOTE]
@@ -72,19 +78,19 @@ func _process(delta):
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [time_trial_patterns.gd](../scripts/game_loop_time_trial_time_trial_patterns.gd)
+### [time_trial_patterns.gd](scripts/time_trial_patterns.gd)
 10 Expert patterns: Microsecond timing, server-authoritative validation, rubber-banding AI, and frame-perfect input flushing.
 
-### [time_trial_manager.gd](../scripts/game_loop_time_trial_time_trial_manager.gd)
+### [time_trial_manager.gd](scripts/time_trial_manager.gd)
 The central clock. Validates checkpoint order and handles "Best Lap" logic.
 
-### [ghost_recorder.gd](../scripts/game_loop_time_trial_ghost_recorder.gd)
+### [ghost_recorder.gd](scripts/ghost_recorder.gd)
 Captures high-frequency transform data for playback.
 
-### [time_trial_playback_buffer.gd](../scripts/game_loop_time_trial_time_trial_playback_buffer.gd)
+### [time_trial_playback_buffer.gd](scripts/time_trial_playback_buffer.gd)
 Jitter-buffer for smooth ghost playback during network streaming.
 
-### [time_trial_leaderboard_bridge.gd](../scripts/game_loop_time_trial_time_trial_leaderboard_bridge.gd)
+### [time_trial_leaderboard_bridge.gd](scripts/time_trial_leaderboard_bridge.gd)
 Formatting utility for converting raw time data to human-readable strings.
 
 ---
@@ -104,4 +110,4 @@ Standardize time formatting across your game to avoid precision issues.
 - **Formatting**: Use `%02d:%02d.%03d` format strings for consistent UI display (e.g., `01:24.450`).
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

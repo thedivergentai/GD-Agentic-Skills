@@ -1,7 +1,7 @@
 extends CharacterBody2D
 class_name OneWayDropHandler
 
-## Expert One-Way Drop Logic (Godot 4.6).
+## Expert One-Way Drop Logic (Godot 4.7).
 ## Down + Jump intentionally drops through platforms.
 
 const PLATFORM_LAYER = 4 # Example layer for one-way platforms

@@ -21,6 +21,10 @@ Expert guidance for player-controlled 2D movement using Godot's physics system.
 - **NEVER use `queue_free()` on characters every frame** — Use object pooling for bullets or enemies to avoid SceneTree performance spikes.
 ---
 
+## Godot 4.7: CharacterBody2D
+
+- Jolt 3D changes do not apply to 2D, but one-way **direction** on `CollisionShape2D` affects platformer feel — align with movement normals.
+
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.

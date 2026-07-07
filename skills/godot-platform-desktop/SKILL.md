@@ -26,6 +26,10 @@ Settings flexibility, window management, and kb/mouse precision define desktop g
 
 ---
 
+## Godot 4.7: Desktop
+
+- **HDR output** on Windows, macOS, and Linux (Wayland) — enable in Rendering → Viewport settings.
+
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.

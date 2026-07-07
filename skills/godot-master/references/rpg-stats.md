@@ -3,40 +3,46 @@ name: godot-rpg-stats
 description: "Expert blueprint for RPG stat systems (attributes, leveling, modifiers, damage formulas) using Resource-based stats, stackable modifiers, and derived stat calculations. Use when implementing character progression OR equipment/buff systems. Keywords stats, attributes, leveling, modifiers, CharacterStats, derived stats, damage calculation, XP."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # RPG Stats
 
 Resource-based stats, modifier stacks, and derived calculations define flexible character progression.
 
 ## Available Scripts
 
-### [base_stats_resource.gd](../scripts/rpg_stats_base_stats_resource.gd)
+### [base_stats_resource.gd](scripts/base_stats_resource.gd)
 Core data container for base attributes (Str, Dex, Int) and derived scaling rules.
 
-### [status_effect_data.gd](../scripts/rpg_stats_status_effect_data.gd)
+### [status_effect_data.gd](scripts/status_effect_data.gd)
 Serialized data definition for buffs/debuffs (Additive, Multiplicative, Override).
 
-### [stats_component_reactive.gd](../scripts/rpg_stats_stats_component_reactive.gd)
+### [stats_component_reactive.gd](scripts/stats_component_reactive.gd)
 Orchestrator for JIT (Just-In-Time) stat calculation with active modifier stacking.
 
-### [exp_progression_resource.gd](../scripts/rpg_stats_exp_progression_resource.gd)
+### [exp_progression_resource.gd](scripts/exp_progression_resource.gd)
 Data-driven level-up curve definition using growth factors and base XP.
 
-### [dynamic_stat_label_sync.gd](../scripts/rpg_stats_dynamic_stat_label_sync.gd)
+### [dynamic_stat_label_sync.gd](scripts/dynamic_stat_label_sync.gd)
 Reactive UI hook for syncing Labels to stat changes without polling.
 
-### [damage_formula_handler.gd](../scripts/rpg_stats_damage_formula_handler.gd)
+### [damage_formula_handler.gd](scripts/damage_formula_handler.gd)
 Centralized RefCounted utility for complex combat math and damage calculations.
 
-### [stat_modifier_stacking.gd](../scripts/rpg_stats_stat_modifier_stacking.gd)
+### [stat_modifier_stacking.gd](scripts/stat_modifier_stacking.gd)
 Logic for handling unique vs. stackable buffs and refreshing durations.
 
-### [resource_stat_inheritance.gd](../scripts/rpg_stats_resource_stat_inheritance.gd)
+### [resource_stat_inheritance.gd](scripts/resource_stat_inheritance.gd)
 Pattern for extending base stats with specialized attributes (Elemental Resists).
 
-### [persistent_character_stats.gd](../scripts/rpg_stats_persistent_character_stats.gd)
+### [persistent_character_stats.gd](scripts/persistent_character_stats.gd)
 Managing the serialization of character progression to `.tres` files.
 
-### [level_up_system.gd](../scripts/rpg_stats_level_up_system.gd)
+### [level_up_system.gd](scripts/level_up_system.gd)
 Logic for awarding experience and triggering level-up benefits.
 
 ## NEVER Do in RPG Stats
@@ -287,4 +293,4 @@ func _make_custom_tooltip(_text: String) -> Object:
 ```
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

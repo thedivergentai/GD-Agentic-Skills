@@ -1,7 +1,7 @@
 class_name DirectionalSpriteResolver
 extends Sprite3D
 
-## Expert Directional Sprite Resolver (Godot 4.6).
+## Expert Directional Sprite Resolver (Godot 4.7).
 ## Calculates the 8-way (Doom/Octopath style) frame index based on camera view.
 
 @export var camera: Camera3D

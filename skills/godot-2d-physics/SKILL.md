@@ -27,6 +27,11 @@ Expert guidance for collision detection, triggers, and raycasting in Godot 2D.
 
 ---
 
+## Godot 4.7: 2D Physics
+
+- `body_set_shape_as_one_way_collision` adds **direction** parameter — set relative to shape orientation for one-way platforms.
+- `CollisionShape2D` supports one-way collision **direction relative to the shape** (not just global up).
+
 ## Available Scripts
 
 > **MANDATORY**: Read the script matching your use case before implementation.

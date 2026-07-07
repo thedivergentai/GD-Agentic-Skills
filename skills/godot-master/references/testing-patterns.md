@@ -3,40 +3,46 @@ name: godot-testing-patterns
 description: "Expert blueprint for testing patterns using GUT (Godot Unit Test), integration tests, mock/stub patterns, async testing, and validation techniques. Covers assert patterns, signal testing, and CI/CD integration. Use when implementing tests OR validating game logic. Keywords GUT, unit test, integration test, assert, mock, stub, GutTest, watch_signals, TDD."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Testing Patterns
 
 GUT framework, assertion patterns, mocking, and async testing define automated validation.
 
 ## Available Scripts
 
-### [basic_unit_test.gd](../scripts/testing_patterns_basic_unit_test.gd)
+### [basic_unit_test.gd](scripts/basic_unit_test.gd)
 Minimal GdUnit4 test structure for verifying simple logic and arithmetic.
 
-### [signal_emission_test.gd](../scripts/testing_patterns_signal_emission_test.gd)
+### [signal_emission_test.gd](scripts/signal_emission_test.gd)
 Expert pattern for monitoring and verifying signal emissions in decoupled architectures.
 
-### [mock_dependency_test.gd](../scripts/testing_patterns_mock_dependency_test.gd)
+### [mock_dependency_test.gd](scripts/mock_dependency_test.gd)
 Using Mocks and Doubles to isolate test subjects from external services or databases.
 
-### [scene_integration_test.gd](../scripts/testing_patterns_scene_integration_test.gd)
+### [scene_integration_test.gd](scripts/scene_integration_test.gd)
 Full scene lifecycle testing, verifying node interactions after instantiation.
 
-### [performance_benchmark_runner.gd](../scripts/testing_patterns_performance_benchmark_runner.gd)
+### [performance_benchmark_runner.gd](scripts/performance_benchmark_runner.gd)
 High-precision execution time measurement using microsecond-scale timers.
 
-### [memory_leak_detector.gd](../scripts/testing_patterns_memory_leak_detector.gd)
+### [memory_leak_detector.gd](scripts/memory_leak_detector.gd)
 Automated orphan node detection to catch memory leaks during long-running tests.
 
-### [parameter_fuzz_tester.gd](../scripts/testing_patterns_parameter_fuzz_tester.gd)
+### [parameter_fuzz_tester.gd](scripts/parameter_fuzz_tester.gd)
 Stress testing systems with randomized data ranges to catch edge-case crashes.
 
-### [wait_for_frame_test.gd](../scripts/testing_patterns_wait_for_frame_test.gd)
+### [wait_for_frame_test.gd](scripts/wait_for_frame_test.gd)
 Advanced async testing for logic that spans multiple frames or game ticks.
 
-### [physics_collision_test.gd](../scripts/testing_patterns_physics_collision_test.gd)
+### [physics_collision_test.gd](scripts/physics_collision_test.gd)
 Automated verification of physics layer interactions and collision resolution.
 
-### [test_data_factory.gd](../scripts/testing_patterns_test_data_factory.gd)
+### [test_data_factory.gd](scripts/test_data_factory.gd)
 Centralized data generation patterns for clean, schemas-compliant test objects.
 
 ## NEVER Do in Testing
@@ -334,4 +340,4 @@ Testing RPC logic and replication without requiring a live server or second clie
 
 
 ### Related
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

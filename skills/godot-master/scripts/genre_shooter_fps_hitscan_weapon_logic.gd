@@ -1,7 +1,7 @@
 extends Node3D
 class_name HitscanWeaponLogic
 
-## Expert Weapon Logic (Godot 4.6).
+## Expert Weapon Logic (Godot 4.7).
 ## Decoupled hitscan logic with signal-based VFX triggering.
 
 signal shot_fired(hit_point: Vector3, hit_normal: Vector3, collider: Object)

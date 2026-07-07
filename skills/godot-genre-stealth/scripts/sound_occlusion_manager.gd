@@ -1,7 +1,7 @@
 extends Node
 class_name SoundOcclusionManager
 
-## Expert Sound Propagation (Godot 4.6).
+## Expert Sound Propagation (Godot 4.7).
 ## Emits noise events and checks for physical occlusion (walls).
 
 func emit_noise(origin: Vector3, radius: float) -> void:

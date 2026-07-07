@@ -1,7 +1,7 @@
 class_name AutoLoadBootstrapper
 extends Node
 
-## Expert AutoLoad Bootstrapper (Godot 4.6).
+## Expert AutoLoad Bootstrapper (Godot 4.7).
 ## Orchestrates two-phase initialization across all Singletons.
 ## PLACE THIS LAST IN THE PROJECT SETTINGS AUTOLOAD LIST.
 

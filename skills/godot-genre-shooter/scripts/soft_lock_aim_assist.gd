@@ -1,7 +1,7 @@
 extends Node
 class_name SoftLockAimAssist
 
-## Expert Aim Assist (Godot 4.6).
+## Expert Aim Assist (Godot 4.7).
 ## Uses Dot Product to find targets and Slerp for smooth tracking.
 
 @export var assist_strength: float = 4.0

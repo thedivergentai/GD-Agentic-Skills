@@ -130,6 +130,12 @@ func complete_level() -> void:
 
 ---
 
+## Godot 4.7: New Project Defaults
+
+- Default stretch **mode**: `canvas_items` (was `disabled`).
+- Default stretch **aspect**: `expand` (was `keep`).
+- Templates should document these defaults; override in Project Settings if legacy behavior needed.
+
 ## Top-Down RPG Template
 
 ### Directory Structure

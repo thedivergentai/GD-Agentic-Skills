@@ -1,6 +1,6 @@
 # audit_memory_fragmentation.gd
 # Expert runtime utility for tracking ObjectDB allocations and detecting fragmentation risks.
-# Grounded in Godot 4.6+ ObjectDB snapshots.
+# Grounded in Godot 4.7+ ObjectDB snapshots.
 
 extends RefCounted
 
@@ -36,5 +36,5 @@ static func audit_fragmentation(snap_a: Dictionary, snap_b: Dictionary) -> Strin
 		
 	return report
 
-## Expert tip: In Godot 4.6, use the ObjectDB Profiler in the Debugger tab 
+## Expert tip: In Godot 4.7, use the ObjectDB Profiler in the Debugger tab 
 ## to take visual snapshots and diff them for deep fragmentation analysis.

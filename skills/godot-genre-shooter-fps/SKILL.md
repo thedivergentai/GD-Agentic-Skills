@@ -3,6 +3,12 @@ name: godot-genre-shooter-fps
 description: "Expert blueprint for First-Person Shooters (Doom, Quake, Battlefield, Overwatch) focusing on physics-based movement, acceleration/friction, camera sway, weapon bobbing, and high-precision hit registration. Use when building tight, responsive FPS combat with advanced camera mechanics. Keywords FPS, movement physics, weapon bobbing, camera sway, hitscan, ground detection, air control."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Genre: Shooter (FPS/TPS)
 
 Gunplay feel, responsive combat, and competitive balance define shooters.

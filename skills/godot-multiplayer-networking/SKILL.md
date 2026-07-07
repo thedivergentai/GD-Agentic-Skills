@@ -3,6 +3,12 @@ name: godot-multiplayer-networking
 description: "Expert blueprint for multiplayer networking (Among Us, Brawlhalla, Terraria) using Godot's high-level API covering RPCs, state synchronization, authoritative servers, client prediction, and lobby systems. Use when building online multiplayer, LAN co-op, or networked games. Keywords multiplayer, RPC, ENetMultiplayerPeer, MultiplayerSynchronizer, authority, client prediction, rollback."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Multiplayer Networking
 
 Authoritative servers, client prediction, and state synchronization define robust multiplayer.

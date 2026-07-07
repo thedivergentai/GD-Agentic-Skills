@@ -1,7 +1,7 @@
 extends CharacterBody3D
 class_name CrowdNavigationUnit
 
-## Expert Crowd Pathfinding (Godot 4.6).
+## Expert Crowd Pathfinding (Godot 4.7).
 ## Optimized RVO avoidance with arrival dampening.
 
 @onready var nav_agent: NavigationAgent3D = $NavigationAgent3D

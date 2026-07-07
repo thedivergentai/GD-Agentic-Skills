@@ -3,6 +3,12 @@ name: godot-game-loop-harvest
 description: Data-driven resource harvesting system (mining, logging, foraging) for Godot 4. Use when implementing gathering mechanics with tool/tier validation, health depletion, item spawning, and persistence.
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Godot Game Loop: Harvest
 
 Implement decoupled, data-driven gathering mechanics. This system handles tool validation, depletion, and respawning.
@@ -11,12 +17,12 @@ Implement decoupled, data-driven gathering mechanics. This system handles tool v
 
 | Component | Asset | Description |
 | :--- | :--- | :--- |
-| **Resource Data** | [resource_data.gd](../scripts/game_loop_harvest_resource_data.gd) | `Resource`: Defines health, yield, and tool requirements. |
-| **Tool Data** | [harvest_tool_data.gd](../scripts/game_loop_harvest_harvest_tool_data.gd) | `Resource`: Defines damage, type, and tier. |
-| **Harvestable Node** | [harvestable_node.gd](../scripts/game_loop_harvest_harvestable_node.gd) | `StaticBody3D`: The world interaction entity. |
-| **Respawn Manager** | [harvest_respawn_manager.gd](../scripts/game_loop_harvest_harvest_respawn_manager.gd) | `Node`: (Singleton) Manages world persistence. |
-| **Inventory Manager**| [harvest_inventory_manager.gd](../scripts/game_loop_harvest_harvest_inventory_manager.gd) | `Node`: Hub for resource collection. |
-| **Auto-Save Manager**| [harvest_autosave_manager.gd](../scripts/game_loop_harvest_harvest_autosave_manager.gd) | `Node`: Interval-based progress safety. |
+| **Resource Data** | [resource_data.gd](scripts/resource_data.gd) | `Resource`: Defines health, yield, and tool requirements. |
+| **Tool Data** | [harvest_tool_data.gd](scripts/harvest_tool_data.gd) | `Resource`: Defines damage, type, and tier. |
+| **Harvestable Node** | [harvestable_node.gd](scripts/harvestable_node.gd) | `StaticBody3D`: The world interaction entity. |
+| **Respawn Manager** | [harvest_respawn_manager.gd](scripts/harvest_respawn_manager.gd) | `Node`: (Singleton) Manages world persistence. |
+| **Inventory Manager**| [harvest_inventory_manager.gd](scripts/harvest_inventory_manager.gd) | `Node`: Hub for resource collection. |
+| **Auto-Save Manager**| [harvest_autosave_manager.gd](scripts/harvest_autosave_manager.gd) | `Node`: Interval-based progress safety. |
 
 ## 2. Implementation Guide
 
@@ -76,16 +82,16 @@ if collider is HarvestableNode:
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [harvest_loop_patterns.gd](../scripts/game_loop_harvest_harvest_loop_patterns.gd)
+### [harvest_loop_patterns.gd](scripts/harvest_loop_patterns.gd)
 Expert patterns for idle optimization, UNIX-based offline gains, and threaded resource processing.
 
-### [resource_data.gd](../scripts/game_loop_harvest_resource_data.gd)
+### [resource_data.gd](scripts/resource_data.gd)
 `Resource` container: Defines health, yield, and tool requirements for a harvestable object.
 
-### [harvestable_node.gd](../scripts/game_loop_harvest_harvestable_node.gd)
+### [harvestable_node.gd](scripts/harvestable_node.gd)
 `StaticBody3D`: The world interaction entity that handles hits, shakes, and depletion.
 
-### [harvest_autosave_manager.gd](../scripts/game_loop_harvest_harvest_autosave_manager.gd)
+### [harvest_autosave_manager.gd](scripts/harvest_autosave_manager.gd)
 Manages interval-based auto-saving for harvest progress using `FileAccess`.
 
 ---
@@ -109,4 +115,4 @@ Avoid hardcoding durability into the player; use a `Resource` to encapsulate too
 - **Implementation**: See `harvest_tool_data.gd`. Tools should emit `durability_changed` and `tool_broken` signals.
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

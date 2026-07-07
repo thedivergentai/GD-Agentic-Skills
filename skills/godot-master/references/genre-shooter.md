@@ -3,13 +3,19 @@ name: godot-genre-shooter
 description: "Expert blueprint for FPS/TPS shooter games (Call of Duty, Counter-Strike, Apex Legends, Fortnite) covering weapon systems, recoil patterns, hitscan vs projectile, aim assist, multiplayer prediction, and gunplay feel. Use when building competitive shooters, battle royales, or tactical FPS games requiring responsive combat. Keywords hitscan, recoil pattern, aim assist, client prediction, weapon archetype, projectile physics, hit registration."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Genre: Shooter (FPS/TPS)
 
 Gunplay feel, responsive combat, and competitive balance define shooters.
 
 ## Available Scripts
 
-### [advanced_weapon_controller.gd](../scripts/genre_shooter_advanced_weapon_controller.gd)
+### [advanced_weapon_controller.gd](scripts/advanced_weapon_controller.gd)
 Expert pattern for recoil, bloom, and dual hitscan/projectile systems with object pooling notes.
 
 ## Core Loop
@@ -41,10 +47,10 @@ Expert pattern for recoil, bloom, and dual hitscan/projectile systems with objec
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [advanced_weapon_controller.gd](../scripts/genre_shooter_advanced_weapon_controller.gd) - Professional-grade weapon system with deterministic recoil, bloom, and dual firing modes.
+- [advanced_weapon_controller.gd](scripts/advanced_weapon_controller.gd) - Professional-grade weapon system with deterministic recoil, bloom, and dual firing modes.
 
 ### Modular Components
-- [shooter_patterns.gd](../scripts/genre_shooter_shooter_patterns.gd) - Reusable patterns: Server-bypassing hitscan, random spread, and ShapeCast3D explosions.
+- [shooter_patterns.gd](scripts/shooter_patterns.gd) - Reusable patterns: Server-bypassing hitscan, random spread, and ShapeCast3D explosions.
 
 ---
 
@@ -445,4 +451,4 @@ func execute_explosion(radius: float) -> Array[Dictionary]:
 
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

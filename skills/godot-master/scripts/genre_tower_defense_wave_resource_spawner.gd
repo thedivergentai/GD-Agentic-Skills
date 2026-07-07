@@ -1,7 +1,7 @@
 extends Node
 class_name WaveResourceSpawner
 
-## Expert Wave Spawner (Godot 4.6).
+## Expert Wave Spawner (Godot 4.7).
 ## Uses WaveData Resources and Path3D for track-based enemy spawning.
 
 @export var waves: Array[Resource] # Array of WaveData

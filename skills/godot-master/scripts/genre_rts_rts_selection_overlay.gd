@@ -1,7 +1,7 @@
 extends Control
 class_name RTSSelectionOverlay
 
-## Expert Box Selection (Godot 4.6).
+## Expert Box Selection (Godot 4.7).
 ## Draws a 2D box and projects 3D units to screen space for selection.
 
 @export var camera: Camera3D

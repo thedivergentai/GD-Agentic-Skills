@@ -3,6 +3,12 @@ name: godot-inventory-system
 description: "Expert blueprint for inventory systems (Diablo, Resident Evil, Minecraft) covering slot-based containers, stacking logic, weight limits, equipment systems, and drag-drop UI. Use when building RPG inventories, survival item management, or loot systems. Keywords inventory, slot, stack, equipment, crafting, item, Resource, drag-drop."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Inventory System
 
 Slot management, stacking logic, and resource-based items define robust inventory systems.

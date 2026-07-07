@@ -1,7 +1,7 @@
 extends Node3D
 class_name NPCScheduleAgent
 
-## Expert NPC Scheduling (Godot 4.6).
+## Expert NPC Scheduling (Godot 4.7).
 ## Responds to TimeManager signals and uses NavigationServer for paths.
 
 var schedule: Dictionary = { 8: Vector3(10, 0, 5), 18: Vector3(0, 0, 0) }

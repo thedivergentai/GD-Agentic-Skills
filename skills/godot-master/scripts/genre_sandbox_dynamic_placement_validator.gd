@@ -1,7 +1,7 @@
 extends Node3D
 class_name DynamicPlacementValidator
 
-## Expert Grid Placement (Godot 4.6).
+## Expert Grid Placement (Godot 4.7).
 ## Low-level physics intersection check for obstruction validation.
 
 @export var grid_size: float = 2.0

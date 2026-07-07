@@ -22,6 +22,12 @@ Expert guidance for high-performance 3D physics and ragdolls.
 
 ---
 
+## Godot 4.7: Jolt Physics Behavior
+
+- **WorldBoundaryShape3D** (Jolt): `plane.d` sign convention flipped vs 4.6 — flip sign to match prior behavior.
+- **SoftBody3D** (Jolt): mass defaults to 1 kg total (not per-point); retune `linear_stiffness` and `damping_coefficient`.
+- **Area3D** now reports overlaps with **SoftBody3D** — adjust layers/masks to avoid unwanted overlap signals.
+
 ## Available Scripts
 
 ### [physics_server_3d_bullets.gd](scripts/physics_server_3d_bullets.gd)

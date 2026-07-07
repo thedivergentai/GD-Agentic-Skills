@@ -3,46 +3,52 @@ name: godot-particles
 description: "Expert blueprint for GPU particle systems (explosions, magic effects, weather, trails) using GPUParticles2D/3D, ParticleProcessMaterial, gradients, sub-emitters, and custom shaders. Use when creating VFX, environmental effects, or visual feedback. Keywords GPUParticles2D, ParticleProcessMaterial, emission_shape, color_ramp, sub_emitter, one_shot."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Particle Systems
 
 GPU-accelerated rendering, material-based configuration, and sub-emitters define performant VFX.
 
 ## Available Scripts
 
-### [vfx_shader_manager.gd](../scripts/particles_vfx_shader_manager.gd)
+### [vfx_shader_manager.gd](scripts/vfx_shader_manager.gd)
 Expert custom shader integration for advanced particle VFX.
 
-### [particle_burst_emitter.gd](../scripts/particles_particle_burst_emitter.gd)
+### [particle_burst_emitter.gd](scripts/particle_burst_emitter.gd)
 One-shot particle bursts with auto-cleanup - essential for VFX systems.
 
-### [custom_particle_logic.gdshader](../scripts/particles_custom_particle_logic.gdshader)
+### [custom_particle_logic.gdshader](scripts/custom_particle_logic.gdshader)
 Expert procedural particle movement logic. Demonstrates persistent `CUSTOM` data and `USERDATA` injection for dynamic wind/orbit effects.
 
-### [sub_emitter_impact.gdshader](../scripts/particles_sub_emitter_impact.gdshader)
+### [sub_emitter_impact.gdshader](scripts/sub_emitter_impact.gdshader)
 High-performance collision handling. Triggers sub-emitters (splashes/debris) using `emit_subparticle()` and `COLLISION_NORMAL`.
 
-### [particle_attractor_opt.gd](../scripts/particles_particle_attractor_opt.gd)
+### [particle_attractor_opt.gd](scripts/particle_attractor_opt.gd)
 Optimization pattern using `cull_mask` to isolate particle-attractor interactions, preventing global performance bottlenecks.
 
-### [massive_swarm_multimesh.gd](../scripts/particles_massive_swarm_multimesh.gd)
+### [massive_swarm_multimesh.gd](scripts/massive_swarm_multimesh.gd)
 Bypassing GPUParticles for millions of entities (fish, insects). Uses `set_buffer_interpolated()` for jitter-free high-count movement.
 
-### [dynamic_userdata_modulation.gd](../scripts/particles_dynamic_userdata_modulation.gd)
+### [dynamic_userdata_modulation.gd](scripts/dynamic_userdata_modulation.gd)
 Clean architectual pattern for passing runtime variables to particle shaders via `USERDATA` to preserve GPU batching.
 
-### [local_vs_global_coords.gd](../scripts/particles_local_vs_global_coords.gd)
+### [local_vs_global_coords.gd](scripts/local_vs_global_coords.gd)
 Expert logic for switching between localized (Auras) and global (Trails) space. Includes correct `restart()` handling for teleports.
 
-### [smart_oneshot_recycler.gd](../scripts/particles_smart_oneshot_recycler.gd)
+### [smart_oneshot_recycler.gd](scripts/smart_oneshot_recycler.gd)
 Robust lifecycle management using the `finished` signal and `restart()` to avoid async emission failures.
 
-### [screenspace_weather_heightfield.gd](../scripts/particles_screenspace_weather_heightfield.gd)
+### [screenspace_weather_heightfield.gd](scripts/screenspace_weather_heightfield.gd)
 Optimizing global weather (Rain/Snow) using Camera-snapped `GPUParticlesCollisionHeightField3D`.
 
-### [particle_lod_manager.gd](../scripts/particles_particle_lod_manager.gd)
+### [particle_lod_manager.gd](scripts/particle_lod_manager.gd)
 Hierarchical LOD for environmental VFX. Uses `visibility_range` and margins to cull distant torches or fires completely.
 
-### [2d_physics_interpolation_fix.gd](../scripts/particles_2d_physics_interpolation_fix.gd)
+### [2d_physics_interpolation_fix.gd](scripts/2d_physics_interpolation_fix.gd)
 Expert workaround for 2D particle stuttering. Switches to `CPUParticles2D` with `fract_delta` for smooth physics-parented movement.
 
 ## NEVER Do in Particle Systems
@@ -330,4 +336,4 @@ func spawn(pos: Vector3) -> void:
 
 
 ### Related
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

@@ -1,7 +1,7 @@
 extends Node
 class_name ProceduralRecoilHandler
 
-## Expert Procedural Recoil (Godot 4.6).
+## Expert Procedural Recoil (Godot 4.7).
 ## Framerate-independent camera kick and exponential return.
 
 @export var camera_pivot: Node3D

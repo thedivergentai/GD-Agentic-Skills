@@ -3,6 +3,12 @@ name: godot-genre-educational
 description: "Expert blueprint for educational games including gamification loops (learn/apply/feedback/adapt), progress tracking (student profiles, mastery %), adaptive difficulty (target 70% success rate), spaced repetition, curriculum trees (prerequisite system), and visual feedback (confetti, XP bars). Use for learning apps, training simulations, or edutainment. Trigger keywords: educational_game, gamification, adaptive_difficulty, spaced_repetition, student_profile, curriculum_tree, mastery_tracking."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Genre: Educational / Gamification
 
 Expert blueprint for educational games that make learning engaging through game mechanics.
@@ -35,13 +41,13 @@ Expert blueprint for educational games that make learning engaging through game 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
 ### Original Expert Patterns
-- [adaptive_difficulty_adjuster.gd](../scripts/genre_educational_adaptive_difficulty_adjuster.gd) - Sophisticated logic engine for Flow-State targeting (70%) and progressive hints.
+- [adaptive_difficulty_adjuster.gd](scripts/adaptive_difficulty_adjuster.gd) - Sophisticated logic engine for Flow-State targeting (70%) and progressive hints.
 
 ### Modular Components
-- [tts_manager.gd](../scripts/genre_educational_tts_manager.gd) - displayServer Text-to-Speech integration for accessibility.
-- [dynamic_localization.gd](../scripts/genre_educational_dynamic_localization.gd) - Runtime localization switching and pluralization support.
-- [interactive_rich_text.gd](../scripts/genre_educational_interactive_rich_text.gd) - Meta-click handling for interactive glossaries.
-- [threaded_scoring_engine.gd](../scripts/genre_educational_threaded_scoring_engine.gd) - WorkerThreadPool patterns for grading algorithms.
+- [tts_manager.gd](scripts/tts_manager.gd) - displayServer Text-to-Speech integration for accessibility.
+- [dynamic_localization.gd](scripts/dynamic_localization.gd) - Runtime localization switching and pluralization support.
+- [interactive_rich_text.gd](scripts/interactive_rich_text.gd) - Meta-click handling for interactive glossaries.
+- [threaded_scoring_engine.gd](scripts/threaded_scoring_engine.gd) - WorkerThreadPool patterns for grading algorithms.
 
 ---
 
@@ -198,4 +204,4 @@ Learning is hard. The game must heavily reward effort visually.
 
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

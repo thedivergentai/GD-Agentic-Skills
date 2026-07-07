@@ -1,7 +1,7 @@
 extends Node2D
 class_name NoiseDungeonGenerator
 
-## Expert Dungeon Generation (Godot 4.6).
+## Expert Dungeon Generation (Godot 4.7).
 ## Uses FastNoiseLite for organic caves and AStarGrid2D for connectivity.
 
 @export var tile_map: TileMapLayer

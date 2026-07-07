@@ -3,6 +3,12 @@ name: godot-genre-shooter
 description: "Expert blueprint for FPS/TPS shooter games (Call of Duty, Counter-Strike, Apex Legends, Fortnite) covering weapon systems, recoil patterns, hitscan vs projectile, aim assist, multiplayer prediction, and gunplay feel. Use when building competitive shooters, battle royales, or tactical FPS games requiring responsive combat. Keywords hitscan, recoil pattern, aim assist, client prediction, weapon archetype, projectile physics, hit registration."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Genre: Shooter (FPS/TPS)
 
 Gunplay feel, responsive combat, and competitive balance define shooters.

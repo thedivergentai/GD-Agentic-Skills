@@ -3,6 +3,12 @@ name: godot-genre-roguelike
 description: "Expert blueprint for roguelikes including procedural generation (Walker method, BSP rooms), permadeath with meta-progression (unlock persistence), run state vs meta state separation, seeded RNG (shareable runs), loot/relic systems (hook-based modifiers), and difficulty scaling (floor-based progression). Use for dungeon crawlers, action roguelikes, or roguelites. Trigger keywords: roguelike, procedural_generation, permadeath, meta_progression, seeded_RNG, relic_system, run_state."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Genre: Roguelike
 
 Expert blueprint for roguelikes balancing challenge, progression, and replayability.
@@ -42,21 +48,21 @@ Expert blueprint for roguelikes balancing challenge, progression, and replayabil
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [meta_progression_manager.gd](../scripts/genre_roguelike_meta_progression_manager.gd) - Foundational meta-progression logic with secure data persistence and currency unlocks.
-- [roguelike_patterns.gd](../scripts/genre_roguelike_roguelike_patterns.gd) - 10 Essential Roguelike Expert Snippets (AStar, BSP, WorkerThreadPool, ShuffleBag, etc.).
+- [meta_progression_manager.gd](scripts/meta_progression_manager.gd) - Foundational meta-progression logic with secure data persistence and currency unlocks.
+- [roguelike_patterns.gd](scripts/roguelike_patterns.gd) - 10 Essential Roguelike Expert Snippets (AStar, BSP, WorkerThreadPool, ShuffleBag, etc.).
 
 ### Modular Components
-- [dungeon_generator_walker.gd](../scripts/genre_roguelike_dungeon_generator_walker.gd) - Drunkard's Walk algorithm for carving procedural rooms and caves.
-- [fov_raycast_calculator.gd](../scripts/genre_roguelike_fov_raycast_calculator.gd) - High-performance LOS checking using physics server queries.
-- [seeded_rng_resource.gd](../scripts/genre_roguelike_seeded_rng_resource.gd) - RNG state persistence for deterministic and shareable replayability.
-- [turn_manager_decoupled.gd](../scripts/genre_roguelike_turn_manager_decoupled.gd) - Signal-driven turn coordination for decoupled entity logic.
-- [astar_grid_handler.gd](../scripts/genre_roguelike_astar_grid_handler.gd) - Specialised AStarGrid2D wrapper for optimized roguelike pathfinding.
-- [weighted_loot_table.gd](../scripts/genre_roguelike_weighted_loot_table.gd) - Native-optimized weighted random item drops with drop-rate controls.
-- [json_state_serializer.gd](../scripts/genre_roguelike_json_state_serializer.gd) - Persistent serialization for procedural entity data and run states.
-- [fog_of_war_masker.gd](../scripts/genre_roguelike_fog_of_war_masker.gd) - TileMapLayer-based visibility masking and discovery system.
-- [meta_progression_resource.gd](../scripts/genre_roguelike_meta_progression_resource.gd) - Data separation for permanent game unlocks and skill trees.
-- [move_command_object.gd](../scripts/genre_roguelike_move_command_object.gd) - Command pattern implementation for reversible turn-based actions.
-- [dungeon_generator.gd](../scripts/genre_roguelike_dungeon_generator.gd) - High-level procedural orchestrator for room-and-hallway layout generation.
+- [dungeon_generator_walker.gd](scripts/dungeon_generator_walker.gd) - Drunkard's Walk algorithm for carving procedural rooms and caves.
+- [fov_raycast_calculator.gd](scripts/fov_raycast_calculator.gd) - High-performance LOS checking using physics server queries.
+- [seeded_rng_resource.gd](scripts/seeded_rng_resource.gd) - RNG state persistence for deterministic and shareable replayability.
+- [turn_manager_decoupled.gd](scripts/turn_manager_decoupled.gd) - Signal-driven turn coordination for decoupled entity logic.
+- [astar_grid_handler.gd](scripts/astar_grid_handler.gd) - Specialised AStarGrid2D wrapper for optimized roguelike pathfinding.
+- [weighted_loot_table.gd](scripts/weighted_loot_table.gd) - Native-optimized weighted random item drops with drop-rate controls.
+- [json_state_serializer.gd](scripts/json_state_serializer.gd) - Persistent serialization for procedural entity data and run states.
+- [fog_of_war_masker.gd](scripts/fog_of_war_masker.gd) - TileMapLayer-based visibility masking and discovery system.
+- [meta_progression_resource.gd](scripts/meta_progression_resource.gd) - Data separation for permanent game unlocks and skill trees.
+- [move_command_object.gd](scripts/move_command_object.gd) - Command pattern implementation for reversible turn-based actions.
+- [dungeon_generator.gd](scripts/dungeon_generator.gd) - High-level procedural orchestrator for room-and-hallway layout generation.
 
 ## Core Loop
 1.  **Preparation**: Select character, equip meta-upgrades (see `meta_progression_resource.gd`).
@@ -292,4 +298,4 @@ func check_synergies(inventory: Array[ItemData]):
 
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

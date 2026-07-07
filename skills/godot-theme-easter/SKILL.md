@@ -3,6 +3,12 @@ name: godot-theme-easter
 description: Use when applying a specific Easter holiday theme (Eggs, Bunnies, Pastels) to a game.
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Easter Theme (Aesthetics & Juice)
 
 ## Overview

@@ -21,38 +21,43 @@ Expert guidance for Godot's timeline-based keyframe animation system.
 
 ---
 
+## Godot 4.7: Animation
+
+- Animation editor tracks can be **collapsed** for dense timelines.
+- `Animation.length` metadata is **double** precision (was float).
+
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [method_track_logic.gd](../scripts/animation_player_method_track_logic.gd)
+### [method_track_logic.gd](scripts/method_track_logic.gd)
 Expert logic triggers using `CALL_MODE_DISCRETE` for high-precision hitbox and state management.
 
-### [runtime_anim_lib_swapper.gd](../scripts/animation_player_runtime_anim_lib_swapper.gd)
+### [runtime_anim_lib_swapper.gd](scripts/runtime_anim_lib_swapper.gd)
 Managing multiple `AnimationLibrary` resources (Stances, Weapons) on a single `AnimationPlayer`.
 
-### [dynamic_shader_animation.gd](../scripts/animation_player_dynamic_shader_animation.gd)
+### [dynamic_shader_animation.gd](scripts/dynamic_shader_animation.gd)
 Animating shader uniforms (e.g., dissolve, glow) in sync with timeline keyframes.
 
-### [procedural_track_modifier.gd](../scripts/animation_player_procedural_track_modifier.gd)
+### [procedural_track_modifier.gd](scripts/procedural_track_modifier.gd)
 Runtime modification of existing tracks (e.g., jump height tweaking) without creating new Animation resources.
 
-### [reset_track_orchestrator.gd](../scripts/animation_player_reset_track_orchestrator.gd)
+### [reset_track_orchestrator.gd](scripts/reset_track_orchestrator.gd)
 Pattern for forced, immediate state resets across complex multi-track node setups.
 
-### [bezier_curve_extraction.gd](../scripts/animation_player_bezier_curve_extraction.gd)
+### [bezier_curve_extraction.gd](scripts/bezier_curve_extraction.gd)
 Extracting numeric data from Bezier tracks at runtime to drive procedural VFX or physics.
 
-### [active_animation_culler.gd](../scripts/animation_player_active_animation_culler.gd)
+### [active_animation_culler.gd](scripts/active_animation_culler.gd)
 Performance optimization: using `VisibleOnScreenNotifier` to disable `AnimationPlayer.active`.
 
-### [root_motion_physics_sync.gd](../scripts/animation_player_root_motion_physics_sync.gd)
+### [root_motion_physics_sync.gd](scripts/root_motion_physics_sync.gd)
 Expert 3D CharacterBody motion extraction using `get_root_motion_position`.
 
-### [character_part_swapper_tracks.gd](../scripts/animation_player_character_part_swapper_tracks.gd)
+### [character_part_swapper_tracks.gd](scripts/character_part_swapper_tracks.gd)
 Character customization (equipment/slots) managed entirely through Animation timeline tracks.
 
-### [precise_audio_sync.gd](../scripts/animation_player_precise_audio_sync.gd)
+### [precise_audio_sync.gd](scripts/precise_audio_sync.gd)
 Perfectly timed SFX using `TYPE_AUDIO` tracks with volume, pitch, and start-offset control.
 
 ---
@@ -472,4 +477,4 @@ func _process(delta: float) -> void:
 ```
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)

@@ -1,6 +1,6 @@
 # Contributing to Godot Agentic Skills
 
-**Status**: Accepting PRs for Godot 4.5+ Expert Patterns.
+**Status**: Accepting PRs for Godot 4.7+ Expert Patterns.
 
 Thank you for helping build the ultimate "Long-Term Memory" for AI Agents. This repository is maintained by **[Divergent AI](https://github.com/thedivergentai)**.
 
@@ -69,7 +69,7 @@ If you include scripts, they must be:
     Write your `SKILL.md` and `scripts/`.
 
 3.  **Validate**:
-    Ensure your scripts parse correctly in the Godot 4.5 editor and are free of warnings.
+    Ensure your scripts parse correctly in the Godot 4.7 editor and are free of warnings.
 
 4.  **Index**:
     Do **NOT** manually edit `skills_index.json`. We run a CI script (`update_skills_index.py`) to regenerate it.

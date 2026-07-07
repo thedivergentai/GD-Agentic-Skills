@@ -3,40 +3,46 @@ name: godot-autoload-architecture
 description: "Expert patterns for Godot AutoLoad (singleton) architecture including global state management, scene transitions, signal-based communication, dependency injection, autoload initialization order, and anti-patterns to avoid. Use for game managers, save systems, audio controllers, or cross-scene resources. Trigger keywords: AutoLoad, singleton, GameManager, SceneTransitioner, SaveManager, global_state, autoload_order, signal_bus, dependency_injection."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult `docs/internal/godot-4.7-migration-digest.md` when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # AutoLoad Architecture
 
 AutoLoads are Godot's singleton pattern, allowing scripts to be globally accessible throughout the project lifecycle. This skill guides implementing robust, maintainable singleton architectures.
 
 ## Available Scripts
 
-### [static_state_manager.gd](../scripts/autoload_architecture_static_state_manager.gd)
+### [static_state_manager.gd](scripts/static_state_manager.gd)
 Using `static var` for high-performance global state that doesn't need SceneTree presence.
 
-### [safe_scene_switcher.gd](../scripts/autoload_architecture_safe_scene_switcher.gd)
+### [safe_scene_switcher.gd](scripts/safe_scene_switcher.gd)
 Robust scene transitioning logic that handles deferred freeing and root-level management.
 
-### [autoload_init_order_diag.gd](../scripts/autoload_architecture_autoload_init_order_diag.gd)
+### [autoload_init_order_diag.gd](scripts/autoload_init_order_diag.gd)
 Diagnostic utility for verifying and debugging the initialization sequence of Singletons.
 
-### [global_event_bus.gd](../scripts/autoload_architecture_global_event_bus.gd)
+### [global_event_bus.gd](scripts/global_event_bus.gd)
 Centralized signal router for decoupling disparate systems (Achievements, Stats, Game Events).
 
-### [persistent_data_holder.gd](../scripts/autoload_architecture_persistent_data_holder.gd)
+### [persistent_data_holder.gd](scripts/persistent_data_holder.gd)
 Pattern for data that must survive `change_scene_to_file()` (Inventory, Settings).
 
-### [lazy_loaded_singleton.gd](../scripts/autoload_architecture_lazy_loaded_singleton.gd)
+### [lazy_loaded_singleton.gd](scripts/lazy_loaded_singleton.gd)
 Memory-efficient singleton pattern that instantiates on-demand rather than at boot.
 
-### [debug_console_autoload.gd](../scripts/autoload_architecture_debug_console_autoload.gd)
+### [debug_console_autoload.gd](scripts/debug_console_autoload.gd)
 CanvasLayer-based debug overlay accessible from any game context.
 
-### [cross_autoload_comms.gd](../scripts/autoload_architecture_cross_autoload_comms.gd)
+### [cross_autoload_comms.gd](scripts/cross_autoload_comms.gd)
 Expert rules and safety checks for communication between multiple Singletons.
 
-### [thread_safe_global_access.gd](../scripts/autoload_architecture_thread_safe_global_access.gd)
+### [thread_safe_global_access.gd](scripts/thread_safe_global_access.gd)
 Using Mutex and `call_deferred` to safely access global data from background threads.
 
-### [autoload_reference_checker.gd](../scripts/autoload_architecture_autoload_reference_checker.gd)
+### [autoload_reference_checker.gd](scripts/autoload_reference_checker.gd)
 Validation utility to ensure Autoloads are correctly registered before attempting access.
 
 ## NEVER Do in AutoLoad Architecture
@@ -311,4 +317,4 @@ func run_health_checks() -> void:
 
 
 ### Related
-- Master Skill: [godot-master](../SKILL.md)
+- Master Skill: [godot-master](../godot-master/SKILL.md)
