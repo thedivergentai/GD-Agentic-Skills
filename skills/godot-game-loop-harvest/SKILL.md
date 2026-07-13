@@ -1,4 +1,4 @@
-﻿---
+---
 name: godot-game-loop-harvest
 description: Data-driven resource harvesting system (mining, logging, foraging) for Godot 4. Use when implementing gathering mechanics with tool/tier validation, health depletion, item spawning, and persistence.
 ---

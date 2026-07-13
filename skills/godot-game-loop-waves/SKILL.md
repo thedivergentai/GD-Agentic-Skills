@@ -1,4 +1,4 @@
-﻿---
+---
 name: godot-game-loop-waves
 description: Expert patterns for managing combat waves, difficulty scaling, and automated enemy spawning in Godot 4. Use when building wave-based shooters, tower defense, or arena games.
 ---

@@ -1,4 +1,4 @@
-﻿---
+---
 name: godot-game-loop-time-trial
 description: Expert patterns for racing mechanics, checkpoint tracking, and ghost recording/playback in Godot 4. Use when building racing games, speed-run platformers, or arcade trials.
 ---

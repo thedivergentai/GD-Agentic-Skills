@@ -1,4 +1,4 @@
-﻿---
+---
 name: godot-mechanic-revival
 description: Use when implementing player death, resurrection, or "second chance" mechanics.
 ---

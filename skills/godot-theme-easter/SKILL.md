@@ -1,4 +1,4 @@
-﻿---
+---
 name: godot-theme-easter
 description: Use when applying a specific Easter holiday theme (Eggs, Bunnies, Pastels) to a game.
 ---

@@ -1,4 +1,4 @@
-﻿---
+---
 name: godot-mechanic-secrets
 description: Use when implementing cheat codes, hidden interactions, or unlockable content based on player input/behavior.
 ---

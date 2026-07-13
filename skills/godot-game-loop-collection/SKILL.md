@@ -1,4 +1,4 @@
-﻿---
+---
 name: godot-game-loop-collection
 description: Use when implementing collection quests, scavenger hunts, or "find all X" objectives.
 ---
