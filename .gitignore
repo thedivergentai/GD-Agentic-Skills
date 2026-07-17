@@ -5,7 +5,9 @@
 .agent/
 .agents/
 .gemini/
-.cursor/
+.cursor/*
+!.cursor/rules/
+!.cursor/rules/**
 .windsurf/
 .cline/
 .aider/

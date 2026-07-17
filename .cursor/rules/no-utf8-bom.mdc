@@ -1,0 +1,29 @@
+---
+description: Never write UTF-8 BOM - breaks SKILL.md frontmatter and install validators
+alwaysApply: true
+---
+
+# No UTF-8 BOM
+
+Agent Skills validators and this repo's `update_skills_index.py` require frontmatter to start with `---` at byte 0. A UTF-8 BOM (`EF BB BF` / `U+FEFF`) before `---` makes otherwise-valid `SKILL.md` files fail install and indexing.
+
+## Rules
+
+1. **Never write a UTF-8 BOM** when creating or editing text files in this repo (`SKILL.md`, `references/*.md`, `.gd`, `.py`, `.json`, `.mdc`, configs, etc.).
+2. **Save as UTF-8 without BOM.** On Windows especially, do not use "UTF-8 with signature."
+3. **If you see a BOM**, strip it before committing. First three bytes must not be `EF BB BF`.
+4. **Python I/O**: read with `encoding="utf-8-sig"` when parsing may encounter legacy BOM; write with `encoding="utf-8"` (no BOM).
+5. Prefer editing tools/APIs that do not prepend BOM. After bulk text rewrites, spot-check a `SKILL.md` by reading the first 3-4 bytes.
+
+## Quick check
+
+```powershell
+Get-ChildItem -Recurse -File skills | ForEach-Object {
+  $b = [IO.File]::ReadAllBytes($_.FullName)
+  if ($b.Length -ge 3 -and $b[0]-eq 0xEF -and $b[1]-eq 0xBB -and $b[2]-eq 0xBF) { $_.FullName }
+}
+```
+
+## Why this matters
+
+BOM on `SKILL.md` frontmatter caused silent install rejection. Do not reintroduce it.
