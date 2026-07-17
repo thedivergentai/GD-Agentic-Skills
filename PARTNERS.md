@@ -1,6 +1,6 @@
 # Support & Sponsorship
 
-Welcome to the **GD Agentic Skills** support program. We are building a comprehensive, agent-first knowledge library for Godot 4.5+, and we invite individuals and organizations to help sustain this open-source ecosystem.
+Welcome to the **GD Agentic Skills** support program. We are building a comprehensive, agent-first knowledge library for Godot 4.7+, and we invite individuals and organizations to help sustain this open-source ecosystem.
 
 ## How to Support Us
 

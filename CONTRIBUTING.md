@@ -51,7 +51,7 @@ description: Precise description of WHAT this does and WHEN to use it. Must incl
 
 ---
 
-## 💻 Code Standards (Godot 4.5+)
+## 💻 Code Standards (Godot 4.7+)
 
 If you include scripts, they must be:
 1.  **Statically Typed**: `func move(vec: Vector2) -> void:`

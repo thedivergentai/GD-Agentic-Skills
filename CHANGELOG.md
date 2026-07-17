@@ -35,6 +35,18 @@ Godot 4.7 dropped and we didn't just bump a version string — we gave the **ent
 
 ---
 
+## 🧹 Follow-up: MCP leftovers cleared + agent-neutral install docs
+**July 17, 2026**
+
+We said in v0.0.7 that MCP Setup/Builder were gone. A few references were still hanging around and biting people (dead `@modelcontextprotocol/server-godot` package, Claude-only config paths). Those are out now.
+
+- **MCP purge**: Removed leftover MCP reference docs and scripts from `godot-master` / `godot-auditor`. Programmatic scenes go through **godot-builder** (Workflow 11).
+- **README agent rubric**: Common host agents and their `-a` / discovery paths for clone + DIA workflows — not Claude-only symlink advice.
+- **Docs target**: Public library target wording is **Godot 4.7+** end-to-end (README / CONTRIBUTING / PARTNERS). Feature-era notes like "added in 4.5" inside skills stay as historical API markers.
+- **Skill counts**: Totals reconciled to **96** skills (92 Domain + master + 3 personas); category headers fixed to match the lists.
+
+---
+
 ## 🎬 Director's Cut: Godot 4.7 Tidbits
 **July 7, 2026**
 

@@ -137,7 +137,7 @@
 
 ## The Philosophy
 
-**Godot Agentic Skills** is a high-density, **Agent-First** knowledge library for Godot 4.5+—designed as an external "Long-Term Memory" (LTM) for AI Coding Agents. It provides structured, deterministic patterns for professional game and application engineering.
+**Godot Agentic Skills** is a high-density, **Agent-First** knowledge library for Godot 4.7+—designed as an external "Long-Term Memory" (LTM) for AI Coding Agents. It provides structured, deterministic patterns for professional game and application engineering.
 
 Unlike generic AI responses, every skill in this repository follows strictly defined Godot 4 best practices, architectural patterns, and performance optimization techniques refined by shipping real products.
 
@@ -166,6 +166,33 @@ npx skills add thedivergentai/gd-agentic-skills/skills/godot-characterbody-2d
 
 ---
 
+## 🧭 Agent Installation Rubric
+
+Use this when installing via the [skills CLI](https://github.com/vercel-labs/skills), or when an agent is reading this README after a **repo clone** (DIA path) instead of a normal plugin install.
+
+| Agent | `-a` flag | Project path | Global path |
+|:---|:---|:---|:---|
+| Cursor | `cursor` | `.agents/skills/` | `~/.cursor/skills/` |
+| Claude Code | `claude-code` | `.claude/skills/` | `~/.claude/skills/` |
+| Codex | `codex` | `.agents/skills/` | `~/.codex/skills/` |
+| Windsurf | `windsurf` | `.windsurf/skills/` | `~/.codeium/windsurf/skills/` |
+| Gemini CLI | `gemini-cli` | `.agents/skills/` | `~/.gemini/skills/` |
+| GitHub Copilot | `github-copilot` | `.agents/skills/` | `~/.copilot/skills/` |
+| OpenCode | `opencode` | `.agents/skills/` | `~/.config/opencode/skills/` |
+
+**Rules**
+1. **Preferred install**: `npx skills add thedivergentai/gd-agentic-skills/skills/godot-master -g -a <agent> -y` (swap the skill path for a Domain Skill when needed).
+2. **Verify**: `npx skills list -g -a <agent>`
+3. **Restart** the host agent after install — most agents load skills once at session start.
+4. **Clone / DIA path** (no `npx skills add`): query [`skills_index.json`](skills_index.json), then read `skills/<name>/SKILL.md` with the agent's file tool. Do **not** hand-symlink into host skill dirs unless the user asks for that.
+5. **Canonical store**: `~/.agents/skills/` is the CLI's shared copy; per-agent discovery paths differ by design.
+
+### Troubleshooting
+- Skill installed but missing in the agent → confirm with `npx skills list`, re-run with the correct `-a <agent>`, then restart the agent.
+- Do **not** treat a manual Claude-only symlink into `~/.claude/skills/` as the default fix — that only helps one host.
+
+---
+
 ## 🧠 Context Management: Performance Guidelines
 
 To keep your AI agent fast and accurate, follow these "Expert Efficiency" rules:
@@ -183,8 +210,8 @@ Installing 96 skills simultaneously creates a **"Metadata Flood"**:
 - **Reasoning Lag**: The model has to sift through 100+ KB of text before deciding what to do.
 
 ### 3. Repository Clones vs. Plugin Installs
-- **Plugin Install (`npx skills add`)**: Copies the skill to your agent's **Skill Plugin Directory**. The agent can now "Discover" and scan these instructions automatically in any conversation. This is why installing too many at once causes a "Context Storm."
-- **Repository Clone**: If you merely clone this repo to a folder (e.g., `Downloads/GDSkills`), the agent will **NOT** automatically find them unless you are actively working *inside* that specific directory. This is safer for context management but requires manual `view_file` calls for discovery.
+- **Plugin Install (`npx skills add`)**: Copies/links the skill into your agent's skill directory (see [Agent Installation Rubric](#-agent-installation-rubric)). The agent can then discover it automatically. This is why installing too many at once causes a "Context Storm."
+- **Repository Clone**: If you merely clone this repo to a folder (e.g., `Downloads/GDSkills`), the agent will **NOT** auto-load skills unless you are working inside that directory. Use [`skills_index.json`](skills_index.json) + read each `SKILL.md` with the agent's file tool (DIA loop below).
 
 ---
 
@@ -199,7 +226,7 @@ Unlike individual Domain Skills that focus on isolated features, **godot-master*
 **📚 Comprehensive Knowledge Base**
 - **96 Reference Documents**: Complete markdown guides for every skill, from foundations to advanced genres
 - **982 Unique Production Scripts**: Battle-tested, production-ready GDScript implementations
-- **10 Workflow Patterns**: Step-by-step architectural workflows (scaffolding, entity orchestration, persistence, optimization, multiplayer, etc.)
+- **11 Workflow Patterns**: Step-by-step architectural workflows (scaffolding, entity orchestration, persistence, optimization, multiplayer, Builder CLI scene builds, etc.)
 
 **🧠 Expert Frameworks**
 - **Architectural Decision Matrix**: Choose the right pattern for your project (component-driven, event-driven, resource-streaming, deterministic networking)
@@ -284,19 +311,18 @@ Individual Domain Skills are **modular add-ons** for targeted functionality. Eac
 Think of Domain Skills as your **component library**: Drop them into your project for instant, expert-level functionality.
 
 <details>
-<summary><b>🏗️ Architecture & Foundation (11 skills)</b></summary>
+<summary><b>🏗️ Architecture & Foundation (10 skills)</b></summary>
 
 - **[godot-autoload-architecture](skills/godot-autoload-architecture/SKILL.md)**: Singleton patterns, global state management, signal-based communication
 - **[godot-composition](skills/godot-composition/SKILL.md)**: Entity-Component architecture for scalable game systems (NPCs, weapons, actors)
 - **[godot-composition-apps](skills/godot-composition-apps/SKILL.md)**: Composition patterns for applications and tools (UI-focused)
 - **[godot-debugging-profiling](skills/godot-debugging-profiling/SKILL.md)**: Print debugging, breakpoints, profiler, memory leak detection
 - **[godot-gdscript-mastery](skills/godot-gdscript-mastery/SKILL.md)**: Static typing, signal architecture, unique nodes, style guide
-- **[godot-mcp-scene-builder](skills/godot-mcp-scene-builder/SKILL.md)**: Programmatic scene hierarchy generation via MCP
-- **[godot-mcp-setup](skills/godot-mcp-setup/SKILL.md)**: MCP server configuration for Godot integration
 - **[godot-project-foundations](skills/godot-project-foundations/SKILL.md)**: Feature-driven folder structure, project scaffolding, conventions
 - **[godot-project-templates](skills/godot-project-templates/SKILL.md)**: Base `.gitignore`, export presets, input maps
 - **[godot-resource-data-patterns](skills/godot-resource-data-patterns/SKILL.md)**: `.tres` workflows, data-driven design, resource factories
 - **[godot-signal-architecture](skills/godot-signal-architecture/SKILL.md)**: Global vs scoped signal buses, signal-driven decoupling
+- **[godot-state-machine-advanced](skills/godot-state-machine-advanced/SKILL.md)**: Hierarchical FSMs, pushdown automata, state stacks, transition validation
 
 </details>
 
@@ -317,7 +343,7 @@ Think of Domain Skills as your **component library**: Drop them into your projec
 </details>
 
 <details>
-<summary><b>🌍 3D Systems (6 skills)</b></summary>
+<summary><b>🌍 3D Systems (7 skills)</b></summary>
 
 - **[godot-3d-lighting](skills/godot-3d-lighting/SKILL.md)**: `DirectionalLight3D`, shadow cascades, `VoxelGI` vs `SDFGI`, `LightmapGI`
 - **[godot-3d-materials](skills/godot-3d-materials/SKILL.md)**: `StandardMaterial3D`, PBR workflows, ORM textures, transparency modes
@@ -325,11 +351,12 @@ Think of Domain Skills as your **component library**: Drop them into your projec
 - **[godot-navigation-pathfinding](skills/godot-navigation-pathfinding/SKILL.md)**: `NavigationAgent2D/3D`, RVO avoidance, async NavMesh baking
 - **[godot-physics-3d](skills/godot-physics-3d/SKILL.md)**: `CharacterBody3D`, `RigidBody3D`, ragdoll physics, collision shapes
 - **[godot-procedural-generation](skills/godot-procedural-generation/SKILL.md)**: `FastNoiseLite`, WFC (Wave Function Collapse), chunk loading
+- **[godot-raycasting-queries](skills/godot-raycasting-queries/SKILL.md)**: RayCast/ShapeCast, DirectSpaceState, hitscan, LOS, mouse picking
 
 </details>
 
 <details>
-<summary><b>⚔️ Gameplay Mechanics (13 skills)</b></summary>
+<summary><b>⚔️ Gameplay Mechanics (16 skills)</b></summary>
 
 - **[godot-ability-system](skills/godot-ability-system/SKILL.md)**: Cooldowns, skill trees, combo systems, upgrade paths
 - **[godot-combat-system](skills/godot-combat-system/SKILL.md)**: Hitbox/hurtbox architecture, damage calculation, invincibility frames
@@ -362,7 +389,7 @@ Think of Domain Skills as your **component library**: Drop them into your projec
 </details>
 
 <details>
-<summary><b>🌐 Connectivity & Platforms (9 skills)</b></summary>
+<summary><b>🌐 Connectivity & Platforms (11 skills)</b></summary>
 
 - **[godot-audio-systems](skills/godot-audio-systems/SKILL.md)**: `AudioBus` routing, positional audio, music crossfades, audio pooling
 - **[godot-export-builds](skills/godot-export-builds/SKILL.md)**: Multi-platform exports, CI/CD, codesigning, headless mode
@@ -390,19 +417,19 @@ Think of Domain Skills as your **component library**: Drop them into your projec
 </details>
 
 <details>
-<summary><b>🎯 Genre Blueprints (26 skills)</b></summary>
+<summary><b>🎯 Genre Blueprints (27 skills)</b></summary>
 
 **Action & Combat**
 - **[godot-genre-action-rpg](skills/godot-genre-action-rpg/SKILL.md)**: Loot generation, skill trees, stat-based combat, equipment systems
 - **[godot-genre-fighting](skills/godot-genre-fighting/SKILL.md)**: Frame data, hitbox/hurtbox, motion inputs, rollback netcode
 - **[godot-genre-platformer](skills/godot-genre-platformer/SKILL.md)**: Coyote time, jump buffer, game feel polish, level design
 - **[godot-genre-shooter](skills/godot-genre-shooter/SKILL.md)**: Hitscan, recoil patterns, weapon archetypes, hit registration
+- **[godot-genre-shooter-fps](skills/godot-genre-shooter-fps/SKILL.md)**: FPS movement physics, camera sway, weapon bobbing, high-precision hit registration
 
 **Strategy & Tactics**
 - **[godot-genre-moba](skills/godot-genre-moba/SKILL.md)**: Lane management, tower aggro, fog of war, ability cooldowns
 - **[godot-genre-rts](skills/godot-genre-rts/SKILL.md)**: Unit selection, command queues, fog of war, pathfinding
 - **[godot-genre-tower-defense](skills/godot-genre-tower-defense/SKILL.md)**: Wave spawning, targeting priority, mazing mechanics
-- **[godot-genre-turn-system](skills/godot-turn-system/SKILL.md)**: Turn-based combat, initiative systems, action economies
 
 **Exploration & Adventure**
 - **[godot-genre-metroidvania](skills/godot-genre-metroidvania/SKILL.md)**: Ability gating, interconnected worlds, map revelation
@@ -452,7 +479,7 @@ Query [`skills_index.json`](skills_index.json) to find the skill matching the us
 ### 2️⃣ Ingestion
 **CRITICAL**: Agents MUST NOT implement from general training data alone. 
 
-**Required**: Use `view_file` on the skill's `SKILL.md` to catch Godot 4-specific nuances (e.g., `AudioServer.get_time_since_last_mix()` for rhythm sync, `StringName` for O(1) dictionary lookups).
+**Required**: Read the skill's `SKILL.md` with the agent's file tool to catch Godot 4-specific nuances (e.g., `AudioServer.get_time_since_last_mix()` for rhythm sync, `StringName` for O(1) dictionary lookups).
 
 **For complex projects**: Load `godot-master` for architectural workflows and anti-patterns.
 
@@ -477,15 +504,13 @@ Agent: Return to godot-characterbody-2d → Implement movement with components +
 
 ## 🏗️ Infrastructure Integration
 
-### MCP Server Support
+### Programmatic Building (`godot-builder`)
 
-These skills integrate seamlessly with the **Godot MCP Server**:
-- **godot-mcp-scene-builder**: Programmatic scene generation
-- **godot-mcp-setup**: Server configuration and diagnostics
+Scene scaffolding and headless automation go through **[godot-builder](skills/godot-builder/SKILL.md)** (also mirrored in `godot-master` Workflow 11). Use Godot CLI scripts such as `create_scene.py`, `add_node.py`, and `run_project.py`.
 
 ### Project Standards
 
-All code follows **Godot 4.5+ conventions**:
+All code follows **Godot 4.7+ conventions**:
 - Static typing: `func move(vec: Vector2) -> void:`
 - `Signal` / `Callable` / `Tween` (Godot 4 syntax)
 - `StringName` for performance-critical lookups
@@ -502,7 +527,7 @@ We welcome contributions from developers and agents!
 **Quick Guidelines**:
 - Every skill must provide **Expert Knowledge Delta** (not tutorials)
 - Include anti-patterns with non-obvious explanations
-- Code must be Godot 4.5+ native, statically typed
+- Code must be Godot 4.7+ native, statically typed
 - Scripts must parse without warnings
 
 **Submit**: Open an issue with `[Request]` tag or submit a PR describing the knowledge delta your skill adds.
@@ -533,7 +558,7 @@ If this project accelerates your Godot development or empowers your AI agents, c
 | **Genre Blueprints** | 27 |
 | **Production Scripts** | 982 |
 | **Reference Documents** | 96 |
-| **Target Engine** | Godot 4.5+ |
+| **Target Engine** | Godot 4.7+ |
 | **License** | LGPLv3 |
 
 ---
