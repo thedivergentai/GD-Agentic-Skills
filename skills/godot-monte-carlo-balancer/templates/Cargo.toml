@@ -1,0 +1,26 @@
+# Proven dependency set for a source-driven Monte Carlo balance simulator.
+# Rename the package per game, e.g. "balance-lab".
+
+[package]
+name = "balance-lab"
+version = "1.0.0"
+edition = "2024"
+description = "High-performance, source-driven balance simulator"
+
+[dependencies]
+anyhow = "1.0"                                                  # ergonomic error contexts for extraction failures
+clap = { version = "4.5", features = ["derive"] }               # CLI: inspect / simulate / career / mode / bruteforce / gen-*
+indexmap = { version = "2.10", features = ["serde"] }           # source-order-stable maps for reports and JSON diffs
+rand = { version = "0.9", features = ["small_rng"] }            # SmallRng, seeded per run
+rand_distr = "0.5"                                              # LogNormal for human reaction delays
+rayon = "1.10"                                                  # parallelize independent (level x style x loadout) jobs
+regex = "1.11"                                                  # dynamic source extraction (.gd profiles, constants, formulas)
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", features = ["preserve_order"] } # stable --json output for agents and regression snapshots
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = "symbols"
