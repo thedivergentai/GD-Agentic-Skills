@@ -9,40 +9,40 @@ Fragment/vertex shaders, uniforms, and built-in variables define custom visual e
 
 ## Available Scripts
 
-### [vfx_port_shader.gdshader](scripts/vfx_port_shader.gdshader)
+### [vfx_port_shader.gdshader](../scripts/shaders_basics_vfx_port_shader.gdshader)
 Expert shader template with parameter validation and common effect patterns.
 
-### [shader_parameter_animator.gd](scripts/shader_parameter_animator.gd)
+### [shader_parameter_animator.gd](../scripts/shaders_basics_shader_parameter_animator.gd)
 Runtime shader uniform animation without AnimationPlayer - for dynamic effects.
 
-### [dissolve_scissor_expert.gdshader](scripts/dissolve_scissor_expert.gdshader)
+### [dissolve_scissor_expert.gdshader](../scripts/shaders_basics_dissolve_scissor_expert.gdshader)
 High-performance mask-based dissolve. Uses `ALPHA_SCISSOR` to enable depth-prepass optimization and shadow casting.
 
-### [instance_uniform_hitflash.gdshader](scripts/instance_uniform_hitflash.gdshader)
+### [instance_uniform_hitflash.gdshader](../scripts/shaders_basics_instance_uniform_hitflash.gdshader)
 Batch-friendly hit effects. Uses `instance uniform` to allow thousands of unique flashes in one draw call.
 
-### [screenspace_hex_pixelate.gdshader](scripts/screenspace_hex_pixelate.gdshader)
+### [screenspace_hex_pixelate.gdshader](../scripts/shaders_basics_screenspace_hex_pixelate.gdshader)
 Post-processing logic for stylizing screen output. Uses `hint_screen_texture` and optimized coordinate quantization.
 
-### [noise_terrain_displacement.gdshader](scripts/noise_terrain_displacement.gdshader)
+### [noise_terrain_displacement.gdshader](../scripts/shaders_basics_noise_terrain_displacement.gdshader)
 Procedural geometry displacement using `NoiseTexture2D` in the `vertex()` function for rolling terrain.
 
-### [foliage_wind_sway_expert.gdshader](scripts/foliage_wind_sway_expert.gdshader)
+### [foliage_wind_sway_expert.gdshader](../scripts/shaders_basics_foliage_wind_sway_expert.gdshader)
 GPU-driven wind animation using `world_vertex_coords` for uniform sway across the environment.
 
-### [global_grass_flatten.gdshader](scripts/global_grass_flatten.gdshader)
+### [global_grass_flatten.gdshader](../scripts/shaders_basics_global_grass_flatten.gdshader)
 World-interaction pattern using `global uniform`. Synchronizes player position to push grass down project-wide.
 
-### [depth_world_reconstruction.gdshader](scripts/depth_world_reconstruction.gdshader)
+### [depth_world_reconstruction.gdshader](../scripts/shaders_basics_depth_world_reconstruction.gdshader)
 Expert depth-buffer logic. Reconstructs world-space coordinates from `hint_depth_texture` for water/fog effects.
 
-### [triplanar_world_mapping.gdshader](scripts/triplanar_world_mapping.gdshader)
+### [triplanar_world_mapping.gdshader](../scripts/shaders_basics_triplanar_world_mapping.gdshader)
 UV-less texturing architecture. Seamlessly projects textures along world axes for procedural cliffs and rocks.
 
-### [instance_texture_array.gdshader](scripts/instance_texture_array.gdshader)
+### [instance_texture_array.gdshader](../scripts/shaders_basics_instance_texture_array.gdshader)
 Bypassing batching limits. Combines `sampler2DArray` with `instance uniform` to give unique textures to thousands of batched objects.
 
-### [screenspace_full_quad.gdshader](scripts/screenspace_full_quad.gdshader)
+### [screenspace_full_quad.gdshader](../scripts/shaders_basics_screenspace_full_quad.gdshader)
 Godot 4.3 specific full-rect shader. Handles Reversed-Z coordinate reconstruction to prevent clipping at the near plane.
 
 ## NEVER Do in Shaders
@@ -420,4 +420,4 @@ func warmup_shaders(scenes: Array[PackedScene]):
 
 
 ### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

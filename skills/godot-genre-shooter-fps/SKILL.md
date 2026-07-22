@@ -482,3 +482,4 @@ func _process(delta: float) -> void:
 
 ## Reference
 - Master Skill: [godot-master](../godot-master/SKILL.md)
+- Related: Weapon asymmetry matrices via [godot-monte-carlo-balancer](../godot-monte-carlo-balancer/SKILL.md).

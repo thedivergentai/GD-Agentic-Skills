@@ -15,34 +15,34 @@ GUT framework, assertion patterns, mocking, and async testing define automated v
 
 ## Available Scripts
 
-### [basic_unit_test.gd](scripts/basic_unit_test.gd)
+### [basic_unit_test.gd](../scripts/testing_patterns_basic_unit_test.gd)
 Minimal GdUnit4 test structure for verifying simple logic and arithmetic.
 
-### [signal_emission_test.gd](scripts/signal_emission_test.gd)
+### [signal_emission_test.gd](../scripts/testing_patterns_signal_emission_test.gd)
 Expert pattern for monitoring and verifying signal emissions in decoupled architectures.
 
-### [mock_dependency_test.gd](scripts/mock_dependency_test.gd)
+### [mock_dependency_test.gd](../scripts/testing_patterns_mock_dependency_test.gd)
 Using Mocks and Doubles to isolate test subjects from external services or databases.
 
-### [scene_integration_test.gd](scripts/scene_integration_test.gd)
+### [scene_integration_test.gd](../scripts/testing_patterns_scene_integration_test.gd)
 Full scene lifecycle testing, verifying node interactions after instantiation.
 
-### [performance_benchmark_runner.gd](scripts/performance_benchmark_runner.gd)
+### [performance_benchmark_runner.gd](../scripts/testing_patterns_performance_benchmark_runner.gd)
 High-precision execution time measurement using microsecond-scale timers.
 
-### [memory_leak_detector.gd](scripts/memory_leak_detector.gd)
+### [memory_leak_detector.gd](../scripts/testing_patterns_memory_leak_detector.gd)
 Automated orphan node detection to catch memory leaks during long-running tests.
 
-### [parameter_fuzz_tester.gd](scripts/parameter_fuzz_tester.gd)
+### [parameter_fuzz_tester.gd](../scripts/testing_patterns_parameter_fuzz_tester.gd)
 Stress testing systems with randomized data ranges to catch edge-case crashes.
 
-### [wait_for_frame_test.gd](scripts/wait_for_frame_test.gd)
+### [wait_for_frame_test.gd](../scripts/testing_patterns_wait_for_frame_test.gd)
 Advanced async testing for logic that spans multiple frames or game ticks.
 
-### [physics_collision_test.gd](scripts/physics_collision_test.gd)
+### [physics_collision_test.gd](../scripts/testing_patterns_physics_collision_test.gd)
 Automated verification of physics layer interactions and collision resolution.
 
-### [test_data_factory.gd](scripts/test_data_factory.gd)
+### [test_data_factory.gd](../scripts/testing_patterns_test_data_factory.gd)
 Centralized data generation patterns for clean, schemas-compliant test objects.
 
 ## NEVER Do in Testing
@@ -340,4 +340,5 @@ Testing RPC logic and replication without requiring a live server or second clie
 
 
 ### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)
+- Related: Seeded headless gameplay sims calibrate [godot-monte-carlo-balancer](../SKILL.md) Phase 7 golden cells.

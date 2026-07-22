@@ -45,20 +45,20 @@ Expert blueprint for RTS games balancing strategy, micromanagement, and performa
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [selection_manager_marquee_2d.gd](scripts/selection_manager_marquee_2d.gd) - Professional-grade unit selection system with drag-box, unit filtering, and shift-add support.
+- [selection_manager_marquee_2d.gd](../scripts/genre_rts_selection_manager_marquee_2d.gd) - Professional-grade unit selection system with drag-box, unit filtering, and shift-add support.
 
 ### Modular Components
-- [rts_army_manager.gd](scripts/rts_army_manager.gd) - Multithreaded AI update system for managing mass units on background cores.
-- [selection_manager_raycast_3d.gd](scripts/selection_manager_raycast_3d.gd) - Optimized 3D selection using direct PhysicsServer raycasting.
-- [rts_path_query_pool.gd](scripts/rts_path_query_pool.gd) - Pooled Navigation query system to prevent memory allocations.
-- [navigation_mask_helper.gd](scripts/navigation_mask_helper.gd) - Bitmask utilities for dynamic navigation layers and avoidance.
-- [rts_targeting_logic.gd](scripts/rts_targeting_logic.gd) - Distance-squared performance optimization for mass enemy filtering.
-- [rts_group_commander.gd](scripts/rts_group_commander.gd) - SceneTree group broadcasting pattern for decoupled mass units.
-- [rts_unit_stat_duplicator.gd](scripts/rts_unit_stat_duplicator.gd) - Pattern for deep duplicating unit data for isolation.
-- [rts_unit.gd](scripts/rts_unit.gd) - Comprehensive unit controller with state management and navigation integration.
-- [building_grid_astar.gd](scripts/building_grid_astar.gd) - High-speed grid-based pathfinding for building placement.
-- [fog_of_war_tile_mask.gd](scripts/fog_of_war_tile_mask.gd) - Efficient Fog of War clearing using the TileMapLayer API and Vector2i.
-- [rendering_ghost_spawner.gd](scripts/rendering_ghost_spawner.gd) - Optimized placement ghosts using RenderingServer RIDs.
+- [rts_army_manager.gd](../scripts/genre_rts_rts_army_manager.gd) - Multithreaded AI update system for managing mass units on background cores.
+- [selection_manager_raycast_3d.gd](../scripts/genre_rts_selection_manager_raycast_3d.gd) - Optimized 3D selection using direct PhysicsServer raycasting.
+- [rts_path_query_pool.gd](../scripts/genre_rts_rts_path_query_pool.gd) - Pooled Navigation query system to prevent memory allocations.
+- [navigation_mask_helper.gd](../scripts/genre_rts_navigation_mask_helper.gd) - Bitmask utilities for dynamic navigation layers and avoidance.
+- [rts_targeting_logic.gd](../scripts/genre_rts_rts_targeting_logic.gd) - Distance-squared performance optimization for mass enemy filtering.
+- [rts_group_commander.gd](../scripts/genre_rts_rts_group_commander.gd) - SceneTree group broadcasting pattern for decoupled mass units.
+- [rts_unit_stat_duplicator.gd](../scripts/genre_rts_rts_unit_stat_duplicator.gd) - Pattern for deep duplicating unit data for isolation.
+- [rts_unit.gd](../scripts/genre_rts_rts_unit.gd) - Comprehensive unit controller with state management and navigation integration.
+- [building_grid_astar.gd](../scripts/genre_rts_building_grid_astar.gd) - High-speed grid-based pathfinding for building placement.
+- [fog_of_war_tile_mask.gd](../scripts/genre_rts_fog_of_war_tile_mask.gd) - Efficient Fog of War clearing using the TileMapLayer API and Vector2i.
+- [rendering_ghost_spawner.gd](../scripts/genre_rts_rendering_ghost_spawner.gd) - Optimized placement ghosts using RenderingServer RIDs.
 
 ---
 
@@ -78,6 +78,7 @@ Expert blueprint for RTS games balancing strategy, micromanagement, and performa
 | 3. Systems | `fog-of-war`, `building-system` | Map visibility, grid placement |
 | 4. AI | `behavior-trees`, `utility-ai` | Enemy commander logic |
 | 5. Polish | `ui-minimap`, `godot-particles` | Strategic overview, battle feedback |
+| 6. Balance | `godot-monte-carlo-balancer` | Build-order policies vs extracted AI orders |
 
 ## Architecture Overview
 
@@ -320,4 +321,4 @@ void fragment() {
 ```
 
 
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

@@ -35,34 +35,34 @@ Expert guidance for Godot's audio engine and mixing architecture.
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [audio_voice_pool_manager.gd](scripts/audio_voice_pool_manager.gd)
+### [audio_voice_pool_manager.gd](../scripts/audio_systems_audio_voice_pool_manager.gd)
 Expert high-performance voice pooler with priority-based 'voice stealing' logic.
 
-### [audio_occlusion_raycast.gd](scripts/audio_occlusion_raycast.gd)
+### [audio_occlusion_raycast.gd](../scripts/audio_systems_audio_occlusion_raycast.gd)
 Professional Raycast-based audio occlusion for dynamic muffling behind walls.
 
-### [audio_interactive_music_manager.gd](scripts/audio_interactive_music_manager.gd)
+### [audio_interactive_music_manager.gd](../scripts/audio_systems_audio_interactive_music_manager.gd)
 Manager for vertical music layering using AudioStreamSynchronized for dynamic intensity.
 
-### [audio_reactive_visualizer_component.gd](scripts/audio_reactive_visualizer_component.gd)
+### [audio_reactive_visualizer_component.gd](../scripts/audio_systems_audio_reactive_visualizer_component.gd)
 Expert FFT spectrum analysis component for driving logic-to-data visuals.
 
-### [audio_bus_ducker_logic.gd](scripts/audio_bus_ducker_logic.gd)
+### [audio_bus_ducker_logic.gd](../scripts/audio_systems_audio_bus_ducker_logic.gd)
 Professional sidechain-style bus ducking (Dialogue-over-Music).
 
-### [audio_procedural_generator_synth.gd](scripts/audio_procedural_generator_synth.gd)
+### [audio_procedural_generator_synth.gd](../scripts/audio_systems_audio_procedural_generator_synth.gd)
 Expert real-time synthesizer for procedural hums, engines, and signals.
 
-### [audio_environmental_reverb_zone.gd](scripts/audio_environmental_reverb_zone.gd)
+### [audio_environmental_reverb_zone.gd](../scripts/audio_systems_audio_environmental_reverb_zone.gd)
 Dynamic reverb/bus effect management via Area3D trigger zones.
 
-### [audio_voice_limiter_manager.gd](scripts/audio_voice_limiter_manager.gd)
+### [audio_voice_limiter_manager.gd](../scripts/audio_systems_audio_voice_limiter_manager.gd)
 Concurrency manager that prevents 'Ear Bleed' by capping identical SFX instances.
 
-### [audio_linear_volume_interpolator.gd](scripts/audio_linear_volume_interpolator.gd)
+### [audio_linear_volume_interpolator.gd](../scripts/audio_systems_audio_linear_volume_interpolator.gd)
 Expert helper for smooth, musically-accurate UI volume slider mapping.
 
-### [audio_footstep_surface_selector.gd](scripts/audio_footstep_surface_selector.gd)
+### [audio_footstep_surface_selector.gd](../scripts/audio_systems_audio_footstep_surface_selector.gd)
 Physics-driven surface detection and sound-bank selector for footsteps.
 
 ---
@@ -524,4 +524,4 @@ Use `AudioStreamSynchronized` to keep multiple stems (drums, bass, melodies) per
 - **Tweening**: Always use a `Tween` to interpolate volume changes over 1-2 seconds for a natural transition.
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

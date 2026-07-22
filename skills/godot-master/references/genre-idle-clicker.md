@@ -39,14 +39,14 @@ Expert blueprint for idle/clicker games with exponential progression and prestig
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [big_number.gd](scripts/idle_performance_setup.gd) - The foundation for handling e308+ scales using Mantissa + Exponent math.
-- [generator.gd](scripts/precision_cost_validator.gd) - Generic template for exponential cost units and rate calculation.
-- [scientific_notation_formatter.gd](scripts/scientific_notation_math.gd) - readable formatting for K, M, B, T suffixes and scientific notation.
+- [big_number.gd](../scripts/genre_idle_clicker_idle_performance_setup.gd) - The foundation for handling e308+ scales using Mantissa + Exponent math.
+- [generator.gd](../scripts/genre_idle_clicker_precision_cost_validator.gd) - Generic template for exponential cost units and rate calculation.
+- [scientific_notation_formatter.gd](../scripts/genre_idle_clicker_scientific_notation_math.gd) - readable formatting for K, M, B, T suffixes and scientific notation.
 
 ### Modular Components
-- [offline_progress_calculator.gd](scripts/offline_progress_calculator.gd) - Real-world delta tracking using UNIX timestamps.
-- [functional_income_reducer.gd](scripts/functional_income_reducer.gd) - C++ optimized array reduction for fast income summation.
-- [threaded_catchup_simulator.gd](scripts/threaded_catchup_simulator.gd) - WorkerThreadPool background simulation patterns.
+- [offline_progress_calculator.gd](../scripts/genre_idle_clicker_offline_progress_calculator.gd) - Real-world delta tracking using UNIX timestamps.
+- [functional_income_reducer.gd](../scripts/genre_idle_clicker_functional_income_reducer.gd) - C++ optimized array reduction for fast income summation.
+- [threaded_catchup_simulator.gd](../scripts/genre_idle_clicker_threaded_catchup_simulator.gd) - WorkerThreadPool background simulation patterns.
 
 ---
 
@@ -66,6 +66,7 @@ Expert blueprint for idle/clicker games with exponential progression and prestig
 | 3. Data | `godot-save-load-systems` | Saving progress, offline time calculation |
 | 4. Logic | `signals` | Decoupling UI from the economic simulation |
 | 5. Meta | `json-serialization` | Balancing hundreds of upgrades via data |
+| 6. Balance | `godot-monte-carlo-balancer` | Career / minutes-to-milestone bands (not win%) |
 
 ## Architecture Overview
 
@@ -263,4 +264,4 @@ func _burst_particles(pos: Vector2) -> void:
 ```
 
 
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

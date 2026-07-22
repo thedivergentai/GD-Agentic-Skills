@@ -66,7 +66,7 @@ Expert blueprint for platformers emphasizing movement feel, level design, and pl
 
 ## Skill Chain
 
-`godot-project-foundations`, `godot-characterbody-2d`, `godot-input-handling`, `animation`, `sound-manager`, `tilemap-setup`, `camera-2d`
+`godot-project-foundations`, `godot-characterbody-2d`, `godot-input-handling`, `animation`, `sound-manager`, `tilemap-setup`, `camera-2d`, `godot-monte-carlo-balancer`
 
 ---
 

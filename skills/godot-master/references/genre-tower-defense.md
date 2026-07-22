@@ -49,12 +49,12 @@ Strategic placement, resource management, and escalating difficulty define tower
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [wave_manager.gd](scripts/wave_manager.gd) - Professional wave orchestrator with Resource-based enemy composition and cleanup.
-- [tower.gd](scripts/tower.gd) - Base turret class with FSM state management and firing logic.
-- [tower_targeting_system.gd](scripts/tower_targeting_system.gd) - Autonomous priority logic (First/Last/Strongest/Weakest) for efficient targeting.
+- [wave_manager.gd](../scripts/game_loop_waves_wave_manager.gd) - Professional wave orchestrator with Resource-based enemy composition and cleanup.
+- [tower.gd](../scripts/genre_tower_defense_tower.gd) - Base turret class with FSM state management and firing logic.
+- [tower_targeting_system.gd](../scripts/genre_tower_defense_tower_targeting_system.gd) - Autonomous priority logic (First/Last/Strongest/Weakest) for efficient targeting.
 
 ### Modular Components
-- [tower_defense_patterns.gd](scripts/tower_defense_patterns.gd) - Collection of patterns for furthest-target logic and PhysicsServer projectile optimization.
+- [tower_defense_patterns.gd](../scripts/genre_tower_defense_tower_defense_patterns.gd) - Collection of patterns for furthest-target logic and PhysicsServer projectile optimization.
 
 ---
 
@@ -269,4 +269,5 @@ func _physics_process(delta: float) -> void:
 ```
 
 
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)
+- Related: Prove wave/economy bands with [godot-monte-carlo-balancer](../SKILL.md) (see also lane-defense example ref).

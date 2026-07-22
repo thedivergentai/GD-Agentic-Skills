@@ -366,3 +366,4 @@ static func set_hitbox_color(shape: CollisionShape3D, is_attack: bool) -> void:
 
 ## Reference
 - Master Skill: [godot-master](../godot-master/SKILL.md)
+- Related: After DamageData/Resources exist, prove difficulty bands with [godot-monte-carlo-balancer](../godot-monte-carlo-balancer/SKILL.md) before shipping curves.

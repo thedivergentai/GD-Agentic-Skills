@@ -466,3 +466,4 @@ func _run() -> void:
 
 
 - Master Skill: [godot-master](../godot-master/SKILL.md)
+- Related: Validate economy ticks and CSV→`.tres` balance with [godot-monte-carlo-balancer](../godot-monte-carlo-balancer/SKILL.md).

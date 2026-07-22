@@ -9,40 +9,40 @@ Container auto-layout, size flags, anchors, and split ratios define responsive U
 
 ## Available Scripts
 
-### [responsive_layout_builder.gd](scripts/responsive_layout_builder.gd)
+### [responsive_layout_builder.gd](../scripts/ui_containers_responsive_layout_builder.gd)
 Expert container builder with breakpoint-based responsive layouts.
 
-### [responsive_grid.gd](scripts/responsive_grid.gd)
+### [responsive_grid.gd](../scripts/ui_containers_responsive_grid.gd)
 Auto-adjusting GridContainer that changes column count based on available width.
 
-### [responsive_inventory_grid.gd](scripts/responsive_inventory_grid.gd)
+### [responsive_inventory_grid.gd](../scripts/ui_containers_responsive_inventory_grid.gd)
 Expert logic for dynamic Grid columns based on available width and item minimum size.
 
-### [terminal_autoscroll.gd](scripts/terminal_autoscroll.gd)
+### [terminal_autoscroll.gd](../scripts/ui_containers_terminal_autoscroll.gd)
 Safe ScrollContainer management. Handles the common "one-frame delay" bug when adding logs or chat.
 
-### [viewport_3d_preview.gd](scripts/viewport_3d_preview.gd)
+### [viewport_3d_preview.gd](../scripts/ui_containers_viewport_3d_preview.gd)
 High-performance 3D-in-UI setup. Uses `stretch_shrink` and `transparent_bg` for character previews.
 
-### [dynamic_tab_manager.gd](scripts/dynamic_tab_manager.gd)
+### [dynamic_tab_manager.gd](../scripts/ui_containers_dynamic_tab_manager.gd)
 Pattern for dynamic tab spawning, custom titles, and tab closing logic.
 
-### [responsive_tag_cloud.gd](scripts/responsive_tag_cloud.gd)
+### [responsive_tag_cloud.gd](../scripts/ui_containers_responsive_tag_cloud.gd)
 Wrapping item lists using `HFlowContainer`, essential for tag clouds and responsive menus.
 
-### [performance_anchor_layout.gd](scripts/performance_anchor_layout.gd)
+### [performance_anchor_layout.gd](../scripts/ui_containers_performance_anchor_layout.gd)
 Optimization architecture. Replaces deep container nesting with lightweight Anchor and Offset logic.
 
-### [custom_radial_container.gd](scripts/custom_radial_container.gd)
+### [custom_radial_container.gd](../scripts/ui_containers_custom_radial_container.gd)
 Expert custom container logic implementing a radial/circle layout via `NOTIFICATION_SORT_CHILDREN`.
 
-### [animated_container_shuffle.gd](scripts/animated_container_shuffle.gd)
+### [animated_container_shuffle.gd](../scripts/ui_containers_animated_container_shuffle.gd)
 Dynamic sibling reordering and animation logic for interactive UI lists.
 
-### [aspect_ratio_mini_map.gd](scripts/aspect_ratio_mini_map.gd)
+### [aspect_ratio_mini_map.gd](../scripts/ui_containers_aspect_ratio_mini_map.gd)
 Enforcing strict aspect ratios (e.g. 1:1, 16:9) across fluid window resizes using `AspectRatioContainer`.
 
-### [container_size_flags_pro.gd](scripts/container_size_flags_pro.gd)
+### [container_size_flags_pro.gd](../scripts/ui_containers_container_size_flags_pro.gd)
 Advanced sizing logic using `SIZE_EXPAND_FILL` and `stretch_ratio` for weighted layouts.
 
 ## NEVER Do in UI Containers
@@ -159,4 +159,4 @@ button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 
 
 ### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

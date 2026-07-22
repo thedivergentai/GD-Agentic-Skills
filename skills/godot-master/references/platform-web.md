@@ -35,34 +35,34 @@ Browser API integration, LocalStorage persistence, and size optimization define 
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [web_javascript_bridge_callback.gd](scripts/web_javascript_bridge_callback.gd)
+### [web_javascript_bridge_callback.gd](../scripts/platform_web_web_javascript_bridge_callback.gd)
 Expert two-way JS-to-GD communication using `create_callback`.
 
-### [web_local_storage_wrapper.gd](scripts/web_local_storage_wrapper.gd)
+### [web_local_storage_wrapper.gd](../scripts/platform_web_web_local_storage_wrapper.gd)
 Robust `localStorage` handler with JSON serialization and quota error prevention.
 
-### [web_responsive_canvas_adaptor.gd](scripts/web_responsive_canvas_adaptor.gd)
+### [web_responsive_canvas_adaptor.gd](../scripts/platform_web_web_responsive_canvas_adaptor.gd)
 Dynamic canvas resizing to match browser window dimensions via JS.
 
-### [web_browser_input_guard.gd](scripts/web_browser_input_guard.gd)
+### [web_browser_input_guard.gd](../scripts/platform_web_web_browser_input_guard.gd)
 Preventing browser default behaviors (Right-click menu, Spacebar scroll).
 
-### [web_resource_lazy_loader.gd](scripts/web_resource_lazy_loader.gd)
+### [web_resource_lazy_loader.gd](../scripts/platform_web_web_resource_lazy_loader.gd)
 Lazy loading of remote PCKs and resources using browser-fetch logic.
 
-### [web_clipboard_interface.gd](scripts/web_clipboard_interface.gd)
+### [web_clipboard_interface.gd](../scripts/platform_web_web_clipboard_interface.gd)
 Asynchronous clipboard (Copy/Paste) integration via the `Navigator` API.
 
-### [web_visibility_auto_pause.gd](scripts/web_visibility_auto_pause.gd)
+### [web_visibility_auto_pause.gd](../scripts/platform_web_web_visibility_auto_pause.gd)
 Visibility API integration to auto-pause engine and audio on tab hide.
 
-### [web_navigation_guard.gd](scripts/web_navigation_guard.gd)
+### [web_navigation_guard.gd](../scripts/platform_web_web_navigation_guard.gd)
 Navigation guard using `beforeunload` to prevent closing on unsaved progress.
 
-### [web_external_url_opener.gd](scripts/web_external_url_opener.gd)
+### [web_external_url_opener.gd](../scripts/platform_web_web_external_url_opener.gd)
 Expert URL opening using `window.open` with `noopener` security flags.
 
-### [web_performance_profiler.gd](scripts/web_performance_profiler.gd)
+### [web_performance_profiler.gd](../scripts/platform_web_web_performance_profiler.gd)
 Browser performance tracking (VRAM, Draw calls) logged to JS console.
 
 ---
@@ -205,4 +205,4 @@ func _send_to_browser(json_str: String) -> void:
 
 
 ### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

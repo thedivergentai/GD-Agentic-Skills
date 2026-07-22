@@ -64,7 +64,7 @@ Expert blueprint for 2D/3D fighters emphasizing frame-perfect combat and competi
 
 ## Skill Chain
 
-`godot-project-foundations`, `godot-characterbody-2d`, `godot-input-handling`, `animation`, `godot-combat-system`, `godot-state-machine-advanced`, `multiplayer-lobby`
+`godot-project-foundations`, `godot-characterbody-2d`, `godot-input-handling`, `animation`, `godot-combat-system`, `godot-state-machine-advanced`, `multiplayer-lobby`, `godot-monte-carlo-balancer`
 
 ---
 
@@ -330,6 +330,8 @@ func load_state(state: Dictionary) -> void:
 | Slowest moves | 20-40 frames (supers, overheads) |
 | Throw range | Short but reliable |
 | Meter gain | Full bar in ~2 combos received |
+
+For roster / matchup simulation beyond these guidelines, use [godot-monte-carlo-balancer](../godot-monte-carlo-balancer/SKILL.md) with **matchup-matrix metrics** — never sole AFK→pro PvE win-rate bands.
 
 ---
 

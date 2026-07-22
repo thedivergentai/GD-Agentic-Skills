@@ -30,13 +30,13 @@ Expert guidance for migrating 2D games into the third dimension.
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [sprite_plane.gd](scripts/sprite_plane.gd)
+### [sprite_plane.gd](../scripts/adapt_2d_to_3d_sprite_plane.gd)
 Sprite3D billboard configuration and world-to-screen projection for placing 2D UI over 3D objects. Handles behind-camera detection.
 
-### [vector_mapping.gd](scripts/vector_mapping.gd)
+### [vector_mapping.gd](../scripts/adapt_2d_to_3d_vector_mapping.gd)
 Static utility for 2D→3D vector translation. The Y-to-Z rule: 2D Y (down) maps to 3D Z (forward). Essential for movement code.
 
-### [crisp_projected_ui.gd](scripts/crisp_projected_ui.gd)
+### [crisp_projected_ui.gd](../scripts/adapt_2d_to_3d_crisp_projected_ui.gd)
 Projected 2D UI for 3D Objects mapping snippet. Replaces blurry text elements with true 2D Canvas space positioning projected from 3D space.
 
 ---
@@ -464,4 +464,4 @@ func _migrate_node(node: Node) -> void:
 ```
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

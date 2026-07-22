@@ -37,10 +37,10 @@ Expert guidance for building flexible, component-based combat systems.
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [combat_system_patterns.gd](scripts/combat_system_patterns.gd)
+### [combat_system_patterns.gd](../scripts/combat_system_combat_system_patterns.gd)
 10 Expert patterns: Safe duck-typing, hitstun tweens, nodeless AoE shape casting, and frame-perfect sync.
 
-### [hitbox_hurtbox.gd](scripts/hitbox_hurtbox.gd)
+### [hitbox_hurtbox.gd](../scripts/combat_system_hitbox_hurtbox.gd)
 Component-based hitbox with hit-stop and knockback logic.
 
 ---
@@ -365,4 +365,5 @@ static func set_hitbox_color(shape: CollisionShape3D, is_attack: bool) -> void:
 ```
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)
+- Related: After DamageData/Resources exist, prove difficulty bands with [godot-monte-carlo-balancer](../SKILL.md) before shipping curves.

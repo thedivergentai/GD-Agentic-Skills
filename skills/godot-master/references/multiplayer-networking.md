@@ -13,37 +13,37 @@ description: "Expert blueprint for multiplayer networking (Among Us, Brawlhalla,
 
 Authoritative servers, client prediction, and state synchronization define robust multiplayer.
 
-### [net_enet_expert_config.gd](scripts/net_enet_expert_config.gd)
+### [net_enet_expert_config.gd](../scripts/multiplayer_networking_net_enet_expert_config.gd)
 Expert logic for tuning ENet channels, compression, and bandwidth thresholds.
 
-### [net_packet_bit_packer.gd](scripts/net_packet_bit_packer.gd)
+### [net_packet_bit_packer.gd](../scripts/multiplayer_networking_net_packet_bit_packer.gd)
 Professional manual serialization tools for bit-packing data into PackedByteArray.
 
-### [net_headless_server_auto_start.gd](scripts/net_headless_server_auto_start.gd)
+### [net_headless_server_auto_start.gd](../scripts/multiplayer_networking_net_headless_server_auto_start.gd)
 Logic for detecting dedicated server mode and parsing CLI arguments for headless launch.
 
-### [net_heartbeat_monitor.gd](scripts/net_heartbeat_monitor.gd)
+### [net_heartbeat_monitor.gd](../scripts/multiplayer_networking_net_heartbeat_monitor.gd)
 RTT (Round Trip Time) and Jitter monitoring system for high-fidelity lag tracking.
 
-### [net_lan_discovery.gd](scripts/net_lan_discovery.gd)
+### [net_lan_discovery.gd](../scripts/multiplayer_networking_net_lan_discovery.gd)
 UDP broadcasting system for local server discovery without master servers.
 
-### [net_adaptive_sync_throttle.gd](scripts/net_adaptive_sync_throttle.gd)
+### [net_adaptive_sync_throttle.gd](../scripts/multiplayer_networking_net_adaptive_sync_throttle.gd)
 Dynamic synchronization manager that adapts sync-rates to peer connection quality.
 
-### [net_anti_desync_reconciler.gd](scripts/net_anti_desync_reconciler.gd)
+### [net_anti_desync_reconciler.gd](../scripts/multiplayer_networking_net_anti_desync_reconciler.gd)
 Server-authoritative state validation and forced-correction logic.
 
-### [net_visibility_grid_culling.gd](scripts/net_visibility_grid_culling.gd)
+### [net_visibility_grid_culling.gd](../scripts/multiplayer_networking_net_visibility_grid_culling.gd)
 Interest Management system for optimizing bandwidth in large-scale worlds.
 
-### [net_packet_rate_limiter.gd](scripts/net_packet_rate_limiter.gd)
+### [net_packet_rate_limiter.gd](../scripts/multiplayer_networking_net_packet_rate_limiter.gd)
 Essential flood-protection and anti-spam manager for RPC security.
 
-### [net_custom_id_mapper.gd](scripts/net_custom_id_mapper.gd)
+### [net_custom_id_mapper.gd](../scripts/multiplayer_networking_net_custom_id_mapper.gd)
 Mapping utility for linking permanent UserIDs to volatile Network PeerIDs.
 
-### [net_rollback_helper.gd](scripts/net_rollback_helper.gd)
+### [net_rollback_helper.gd](../scripts/multiplayer_networking_net_rollback_helper.gd)
 Expert logic for state snapshots and re-simulation (GGR-style rollback).
 
 ## NEVER Do (Expert Networking Rules)
@@ -331,4 +331,4 @@ Test your game's resilience by artificially degrading the network.
 
 
 ### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

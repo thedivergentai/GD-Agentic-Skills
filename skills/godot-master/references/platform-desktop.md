@@ -34,34 +34,34 @@ Settings flexibility, window management, and kb/mouse precision define desktop g
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [desktop_window_manager.gd](scripts/desktop_window_manager.gd)
+### [desktop_window_manager.gd](../scripts/platform_desktop_desktop_window_manager.gd)
 Expert DPI-aware multi-monitor window positioning using `DisplayServer`.
 
-### [desktop_settings_persistent.gd](scripts/desktop_settings_persistent.gd)
+### [desktop_settings_persistent.gd](../scripts/platform_desktop_desktop_settings_persistent.gd)
 Production settings persistence using `ConfigFile` for persistent INI data.
 
-### [physical_input_rebinder.gd](scripts/physical_input_rebinder.gd)
+### [physical_input_rebinder.gd](../scripts/platform_desktop_physical_input_rebinder.gd)
 Expert positional rebind system using `physical_keycode` for AZERTY/Dvorak.
 
-### [platform_sdk_wrapper.gd](scripts/platform_sdk_wrapper.gd)
+### [platform_sdk_wrapper.gd](../scripts/platform_desktop_platform_sdk_wrapper.gd)
 Safe PC SDK singleton wrapper (Steamworks/Epic) with crash guards.
 
-### [native_dialog_helper.gd](scripts/native_dialog_helper.gd)
+### [native_dialog_helper.gd](../scripts/platform_desktop_native_dialog_helper.gd)
 Expert native OS file dialogs and system alerts logic.
 
-### [secondary_window_spawner.gd](scripts/secondary_window_spawner.gd)
+### [secondary_window_spawner.gd](../scripts/platform_desktop_secondary_window_spawner.gd)
 True multi-window management for secondary Viewports/Windows.
 
-### [graceful_shutdown_handler.gd](scripts/graceful_shutdown_handler.gd)
+### [graceful_shutdown_handler.gd](../scripts/platform_desktop_graceful_shutdown_handler.gd)
 Safe close-request interceptor for data flushing and exit guards.
 
-### [low_processor_eco_mode.gd](scripts/low_processor_eco_mode.gd)
+### [low_processor_eco_mode.gd](../scripts/platform_desktop_low_processor_eco_mode.gd)
 Eco mode optimization for desktop tools and launchers.
 
-### [desktop_performance_monitor.gd](scripts/desktop_performance_monitor.gd)
+### [desktop_performance_monitor.gd](../scripts/platform_desktop_desktop_performance_monitor.gd)
 OS-level hardware detection for dynamic graphics presets.
 
-### [native_shell_executor.gd](scripts/native_shell_executor.gd)
+### [native_shell_executor.gd](../scripts/platform_desktop_native_shell_executor.gd)
 Expert native shell command execution and output capture.
 
 ---
@@ -200,4 +200,4 @@ func _on_play_pressed() -> void:
 
 
 ### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

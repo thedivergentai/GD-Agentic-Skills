@@ -41,11 +41,11 @@ Turn order calculation, action points, phase management, and timeline systems de
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [active_time_battle.gd](scripts/active_time_battle.gd) - Framework for ATB systems with dynamic progress bars and async action support.
-- [timeline_turn_manager.gd](scripts/timeline_turn_manager.gd) - Advanced manager for timeline-based turns with interrupts and predictive visualization.
+- [active_time_battle.gd](../scripts/turn_system_active_time_battle.gd) - Framework for ATB systems with dynamic progress bars and async action support.
+- [timeline_turn_manager.gd](../scripts/turn_system_timeline_turn_manager.gd) - Advanced manager for timeline-based turns with interrupts and predictive visualization.
 
 ### Modular Components
-- [turn_system_patterns.gd](scripts/turn_system_patterns.gd) - Collection of patterns for match state machines, UndoRedo, and A* Grid setup.
+- [turn_system_patterns.gd](../scripts/turn_system_turn_system_patterns.gd) - Collection of patterns for match state machines, UndoRedo, and A* Grid setup.
 
 ---
 
@@ -191,4 +191,4 @@ func _on_action_hover(target: Enemy):
 ```
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

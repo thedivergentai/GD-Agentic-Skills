@@ -66,6 +66,7 @@ Expert blueprint for idle/clicker games with exponential progression and prestig
 | 3. Data | `godot-save-load-systems` | Saving progress, offline time calculation |
 | 4. Logic | `signals` | Decoupling UI from the economic simulation |
 | 5. Meta | `json-serialization` | Balancing hundreds of upgrades via data |
+| 6. Balance | `godot-monte-carlo-balancer` | Career / minutes-to-milestone bands (not win%) |
 
 ## Architecture Overview
 

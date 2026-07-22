@@ -16,34 +16,34 @@ This skill provides reusable components for hiding content behind specific playe
 
 ## Core Components
 
-### [secret_meta_persistence.gd](scripts/secret_meta_persistence.gd)
+### [secret_meta_persistence.gd](../scripts/mechanic_secrets_secret_meta_persistence.gd)
 Expert logic for saving global unlocks and discovery flags across all save profiles.
 
-### [secret_visibility_detector.gd](scripts/secret_visibility_detector.gd)
+### [secret_visibility_detector.gd](../scripts/mechanic_secrets_secret_visibility_detector.gd)
 View-dependent hidden wall detection using optimized Dot Product calculations.
 
-### [secret_sequence_combo_matcher.gd](scripts/secret_sequence_combo_matcher.gd)
+### [secret_sequence_combo_matcher.gd](../scripts/mechanic_secrets_secret_sequence_combo_matcher.gd)
 Professional time-sensitive input buffer for detecting complex cheat combos and sequences.
 
-### [secret_interaction_spam_tracker.gd](scripts/secret_interaction_spam_tracker.gd)
+### [secret_interaction_spam_tracker.gd](../scripts/mechanic_secrets_secret_interaction_spam_tracker.gd)
 Logic for tracking repetitive player actions to trigger curiosity-based Easter Eggs.
 
-### [secret_audio_environment_occluder.gd](scripts/secret_audio_environment_occluder.gd)
+### [secret_audio_environment_occluder.gd](../scripts/mechanic_secrets_secret_audio_environment_occluder.gd)
 Spatial logic for dynamically adjusting AudioBus effects in sealed or hidden areas.
 
-### [secret_progress_threshold_unlocker.gd](scripts/secret_progress_threshold_unlocker.gd)
+### [secret_progress_threshold_unlocker.gd](../scripts/mechanic_secrets_secret_progress_threshold_unlocker.gd)
 Percentage-based unlocker for meta-content and 'True Ending' triggers.
 
-### [secret_random_encounter_spawner.gd](scripts/secret_random_encounter_spawner.gd)
+### [secret_random_encounter_spawner.gd](../scripts/mechanic_secrets_secret_random_encounter_spawner.gd)
 Weighted random system for rarest-tier entities and secret vendor encounters.
 
-### [secret_lockout_cheat_guard.gd](scripts/secret_lockout_cheat_guard.gd)
+### [secret_lockout_cheat_guard.gd](../scripts/mechanic_secrets_secret_lockout_cheat_guard.gd)
 Anti-brute-force lockout manager to protect secret integrity.
 
-### [secret_vfx_discovery_glimmer.gd](scripts/secret_vfx_discovery_glimmer.gd)
+### [secret_vfx_discovery_glimmer.gd](../scripts/mechanic_secrets_secret_vfx_discovery_glimmer.gd)
 Subtle procedural visual cues for hinting at hidden interactables.
 
-### [secret_konami_legacy_code.gd](scripts/secret_konami_legacy_code.gd)
+### [secret_konami_legacy_code.gd](../scripts/mechanic_secrets_secret_konami_legacy_code.gd)
 Specialized implementation of the iconic Konami code using the buffer matcher.
 
 ## Usage Example (Cheat Code)
@@ -141,4 +141,4 @@ func _apply_ghost_visuals():
 ```
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

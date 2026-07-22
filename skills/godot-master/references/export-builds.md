@@ -35,40 +35,40 @@ Expert guidance for building and distributing Godot games across platforms.
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [export_headless_pipeline.ps1](scripts/export_headless_pipeline.ps1)
+### [export_headless_pipeline.ps1](../scripts/export_builds_export_headless_pipeline.ps1)
 Expert PowerShell script for automated multi-platform headless exports.
 
-### [export_version_sync.gd](scripts/export_version_sync.gd)
+### [export_version_sync.gd](../scripts/export_builds_export_version_sync.gd)
 Editor script to sync Git tags/hashes with 'application/config/version'.
 
-### [export_post_process_hook.gd](scripts/export_post_process_hook.gd)
+### [export_post_process_hook.gd](../scripts/export_builds_export_post_process_hook.gd)
 `EditorExportPlugin` for automating post-build tasks (Zipping, Manifests).
 
-### [export_feature_flag_manager.gd](scripts/export_feature_flag_manager.gd)
+### [export_feature_flag_manager.gd](../scripts/export_builds_export_feature_flag_manager.gd)
 Expert manager for runtime behavior swapping via build feature flags.
 
-### [export_pck_patch_loader.gd](scripts/export_pck_patch_loader.gd)
+### [export_pck_patch_loader.gd](../scripts/export_builds_export_pck_patch_loader.gd)
 Runtime patching logic for mounting external PCK archives and DLC.
 
-### [export_android_signing_env.ps1](scripts/export_android_signing_env.ps1)
+### [export_android_signing_env.ps1](../scripts/export_builds_export_android_signing_env.ps1)
 Secure environment variable setup for Android release keystores.
 
-### [export_custom_build_stripper.py](scripts/export_custom_build_stripper.py)
+### [export_custom_build_stripper.py](../scripts/export_builds_export_custom_build_stripper.py)
 SCons configuration for stripping unused Godot modules to reduce binary size.
 
-### [export_macos_notarize_cmd.ps1](scripts/export_macos_notarize_cmd.ps1)
+### [export_macos_notarize_cmd.ps1](../scripts/export_builds_export_macos_notarize_cmd.ps1)
 CLI procedure for macOS code signing and notarization outside the App Store.
 
-### [export_build_size_report.gd](scripts/export_build_size_report.gd)
+### [export_build_size_report.gd](../scripts/export_builds_export_build_size_report.gd)
 Editor tool for auditing resource sizes to optimize build footprints.
 
-### [export_ci_github_actions.yml](scripts/export_ci_github_actions.yml)
+### [export_ci_github_actions.yml](../scripts/export_builds_export_ci_github_actions.yml)
 Professional CI/CD workflow for automated multi-platform Godot releases.
 
 ### [export_steam_upload.ps1](scripts/export_steam_upload.ps1)
 Expert script for automating SteamPipe uploads using `steamcmd` and VDF manifests.
 
-### [export_universal_manager.gd](scripts/export_universal_manager.gd)
+### [export_universal_manager.gd](../scripts/export_builds_export_universal_manager.gd)
 Editor tool to programmatically iterate and export all defined presets in one click.
 
 ---
@@ -344,4 +344,4 @@ Iterating through all export presets to generate a full suite of release binarie
 
 
 ### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

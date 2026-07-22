@@ -617,3 +617,4 @@ func _rebuild_graph() -> void:
 
 ## Reference
 - Master Skill: [godot-master](../godot-master/SKILL.md)
+- Related: After cooldowns/costs are Resource-tuned, validate loadouts with [godot-monte-carlo-balancer](../godot-monte-carlo-balancer/SKILL.md).

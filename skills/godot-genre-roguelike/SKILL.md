@@ -81,6 +81,7 @@ Expert blueprint for roguelikes balancing challenge, progression, and replayabil
 | 3. Combat | `godot-combat-system`, `enemy-ai` | Fast-paced, high-stakes encounters |
 | 4. Progression | `loot-tables`, `godot-inventory-system` | Managing run-specific items/relics |
 | 5. Persistence | `save-system`, `resources` | Saving meta-progress between runs |
+| 6. Balance | `godot-monte-carlo-balancer` | Win% vs meta level; dead-item detection |
 
 ## Architecture Overview
 

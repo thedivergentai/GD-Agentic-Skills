@@ -78,6 +78,7 @@ Expert blueprint for RTS games balancing strategy, micromanagement, and performa
 | 3. Systems | `fog-of-war`, `building-system` | Map visibility, grid placement |
 | 4. AI | `behavior-trees`, `utility-ai` | Enemy commander logic |
 | 5. Polish | `ui-minimap`, `godot-particles` | Strategic overview, battle feedback |
+| 6. Balance | `godot-monte-carlo-balancer` | Build-order policies vs extracted AI orders |
 
 ## Architecture Overview
 

@@ -15,34 +15,34 @@ Signal Up/Call Down pattern, typed signals, and event buses define decoupled, ma
 
 ## Available Scripts
 
-### [signal_up_call_down_pattern.gd](scripts/signal_up_call_down_pattern.gd)
+### [signal_up_call_down_pattern.gd](../scripts/signal_architecture_signal_up_call_down_pattern.gd)
 Clean implementation of decoupled hierarchy communication: children signal up, parents call down.
 
-### [global_signal_bus_router.gd](scripts/global_signal_bus_router.gd)
+### [global_signal_bus_router.gd](../scripts/signal_architecture_global_signal_bus_router.gd)
 Expert AutoLoad event bus for system-level event routing (Achievements, UI, Saving).
 
-### [callable_bind_context.gd](scripts/callable_bind_context.gd)
+### [callable_bind_context.gd](../scripts/signal_architecture_callable_bind_context.gd)
 Injecting extra static context into signal callbacks using `Callable.bind()`.
 
-### [unbind_unwanted_args.gd](scripts/unbind_unwanted_args.gd)
+### [unbind_unwanted_args.gd](../scripts/signal_architecture_unbind_unwanted_args.gd)
 Cleaning up function signatures by discarding unneeded signal arguments with `unbind()`.
 
-### [await_signal_sequencing.gd](scripts/await_signal_sequencing.gd)
+### [await_signal_sequencing.gd](../scripts/signal_architecture_await_signal_sequencing.gd)
 Replacing messy timers and state flags with linear, readable `await` signal sequences.
 
-### [safe_dynamic_connections.gd](scripts/safe_dynamic_connections.gd)
+### [safe_dynamic_connections.gd](../scripts/signal_architecture_safe_dynamic_connections.gd)
 Verifying connection state using `is_connected()` to prevent runtime multi-connection errors.
 
-### [disconnect_ghost_signals.gd](scripts/disconnect_ghost_signals.gd)
+### [disconnect_ghost_signals.gd](../scripts/signal_architecture_disconnect_ghost_signals.gd)
 Crucial memory management pattern for disconnecting signals when switching tracking targets.
 
-### [one_shot_deferred_connections.gd](scripts/one_shot_deferred_connections.gd)
+### [one_shot_deferred_connections.gd](../scripts/signal_architecture_one_shot_deferred_connections.gd)
 Using `CONNECT_ONE_SHOT` and `CONNECT_DEFERRED` for self-cleaning and physics-safe callbacks.
 
-### [track_signal_emitter_source.gd](scripts/track_signal_emitter_source.gd)
+### [track_signal_emitter_source.gd](../scripts/signal_architecture_track_signal_emitter_source.gd)
 Identifying which node fired a shared signal using `CONNECT_APPEND_SOURCE_OBJECT`.
 
-### [complex_signal_sequencer.gd](scripts/complex_signal_sequencer.gd)
+### [complex_signal_sequencer.gd](../scripts/signal_architecture_complex_signal_sequencer.gd)
 Managing multi-step asynchronous loading and transitions using sequential signal awaits.
 
 ## NEVER Do in Signal Architecture
@@ -331,4 +331,4 @@ func test_health_signal() -> void:
 
 
 ### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

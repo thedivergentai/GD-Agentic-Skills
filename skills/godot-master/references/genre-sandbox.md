@@ -40,12 +40,12 @@ Physical simulation, emergent play, and player creativity define this genre.
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [voxel_chunk_manager.gd](scripts/voxel_chunk_manager.gd) - Professional chunk management using `MultiMeshInstance3D` with batch update logic.
-- [cellular_automata_liquid.gd](scripts/cellular_automata_liquid.gd) - Optimized simulation of liquids and powders using property-based density checks.
-- [voxel_world.gd](scripts/voxel_world.gd) - Top-level world controller for grid state, tool-based editing, and chunk lifecycle.
+- [voxel_chunk_manager.gd](../scripts/genre_sandbox_voxel_chunk_manager.gd) - Professional chunk management using `MultiMeshInstance3D` with batch update logic.
+- [cellular_automata_liquid.gd](../scripts/genre_sandbox_cellular_automata_liquid.gd) - Optimized simulation of liquids and powders using property-based density checks.
+- [voxel_world.gd](../scripts/genre_sandbox_voxel_world.gd) - Top-level world controller for grid state, tool-based editing, and chunk lifecycle.
 
 ### Modular Components
-- [sandbox_patterns.gd](scripts/sandbox_patterns.gd) - Utility collection for async chunk loading, multithreading, and origin shifting.
+- [sandbox_patterns.gd](../scripts/genre_sandbox_sandbox_patterns.gd) - Utility collection for async chunk loading, multithreading, and origin shifting.
 
 ## Architecture Patterns
 
@@ -303,4 +303,4 @@ static func import_blueprint_from_clipboard() -> Dictionary:
 ```
 
 
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

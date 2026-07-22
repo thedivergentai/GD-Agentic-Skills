@@ -108,3 +108,4 @@ Decouple your wave data from the UI using a `CanvasLayer` and signals.
 
 ## Reference
 - Master Skill: [godot-master](../godot-master/SKILL.md)
+- Related: Rebalance wave curves with a style matrix via [godot-monte-carlo-balancer](../godot-monte-carlo-balancer/SKILL.md).

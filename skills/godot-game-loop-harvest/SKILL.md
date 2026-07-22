@@ -116,3 +116,4 @@ Avoid hardcoding durability into the player; use a `Resource` to encapsulate too
 
 ## Reference
 - Master Skill: [godot-master](../godot-master/SKILL.md)
+- Related: Validate yield pacing and sink pressure with [godot-monte-carlo-balancer](../godot-monte-carlo-balancer/SKILL.md) career sims.

@@ -15,34 +15,34 @@ Hierarchical states, state stacks, and context passing define complex behavior m
 
 ## Available Scripts
 
-### [hsm_hierarchical_base.gd](scripts/hsm_hierarchical_base.gd)
+### [hsm_hierarchical_base.gd](../scripts/state_machine_advanced_hsm_hierarchical_base.gd)
 Advanced HSM base delegator for propagating physics and input to sub-states.
 
-### [hsm_pushdown_stack.gd](scripts/hsm_pushdown_stack.gd)
+### [hsm_pushdown_stack.gd](../scripts/state_machine_advanced_hsm_pushdown_stack.gd)
 Professional Pushdown Automata for interruptive state (Pause/Menu) stacking.
 
-### [hsm_state_context.gd](scripts/hsm_state_context.gd)
+### [hsm_state_context.gd](../scripts/state_machine_advanced_hsm_state_context.gd)
 Decoupled context object pattern for passing persistent data between states.
 
-### [hsm_transition_guard.gd](scripts/hsm_transition_guard.gd)
+### [hsm_transition_guard.gd](../scripts/state_machine_advanced_hsm_transition_guard.gd)
 Expert transition validation logic to prevent illegal state changes.
 
-### [hsm_animation_syncer.gd](scripts/hsm_animation_syncer.gd)
+### [hsm_animation_syncer.gd](../scripts/state_machine_advanced_hsm_animation_syncer.gd)
 Automated Logic-to-AnimationTree syncing with state-based travel logic.
 
-### [hsm_concurrent_logic.gd](scripts/hsm_concurrent_logic.gd)
+### [hsm_concurrent_logic.gd](../scripts/state_machine_advanced_hsm_concurrent_logic.gd)
 Orchestration for parallel state machines (e.g., Move + Attack).
 
-### [hsm_resource_state_loader.gd](scripts/hsm_resource_state_loader.gd)
+### [hsm_resource_state_loader.gd](../scripts/state_machine_advanced_hsm_resource_state_loader.gd)
 Data-driven state definition using custom Godot Resources (`.tres`).
 
-### [hsm_reentry_aware_state.gd](scripts/hsm_reentry_aware_state.gd)
+### [hsm_reentry_aware_state.gd](../scripts/state_machine_advanced_hsm_reentry_aware_state.gd)
 Handling resume-from-stack logic vs fresh entry events.
 
-### [hsm_state_history_logger.gd](scripts/hsm_state_history_logger.gd)
+### [hsm_state_history_logger.gd](../scripts/state_machine_advanced_hsm_state_history_logger.gd)
 Debug ring-buffer for tracking state transition history and stack depth.
 
-### [hsm_state_timer_component.gd](scripts/hsm_state_timer_component.gd)
+### [hsm_state_timer_component.gd](../scripts/state_machine_advanced_hsm_state_timer_component.gd)
 Auto-transition component for finite states like Stun or Dash.
 
 > **MANDATORY**: Read hsm_logic_state.gd before implementing hierarchical AI behaviors.
@@ -202,4 +202,4 @@ func _physics_process(_d: float) -> void:
 
 
 ### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

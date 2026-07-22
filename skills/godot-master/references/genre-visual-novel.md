@@ -43,13 +43,13 @@ Branching narratives, meaningful choices, and quality-of-life features define vi
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [story_manager.gd](scripts/story_manager.gd) - Flag-aware dialog orchestrator with branching logic and character state persistence.
-- [dialogue_ui.gd](scripts/dialogue_ui.gd) - Presentation layer with typewriter tweens and choice-window generation.
-- [vn_rollback_manager.gd](scripts/vn_rollback_manager.gd) - History stack maintenance for state rollback (flags/backgrounds/index).
+- [story_manager.gd](../scripts/genre_visual_novel_story_manager.gd) - Flag-aware dialog orchestrator with branching logic and character state persistence.
+- [dialogue_ui.gd](../scripts/genre_visual_novel_dialogue_ui.gd) - Presentation layer with typewriter tweens and choice-window generation.
+- [vn_rollback_manager.gd](../scripts/genre_visual_novel_vn_rollback_manager.gd) - History stack maintenance for state rollback (flags/backgrounds/index).
 
 ### Modular Components
-- [visual_novel_patterns.gd](scripts/visual_novel_patterns.gd) - Reusable patterns: BBCode effects, choice filtering, and sprite layering.
-- [dialogue_ui.gd](scripts/dialogue_ui.gd) - Base UI core for dialogue and character management.
+- [visual_novel_patterns.gd](../scripts/genre_visual_novel_visual_novel_patterns.gd) - Reusable patterns: BBCode effects, choice filtering, and sprite layering.
+- [dialogue_ui.gd](../scripts/genre_visual_novel_dialogue_ui.gd) - Base UI core for dialogue and character management.
 
 ---
 
@@ -214,4 +214,4 @@ func print_line(speaker: String, text: String, emotion: String) -> void:
 
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

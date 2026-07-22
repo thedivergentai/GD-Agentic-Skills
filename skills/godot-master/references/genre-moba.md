@@ -47,20 +47,20 @@ Expert blueprint for MOBAs emphasizing competitive balance and strategic depth.
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [skill_shot_indicator.gd](scripts/skill_shot_indicator.gd) - Mouse-driven targeting system for range, width, and direction visualization.
-- [tower_priority_aggro.gd](scripts/tower_priority_aggro.gd) - Advanced AI for defensive towers following competitive priority rules.
+- [skill_shot_indicator.gd](../scripts/genre_moba_skill_shot_indicator.gd) - Mouse-driven targeting system for range, width, and direction visualization.
+- [tower_priority_aggro.gd](../scripts/genre_moba_tower_priority_aggro.gd) - Advanced AI for defensive towers following competitive priority rules.
 
 ### Modular Components
-- [server_minion_sync.gd](scripts/server_minion_sync.gd) - Authoritative sync for high-count units using compressed byte arrays.
-- [fog_visibility_check.gd](scripts/fog_visibility_check.gd) - Physics raycasting for high-performance Line-of-Sight checks.
-- [fog_grid_mask.gd](scripts/fog_grid_mask.gd) - TileMap-driven visibility masking system using Vector2i grid logic.
-- [status_effect_data.gd](scripts/status_effect_data.gd) - Lightweight Resource container forDefining buffs, debuffs, and stuns.
-- [status_effect_manager.gd](scripts/status_effect_manager.gd) - Modular logic for applying and managing unique status effect instances.
-- [decoupled_ability_damage.gd](scripts/decoupled_ability_damage.gd) - Inter-hero combat interaction using safe duck-typing patterns.
-- [hero_state_machine.gd](scripts/hero_state_machine.gd) - Optimized StringName-based state machine for hero logic.
-- [async_arena_baker.gd](scripts/async_arena_baker.gd) - Background thread-safe navigation mesh updates for dynamic arenas.
-- [ability_ui_binder.gd](scripts/ability_ui_binder.gd) - Signal-based UI decoupling for ability cooldown tracking.
-- [minion_flow_calculator.gd](scripts/minion_flow_calculator.gd) - Parallelized pathing and intelligence using WorkerThreadPool.
+- [server_minion_sync.gd](../scripts/genre_moba_server_minion_sync.gd) - Authoritative sync for high-count units using compressed byte arrays.
+- [fog_visibility_check.gd](../scripts/genre_moba_fog_visibility_check.gd) - Physics raycasting for high-performance Line-of-Sight checks.
+- [fog_grid_mask.gd](../scripts/genre_moba_fog_grid_mask.gd) - TileMap-driven visibility masking system using Vector2i grid logic.
+- [status_effect_data.gd](../scripts/genre_moba_status_effect_data.gd) - Lightweight Resource container forDefining buffs, debuffs, and stuns.
+- [status_effect_manager.gd](../scripts/genre_moba_status_effect_manager.gd) - Modular logic for applying and managing unique status effect instances.
+- [decoupled_ability_damage.gd](../scripts/genre_moba_decoupled_ability_damage.gd) - Inter-hero combat interaction using safe duck-typing patterns.
+- [hero_state_machine.gd](../scripts/genre_moba_hero_state_machine.gd) - Optimized StringName-based state machine for hero logic.
+- [async_arena_baker.gd](../scripts/genre_moba_async_arena_baker.gd) - Background thread-safe navigation mesh updates for dynamic arenas.
+- [ability_ui_binder.gd](../scripts/genre_moba_ability_ui_binder.gd) - Signal-based UI decoupling for ability cooldown tracking.
+- [minion_flow_calculator.gd](../scripts/genre_moba_minion_flow_calculator.gd) - Parallelized pathing and intelligence using WorkerThreadPool.
 
 ---
 
@@ -80,6 +80,7 @@ Expert blueprint for MOBAs emphasizing competitive balance and strategic depth.
 | 3. Combat | `godot-ability-system`, `godot-rpg-stats` | QWER abilities, cooldowns, scaling |
 | 4. Network | `godot-multiplayer-networking` | Authority, lag compensation, prediction |
 | 5. Map | `godot-3d-world-building` | Lanes, Jungle, River, Bases |
+| 6. Balance | `godot-monte-carlo-balancer` | Hero/asymmetry matrix (not sole AFK→pro) |
 
 ## Architecture Overview
 
@@ -264,4 +265,4 @@ func _physics_process(_delta: float) -> void:
 
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

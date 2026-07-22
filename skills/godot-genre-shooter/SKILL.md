@@ -452,3 +452,4 @@ func execute_explosion(radius: float) -> Array[Dictionary]:
 
 ## Reference
 - Master Skill: [godot-master](../godot-master/SKILL.md)
+- Related: Weapon asymmetry matrices via [godot-monte-carlo-balancer](../godot-monte-carlo-balancer/SKILL.md).

@@ -67,6 +67,7 @@ Expert blueprint for party games balancing accessibility, variety, and social fu
 | 3. Data | `godot-resource-data-patterns` | Defining minigames via Resource files |
 | 4. UI | `godot-ui-containers` | Scoreboards, instructions screens |
 | 5. Logic | `godot-turn-system` | Managing the "Board Game" phase |
+| 6. Balance | `godot-monte-carlo-balancer` | Asymmetric 1v3 / role power offsets |
 
 ## Architecture Overview
 

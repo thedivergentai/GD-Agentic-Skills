@@ -80,16 +80,16 @@ Manage enemy variety using a Dictionary-based composition strategy in your `Wave
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [wave_loop_patterns.gd](scripts/wave_loop_patterns.gd)
+### [wave_loop_patterns.gd](../scripts/game_loop_waves_wave_loop_patterns.gd)
 10 Expert patterns: MultiMesh swarms, async pathfinding, background preloading, and server-side physics mobs.
 
-### [wave_manager.gd](scripts/wave_manager.gd)
+### [wave_manager.gd](../scripts/game_loop_waves_wave_manager.gd)
 Orchestrates the timeline, delays between waves, and tracks "Victory" conditions.
 
-### [wave_resource.gd](scripts/wave_resource.gd)
+### [wave_resource.gd](../scripts/game_loop_waves_wave_resource.gd)
 Data containers for wave compositions and difficulty settings.
 
-### [wave_weighted_spawner.gd](scripts/wave_weighted_spawner.gd)
+### [wave_weighted_spawner.gd](../scripts/game_loop_waves_wave_weighted_spawner.gd)
 Spatial spawner using weighted random selection for enemy variety.
 
 ---
@@ -107,4 +107,5 @@ Decouple your wave data from the UI using a `CanvasLayer` and signals.
 - **Health Bars**: Use a `TextureProgressBar` on a `CanvasLayer` for bosses, or `Sprite3D` with a viewport texture for individual enemy health bars.
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)
+- Related: Rebalance wave curves with a style matrix via [godot-monte-carlo-balancer](../SKILL.md).

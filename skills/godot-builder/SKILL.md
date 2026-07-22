@@ -96,3 +96,7 @@ Professional Godot building requires a "Zero-Touch" philosophy for assets and bi
 26. **asset_reimport_utility.gd**: Expert batch re-importer for enforcing project-wide settings.
 27. **test_runner.py**: Executes headless unit and integration tests (GUT/doctest).
 28. **export_mesh_library.py**: Converts 3D scenes into `.meshlib` resources for GridMaps.
+
+## Reference
+- Related: Headless CLI + test_runner calibrate [godot-monte-carlo-balancer](../godot-monte-carlo-balancer/SKILL.md) Phase 7.
+

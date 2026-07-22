@@ -42,15 +42,15 @@ Expert blueprint for rhythm games emphasizing audio-visual synchronization and f
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [rhythm_conductor.gd](scripts/rhythm_conductor.gd) - High-precision BPM/beat tracker with latency compensation logic.
+- [rhythm_conductor.gd](../scripts/genre_rhythm_rhythm_conductor.gd) - High-precision BPM/beat tracker with latency compensation logic.
 
 ### Modular Components
-- [input_judge_logic.gd](scripts/input_judge_logic.gd) - Hit-window validation (Perfect/Good/Miss).
-- [latency_calibrator.gd](scripts/latency_calibrator.gd) - A/V offset measurement utility.
-- [note_object_pool.gd](scripts/note_object_pool.gd) - High-frequency recycling for dense highways.
-- [audio_spectrum_analyzer.gd](scripts/audio_spectrum_analyzer.gd) - Optimized engine-side frequency extraction.
-- [dynamic_bpm_handler.gd](scripts/dynamic_bpm_handler.gd) - Tempo map and fractional beat support.
-- [note_lane_manager.gd](scripts/note_lane_manager.gd) - Spawning routes and variable scroll speed control.
+- [input_judge_logic.gd](../scripts/genre_rhythm_input_judge_logic.gd) - Hit-window validation (Perfect/Good/Miss).
+- [latency_calibrator.gd](../scripts/genre_rhythm_latency_calibrator.gd) - A/V offset measurement utility.
+- [note_object_pool.gd](../scripts/genre_rhythm_note_object_pool.gd) - High-frequency recycling for dense highways.
+- [audio_spectrum_analyzer.gd](../scripts/genre_rhythm_audio_spectrum_analyzer.gd) - Optimized engine-side frequency extraction.
+- [dynamic_bpm_handler.gd](../scripts/genre_rhythm_dynamic_bpm_handler.gd) - Tempo map and fractional beat support.
+- [note_lane_manager.gd](../scripts/genre_rhythm_note_lane_manager.gd) - Spawning routes and variable scroll speed control.
 
 ---
 
@@ -453,4 +453,4 @@ void fragment() {
 
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

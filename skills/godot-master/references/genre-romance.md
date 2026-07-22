@@ -47,12 +47,12 @@ Romance games are built on the "Affection Economy"—the management of player ti
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [romance_affection_manager.gd](scripts/affection_manager.gd) - Multi-axis (Attraction/Trust/amic_pricing_modifier.gd Attraction/Trust/Comfort) tracking and gift logic.
-- [romance_date_event_system.gd](scripts/date_event_system.gd) - Variety-aware dating logic with repetition penalties.
-- [romance_route_manager.gd](scripts/route_manager.gd) - Flag-based route branching and CG gallery persistence.
+- [romance_affection_manager.gd](../scripts/genre_romance_affection_manager.gd) - Multi-axis (Attraction/Trust/amic_pricing_modifier.gd Attraction/Trust/Comfort) tracking and gift logic.
+- [romance_date_event_system.gd](../scripts/genre_romance_date_event_system.gd) - Variety-aware dating logic with repetition penalties.
+- [romance_route_manager.gd](../scripts/genre_romance_route_manager.gd) - Flag-based route branching and CG gallery persistence.
 
 ### Modular Components
-- [romance_patterns.gd](scripts/romance_patterns.gd) - Reusable UI helpers: Typewriter tweens and heart-burst pulses.
+- [romance_patterns.gd](../scripts/genre_romance_romance_patterns.gd) - Reusable UI helpers: Typewriter tweens and heart-burst pulses.
 
 ---
 
@@ -208,5 +208,5 @@ func on_player_date_started(dating_name: String):
 
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
-- Sub-specialty: [godot-genre-visual-novel](../godot-genre-visual-novel/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)
+- Sub-specialty: [godot-genre-visual-novel](../SKILL.md)

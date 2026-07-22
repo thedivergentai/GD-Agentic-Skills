@@ -270,3 +270,4 @@ func _physics_process(delta: float) -> void:
 
 
 - Master Skill: [godot-master](../godot-master/SKILL.md)
+- Related: Prove wave/economy bands with [godot-monte-carlo-balancer](../godot-monte-carlo-balancer/SKILL.md) (see also lane-defense example ref).

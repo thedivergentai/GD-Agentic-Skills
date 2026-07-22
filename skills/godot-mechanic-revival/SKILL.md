@@ -91,3 +91,4 @@ Use **Death Analytics** to find "Difficulty Spikes".
 
 ## Reference
 - Master Skill: [godot-master](../godot-master/SKILL.md)
+- Related: Feed death-analytics difficulty spikes into a [godot-monte-carlo-balancer](../godot-monte-carlo-balancer/SKILL.md) matrix.

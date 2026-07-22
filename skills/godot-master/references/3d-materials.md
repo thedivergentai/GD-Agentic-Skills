@@ -31,46 +31,46 @@ Expert guidance for PBR materials and StandardMaterial3D in Godot.
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [material_fx.gd](scripts/material_fx.gd)
+### [material_fx.gd](../scripts/3d_materials_material_fx.gd)
 Runtime material property animation for damage effects, dissolve, and texture swapping. Use for dynamic material state changes.
 
-### [pbr_material_builder.gd](scripts/pbr_material_builder.gd)
+### [pbr_material_builder.gd](../scripts/3d_materials_pbr_material_builder.gd)
 Runtime PBR material creation with ORM textures and triplanar mapping.
 
-### [organic_material.gd](scripts/organic_material.gd)
+### [organic_material.gd](../scripts/3d_materials_organic_material.gd)
 Subsurface scattering and rim lighting setup for organic surfaces (skin, leaves). Use for realistic character or vegetation materials.
 
-### [triplanar_world.gdshader](scripts/triplanar_world.gdshader)
+### [triplanar_world.gdshader](../scripts/3d_materials_triplanar_world.gdshader)
 Triplanar projection shader for terrain without UV mapping. Blends textures based on surface normals. Use for cliffs, caves, or procedural terrain.
 
-### [pbr_orm_packer.gd](scripts/pbr_orm_packer.gd)
+### [pbr_orm_packer.gd](../scripts/3d_materials_pbr_orm_packer.gd)
 Expert PBR resource utility. Packs Ambient Occlusion, Roughness, and Metallic into a single ORM texture to optimize VRAM and draw calls.
 
-### [vertex_wind_sway.gdshader](scripts/vertex_wind_sway.gdshader)
+### [vertex_wind_sway.gdshader](../scripts/3d_materials_vertex_wind_sway.gdshader)
 High-performance GPU-driven foliage animation. Uses vertex world coordinates and vertex color weight painting to simulate wind without skeletons.
 
-### [triplanar_world_projection.gdshader](scripts/triplanar_world_projection.gdshader)
+### [triplanar_world_projection.gdshader](../scripts/3d_materials_triplanar_world_projection.gdshader)
 UV-less environment mapping. Projects textures along X/Y/Z axes for organic blending over complex rocks and terrain.
 
-### [subsurface_scattering_setup.gd](scripts/subsurface_scattering_setup.gd)
+### [subsurface_scattering_setup.gd](../scripts/3d_materials_subsurface_scattering_setup.gd)
 Configuring realistic organic materials. Covers Skin Mode, Transmittance, and depth scattering settings for Forward+ rendering.
 
-### [instance_uniform_batching.gdshader](scripts/instance_uniform_batching.gdshader)
+### [instance_uniform_batching.gdshader](../scripts/3d_materials_instance_uniform_batching.gdshader)
 Architecture pattern for high-speed batching. Allows 10,000 meshes to share one material while maintaining unique colors or health states via instance uniforms.
 
-### [decal_placer_expert.gd](scripts/decal_placer_expert.gd)
+### [decal_placer_expert.gd](../scripts/3d_materials_decal_placer_expert.gd)
 Dynamic 3D decal system with cull masking and life-cycle management for impact effects.
 
-### [transparency_sorting_fix.gd](scripts/transparency_sorting_fix.gd)
+### [transparency_sorting_fix.gd](../scripts/3d_materials_transparency_sorting_fix.gd)
 Solving visual artifacts using Alpha Hash and Depth Prepass strategies.
 
-### [shader_state_manager.gd](scripts/shader_state_manager.gd)
+### [shader_state_manager.gd](../scripts/3d_materials_shader_state_manager.gd)
 Clean pattern for toggling shader-based visual states (Frozen, Burned) on multiple entities.
 
-### [depth_precision_fix.gd](scripts/depth_precision_fix.gd)
+### [depth_precision_fix.gd](../scripts/3d_materials_depth_precision_fix.gd)
 Camera-side fix for Z-fighting and texture flickering in large-scale worlds.
 
-### [material_batcher.gd](scripts/material_batcher.gd)
+### [material_batcher.gd](../scripts/3d_materials_material_batcher.gd)
 Global override system to ensure environmental meshes draw in optimized, state-locked batches.
 
 ---
@@ -517,4 +517,4 @@ func setup_lod_materials(detailed_node: GeometryInstance3D, distant_node: Geomet
 ```
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

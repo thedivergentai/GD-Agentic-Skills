@@ -294,3 +294,4 @@ func _make_custom_tooltip(_text: String) -> Object:
 
 ## Reference
 - Master Skill: [godot-master](../godot-master/SKILL.md)
+- Related: Matrix-test power curves and modifier stacks with [godot-monte-carlo-balancer](../godot-monte-carlo-balancer/SKILL.md).

@@ -15,37 +15,37 @@ NavigationServer-powered pathfinding with avoidance and dynamic obstacles define
 
 ## Available Scripts
 
-### [dynamic_nav_manager.gd](scripts/dynamic_nav_manager.gd)
+### [dynamic_nav_manager.gd](../scripts/navigation_pathfinding_dynamic_nav_manager.gd)
 Expert runtime navigation mesh updates for moving platforms.
 
-### [server_navigation_setup.gd](scripts/server_navigation_setup.gd)
+### [server_navigation_setup.gd](../scripts/navigation_pathfinding_server_navigation_setup.gd)
 Low-level `NavigationServer3D` usage (bypassing nodes). Creates maps, regions, and registers navmeshes entirely via RID for maximum performance.
 
-### [async_dynamic_baking.gd](scripts/async_dynamic_baking.gd)
+### [async_dynamic_baking.gd](../scripts/navigation_pathfinding_async_dynamic_baking.gd)
 Expert logic for `bake_from_source_geometry_data_async`. Parses geometry on main thread then bakes in background to prevent procedural-gen stutters.
 
-### [memory_optimized_queries.gd](scripts/memory_optimized_queries.gd)
+### [memory_optimized_queries.gd](../scripts/navigation_pathfinding_memory_optimized_queries.gd)
 Pattern for reusing `NavigationPathQueryParameters3D` and `NavigationPathQueryResult3D` objects to prevent frame-by-frame GC allocations.
 
-### [terrain_cost_manager.gd](scripts/terrain_cost_manager.gd)
+### [terrain_cost_manager.gd](../scripts/navigation_pathfinding_terrain_cost_manager.gd)
 Controlling pathfinding logic using `region_set_enter_cost` and `region_set_travel_cost` to define high-penalty areas (mud, fire, water).
 
-### [low_level_avoidance.gd](scripts/low_level_avoidance.gd)
+### [low_level_avoidance.gd](../scripts/navigation_pathfinding_low_level_avoidance.gd)
 Direct RVO (Reciprocal Velocity Obstacles) registration using server-side agents. Uses `NavigationServer3D.agent_set_avoidance_callback` for high-performance avoidance.
 
-### [moving_obstacle_server.gd](scripts/moving_obstacle_server.gd)
+### [moving_obstacle_server.gd](../scripts/navigation_pathfinding_moving_obstacle_server.gd)
 Dynamic obstacle registration (e.g. for projectiles or rolling hazards) that push RVO agents away without full navmesh baking.
 
-### [nav_link_traversal.gd](scripts/nav_link_traversal.gd)
+### [nav_link_traversal.gd](../scripts/navigation_pathfinding_nav_link_traversal.gd)
 Advanced handling of `NavigationLink3D` for jumps, teleports, and elevators. Detects link traversal and overrides standard movement.
 
-### [layer_mask_navigation.gd](scripts/layer_mask_navigation.gd)
+### [layer_mask_navigation.gd](../scripts/navigation_pathfinding_layer_mask_navigation.gd)
 Architecture for multi-type navigation (e.g. Flying vs Walking vs Swimming) using 32-bit navigation layers and bitmasks.
 
-### [agent_stuck_detection.gd](scripts/agent_stuck_detection.gd)
+### [agent_stuck_detection.gd](../scripts/navigation_pathfinding_agent_stuck_detection.gd)
 Robust AI recovery logic. Detects distance-over-time stalls and triggers jitter recovery or path recalculation.
 
-### [group_avoidance_formations.gd](scripts/group_avoidance_formations.gd)
+### [group_avoidance_formations.gd](../scripts/navigation_pathfinding_group_avoidance_formations.gd)
 Coordinating crowd behavior. Strategies for avoiding individual agent clumping by using leader-relative target offsets.
 
 ## NEVER Do in Navigation & Pathfinding
@@ -266,4 +266,4 @@ nav_agent.max_neighbors = 10
 
 
 ### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

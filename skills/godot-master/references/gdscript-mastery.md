@@ -9,34 +9,34 @@ Expert guidance for writing performant, maintainable GDScript following official
 
 ## Available Scripts
 
-### [typed_collections_mastery.gd](scripts/typed_collections_mastery.gd)
+### [typed_collections_mastery.gd](../scripts/gdscript_mastery_typed_collections_mastery.gd)
 Expert performance optimization using statically typed Arrays and Dictionaries.
 
-### [functional_lambda_logic.gd](scripts/functional_lambda_logic.gd)
+### [functional_lambda_logic.gd](../scripts/gdscript_mastery_functional_lambda_logic.gd)
 Advanced list processing using `reduce()`, `all()`, and `any()` with clean lambda syntax.
 
-### [safe_type_casting.gd](scripts/safe_type_casting.gd)
+### [safe_type_casting.gd](../scripts/gdscript_mastery_safe_type_casting.gd)
 Best practices for using the `as` operator for crash-proof object identification.
 
-### [typed_signal_definitions.gd](scripts/typed_signal_definitions.gd)
+### [typed_signal_definitions.gd](../scripts/gdscript_mastery_typed_signal_definitions.gd)
 Enforcing type safety across script boundaries using strictly typed signal arguments.
 
-### [callable_binding_context.gd](scripts/callable_binding_context.gd)
+### [callable_binding_context.gd](../scripts/gdscript_mastery_callable_binding_context.gd)
 Injecting extra context into signal callbacks using `Callable.bind()`.
 
-### [unbind_signal_args.gd](scripts/unbind_signal_args.gd)
+### [unbind_signal_args.gd](../scripts/gdscript_mastery_unbind_signal_args.gd)
 Safely discarding unneeded signal arguments using `Callable.unbind()`.
 
-### [await_sequence_manager.gd](scripts/await_sequence_manager.gd)
+### [await_sequence_manager.gd](../scripts/gdscript_mastery_await_sequence_manager.gd)
 Managing complex asynchronous flows and timers using `await` without thread-blocking.
 
-### [array_preallocation_perf.gd](scripts/array_preallocation_perf.gd)
+### [array_preallocation_perf.gd](../scripts/gdscript_mastery_array_preallocation_perf.gd)
 Eliminating memory reallocation lag by pre-sizing large arrays with `resize()`.
 
-### [static_var_singleton_alt.gd](scripts/static_var_singleton_alt.gd)
+### [static_var_singleton_alt.gd](../scripts/gdscript_mastery_static_var_singleton_alt.gd)
 Using `static var` for global state management as an alternative to heavy Autoloads.
 
-### [dictionary_safe_iteration.gd](scripts/dictionary_safe_iteration.gd)
+### [dictionary_safe_iteration.gd](../scripts/gdscript_mastery_dictionary_safe_iteration.gd)
 The correct pattern for erasing dictionary keys while iterating to avoid runtime errors.
 
 ## NEVER Do in GDScript
@@ -140,4 +140,4 @@ When building complex UI, always toggle "Access as Scene Unique Name" on critica
 
 
 ### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

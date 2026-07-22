@@ -30,40 +30,40 @@ Expert guidance for high-performance 3D physics and ragdolls.
 
 ## Available Scripts
 
-### [physics_server_3d_bullets.gd](scripts/physics_server_3d_bullets.gd)
+### [physics_server_3d_bullets.gd](../scripts/physics_3d_physics_server_3d_bullets.gd)
 Direct `PhysicsServer3D` RID management for thousands of high-speed 3D projectiles.
 
-### [ray_query_3d_vision.gd](scripts/ray_query_3d_vision.gd)
+### [ray_query_3d_vision.gd](../scripts/physics_3d_ray_query_3d_vision.gd)
 Expert line-of-sight and AI vision logic using low-level space state interrupts.
 
-### [shapecast_3d_ground_check.gd](scripts/shapecast_3d_ground_check.gd)
+### [shapecast_3d_ground_check.gd](../scripts/physics_3d_shapecast_3d_ground_check.gd)
 Robust stair and ledge detection using `ShapeCast3D` for 3D CharacterBody stability.
 
-### [physics_ccd_3d_projectile.gd](scripts/physics_ccd_3d_projectile.gd)
+### [physics_ccd_3d_projectile.gd](../scripts/physics_3d_physics_ccd_3d_projectile.gd)
 Continuous Collision Detection configuration and sub-stepping logic for anti-tunneling.
 
-### [physics_layers_3d_config.gd](scripts/physics_layers_3d_config.gd)
+### [physics_layers_3d_config.gd](../scripts/physics_3d_physics_layers_3d_config.gd)
 Clean collision matrix architecture for 3D using named bitmask layers and masks.
 
-### [custom_gravity_well_3d.gd](scripts/custom_gravity_well_3d.gd)
+### [custom_gravity_well_3d.gd](../scripts/physics_3d_custom_gravity_well_3d.gd)
 Planet-style gravity wells and zero-G zones implemented via priority Area3D nodes.
 
-### [soft_body_3d_interaction.gd](scripts/soft_body_3d_interaction.gd)
+### [soft_body_3d_interaction.gd](../scripts/physics_3d_soft_body_3d_interaction.gd)
 Managing high-performance SoftBody3D flags, cloaks, and foliage attachments.
 
-### [joint_3d_breakage_logic.gd](scripts/joint_3d_breakage_logic.gd)
+### [joint_3d_breakage_logic.gd](../scripts/physics_3d_joint_3d_breakage_logic.gd)
 Dynamic joint stress monitoring and procedural snaps for destructible 3D objects.
 
-### [kinematic_3d_stairs_logic.gd](scripts/kinematic_3d_stairs_logic.gd)
+### [kinematic_3d_stairs_logic.gd](../scripts/physics_3d_kinematic_3d_stairs_logic.gd)
 Advanced procedural stair-stepping and snapping for professional 3D character controllers.
 
-### [vehicle_simulation_tuning.gd](scripts/vehicle_simulation_tuning.gd)
+### [vehicle_simulation_tuning.gd](../scripts/physics_3d_vehicle_simulation_tuning.gd)
 Tuning `VehicleBody3D` and `VehicleWheel3D` for high-speed drifting and arcade feel.
 
-### [ragdoll_manager.gd](scripts/ragdoll_manager.gd)
+### [ragdoll_manager.gd](../scripts/physics_3d_ragdoll_manager.gd)
 Expert manager for transitioning Skeleton3D from animation to physical simulation (death effect). Handles impulse application and cleanup.
 
-### [raycast_visualizer.gd](scripts/raycast_visualizer.gd)
+### [raycast_visualizer.gd](../scripts/physics_3d_raycast_visualizer.gd)
 Debug tool to visualize hit points and normals of RayCast3D in game.
 
 ## Core Architecture
@@ -192,4 +192,4 @@ func revive_character() -> void:
 ```
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

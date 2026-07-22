@@ -7,34 +7,34 @@ description: "Expert blueprint for RichTextLabel with BBCode formatting (bold, i
 
 BBCode tags, meta clickable links, and RichTextEffect shaders define formatted text systems.
 
-### [rich_text_rainbow_effect.gd](scripts/rich_text_rainbow_effect.gd)
+### [rich_text_rainbow_effect.gd](../scripts/ui_rich_text_rich_text_rainbow_effect.gd)
 Expert custom `RichTextEffect` that rotates colors over time.
 
-### [rich_text_glitch_effect.gd](scripts/rich_text_glitch_effect.gd)
+### [rich_text_glitch_effect.gd](../scripts/ui_rich_text_rich_text_glitch_effect.gd)
 Professional horror-style glitch effects with spatial jitter and alpha flickering.
 
-### [rich_text_typewriter_controller.gd](scripts/rich_text_typewriter_controller.gd)
+### [rich_text_typewriter_controller.gd](../scripts/ui_rich_text_rich_text_typewriter_controller.gd)
 Dialogue manager that parses sequential event tags (`[pause]`, `[speed]`) during animations.
 
-### [rich_text_meta_dispatch.gd](scripts/rich_text_meta_dispatch.gd)
+### [rich_text_meta_dispatch.gd](../scripts/ui_rich_text_rich_text_meta_dispatch.gd)
 Advanced handling for multi-prefix URLs in meta-clicks (items, quests, NPCs).
 
-### [rich_text_image_scaler.gd](scripts/rich_text_image_scaler.gd)
+### [rich_text_image_scaler.gd](../scripts/ui_rich_text_rich_text_image_scaler.gd)
 Utility to dynamically scale `[img]` tags to match runtime font sizes.
 
-### [rich_text_hover_reactive.gd](scripts/rich_text_hover_reactive.gd)
+### [rich_text_hover_reactive.gd](../scripts/ui_rich_text_rich_text_hover_reactive.gd)
 Signals and logic for making text spans reactive to mouse hover (SFX/Cursors).
 
-### [rich_text_bbcode_sanitizer.gd](scripts/rich_text_bbcode_sanitizer.gd)
+### [rich_text_bbcode_sanitizer.gd](../scripts/ui_rich_text_rich_text_bbcode_sanitizer.gd)
 Security utility to prevent BBCode injection in public chat interfaces.
 
-### [rich_text_gradient_generator.gd](scripts/rich_text_gradient_generator.gd)
+### [rich_text_gradient_generator.gd](../scripts/ui_rich_text_rich_text_gradient_generator.gd)
 Generator for multi-stop linear gradients using granular character-level tagging.
 
-### [rich_text_auto_scroller.gd](scripts/rich_text_auto_scroller.gd)
+### [rich_text_auto_scroller.gd](../scripts/ui_rich_text_rich_text_auto_scroller.gd)
 Smooth vertical auto-scrolling logic for credits, news feeds, and logs.
 
-### [rich_text_syntax_highlighter.gd](scripts/rich_text_syntax_highlighter.gd)
+### [rich_text_syntax_highlighter.gd](../scripts/ui_rich_text_rich_text_syntax_highlighter.gd)
 Simple regex-based syntax highlighting pattern for code blocks in UI.
 
 ## NEVER Do (Expert UI Rules)
@@ -141,4 +141,4 @@ func _process_custom_fx(char_fx: CharFXTransform):
 
 
 ### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

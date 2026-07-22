@@ -36,38 +36,38 @@ Expert blueprint for Battle Royale games with zone mechanics, large-scale networ
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
 ### Networking & Multiplayer
-### [kill_feed_bus.gd](scripts/kill_feed_bus.gd)
+### [kill_feed_bus.gd](../scripts/genre_battle_royale_kill_feed_bus.gd)
 Global elimination signal bus with match stat tracking.
 
-### [headless_branch_logic.gd](scripts/headless_branch_logic.gd)
+### [headless_branch_logic.gd](../scripts/genre_battle_royale_headless_branch_logic.gd)
 Expert dedicated server initialization that branches logic based on `headless` execution and server-specific feature flags.
 
-### [enet_br_server.gd](scripts/enet_br_server.gd)
+### [enet_br_server.gd](../scripts/genre_battle_royale_enet_br_server.gd)
 High-player-capacity ENet server setup optimized for 100+ concurrent peers over UDP.
 
-### [state_replication_unreliable.gd](scripts/state_replication_unreliable.gd)
+### [state_replication_unreliable.gd](../scripts/genre_battle_royale_state_replication_unreliable.gd)
 Pattern for synchronizing player transforms via `TRANSFER_MODE_UNRELIABLE` to minimize network congestion in large matches.
 
-### [authoritative_looting.gd](scripts/authoritative_looting.gd)
+### [authoritative_looting.gd](../scripts/genre_battle_royale_authoritative_looting.gd)
 Authoritative server-side validation logic for preventing cheat-based item collection and infinite looting.
 
-### [targeted_rpc_relay.gd](scripts/targeted_rpc_relay.gd)
+### [targeted_rpc_relay.gd](../scripts/genre_battle_royale_targeted_rpc_relay.gd)
 Optimized communication pattern using `rpc_id()` to target specific peers and reduce wasted packet broadcasts.
 
-### [server_state_buffer.gd](scripts/server_state_buffer.gd)
+### [server_state_buffer.gd](../scripts/genre_battle_royale_server_state_buffer.gd)
 Handling network jitter and out-of-order UDP packets via sequential state buffering and tick-based sorting.
 
 ### Performance & Optimization
-### [rid_loot_spawner.gd](scripts/rid_loot_spawner.gd)
+### [rid_loot_spawner.gd](../scripts/genre_battle_royale_rid_loot_spawner.gd)
 Bypassing the node hierarchy for massive loot density. Uses `RenderingServer` directly to eliminate CPU overhead for item drops.
 
-### [async_map_loader.gd](scripts/async_map_loader.gd)
+### [async_map_loader.gd](../scripts/genre_battle_royale_async_map_loader.gd)
 Non-blocking map sector streaming using `ResourceLoader` background threads for seamless open-world exploration.
 
-### [multimesh_vegetation.gd](scripts/multimesh_vegetation.gd)
+### [multimesh_vegetation.gd](../scripts/genre_battle_royale_multimesh_vegetation.gd)
 Drawing dense foliage and environment assets (100k+ instances) via `MultiMeshInstance3D` to maximize rendering performance.
 
-### [threaded_ai_manager.gd](scripts/threaded_ai_manager.gd)
+### [threaded_ai_manager.gd](../scripts/genre_battle_royale_threaded_ai_manager.gd)
 Offloading server-side bot behavior and pathfinding logic to the `WorkerThreadPool` to prevent main-thread stalling.
 
 ## NEVER Do in Battle Royale
@@ -281,4 +281,4 @@ void fragment() {
 
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

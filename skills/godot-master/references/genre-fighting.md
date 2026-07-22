@@ -41,20 +41,20 @@ Expert blueprint for 2D/3D fighters emphasizing frame-perfect combat and competi
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [fighting_input_buffer.gd](scripts/fighting_input_buffer.gd) - Frame-locked input engine (60fps) with motion command fuzzy matching (QCF/DP).
-- [hitbox_component.gd](scripts/hitbox_component.gd) - Professional hitbox/hurtbox utility with layered collision zones (High/Low/Throw).
+- [fighting_input_buffer.gd](../scripts/genre_fighting_fighting_input_buffer.gd) - Frame-locked input engine (60fps) with motion command fuzzy matching (QCF/DP).
+- [hitbox_component.gd](../scripts/combat_system_hitbox_component.gd) - Professional hitbox/hurtbox utility with layered collision zones (High/Low/Throw).
 
 ### Modular Components
-- [deterministic_physics_loop.gd](scripts/deterministic_physics_loop.gd) - Custom loop pattern for frame-perfect game state progression.
-- [direct_hitbox_query.gd](scripts/direct_hitbox_query.gd) - PhysicsServer shape-casting for immediate collision resolution.
-- [hit_stop_controller.gd](scripts/hit_stop_controller.gd) - Dynamic time-scale manipulation for "impact" feel.
-- [manual_animation_advancer.gd](scripts/manual_animation_advancer.gd) - Frame-synced animation control via manual delta processing.
-- [rollback_state_serializer.gd](scripts/rollback_state_serializer.gd) - Serialization logic for managing discrete game state snapshots.
-- [bitwise_state_flags.gd](scripts/bitwise_state_flags.gd) - High-performance bitwise flags for fighter state tracking.
-- [input_accumulation_control.gd](scripts/input_accumulation_control.gd) - Toggle for disabling Godot's input accumulation for sub-frame timing.
-- [raw_byte_network_sync.gd](scripts/raw_byte_network_sync.gd) - UDP-based state synchronization for netplay efficiency.
-- [string_name_optimization.gd](scripts/string_name_optimization.gd) - Pattern for using pointer-level `StringName` comparisons in AI states.
-- [round_timer_logic.gd](scripts/round_timer_logic.gd) - Logic for frame-synced match timers and timeout triggers.
+- [deterministic_physics_loop.gd](../scripts/genre_fighting_deterministic_physics_loop.gd) - Custom loop pattern for frame-perfect game state progression.
+- [direct_hitbox_query.gd](../scripts/genre_fighting_direct_hitbox_query.gd) - PhysicsServer shape-casting for immediate collision resolution.
+- [hit_stop_controller.gd](../scripts/genre_fighting_hit_stop_controller.gd) - Dynamic time-scale manipulation for "impact" feel.
+- [manual_animation_advancer.gd](../scripts/genre_fighting_manual_animation_advancer.gd) - Frame-synced animation control via manual delta processing.
+- [rollback_state_serializer.gd](../scripts/genre_fighting_rollback_state_serializer.gd) - Serialization logic for managing discrete game state snapshots.
+- [bitwise_state_flags.gd](../scripts/genre_fighting_bitwise_state_flags.gd) - High-performance bitwise flags for fighter state tracking.
+- [input_accumulation_control.gd](../scripts/genre_fighting_input_accumulation_control.gd) - Toggle for disabling Godot's input accumulation for sub-frame timing.
+- [raw_byte_network_sync.gd](../scripts/genre_fighting_raw_byte_network_sync.gd) - UDP-based state synchronization for netplay efficiency.
+- [string_name_optimization.gd](../scripts/genre_fighting_string_name_optimization.gd) - Pattern for using pointer-level `StringName` comparisons in AI states.
+- [round_timer_logic.gd](../scripts/genre_fighting_round_timer_logic.gd) - Logic for frame-synced match timers and timeout triggers.
 
 ---
 
@@ -64,7 +64,7 @@ Expert blueprint for 2D/3D fighters emphasizing frame-perfect combat and competi
 
 ## Skill Chain
 
-`godot-project-foundations`, `godot-characterbody-2d`, `godot-input-handling`, `animation`, `godot-combat-system`, `godot-state-machine-advanced`, `multiplayer-lobby`
+`godot-project-foundations`, `godot-characterbody-2d`, `godot-input-handling`, `animation`, `godot-combat-system`, `godot-state-machine-advanced`, `multiplayer-lobby`, `godot-monte-carlo-balancer`
 
 ---
 
@@ -331,6 +331,8 @@ func load_state(state: Dictionary) -> void:
 | Throw range | Short but reliable |
 | Meter gain | Full bar in ~2 combos received |
 
+For roster / matchup simulation beyond these guidelines, use [godot-monte-carlo-balancer](../SKILL.md) with **matchup-matrix metrics** — never sole AFK→pro PvE win-rate bands.
+
 ---
 
 ## Common Pitfalls
@@ -440,4 +442,4 @@ class_name FighterBalanceProfile extends Resource
 
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

@@ -15,40 +15,40 @@ RID-based server API, direct rendering/physics access, and object pooling define
 
 ## Available Scripts
 
-### [headless_init_manager.gd](scripts/headless_init_manager.gd)
+### [headless_init_manager.gd](../scripts/server_architecture_headless_init_manager.gd)
 Automatically detecting and initializing dedicated server logic when launched with `--headless` or `dedicated_server` features.
 
-### [enet_optimized_host.gd](scripts/enet_optimized_host.gd)
+### [enet_optimized_host.gd](../scripts/server_architecture_enet_optimized_host.gd)
 Expert initialization of high-performance ENet UDP hosts with precise bandwidth and client limits.
 
-### [dtls_secure_server.gd](scripts/dtls_secure_server.gd)
+### [dtls_secure_server.gd](../scripts/server_architecture_dtls_secure_server.gd)
 Securing ENet UDP traffic using DTLS and X509 certificates to prevent man-in-the-middle attacks.
 
-### [physics_server_direct.gd](scripts/physics_server_direct.gd)
+### [physics_server_direct.gd](../scripts/server_architecture_physics_server_direct.gd)
 Massive scale simulation pattern that bypasses the SceneTree by creating bodies directly on the `PhysicsServer3D`.
 
-### [safe_packet_decoder.gd](scripts/safe_packet_decoder.gd)
+### [safe_packet_decoder.gd](../scripts/server_architecture_safe_packet_decoder.gd)
 Crucial network security pattern that explicitly forbids object decoding to prevent Remote Code Execution (RCE) vulnerabilities.
 
-### [manual_network_poll.gd](scripts/manual_network_poll.gd)
+### [manual_network_poll.gd](../scripts/server_architecture_manual_network_poll.gd)
 Moving networking off the main thread by disabling automatic polling and managing manual `multiplayer.poll()` loops.
 
-### [isolated_multiplayer_api.gd](scripts/isolated_multiplayer_api.gd)
+### [isolated_multiplayer_api.gd](../scripts/server_architecture_isolated_multiplayer_api.gd)
 Pattern for running Client and Server branches independently within a single Godot instance via isolated API instances.
 
-### [server_authority_validator.gd](scripts/server_authority_validator.gd)
+### [server_authority_validator.gd](../scripts/server_architecture_server_authority_validator.gd)
 Authoritative entry point validation using `get_remote_sender_id()` to strictly verify client requests.
 
-### [websocket_server_compat.gd](scripts/websocket_server_compat.gd)
+### [websocket_server_compat.gd](../scripts/server_architecture_websocket_server_compat.gd)
 Ensuring compatibility with HTML5/Web browser clients using `WebSocketMultiplayerPeer` architecture.
 
-### [peer_kick_manager.gd](scripts/peer_kick_manager.gd)
+### [peer_kick_manager.gd](../scripts/server_architecture_peer_kick_manager.gd)
 Graceful termination and cleanup of peer connections with custom reason propagation.
 
-### [server_matchmaker_client.gd](scripts/server_matchmaker_client.gd)
+### [server_matchmaker_client.gd](../scripts/server_architecture_server_matchmaker_client.gd)
 Client-side handoff logic for connecting to servers via a Load Balancer/Matchmaker.
 
-### [server_health_exporter.gd](scripts/server_health_exporter.gd)
+### [server_health_exporter.gd](../scripts/server_architecture_server_health_exporter.gd)
 Telemetry exporter for headless servers to monitoring stacks (Prometheus/Grafana).
 
 ## NEVER Do in Server Architecture
@@ -131,4 +131,4 @@ Monitoring dedicated servers is vital for scaling.
 
 
 ### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

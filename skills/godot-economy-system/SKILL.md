@@ -258,3 +258,4 @@ func get_value() -> int:
 
 ## Reference
 - Master Skill: [godot-master](../godot-master/SKILL.md)
+- Related: After sinks/loot/shops are Resource-driven, validate careers and farm risks with [godot-monte-carlo-balancer](../godot-monte-carlo-balancer/SKILL.md).

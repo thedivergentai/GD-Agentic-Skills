@@ -41,13 +41,13 @@ Expert blueprint for educational games that make learning engaging through game 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
 ### Original Expert Patterns
-- [adaptive_difficulty_adjuster.gd](scripts/adaptive_difficulty_adjuster.gd) - Sophisticated logic engine for Flow-State targeting (70%) and progressive hints.
+- [adaptive_difficulty_adjuster.gd](../scripts/genre_educational_adaptive_difficulty_adjuster.gd) - Sophisticated logic engine for Flow-State targeting (70%) and progressive hints.
 
 ### Modular Components
-- [tts_manager.gd](scripts/tts_manager.gd) - displayServer Text-to-Speech integration for accessibility.
-- [dynamic_localization.gd](scripts/dynamic_localization.gd) - Runtime localization switching and pluralization support.
-- [interactive_rich_text.gd](scripts/interactive_rich_text.gd) - Meta-click handling for interactive glossaries.
-- [threaded_scoring_engine.gd](scripts/threaded_scoring_engine.gd) - WorkerThreadPool patterns for grading algorithms.
+- [tts_manager.gd](../scripts/genre_educational_tts_manager.gd) - displayServer Text-to-Speech integration for accessibility.
+- [dynamic_localization.gd](../scripts/genre_educational_dynamic_localization.gd) - Runtime localization switching and pluralization support.
+- [interactive_rich_text.gd](../scripts/genre_educational_interactive_rich_text.gd) - Meta-click handling for interactive glossaries.
+- [threaded_scoring_engine.gd](../scripts/genre_educational_threaded_scoring_engine.gd) - WorkerThreadPool patterns for grading algorithms.
 
 ---
 
@@ -67,6 +67,7 @@ Expert blueprint for educational games that make learning engaging through game 
 | 3. Logic | `state-machine` | Quiz flow (Question -> Answer -> Result) |
 | 4. Juice | `godot-particles`, `godot-tweening` | Making learning feel rewarding |
 | 5. Meta | `godot-scene-management` | Navigating between lessons and map |
+| 6. Balance | `godot-monte-carlo-balancer` | Override bands to ~70% flow / mastery |
 
 ## Architecture Overview
 
@@ -204,4 +205,4 @@ Learning is hard. The game must heavily reward effort visually.
 
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

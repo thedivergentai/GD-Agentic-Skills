@@ -39,11 +39,11 @@ description: "Expert blueprint for sports games (FIFA, NBA 2K, Rocket League, To
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [sports_ball_physics.gd](scripts/sports_ball_physics.gd) - High-fidelity Magnus effect and air drag model for ball-centric sports.
-- [team_manager.gd](scripts/team_manager.gd) - Macro-behavior manager implementing Formation Slots and team strategy switching.
+- [sports_ball_physics.gd](../scripts/genre_sports_sports_ball_physics.gd) - High-fidelity Magnus effect and air drag model for ball-centric sports.
+- [team_manager.gd](../scripts/genre_sports_team_manager.gd) - Macro-behavior manager implementing Formation Slots and team strategy switching.
 
 ### Modular Components
-- [sports_patterns.gd](scripts/sports_patterns.gd) - Collection of utilities for physics-safe impulses and authoritative scoring.
+- [sports_patterns.gd](../scripts/genre_sports_sports_patterns.gd) - Collection of utilities for physics-safe impulses and authoritative scoring.
 
 ---
 
@@ -220,8 +220,8 @@ func _on_ball_entered(ball: RigidBody3D) -> void:
 
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)
 
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

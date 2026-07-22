@@ -46,10 +46,10 @@ Player choice, systemic AI, and clear communication define stealth games.
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [stealth_ai_controller.gd](scripts/stealth_ai_controller.gd) - Professional-grade NPC controller with composite vision, sound paths, and alert state logic.
+- [stealth_ai_controller.gd](../scripts/genre_stealth_stealth_ai_controller.gd) - Professional-grade NPC controller with composite vision, sound paths, and alert state logic.
 
 ### Modular Components
-- [stealth_patterns.gd](scripts/stealth_patterns.gd) - Collection of patterns for PhysicsServer raycasting, noise bus routing, and avoidance masking.
+- [stealth_patterns.gd](../scripts/genre_stealth_stealth_patterns.gd) - Collection of patterns for PhysicsServer raycasting, noise bus routing, and avoidance masking.
 
 ---
 
@@ -434,4 +434,5 @@ void fragment() {
 
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)
+- Related: Suspicion/route playstyles → [godot-monte-carlo-balancer](../SKILL.md).

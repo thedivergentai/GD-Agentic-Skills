@@ -15,34 +15,34 @@ Slot management, stacking logic, and resource-based items define robust inventor
 
 ## Available Scripts
 
-### [inventory_item_resource.gd](scripts/inventory_item_resource.gd)
+### [inventory_item_resource.gd](../scripts/inventory_system_inventory_item_resource.gd)
 Base Resource for all inventory items, allowing for serialized `.tres` item databases.
 
-### [item_slot_data.gd](scripts/item_slot_data.gd)
+### [item_slot_data.gd](../scripts/inventory_system_item_slot_data.gd)
 Reactive data structure for a single inventory slot, broadcasting changes to the UI.
 
-### [inventory_data_resource.gd](scripts/inventory_data_resource.gd)
+### [inventory_data_resource.gd](../scripts/inventory_system_inventory_data_resource.gd)
 Centralized Resource for managing inventory arrays, stacking logic, and empty slot finding.
 
-### [inventory_ui_controller.gd](scripts/inventory_ui_controller.gd)
+### [inventory_ui_controller.gd](../scripts/inventory_system_inventory_ui_controller.gd)
 Grid-based UI controller that maps `InventoryData` to visual slots using the "Reactive UI" pattern.
 
-### [drag_and_drop_slot.gd](scripts/drag_and_drop_slot.gd)
+### [drag_and_drop_slot.gd](../scripts/inventory_system_drag_and_drop_slot.gd)
 Native Godot drag-and-drop implementation for moving and swapping inventory items.
 
-### [item_database_loader.gd](scripts/item_database_loader.gd)
+### [item_database_loader.gd](../scripts/inventory_system_item_database_loader.gd)
 Global registry pattern to efficiently load and lookup items by unique ID strings.
 
-### [inventory_persistence.gd](scripts/inventory_persistence.gd)
+### [inventory_persistence.gd](../scripts/inventory_system_inventory_persistence.gd)
 Expert logic for serializing and deserializing complex inventory structures to disk.
 
-### [consumable_item_logic.gd](scripts/consumable_item_logic.gd)
+### [consumable_item_logic.gd](../scripts/inventory_system_consumable_item_logic.gd)
 Extension pattern for implementing specific item behaviors (Potions, Food) via inheritance.
 
-### [loot_table_resource.gd](scripts/loot_table_resource.gd)
+### [loot_table_resource.gd](../scripts/inventory_system_loot_table_resource.gd)
 Data-driven loot distribution definition for random drops and chest contents.
 
-### [item_pickup_node.gd](scripts/item_pickup_node.gd)
+### [item_pickup_node.gd](../scripts/inventory_system_item_pickup_node.gd)
 World-space bridge for converting physical 2D/3D pickups into inventory data.
 
 ## NEVER Do in Inventory Systems
@@ -394,4 +394,4 @@ func load_inventory() -> void:
 ```
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

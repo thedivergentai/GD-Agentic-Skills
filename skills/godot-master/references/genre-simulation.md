@@ -39,11 +39,11 @@ Optimization, systems mastery, and satisfying feedback loops define management g
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [sim_tick_manager.gd](scripts/sim_tick_manager.gd) - Variable-speed tick system decoupling simulation from rendering.
-- [tycoon_economy.gd](scripts/tycoon_economy.gd) - Multi-resource economic engine with integer-precision currency.
+- [sim_tick_manager.gd](../scripts/genre_simulation_sim_tick_manager.gd) - Variable-speed tick system decoupling simulation from rendering.
+- [tycoon_economy.gd](../scripts/genre_simulation_tycoon_economy.gd) - Multi-resource economic engine with integer-precision currency.
 
 ### Modular Components
-- [simulation_patterns.gd](scripts/simulation_patterns.gd) - Reusable patterns: AStarGrid2D logistics and low-processor modes.
+- [simulation_patterns.gd](../scripts/genre_simulation_simulation_patterns.gd) - Reusable patterns: AStarGrid2D logistics and low-processor modes.
 
 ---
 
@@ -465,4 +465,5 @@ func _run() -> void:
 ```
 
 
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)
+- Related: Validate economy ticks and CSV→`.tres` balance with [godot-monte-carlo-balancer](../SKILL.md).

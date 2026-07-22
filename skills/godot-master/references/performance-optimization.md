@@ -15,34 +15,34 @@ Profiler-driven analysis, object pooling, and visibility culling define optimize
 
 ## Available Scripts
 
-### [worker_thread_pool_manager.gd](scripts/worker_thread_pool_manager.gd)
+### [worker_thread_pool_manager.gd](../scripts/performance_optimization_worker_thread_pool_manager.gd)
 Expert logic for offloading heavy computation to Godot 4's WorkerThreadPool for multi-threaded processing.
 
-### [object_pool_system.gd](scripts/object_pool_system.gd)
+### [object_pool_system.gd](../scripts/performance_optimization_object_pool_system.gd)
 Minimal allocation strategy using node visibility and process toggling instead of constant instantiation.
 
-### [rendering_server_direct.gd](scripts/rendering_server_direct.gd)
+### [rendering_server_direct.gd](../scripts/performance_optimization_rendering_server_direct.gd)
 Bypassing the SceneTree logic for massive canvas item rendering directly via the RenderingServer.
 
-### [low_level_physics_query.gd](scripts/low_level_physics_query.gd)
+### [low_level_physics_query.gd](../scripts/performance_optimization_low_level_physics_query.gd)
 High-performance direct physics space state queries, faster than using RayCast nodes for hundreds of checks.
 
-### [custom_monitor_profiler.gd](scripts/custom_monitor_profiler.gd)
+### [custom_monitor_profiler.gd](../scripts/performance_optimization_custom_monitor_profiler.gd)
 Implementation of real-time performance monitoring using Performance.get_monitor() for bottleneck detection.
 
-### [manual_culling_logic.gd](scripts/manual_culling_logic.gd)
+### [manual_culling_logic.gd](../scripts/performance_optimization_manual_culling_logic.gd)
 Disabling off-screen logic manually using VisibilityNotifiers to cull CPU-heavy processing.
 
-### [shared_resource_strategy.gd](scripts/shared_resource_strategy.gd)
+### [shared_resource_strategy.gd](../scripts/performance_optimization_shared_resource_strategy.gd)
 Expert management of Local-to-Scene vs Shared resources to balance memory usage and unique instance states.
 
-### [texture_array_batching.gd](scripts/texture_array_batching.gd)
+### [texture_array_batching.gd](../scripts/performance_optimization_texture_array_batching.gd)
 Reducing draw calls and state changes by utilizing TextureArrays for multi-item shader-based batching.
 
-### [multimesh_optimizer.gd](scripts/multimesh_optimizer.gd)
+### [multimesh_optimizer.gd](../scripts/performance_optimization_multimesh_optimizer.gd)
 Rendering thousands of animated mesh instances via hardware instancing (MultiMeshInstance3D).
 
-### [navigation_agent_optimization.gd](scripts/navigation_agent_optimization.gd)
+### [navigation_agent_optimization.gd](../scripts/performance_optimization_navigation_agent_optimization.gd)
 Staggered path update strategy for massive AI crowds to prevent pathfinding bottlenecks in a single frame.
 
 ## NEVER Do in Performance Optimization
@@ -127,4 +127,4 @@ Spreading pathfinding costs over multiple frames to prevent frame-time spikes.
 
 
 ### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

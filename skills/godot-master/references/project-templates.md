@@ -9,37 +9,37 @@ Genre-specific scaffolding, AutoLoad patterns, and modular architecture define r
 
 ## Available Scripts
 
-### [base_game_manager.gd](scripts/base_game_manager.gd)
+### [base_game_manager.gd](../scripts/project_templates_base_game_manager.gd)
 Expert AutoLoad template for game state management.
 
-### [base_level.gd](scripts/base_level.gd)
+### [base_level.gd](../scripts/project_templates_base_level.gd)
 Abstract base class for all loaded levels with structured lifecycle hooks.
 
-### [base_actor.gd](scripts/base_actor.gd)
+### [base_actor.gd](../scripts/project_templates_base_actor.gd)
 Expert foundation for all gameplay agents (Player, NPC, Enemies).
 
-### [base_menu.gd](scripts/base_menu.gd)
+### [base_menu.gd](../scripts/project_templates_base_menu.gd)
 UI foundation for focus persistence, animations, and input blocking.
 
-### [subsystem_locator.gd](scripts/subsystem_locator.gd)
+### [subsystem_locator.gd](../scripts/project_templates_subsystem_locator.gd)
 Decoupled alternative to monolithic managers for modular registration.
 
-### [multi_platform_input.gd](scripts/multi_platform_input.gd)
+### [multi_platform_input.gd](../scripts/project_templates_multi_platform_input.gd)
 Template-driven Input Mapping for hardware-aware profile overrides.
 
-### [platform_feature_config.gd](scripts/platform_feature_config.gd)
+### [platform_feature_config.gd](../scripts/project_templates_platform_feature_config.gd)
 Conditional platform logic using Godot Feature Tags.
 
-### [scene_state_machine.gd](scripts/scene_state_machine.gd)
+### [scene_state_machine.gd](../scripts/project_templates_scene_state_machine.gd)
 Node-based State Machine boilerplate for visual state logic.
 
-### [state_machine_node.gd](scripts/state_machine_node.gd)
+### [state_machine_node.gd](../scripts/project_templates_state_machine_node.gd)
 Abstract state node foundation for specialized state components.
 
-### [accessibility_tts_manager.gd](scripts/accessibility_tts_manager.gd)
+### [accessibility_tts_manager.gd](../scripts/project_templates_accessibility_tts_manager.gd)
 Accessibility & Localization foundation using native TTS API.
 
-### [level_steamer_manager.gd](scripts/level_steamer_manager.gd)
+### [level_steamer_manager.gd](../scripts/project_templates_level_steamer_manager.gd)
 Background level-loading template using `load_threaded_request`.
 
 ## NEVER Do (Expert Anti-Patterns)
@@ -347,8 +347,8 @@ func _ready():
 ```
 
 ## Reference
-- [GDSkills godot-project-foundations](../godot-project-foundations/SKILL.md)
+- [GDSkills godot-project-foundations](../SKILL.md)
 
 
 ### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

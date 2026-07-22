@@ -9,46 +9,46 @@ Seeded algorithms, noise functions, and constraint propagation define replayable
 
 ## Available Scripts
 
-### [fast_noise_noise2d_master.gd](scripts/fast_noise_noise2d_master.gd)
+### [fast_noise_noise2d_master.gd](../scripts/procedural_generation_fast_noise_noise2d_master.gd)
 Advanced usage of `FastNoiseLite` with image-based sampling for maximum performance.
 
-### [cellular_automata_dungeon.gd](scripts/cellular_automata_dungeon.gd)
+### [cellular_automata_dungeon.gd](../scripts/procedural_generation_cellular_automata_dungeon.gd)
 The classic 4-5 rule implementation for organic cave and terrain generation.
 
-### [poisson_disk_sampling_2d.gd](scripts/poisson_disk_sampling_2d.gd)
+### [poisson_disk_sampling_2d.gd](../scripts/procedural_generation_poisson_disk_sampling_2d.gd)
 Blue-noise distribution algorithm for non-clumping object and enemy placement.
 
-### [multi_threaded_chunk_gen.gd](scripts/multi_threaded_chunk_gen.gd)
+### [multi_threaded_chunk_gen.gd](../scripts/procedural_generation_multi_threaded_chunk_gen.gd)
 Expert pattern for offloading procedural generation to the `WorkerThreadPool`.
 
-### [drunknard_walk_path.gd](scripts/drunknard_walk_path.gd)
+### [drunknard_walk_path.gd](../scripts/procedural_generation_drunknard_walk_path.gd)
 Lightweight algorithm for generating winding paths, tunnels, and rivers.
 
-### [marching_squares_metaballs.gd](scripts/marching_squares_metaballs.gd)
+### [marching_squares_metaballs.gd](../scripts/procedural_generation_marching_squares_metaballs.gd)
 Implementing the Marching Squares algorithm for smooth contouring and influential maps.
 
-### [bsp_tree_rooms.gd](scripts/bsp_tree_rooms.gd)
+### [bsp_tree_rooms.gd](../scripts/procedural_generation_bsp_tree_rooms.gd)
 Binary Space Partitioning for generating structured, non-overlapping floor plans.
 
-### [wave_function_collapse_lite.gd](scripts/wave_function_collapse_lite.gd)
+### [wave_function_collapse_lite.gd](../scripts/procedural_generation_wave_function_collapse_lite.gd)
 Foundation for Wave Function Collapse (WFC) using entropy-based adjacency rules.
 
-### [mesh_gen_infinite_terrain.gd](scripts/mesh_gen_infinite_terrain.gd)
+### [mesh_gen_infinite_terrain.gd](../scripts/procedural_generation_mesh_gen_infinite_terrain.gd)
 Runtime 3D terrain generation using `ArrayMesh` and `SurfaceTool` with LOD potential.
 
-### [l_system_tree_gen.gd](scripts/l_system_tree_gen.gd)
+### [l_system_tree_gen.gd](../scripts/procedural_generation_l_system_tree_gen.gd)
 L-System string grammar for procedural plant and tree growth in 3D.
 
-### [wfc_level_generator.gd](scripts/wfc_level_generator.gd)
+### [wfc_level_generator.gd](../scripts/procedural_generation_wfc_level_generator.gd)
 Expert Wave Function Collapse implementation with tile adjacency rules.
 
-### [proc_gen_marching_cubes_base.gd](scripts/proc_gen_marching_cubes_base.gd)
+### [proc_gen_marching_cubes_base.gd](../scripts/procedural_generation_proc_gen_marching_cubes_base.gd)
 Base class for 3D terrain generation using ArrayMesh and direct GPU vertex array committing.
 
-### [proc_gen_graph_layout.gd](scripts/proc_gen_graph_layout.gd)
+### [proc_gen_graph_layout.gd](../scripts/procedural_generation_proc_gen_graph_layout.gd)
 Pattern for managing logical dungeon layouts using AStar2D/3D as a directed graph.
 
-### [proc_gen_seed_history.gd](scripts/proc_gen_seed_history.gd)
+### [proc_gen_seed_history.gd](../scripts/procedural_generation_proc_gen_seed_history.gd)
 Seed and state history manager for deterministic, undoable procedural sequences.
 
 ## NEVER Do in Procedural Generation
@@ -289,4 +289,4 @@ Don't generate your dungeon geometry first. Build a logical graph using `AStar2D
 
 
 ### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

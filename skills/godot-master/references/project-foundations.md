@@ -12,21 +12,21 @@ Feature-based organization, consistent naming, and version control hygiene defin
 ### 🏛️ Core Scaffolding (Stateful / Persistent)
 Stateful managers and controllers that persist in the SceneTree or handle global lifecycle events.
 
-- **[project_bootstrapper.gd](scripts/project_bootstrapper.gd)**: Auto-generates feature folders and .gitignore.
-- **[runtime_configurator.gd](scripts/runtime_configurator.gd)**: Applies high-performance profiles and saves `override.cfg`.
-- **[managed_autoload.gd](scripts/managed_autoload.gd)**: Advanced Singleton pattern with `RefCounted` delegation.
-- **[global_event_bus.gd](scripts/global_event_bus.gd)**: Strongly-typed global Signal Bus for system decoupling.
-- **[node_pooling_system.gd](scripts/node_pooling_system.gd)**: Thread-safe Object Pool for high-frequency scene instantiation.
-- **[async_resource_loader.gd](scripts/async_resource_loader.gd)**: Threaded non-blocking scene loading with progress status.
+- **[project_bootstrapper.gd](../scripts/project_foundations_project_bootstrapper.gd)**: Auto-generates feature folders and .gitignore.
+- **[runtime_configurator.gd](../scripts/project_foundations_runtime_configurator.gd)**: Applies high-performance profiles and saves `override.cfg`.
+- **[managed_autoload.gd](../scripts/project_foundations_managed_autoload.gd)**: Advanced Singleton pattern with `RefCounted` delegation.
+- **[global_event_bus.gd](../scripts/autoload_architecture_global_event_bus.gd)**: Strongly-typed global Signal Bus for system decoupling.
+- **[node_pooling_system.gd](../scripts/project_foundations_node_pooling_system.gd)**: Thread-safe Object Pool for high-frequency scene instantiation.
+- **[async_resource_loader.gd](../scripts/project_foundations_async_resource_loader.gd)**: Threaded non-blocking scene loading with progress status.
 
 ### 🛠️ Runtime Utilities (Stateless / Lightweight)
 Stateless helper scripts, static libraries, and custom data containers (Resource/RefCounted).
 
-- **[base_data_resource.gd](scripts/base_data_resource.gd)**: Reactive Resource foundation using `emit_changed()`.
-- **[advanced_telemetry_logger.gd](scripts/advanced_telemetry_logger.gd)**: Custom OS-level `Logger` for crash reporting.
-- **[threaded_task_worker.gd](scripts/threaded_task_worker.gd)**: Robust `WorkerThreadPool` implementation.
-- **[action_buffer_input.gd](scripts/action_buffer_input.gd)**: Foundational `_unhandled_input` buffer.
-- **[build_metadata_provider.gd](scripts/build_metadata_provider.gd)**: Native extraction of version and build metadata.
+- **[base_data_resource.gd](../scripts/project_foundations_base_data_resource.gd)**: Reactive Resource foundation using `emit_changed()`.
+- **[advanced_telemetry_logger.gd](../scripts/project_foundations_advanced_telemetry_logger.gd)**: Custom OS-level `Logger` for crash reporting.
+- **[threaded_task_worker.gd](../scripts/project_foundations_threaded_task_worker.gd)**: Robust `WorkerThreadPool` implementation.
+- **[action_buffer_input.gd](../scripts/project_foundations_action_buffer_input.gd)**: Foundational `_unhandled_input` buffer.
+- **[build_metadata_provider.gd](../scripts/project_foundations_build_metadata_provider.gd)**: Native extraction of version and build metadata.
 
 > **Do NOT Load** dependency_auditor.gd unless troubleshooting loading errors.
 
@@ -201,4 +201,4 @@ static func load_metadata(path: String = "user://metadata.res") -> ProjectMetada
 
 
 ### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

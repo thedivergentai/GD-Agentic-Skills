@@ -15,7 +15,7 @@ Gunplay feel, responsive combat, and competitive balance define shooters.
 
 ## Available Scripts
 
-### [advanced_weapon_controller.gd](scripts/advanced_weapon_controller.gd)
+### [advanced_weapon_controller.gd](../scripts/genre_shooter_advanced_weapon_controller.gd)
 Expert pattern for recoil, bloom, and dual hitscan/projectile systems with object pooling notes.
 
 ## Core Loop
@@ -47,10 +47,10 @@ Expert pattern for recoil, bloom, and dual hitscan/projectile systems with objec
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [advanced_weapon_controller.gd](scripts/advanced_weapon_controller.gd) - Professional-grade weapon system with deterministic recoil, bloom, and dual firing modes.
+- [advanced_weapon_controller.gd](../scripts/genre_shooter_advanced_weapon_controller.gd) - Professional-grade weapon system with deterministic recoil, bloom, and dual firing modes.
 
 ### Modular Components
-- [shooter_patterns.gd](scripts/shooter_patterns.gd) - Reusable patterns: Server-bypassing hitscan, random spread, and ShapeCast3D explosions.
+- [shooter_patterns.gd](../scripts/genre_shooter_shooter_patterns.gd) - Reusable patterns: Server-bypassing hitscan, random spread, and ShapeCast3D explosions.
 
 ---
 
@@ -451,4 +451,5 @@ func execute_explosion(radius: float) -> Array[Dictionary]:
 
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)
+- Related: Weapon asymmetry matrices via [godot-monte-carlo-balancer](../SKILL.md).

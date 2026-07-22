@@ -80,6 +80,7 @@ Expert blueprint for MOBAs emphasizing competitive balance and strategic depth.
 | 3. Combat | `godot-ability-system`, `godot-rpg-stats` | QWER abilities, cooldowns, scaling |
 | 4. Network | `godot-multiplayer-networking` | Authority, lag compensation, prediction |
 | 5. Map | `godot-3d-world-building` | Lanes, Jungle, River, Bases |
+| 6. Balance | `godot-monte-carlo-balancer` | Hero/asymmetry matrix (not sole AFK→pro) |
 
 ## Architecture Overview
 

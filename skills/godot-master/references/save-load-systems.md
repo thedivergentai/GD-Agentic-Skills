@@ -37,13 +37,13 @@ JSON serialization, version migration, and PERSIST group patterns define robust 
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [save_load_patterns.gd](scripts/save_load_patterns.gd)
+### [save_load_patterns.gd](../scripts/save_load_systems_save_load_patterns.gd)
 10 Expert patterns: PERSIST group serialization, binary snapshots, JSON safe-parsing, and threaded loading.
 
-### [save_migration_manager.gd](scripts/save_migration_manager.gd)
+### [save_migration_manager.gd](../scripts/save_load_systems_save_migration_manager.gd)
 Expert save file versioning with automatic migration between schema versions.
 
-### [save_system_encryption.gd](scripts/save_system_encryption.gd)
+### [save_system_encryption.gd](../scripts/save_load_systems_save_system_encryption.gd)
 AES-256 encrypted saves with compression to prevent casual save editing.
 
 ---
@@ -371,4 +371,4 @@ func load_with_validation() -> Variant:
 ```
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

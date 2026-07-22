@@ -9,34 +9,34 @@ Expert guidance for building flexible, data-driven dialogue systems.
 
 ## Available Scripts
 
-### [dialogue_resource.gd](scripts/dialogue_resource.gd)
+### [dialogue_resource.gd](../scripts/dialogue_system_dialogue_resource.gd)
 Data-driven conversation tree container using Resources for modular, branching narrative paths.
 
-### [dialogue_node_data.gd](scripts/dialogue_node_data.gd)
+### [dialogue_node_data.gd](../scripts/dialogue_system_dialogue_node_data.gd)
 Serialized data structure for a single line of dialogue, including speaker metadata and portraits.
 
-### [dialogue_option_data.gd](scripts/dialogue_option_data.gd)
+### [dialogue_option_data.gd](../scripts/dialogue_system_dialogue_option_data.gd)
 Interactive player choice definition with branching logic and scriptable availability conditions.
 
-### [dialogue_manager_singleton.gd](scripts/dialogue_manager_singleton.gd)
+### [dialogue_manager_singleton.gd](../scripts/dialogue_system_dialogue_manager_singleton.gd)
 Centralized AutoLoad orchestrator for traversing dialogue trees and broadcasting state signals.
 
-### [dialogue_ui_controller.gd](scripts/dialogue_ui_controller.gd)
+### [dialogue_ui_controller.gd](../scripts/dialogue_system_dialogue_ui_controller.gd)
 Reactive UI bridge that maps dialogue data to visual labels and dynamic choice buttons.
 
-### [typebox_effect.gd](scripts/typebox_effect.gd)
+### [typebox_effect.gd](../scripts/dialogue_system_typebox_effect.gd)
 Polished "Character-by-character" text reveal effect using Godot's built-in Tweens.
 
-### [dialogue_event_bridge.gd](scripts/dialogue_event_bridge.gd)
+### [dialogue_event_bridge.gd](../scripts/dialogue_system_dialogue_event_bridge.gd)
 Bridge node for triggering external game events (e.g. starting a quest) from conversation nodes.
 
-### [branching_condition_validator.gd](scripts/branching_condition_validator.gd)
+### [branching_condition_validator.gd](../scripts/dialogue_system_branching_condition_validator.gd)
 Expert logic for evaluating player stats or global flags to toggle dialogue choices.
 
-### [localized_dialogue_resource.gd](scripts/localized_dialogue_resource.gd)
+### [localized_dialogue_resource.gd](../scripts/dialogue_system_localized_dialogue_resource.gd)
 Advanced strategy for supporting multi-language conversation text via translation keys.
 
-### [dialogue_portrait_manager.gd](scripts/dialogue_portrait_manager.gd)
+### [dialogue_portrait_manager.gd](../scripts/dialogue_system_dialogue_portrait_manager.gd)
 Visual controller for managing character expressions and entry animations during dialogue.
 
 ## NEVER Do in Dialogue Systems
@@ -61,10 +61,10 @@ Visual controller for managing character expressions and entry animations during
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [dialogue_engine.gd](scripts/dialogue_engine.gd)
+### [dialogue_engine.gd](../scripts/dialogue_system_dialogue_engine.gd)
 Graph-based dialogue with BBCode signal tags. Parses [trigger:event_id] tags from text, fires signals, and loads external JSON dialogue graphs.
 
-### [dialogue_manager.gd](scripts/dialogue_manager.gd)
+### [dialogue_manager.gd](../scripts/dialogue_system_dialogue_manager.gd)
 Data-driven dialogue engine with branching, variable storage, and conditional choices.
 
 ---
@@ -353,4 +353,4 @@ static func initialize() -> void:
 ```
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

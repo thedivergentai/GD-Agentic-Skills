@@ -33,46 +33,46 @@ Expert guidance for realistic 3D lighting with shadows and global illumination.
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [day_night_cycle.gd](scripts/day_night_cycle.gd)
+### [day_night_cycle.gd](../scripts/3d_lighting_day_night_cycle.gd)
 Dynamic sun position and color based on time-of-day. Handles DirectionalLight3D rotation, color temperature, and intensity curves. Use for outdoor day/night systems.
 
-### [light_probe_manager.gd](scripts/light_probe_manager.gd)
+### [light_probe_manager.gd](../scripts/3d_lighting_light_probe_manager.gd)
 VoxelGI and SDFGI management for global illumination setup.
 
-### [lighting_manager.gd](scripts/lighting_manager.gd)
+### [lighting_manager.gd](../scripts/3d_lighting_lighting_manager.gd)
 Dynamic light pooling and LOD. Manages light culling and shadow toggling based on camera distance. Use for performance optimization with many lights.
 
-### [volumetric_fx.gd](scripts/volumetric_fx.gd)
+### [volumetric_fx.gd](../scripts/3d_lighting_volumetric_fx.gd)
 Volumetric fog and god ray configuration. Runtime fog density/color adjustments and light shaft setup. Use for atmospheric effects.
 
-### [shadow_cascade_tuner.gd](scripts/shadow_cascade_tuner.gd)
+### [shadow_cascade_tuner.gd](../scripts/3d_lighting_shadow_cascade_tuner.gd)
 Expert logic for adjusting DirectionalLight3D shadow split distances dynamically based on sun angle and camera tilt.
 
-### [lightmap_bake_helper.gd](scripts/lightmap_bake_helper.gd)
+### [lightmap_bake_helper.gd](../scripts/3d_lighting_lightmap_bake_helper.gd)
 Advanced LightmapGI configuration pattern using Shadowmasking mode for hybrid static/dynamic shadowing.
 
-### [sdfgi_probe_manager.gd](scripts/sdfgi_probe_manager.gd)
+### [sdfgi_probe_manager.gd](../scripts/3d_lighting_sdfgi_probe_manager.gd)
 Dynamic quality scaler for real-time Global Illumination (SDFGI). Adjusts cell size and occlusion for performance/quality trade-offs.
 
-### [volumetric_fog_zones.gd](scripts/volumetric_fog_zones.gd)
+### [volumetric_fog_zones.gd](../scripts/3d_lighting_volumetric_fog_zones.gd)
 Smoothly transitioning localized fog density for cave entrances or forest clearings using Tweens and Area3D triggers.
 
-### [fake_gi_bounce.gd](scripts/fake_gi_bounce.gd)
+### [fake_gi_bounce.gd](../scripts/3d_lighting_fake_gi_bounce.gd)
 Efficient 'Mobile-GI' pattern. Simulates light bouncing off the floor using non-shadowed directional fill lights.
 
-### [environment_blender.gd](scripts/environment_blender.gd)
+### [environment_blender.gd](../scripts/3d_lighting_environment_blender.gd)
 Architectural pattern for transitioning WorldEnvironment parameters (Sky, Ambient, Tonemap) during gameplay.
 
-### [shadow_bias_tuner.gd](scripts/shadow_bias_tuner.gd)
+### [shadow_bias_tuner.gd](../scripts/3d_lighting_shadow_bias_tuner.gd)
 Optimization script for correcting 'Peter Panning' and 'Shadow Acne' on high-fidelity directional lights.
 
-### [light_lod_optimizer.gd](scripts/light_lod_optimizer.gd)
+### [light_lod_optimizer.gd](../scripts/3d_lighting_light_lod_optimizer.gd)
 Distance-based shadow and visibility culling for OmniLight3D nodes in dense environments.
 
-### [reflection_probe_manager.gd](scripts/reflection_probe_manager.gd)
+### [reflection_probe_manager.gd](../scripts/3d_lighting_reflection_probe_manager.gd)
 Performance-aware ReflectionProbe handling using manual 'Update Once' triggers for large environmental changes.
 
-### [spotlight_projector_setup.gd](scripts/spotlight_projector_setup.gd)
+### [spotlight_projector_setup.gd](../scripts/3d_lighting_spotlight_projector_setup.gd)
 High-detail lighting using Projector textures to fake complex shadow patterns (grates, glass ripples).
 
 ---
@@ -532,4 +532,4 @@ func apply_low_quality_profile(env_rid: RID) -> void:
 ```
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

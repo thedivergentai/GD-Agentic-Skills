@@ -46,20 +46,20 @@ Expert blueprint for horror games balancing tension, atmosphere, and player agen
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [predator_stalking_ai.gd](scripts/predator_stalking_ai.gd) - Sophisticated "Stalker" AI using dual-brain logic (Director + Senses) and player view-cone avoidance.
-- [director_pacing.gd](scripts/director_pacing.gd) - Invisible orchestrator managing the "Sawtooth" tension wave and relief periods.
+- [predator_stalking_ai.gd](../scripts/genre_horror_predator_stalking_ai.gd) - Sophisticated "Stalker" AI using dual-brain logic (Director + Senses) and player view-cone avoidance.
+- [director_pacing.gd](../scripts/genre_horror_director_pacing.gd) - Invisible orchestrator managing the "Sawtooth" tension wave and relief periods.
 
 ### Modular Components
-- [monster_los_check.gd](scripts/monster_los_check.gd) - Physics-synced raycasting for high-performance visibility checks.
-- [flashlight_flicker.gd](scripts/flashlight_flicker.gd) - Procedural light interference for atmospheric tension.
-- [inventory_data_storage.gd](scripts/inventory_data_storage.gd) - Typed data structure for sparse resource management.
-- [async_scare_loader.gd](scripts/async_scare_loader.gd) - Threaded resource loading for hitch-free jump-scares.
-- [spatial_noise_emitter.gd](scripts/spatial_noise_emitter.gd) - Shape-based sound sensing for sensory AI.
-- [item_state_duplicator.gd](scripts/item_state_duplicator.gd) - Deep duplication for managing unique weapon/item states.
-- [fog_claus_intensifier.gd](scripts/fog_claus_intensifier.gd) - Volumetric fog manipulation for dread buildup.
-- [offscreen_logic_suspender.gd](scripts/offscreen_logic_suspender.gd) - Culling logic for AI processing outside camera view.
-- [sanity_shader_manager.gd](scripts/sanity_shader_manager.gd) - Instance-uniform driven distortion effects.
-- [optimized_horror_state_machine.gd](scripts/optimized_horror_state_machine.gd) - High-speed predator behavior logic.
+- [monster_los_check.gd](../scripts/genre_horror_monster_los_check.gd) - Physics-synced raycasting for high-performance visibility checks.
+- [flashlight_flicker.gd](../scripts/genre_horror_flashlight_flicker.gd) - Procedural light interference for atmospheric tension.
+- [inventory_data_storage.gd](../scripts/genre_horror_inventory_data_storage.gd) - Typed data structure for sparse resource management.
+- [async_scare_loader.gd](../scripts/genre_horror_async_scare_loader.gd) - Threaded resource loading for hitch-free jump-scares.
+- [spatial_noise_emitter.gd](../scripts/genre_horror_spatial_noise_emitter.gd) - Shape-based sound sensing for sensory AI.
+- [item_state_duplicator.gd](../scripts/genre_horror_item_state_duplicator.gd) - Deep duplication for managing unique weapon/item states.
+- [fog_claus_intensifier.gd](../scripts/genre_horror_fog_claus_intensifier.gd) - Volumetric fog manipulation for dread buildup.
+- [offscreen_logic_suspender.gd](../scripts/genre_horror_offscreen_logic_suspender.gd) - Culling logic for AI processing outside camera view.
+- [sanity_shader_manager.gd](../scripts/genre_horror_sanity_shader_manager.gd) - Instance-uniform driven distortion effects.
+- [optimized_horror_state_machine.gd](../scripts/genre_horror_optimized_horror_state_machine.gd) - High-speed predator behavior logic.
 
 ---
 
@@ -217,4 +217,4 @@ func _do_save(data):
 
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

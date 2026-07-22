@@ -35,34 +35,34 @@ Touch-first input, safe area handling, and battery optimization define mobile de
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [mobile_gesture_recognizer.gd](scripts/mobile_gesture_recognizer.gd)
+### [mobile_gesture_recognizer.gd](../scripts/platform_mobile_mobile_gesture_recognizer.gd)
 Expert multi-touch logic for pinch-to-zoom and two-finger rotation.
 
-### [adaptive_safe_area_inset.gd](scripts/adaptive_safe_area_inset.gd)
+### [adaptive_safe_area_inset.gd](../scripts/platform_mobile_adaptive_safe_area_inset.gd)
 Dynamic safe-area (notch) handling using `DisplayServer` insets.
 
-### [thermal_throttle_monitor.gd](scripts/thermal_throttle_monitor.gd)
+### [thermal_throttle_monitor.gd](../scripts/platform_mobile_thermal_throttle_monitor.gd)
 Battery and heat management via `NOTIFICATION_APPLICATION_PAUSED`.
 
-### [mobile_iap_flow_boilerplate.gd](scripts/mobile_iap_flow_boilerplate.gd)
+### [mobile_iap_flow_boilerplate.gd](../scripts/platform_mobile_mobile_iap_flow_boilerplate.gd)
 Unified boilerplate for Android/iOS In-App Purchases (IAP).
 
-### [haptic_pattern_generator.gd](scripts/haptic_pattern_generator.gd)
+### [haptic_pattern_generator.gd](../scripts/platform_mobile_haptic_pattern_generator.gd)
 Advanced vibration patterns for mobile haptic feedback.
 
-### [android_runtime_permissions.gd](scripts/android_runtime_permissions.gd)
+### [android_runtime_permissions.gd](../scripts/platform_mobile_android_runtime_permissions.gd)
 Expert Android permission requesting and verification logic.
 
-### [mobile_sensor_fusion.gd](scripts/mobile_sensor_fusion.gd)
+### [mobile_sensor_fusion.gd](../scripts/platform_mobile_mobile_sensor_fusion.gd)
 Stable motion controls using Accelerometer and Gravity fusion.
 
-### [orientation_layout_adaptor.gd](scripts/orientation_layout_adaptor.gd)
+### [orientation_layout_adaptor.gd](../scripts/platform_mobile_orientation_layout_adaptor.gd)
 Adaptive UI swapping for Landscape/Portrait transitions.
 
-### [mobile_vram_optimizer.gd](scripts/mobile_vram_optimizer.gd)
+### [mobile_vram_optimizer.gd](../scripts/platform_mobile_mobile_vram_optimizer.gd)
 VRAM monitoring and texture compression enforcement rules.
 
-### [native_share_invoker.gd](scripts/native_share_invoker.gd)
+### [native_share_invoker.gd](../scripts/platform_mobile_native_share_invoker.gd)
 OS-level native share sheet integration for social features.
 
 ---
@@ -241,4 +241,4 @@ func _ready() -> void:
 
 
 ### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

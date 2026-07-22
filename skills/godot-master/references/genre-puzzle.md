@@ -42,20 +42,20 @@ Expert blueprint for puzzle games emphasizing clarity, experimentation, and "Aha
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [command_undo_redo.gd](scripts/command_undo_redo.gd) - Professional-grade Command Pattern for non-destructive state reversal and experimentation.
-- [grid_manager.gd](scripts/grid_manager.gd) - Decoupled grid logic data structure for raycast-free move validation (Sokoban/Match-3).
+- [command_undo_redo.gd](../scripts/genre_puzzle_command_undo_redo.gd) - Professional-grade Command Pattern for non-destructive state reversal and experimentation.
+- [grid_manager.gd](../scripts/genre_puzzle_grid_manager.gd) - Decoupled grid logic data structure for raycast-free move validation (Sokoban/Match-3).
 
 ### Modular Components
-- [puzzle_pathfinder.gd](scripts/puzzle_pathfinder.gd) - AStarGrid2D configuration for optimized pathfinding on 2D grids.
-- [puzzle_history.gd](scripts/puzzle_history.gd) - UndoRedo system implementation using the Action Command pattern.
-- [puzzle_saver.gd](scripts/puzzle_saver.gd) - JSON-based serialization for saving/restoring complex puzzle states.
-- [shuffle_bag.gd](scripts/shuffle_bag.gd) - Non-repeating randomizer for fair distribution of puzzle elements.
-- [perspective_overlay.gd](scripts/perspective_overlay.gd) - 3D-to-2D projection bridge for world-space puzzle mechanics.
-- [tile_animator.gd](scripts/tile_animator.gd) - Safe tween-based movement system using Callables for logic sync.
-- [match_three_logic.gd](scripts/match_three_logic.gd) - Recursive flood-fill and match detection logic.
-- [grid_input_manager.gd](scripts/grid_input_manager.gd) - Device-agnostic input routing for grid interaction.
-- [sleepy_block.gd](scripts/sleepy_block.gd) - Physics object stabilizer to prevent unintended solver jitter.
-- [puzzle_validator.gd](scripts/puzzle_validator.gd) - Array reduction component for evaluating complex win conditions.
+- [puzzle_pathfinder.gd](../scripts/genre_puzzle_puzzle_pathfinder.gd) - AStarGrid2D configuration for optimized pathfinding on 2D grids.
+- [puzzle_history.gd](../scripts/genre_puzzle_puzzle_history.gd) - UndoRedo system implementation using the Action Command pattern.
+- [puzzle_saver.gd](../scripts/genre_puzzle_puzzle_saver.gd) - JSON-based serialization for saving/restoring complex puzzle states.
+- [shuffle_bag.gd](../scripts/genre_card_game_deck_shuffle_bag.gd) - Non-repeating randomizer for fair distribution of puzzle elements.
+- [perspective_overlay.gd](../scripts/genre_puzzle_perspective_overlay.gd) - 3D-to-2D projection bridge for world-space puzzle mechanics.
+- [tile_animator.gd](../scripts/genre_puzzle_tile_animator.gd) - Safe tween-based movement system using Callables for logic sync.
+- [match_three_logic.gd](../scripts/genre_puzzle_match_three_logic.gd) - Recursive flood-fill and match detection logic.
+- [grid_input_manager.gd](../scripts/genre_puzzle_grid_input_manager.gd) - Device-agnostic input routing for grid interaction.
+- [sleepy_block.gd](../scripts/genre_puzzle_sleepy_block.gd) - Physics object stabilizer to prevent unintended solver jitter.
+- [puzzle_validator.gd](../scripts/genre_puzzle_puzzle_validator.gd) - Array reduction component for evaluating complex win conditions.
 
 ---
 
@@ -252,4 +252,4 @@ func reset_to_snapshot() -> void:
 ```
 
 
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

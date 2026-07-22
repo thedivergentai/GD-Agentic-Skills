@@ -38,13 +38,13 @@ This skill provides a standardized framework for "Collection Loops" – gameplay
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [collection_loop_patterns.gd](scripts/collection_loop_patterns.gd)
+### [collection_loop_patterns.gd](../scripts/game_loop_collection_collection_loop_patterns.gd)
 Collection of 10 expert patterns: Custom MainLoop extensions, deferred scene switching, threaded loading, and frame throttling.
 
-### [collection_manager.gd](scripts/collection_manager.gd)
+### [collection_manager.gd](../scripts/game_loop_collection_collection_manager.gd)
 The central brain of the hunt. Tracks progress and manages completion signals.
 
-### [collection_compass.gd](scripts/collection_compass.gd)
+### [collection_compass.gd](../scripts/game_loop_collection_collection_compass.gd)
 Spatial radar for pointing towards the nearest collectible using vector math.
 
 ---
@@ -73,4 +73,4 @@ Display uncollected items as silhouettes without extra textures by using `modula
 - **Reveal**: Set `modulate = Color(1, 1, 1, 1)` once collected.
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

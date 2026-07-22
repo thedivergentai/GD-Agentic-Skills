@@ -15,34 +15,34 @@ Resource-based design, typed arrays, and serialization define reusable, inspecto
 
 ## Available Scripts
 
-### [custom_data_resource.gd](scripts/custom_data_resource.gd)
+### [custom_data_resource.gd](../scripts/resource_data_patterns_custom_data_resource.gd)
 Pattern for defining serialized data containers (Items, Spells, Stats) for the Inspector.
 
-### [resource_flyweight_caching.gd](scripts/resource_flyweight_caching.gd)
+### [resource_flyweight_caching.gd](../scripts/resource_data_patterns_resource_flyweight_caching.gd)
 Expert example of the Flyweight pattern for memory-efficient resource sharing.
 
-### [resource_local_to_scene.gd](scripts/resource_local_to_scene.gd)
+### [resource_local_to_scene.gd](../scripts/resource_data_patterns_resource_local_to_scene.gd)
 Handling "Local to Scene" resources and `duplicate()` to prevent cross-contamination.
 
-### [character_stats_resource.gd](scripts/character_stats_resource.gd)
+### [character_stats_resource.gd](../scripts/genre_action_rpg_character_stats_resource.gd)
 Reactive data containers that emit signals when internal properties are modified.
 
-### [resource_save_system.gd](scripts/resource_save_system.gd)
+### [resource_save_system.gd](../scripts/resource_data_patterns_resource_save_system.gd)
 Pattern for serializing complex game state directly into `.tres` files on disk.
 
-### [resource_based_inventory.gd](scripts/resource_based_inventory.gd)
+### [resource_based_inventory.gd](../scripts/resource_data_patterns_resource_based_inventory.gd)
 Managing item collections and inventory logic using serialized Resource arrays.
 
-### [flyweight_enemy_config.gd](scripts/flyweight_enemy_config.gd)
+### [flyweight_enemy_config.gd](../scripts/resource_data_patterns_flyweight_enemy_config.gd)
 Using shared Resources to configure many entities efficiently (HP, Skins, Speed).
 
-### [dynamic_resource_generation.gd](scripts/dynamic_resource_generation.gd)
+### [dynamic_resource_generation.gd](../scripts/resource_data_patterns_dynamic_resource_generation.gd)
 Creating and modifying Resource instances programmatically at runtime (Loot, Procedural).
 
-### [resource_preloading_strategy.gd](scripts/resource_preloading_strategy.gd)
+### [resource_preloading_strategy.gd](../scripts/resource_data_patterns_resource_preloading_strategy.gd)
 Preventing frame drops by caching resources in a dictionary before gameplay starts.
 
-### [nested_resource_serialization.gd](scripts/nested_resource_serialization.gd)
+### [nested_resource_serialization.gd](../scripts/resource_data_patterns_nested_resource_serialization.gd)
 Building and saving complex data hierarchies using nested Resource properties.
 
 ## NEVER Do in Resource Design
@@ -401,4 +401,5 @@ Mandatory for components like `HealthComponent` or `AIConfig` that share a base 
 
 
 ### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)
+- Related: `.tres` / Resources are the preferred extract source for [godot-monte-carlo-balancer](../SKILL.md) — build the data layer before regex farms.

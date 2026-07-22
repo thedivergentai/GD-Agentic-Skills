@@ -402,3 +402,4 @@ Mandatory for components like `HealthComponent` or `AIConfig` that share a base 
 
 ### Related
 - Master Skill: [godot-master](../godot-master/SKILL.md)
+- Related: `.tres` / Resources are the preferred extract source for [godot-monte-carlo-balancer](../godot-monte-carlo-balancer/SKILL.md) — build the data layer before regex farms.

@@ -30,13 +30,13 @@ Expert guidance for building flexible, extensible ability systems.
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
-### [ability_manager.gd](scripts/ability_manager.gd)
+### [ability_manager.gd](../scripts/ability_system_ability_manager.gd)
 Ability orchestration with cooldown registry, can_use checks, and visual cooldown progress. Decoupled from character logic for use on players, enemies, or turrets.
 
-### [ability_resource.gd](scripts/ability_resource.gd)
+### [ability_resource.gd](../scripts/ability_system_ability_resource.gd)
 Scriptable ability resource base class with metadata, stats, and effects array. Virtual execute() method for inheritance (ProjectileAbility, BuffAbility).
 
-### [buff_stat.gd](scripts/buff_stat.gd)
+### [buff_stat.gd](../scripts/ability_system_buff_stat.gd)
 Resource-Driven Buff System setup. Extends Resource and creates highly modular, drag-and-drop ability data.
 
 ---
@@ -616,4 +616,5 @@ func _rebuild_graph() -> void:
 ```
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)
+- Related: After cooldowns/costs are Resource-tuned, validate loadouts with [godot-monte-carlo-balancer](../SKILL.md).

@@ -435,3 +435,4 @@ void fragment() {
 
 ## Reference
 - Master Skill: [godot-master](../godot-master/SKILL.md)
+- Related: Suspicion/route playstyles → [godot-monte-carlo-balancer](../godot-monte-carlo-balancer/SKILL.md).

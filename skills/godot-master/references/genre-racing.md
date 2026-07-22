@@ -44,20 +44,20 @@ Expert blueprint for racing games balancing physics, competition, and sense of s
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
-- [arcade_vehicle_physics.gd](scripts/arcade_vehicle_physics.gd) - High-performance arcade handling with custom gravity, air control, and friction-slip drifting.
-- [spline_ai_controller.gd](scripts/spline_ai_controller.gd) - Professional racing AI using Path3D predictive steering and rubber-banding logic.
+- [arcade_vehicle_physics.gd](../scripts/genre_racing_arcade_vehicle_physics.gd) - High-performance arcade handling with custom gravity, air control, and friction-slip drifting.
+- [spline_ai_controller.gd](../scripts/genre_racing_spline_ai_controller.gd) - Professional racing AI using Path3D predictive steering and rubber-banding logic.
 
 ### Modular Components
-- [arcade_vehicle_controller.gd](scripts/arcade_vehicle_controller.gd) - Alternative tight, raycast-based vehicle movement model for non-physics karts.
-- [slipstream_handler.gd](scripts/slipstream_handler.gd) - Drafting zones with relative dot-product checks for speed boosts.
-- [lap_tracker.gd](scripts/lap_tracker.gd) - High-precision lap management with sequential checkpoint logic.
-- [ghost_recorder.gd](scripts/ghost_recorder.gd) - Binary transform serialization for lightweight ghost car playback.
-- [engine_audio_controller.gd](scripts/engine_audio_controller.gd) - RPM-to-pitch audio synthesis for engine revving and gear shifts.
-- [skid_mark_emitter.gd](scripts/skid_mark_emitter.gd) - Conditional tire-slip trail system for persistent visual feedback.
-- [minimap_icon_projector.gd](scripts/minimap_icon_projector.gd) - 3D-to-2D bridge for projecting racers onto a localized UI.
-- [force_feedback_router.gd](scripts/force_feedback_router.gd) - Haptic and rumble management based on terrain and collisions.
-- [raycast_suspension.gd](scripts/raycast_suspension.gd) - Spring/damper model for raycast wheels with configurable stiffness.
-- [racing_checkpoint.gd](scripts/racing_checkpoint.gd) - Indexed trigger gate for modular track-based lap progression.
+- [arcade_vehicle_controller.gd](../scripts/genre_racing_arcade_vehicle_controller.gd) - Alternative tight, raycast-based vehicle movement model for non-physics karts.
+- [slipstream_handler.gd](../scripts/genre_racing_slipstream_handler.gd) - Drafting zones with relative dot-product checks for speed boosts.
+- [lap_tracker.gd](../scripts/genre_racing_lap_tracker.gd) - High-precision lap management with sequential checkpoint logic.
+- [ghost_recorder.gd](../scripts/game_loop_time_trial_ghost_recorder.gd) - Binary transform serialization for lightweight ghost car playback.
+- [engine_audio_controller.gd](../scripts/genre_racing_engine_audio_controller.gd) - RPM-to-pitch audio synthesis for engine revving and gear shifts.
+- [skid_mark_emitter.gd](../scripts/genre_racing_skid_mark_emitter.gd) - Conditional tire-slip trail system for persistent visual feedback.
+- [minimap_icon_projector.gd](../scripts/genre_racing_minimap_icon_projector.gd) - 3D-to-2D bridge for projecting racers onto a localized UI.
+- [force_feedback_router.gd](../scripts/genre_racing_force_feedback_router.gd) - Haptic and rumble management based on terrain and collisions.
+- [raycast_suspension.gd](../scripts/genre_racing_raycast_suspension.gd) - Spring/damper model for raycast wheels with configurable stiffness.
+- [racing_checkpoint.gd](../scripts/genre_racing_racing_checkpoint.gd) - Indexed trigger gate for modular track-based lap progression.
 
 ---
 
@@ -230,8 +230,8 @@ func save_ghost_binary(path: String) -> void:
 
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)
 
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

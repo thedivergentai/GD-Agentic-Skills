@@ -72,7 +72,7 @@ Expert blueprint for action RPGs emphasizing real-time combat, character builds,
 
 ## Skill Chain
 
-`godot-project-foundations`, `godot-characterbody-2d`, `godot-combat-system`, `godot-rpg-stats`, `godot-inventory-system`, `godot-ability-system`, `godot-quest-system`, `godot-economy-system`, `godot-save-load-systems`
+`godot-project-foundations`, `godot-characterbody-2d`, `godot-combat-system`, `godot-rpg-stats`, `godot-inventory-system`, `godot-ability-system`, `godot-quest-system`, `godot-economy-system`, `godot-save-load-systems`, `godot-monte-carlo-balancer`
 
 ---
 

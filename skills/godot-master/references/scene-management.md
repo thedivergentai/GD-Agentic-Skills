@@ -15,41 +15,41 @@ Async loading, transitions, instance pooling, and caching define smooth scene wo
 
 ## Available Scripts
 
-### [background_resource_loader.gd](scripts/background_resource_loader.gd)
+### [background_resource_loader.gd](../scripts/scene_management_background_resource_loader.gd)
 Expert asynchronous scene loading with progress tracking and thread-safe transition.
 
-### [scene_transition_manager.gd](scripts/scene_transition_manager.gd)
+### [scene_transition_manager.gd](../scripts/scene_management_scene_transition_manager.gd)
 Clean implementation of scene fades and transitions using Tweens and Shaders.
 
-### [additive_ui_layering.gd](scripts/additive_ui_layering.gd)
+### [additive_ui_layering.gd](../scripts/scene_management_additive_ui_layering.gd)
 Managing UI overlays and menus without destroying the current world scene.
 
-### [node_unparent_reparent.gd](scripts/node_unparent_reparent.gd)
+### [node_unparent_reparent.gd](../scripts/scene_management_node_unparent_reparent.gd)
 Safe, transform-preserving reparenting of nodes between different scene trees.
 
-### [persistent_data_preservation.gd](scripts/persistent_data_preservation.gd)
+### [persistent_data_preservation.gd](../scripts/scene_management_persistent_data_preservation.gd)
 Pattern for using Autoloads to maintain player state and game data across scene changes.
 
-### [scene_instancing_pooling.gd](scripts/scene_instancing_pooling.gd)
+### [scene_instancing_pooling.gd](../scripts/scene_management_scene_instancing_pooling.gd)
 High-performance object pooling to eliminate the cost of frequent instantiation and freeing.
 
-### [subviewport_scene_layering.gd](scripts/subviewport_scene_layering.gd)
+### [subviewport_scene_layering.gd](../scripts/scene_management_subviewport_scene_layering.gd)
 Running parallel worlds or specialized rendering layers using `SubViewport` nodes.
 
-### [node_path_safe_retrieval.gd](scripts/node_path_safe_retrieval.gd)
+### [node_path_safe_retrieval.gd](../scripts/scene_management_node_path_safe_retrieval.gd)
 Robust node reference architecture using Unique Names and error-guarded @onready.
 
-### [dynamic_script_attachment.gd](scripts/dynamic_script_attachment.gd)
+### [dynamic_script_attachment.gd](../scripts/scene_management_dynamic_script_attachment.gd)
 Runtime script manipulation for modding systems or highly dynamic entity behavior.
 
-### [async_scene_manager.gd](scripts/async_scene_manager.gd)
+### [async_scene_manager.gd](../scripts/scene_management_async_scene_manager.gd)
 Expert async scene loader with progress tracking, error handling, and transition callbacks.
 Expert async scene loader with progress tracking, error handling, and transition callbacks.
 
-### [scene_pool.gd](scripts/scene_pool.gd)
+### [scene_pool.gd](../scripts/scene_management_scene_pool.gd)
 Object pooling for frequently spawned scenes (bullets, godot-particles, enemies).
 
-### [scene_state_manager.gd](scripts/scene_state_manager.gd)
+### [scene_state_manager.gd](../scripts/scene_management_scene_state_manager.gd)
 Preserves and restores scene state across transitions using "persist" group pattern.
 
 > **MANDATORY - For Smooth Transitions**: Read async_scene_manager.gd before implementing loading screens.
@@ -339,4 +339,4 @@ func load_scene_safe(path: String) -> bool:
 
 
 ### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)

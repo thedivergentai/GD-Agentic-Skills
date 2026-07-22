@@ -85,6 +85,7 @@ Expert systems are defined not by their isolation, but by their **Payload Synthe
 | **Seasonal Event** | Runtime Injection | **READ**: [Easter Theming](references/theme-easter.md) → [Material Swapping](references/3d-materials.md). | Fast branding, no asset pollution |
 | **Souls-like Mortality** | Risk-Reward Revival | **READ**: [Revival/Corpse Run](references/mechanic-revival.md) → [Physics 3D](references/physics-3d.md). | High tension, player frustration risk |
 | **Wave-based Action** | Combat Pacing Loop | **READ**: [Waves](references/game-loop-waves.md) → [Combat](references/combat-system.md). | Escalating tension, encounter design |
+| **Balance / Difficulty / Economy Pacing** | Monte Carlo Balance Lab | **READ**: [Resources](references/resource-data-patterns.md) → [Economy](references/economy-system.md) → [Combat](references/combat-system.md) / [RPG Stats](references/rpg-stats.md) / [Waves](references/game-loop-waves.md) (as needed) → [Monte Carlo Balancer](references/monte-carlo-balancer.md) → [Testing](references/testing-patterns.md) → [Builder](references/builder.md). | Statistical rigor; abstract sim must calibrate vs headless Godot |
 | **Survival Economy** | Harvesting Loop | **READ**: [Harvesting](references/game-loop-harvest.md) → [Inventory](references/inventory-system.md). | Resource scarcity, loop persistence |
 | **Racing / Speedrun** | Validation Loop | **READ**: [Time Trials](references/game-loop-time-trial.md) → [Input Buffer](references/input-handling.md) → [Genre Racing](references/genre-racing.md). | High precision, ghost record drive |
 | **Horror / Stealth** | Tension Management | **READ**: [Genre Horror](references/genre-horror.md) → [Genre Stealth](references/genre-stealth.md) → [Audio](references/audio-systems.md). | Atmosphere, player vulnerability |
@@ -416,7 +417,7 @@ Expert implementations of common architectural and gameplay systems.
 
 ---
 
-## 📂 Part 9: Module Directory (96 Blueprints)
+## 📂 Part 9: Module Directory (97 Blueprints)
 
 > [!IMPORTANT]
 > Load ONLY the modules needed for your current workflow. Use the Decision Matrix in Part 2 to determine which chain to follow.
@@ -434,7 +435,7 @@ Expert implementations of common architectural and gameplay systems.
 [3D Lighting](references/3d-lighting.md) | [3D Materials](references/3d-materials.md) | [3D World Building](references/3d-world-building.md) | [Physics 3D](references/physics-3d.md) | [Navigation/Pathfinding](references/navigation-pathfinding.md) | [Procedural Generation](references/procedural-generation.md) | [Raycasting](references/raycasting-queries.md)
 
 ### Gameplay Mechanics
-[Abilities](references/ability-system.md) | [Combat](references/combat-system.md) | [Dialogue](references/dialogue-system.md) | [Economy](references/economy-system.md) | [Inventory](references/inventory-system.md) | [Questing](references/quest-system.md) | [RPG Stats](references/rpg-stats.md) | [Turn System](references/turn-system.md) | [Audio](references/audio-systems.md) | [Scene Transitions](references/scene-management.md) | [Save/Load](references/save-load-systems.md) | [Secrets](references/mechanic-secrets.md) | [Collections](references/game-loop-collection.md) | [Waves](references/game-loop-waves.md) | [Harvesting](references/game-loop-harvest.md) | [Time Trials](references/game-loop-time-trial.md) | [Revival](references/mechanic-revival.md)
+[Abilities](references/ability-system.md) | [Combat](references/combat-system.md) | [Dialogue](references/dialogue-system.md) | [Economy](references/economy-system.md) | [Inventory](references/inventory-system.md) | [Questing](references/quest-system.md) | [RPG Stats](references/rpg-stats.md) | [Turn System](references/turn-system.md) | [Audio](references/audio-systems.md) | [Scene Transitions](references/scene-management.md) | [Save/Load](references/save-load-systems.md) | [Secrets](references/mechanic-secrets.md) | [Collections](references/game-loop-collection.md) | [Waves](references/game-loop-waves.md) | [Harvesting](references/game-loop-harvest.md) | [Time Trials](references/game-loop-time-trial.md) | [Revival](references/mechanic-revival.md) | [Monte Carlo Balancer](references/monte-carlo-balancer.md)
 
 ### UI & UX
 [UI Containers](references/ui-containers.md) | [Rich Text](references/ui-rich-text.md) | [Theming](references/ui-theming.md) | [Input Handling](references/input-handling.md) | [Seasonal Theming](references/theme-easter.md)

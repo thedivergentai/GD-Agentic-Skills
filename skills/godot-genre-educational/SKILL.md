@@ -67,6 +67,7 @@ Expert blueprint for educational games that make learning engaging through game 
 | 3. Logic | `state-machine` | Quiz flow (Question -> Answer -> Result) |
 | 4. Juice | `godot-particles`, `godot-tweening` | Making learning feel rewarding |
 | 5. Meta | `godot-scene-management` | Navigating between lessons and map |
+| 6. Balance | `godot-monte-carlo-balancer` | Override bands to ~70% flow / mastery |
 
 ## Architecture Overview
 

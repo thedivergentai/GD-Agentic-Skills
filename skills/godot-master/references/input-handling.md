@@ -9,34 +9,34 @@ Handle keyboard, mouse, gamepad, and touch input with proper buffering and acces
 
 ## Available Scripts
 
-### [advanced_input_buffer.gd](scripts/advanced_input_buffer.gd)
+### [advanced_input_buffer.gd](../scripts/input_handling_advanced_input_buffer.gd)
 Frame-perfect input buffering system for responsive jumps, dashes, and combo chains.
 
-### [safe_runtime_rebind.gd](scripts/safe_runtime_rebind.gd)
+### [safe_runtime_rebind.gd](../scripts/input_handling_safe_runtime_rebind.gd)
 Dynamic input rebinding with conflict detection, persistence, and multi-device support.
 
-### [analog_deadzone_manager.gd](scripts/analog_deadzone_manager.gd)
+### [analog_deadzone_manager.gd](../scripts/input_handling_analog_deadzone_manager.gd)
 Radial deadzone management for analog sticks to eliminate drift while maintaining natural follow-through.
 
-### [multi_touch_gestures.gd](scripts/multi_touch_gestures.gd)
+### [multi_touch_gestures.gd](../scripts/input_handling_multi_touch_gestures.gd)
 Handling touch, drags, and pinch-to-zoom gestures for mobile and touchscreen compatibility.
 
-### [input_echo_filter.gd](scripts/input_echo_filter.gd)
+### [input_echo_filter.gd](../scripts/input_handling_input_echo_filter.gd)
 Filtering echo events to distinguish between hold-to-navigate (UI) and one-time gameplay actions.
 
-### [mouse_capture_manager.gd](scripts/mouse_capture_manager.gd)
+### [mouse_capture_manager.gd](../scripts/input_handling_mouse_capture_manager.gd)
 Robust mouse capture and sensitivity scaling logic for FPS and mouse-intensive systems.
 
-### [hold_toggle_accessibility.gd](scripts/hold_toggle_accessibility.gd)
+### [hold_toggle_accessibility.gd](../scripts/input_handling_hold_toggle_accessibility.gd)
 Software-side support for user-defined 'Hold' vs 'Toggle' accessibility preferences.
 
-### [glyph_prompt_manager.gd](scripts/glyph_prompt_manager.gd)
+### [glyph_prompt_manager.gd](../scripts/input_handling_glyph_prompt_manager.gd)
 Real-time switching between Keyboard and Gamepad UI prompts based on the last active device.
 
-### [action_state_machine.gd](scripts/action_state_machine.gd)
+### [action_state_machine.gd](../scripts/input_handling_action_state_machine.gd)
 Tracking the lifecycle of an action ('Just Pressed', 'Held', 'Released') for complex state logic.
 
-### [unhandled_input_priority.gd](scripts/unhandled_input_priority.gd)
+### [unhandled_input_priority.gd](../scripts/input_handling_unhandled_input_priority.gd)
 Demonstrating the correct use of `_unhandled_input` to prevent gameplay logic from leaking into UI.
 
 > **MANDATORY - For Responsive Controls**: Read input_buffer.gd before implementing jump/dash mechanics.
@@ -265,4 +265,4 @@ func start_replay() -> void:
 
 
 ### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+- Master Skill: [godot-master](../SKILL.md)
