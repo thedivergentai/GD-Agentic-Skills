@@ -369,7 +369,7 @@ Think of Domain Skills as your **component library**: Drop them into your projec
 - **[godot-inventory-system](skills/godot-inventory-system/SKILL.md)**: Slot-based containers, stacking logic, drag-drop UI
 - **[godot-mechanic-revival](skills/godot-mechanic-revival/SKILL.md)**: Souls-like mortality, corpse runs, revival charges, consequence tracking
 - **[godot-mechanic-secrets](skills/godot-mechanic-secrets/SKILL.md)**: Input sequence buffering (Konami code), interaction thresholds, secret persistence
-- **[godot-monte-carlo-balancer](skills/godot-monte-carlo-balancer/SKILL.md)**: Source-driven Monte Carlo balance lab, playstyle win-rate bands, economy careers, CI snapshots
+- **[godot-monte-carlo-balancer](skills/godot-monte-carlo-balancer/SKILL.md)**: Source-driven Monte Carlo balance lab, playstyle win-rate bands, economy careers, CI snapshots — co-authored by [@DedInc](https://github.com/DedInc)
 - **[godot-quest-system](skills/godot-quest-system/SKILL.md)**: Quest graphs, prerequisites, state tracking
 - **[godot-rpg-stats](skills/godot-rpg-stats/SKILL.md)**: Stat modifiers, attribute scaling, damage formulas
 - **[godot-save-load-systems](skills/godot-save-load-systems/SKILL.md)**: Dictionary serialization, delta-save patterns, encryption
