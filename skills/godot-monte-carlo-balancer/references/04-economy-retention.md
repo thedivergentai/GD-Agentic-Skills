@@ -12,14 +12,15 @@ From the Phase 0 economy map, implement in the simulator:
 
 ## Career simulation (`career` command)
 
-`simulate_careers(data, style, runs)` chains full progressions and produces a `CareerTimeline`:
+`simulate_careers(data, style, input_model, runs)` chains full progressions and produces a `CareerTimeline`:
 
 1. Start with a fresh save (starting purchases, level 1 unlocked).
-2. Loop: attempt the frontier level with the current loadout → on win, apply rewards + unlocks; on loss, apply the style's fallback behavior (retry, or grind an earlier level / secondary mode for currency).
-3. Before each attempt, run the style's shopping policy against the shop price ladder (buy the intended next item when affordable above reserve).
-4. Record per step: wall-clock minutes played, attempts per level, currency balances over time, purchase timestamps, mode-play episodes.
+2. Loop: attempt the frontier level with the current loadout under `style × input_model` → on win, apply rewards + unlocks; on loss, apply the style's fallback behavior (retry, or grind an earlier level / secondary mode for currency).
+3. Mobile careers apply the `SessionModel` chunking: total wall-clock time is split into sessions (e.g. 3–7 minutes per session). Interruption frequency and session length caps dictate play windows.
+4. Before each attempt, run the style's shopping policy against the shop price ladder (buy the intended next item when affordable above reserve).
+5. Record per step: wall-clock minutes played, **sessions played to purchase**, attempts per level, currency balances over time, purchase timestamps, mode-play episodes.
 
-Report per style: **minutes-to-each-purchase, attempts-per-level distribution, currency balance curve, and total time to "complete" the content**. Run hundreds of careers to get distributions, not single anecdotes.
+Report per style × input model: **minutes-to-each-purchase, sessions-to-each-purchase, attempts-per-level distribution, currency balance curve, and total time/sessions to "complete" the content**. Run hundreds of careers to get distributions, not single anecdotes.
 
 ### Career red flags
 
@@ -27,6 +28,8 @@ Report per style: **minutes-to-each-purchase, attempts-per-level distribution, c
 - **Zero-grind completion**: every item affordable on first pass → replay incentives are decorative, meta-economy too generous.
 - **Grind walls**: a purchase requiring many repeats of already-mastered content (check minutes between purchases against the Phase 0 target, e.g. 5–15 casual minutes per meaningful purchase).
 - **Dominant farm**: one level/mode yields far more currency/minute than everything else → all grinding collapses onto it (verify with the mode matrix's `coins_per_minute`).
+- **Session overflow**: median level/run time exceeds the mobile session length cap → players quit mid-run; check whether progress/checkpoints are saved.
+- **Session-boundary dead ends**: a session routinely ends with no purchase, unlock, or star gained → mobile dopamine macro-loop broken (design target: ≥1 visible progress event per 3–7 min session).
 
 ## Replayability & reward decay
 
@@ -40,13 +43,13 @@ Simulate the *repeat* case explicitly: what does re-clearing a done level pay? H
 
 Every secondary mode (endless, deadline, strike, daily…) exists partly as an income stream and pacing valve. For each mode, from `ModeAggregate`:
 
-- `coins_per_minute` per style — compare across modes and vs story replay; keep them within a designed ratio (e.g. no mode > 1.5× the intended best) unless a mode is explicitly "the grind mode".
-- Win rate per style against its own band — modes have difficulty targets too.
+- `coins_per_minute` per style × input model — compare across modes and vs story replay; keep them within a designed ratio (e.g. no mode > 1.5× the intended best) unless a mode is explicitly "the grind mode".
+- Win rate per style × input model against its own band — modes have difficulty targets too.
 - Career integration: styles like `grinder` should route through modes; verify the sim actually chooses them when they pay better.
 
 ## Interest curve
 
-Plot (or tabulate) across the level sequence, per style:
+Plot (or tabulate) across the level sequence, per style × input model:
 
 - Win rate and star average by level index — should trend gently downward in win rate (rising challenge) without cliffs or inversions (level N+1 easier than N is an inversion unless intentional as a breather).
 - Intensity proxies by level: leaks, fault downtime, peak heat, time-to-first-fault — the *shape* should alternate tension and relief (breather levels are good; accidental dead plateaus of three same-intensity levels are not).
@@ -54,12 +57,15 @@ Plot (or tabulate) across the level sequence, per style:
 
 ## Dopamine-loop checkpoints
 
-Validate the reward cadence mechanically:
+Validate the reward cadence mechanically across platforms:
 
 - **Micro loop (seconds)**: kills → cash → in-run purchase. Check `upgrades_avg`/`traps_placed_avg` > 0 for spending styles in every level; if cash pools unspent (`cash_end_avg` high), in-run sinks are mispriced.
-- **Meso loop (one session)**: clear → stars/grade → visible progress. Check star histograms give improvement room (not everyone 3★ or stuck at 1★).
-- **Macro loop (days)**: purchases and unlocks at a steady wall-clock rhythm from the career timeline; flag gaps 3× longer than the median inter-purchase interval.
+- **Meso loop (platform-dependent)**:
+  - **Mobile meso loop**: one session (3–7 min) → at least 1 clear / star / small shop purchase.
+  - **Desktop meso loop**: one play block (20–40 min) → 3–5 clears / major upgrade / level unlock. Check star histograms give improvement room (not everyone 3★ or stuck at 1★).
+- **Macro loop (days)**: purchases and unlocks at a steady wall-clock/session rhythm from the career timeline; flag gaps 3× longer than the median inter-purchase interval.
 
 ## Deliverable
 
-An economy report section (text + JSON) covering: currency/minute matrix (level & mode × style), career timelines with purchase timestamps, replay-vs-frontier income ratios, interest-curve table, and explicit PASS/WARN flags for each red-flag rule above.
+An economy report section (text + JSON) covering: currency/minute matrix (level & mode × style × input model), career timelines with purchase timestamps (in minutes and sessions), replay-vs-frontier income ratios, interest-curve table, and explicit PASS/WARN flags for each red-flag rule above.
+

@@ -50,10 +50,33 @@ Every node in this graph must be either extracted (Phase 1) or explicitly declar
 - **Replay incentives**: What does replaying a cleared level pay? Is it flat, decayed, or best-score-delta? (Exploit check: `coins = stars × 100` per repeat clear is a farm.)
 - **Grind expectations**: How many minutes should a casual player need between shop purchases? Get or set a design target now — you will validate it in Phase 4.
 
-## Step 6 — Enumerate playstyles
+## Step 6 — Platform & Input Audit
 
-Start from the four canonical styles (afk, casual, average, pro) and add **game-specific** styles the mechanics afford. Examples:
+**First Question:** *"Does this game ship on mobile at all?"*
+If the answer is **no** (desktop-only game), mark mobile input/session machinery out-of-scope for this game and proceed with `mouse` as the sole input model.
 
+If the answer is **yes** (cross-platform or mobile-only):
+- **Target platforms & primary inputs**: Which platforms does the game ship on (PC / mobile / both)? What is the primary input model (`mouse`, `touch`, `gamepad`)?
+- **Input-sensitive mechanics**: Identify mechanics requiring precise aiming, drag placement, fast tapping minigames, small hit targets, or simultaneous multi-point interactions (impossible with one thumb).
+- **UI geometry & occlusion**: Are interactive elements in thumb-reach zones? Do fingers occlude critical play area elements during faults or minigames?
+- **Session expectations**: What is the target session length per platform (e.g. mobile target session = 3–7 min)? Does a single level/run fit inside one session?
+- **Interruption tolerance**: What happens on app backgrounding (notification, incoming call, app switch) — does the game auto-pause, continue running in the background, or disconnect/penalize?
+
+## Step 7 — Enumerate playstyles
+
+Start from the four canonical styles (afk, casual, average, pro) and add **game-specific** styles the mechanics afford. Every playstyle must be crossed with each shipped input model (e.g., `PlayStyle × InputModel`).
+
+Canonical/generic playstyles:
+- **afk** (minimal input, idle/baseline)
+- **casual** (relaxed play, slower reaction, higher miss rate)
+- **average** (typical player, standard reactions and strategy)
+- **pro** (near-optimal play, fast reactions, strong strategy)
+
+Mobile-specific playstyle candidates:
+- **commuter** (short sessions, frequent interruptions, plays one-handed)
+- **thumb-pro** (high skill within touch constraints — the mobile skill ceiling)
+
+Other genre/mechanic specific playstyles:
 - **stealth** (avoids combat, slower, fewer kills, different reward profile)
 - **rusher** (speed over safety, skips pickups)
 - **grinder** (replays old content for currency before advancing)
@@ -62,7 +85,7 @@ Start from the four canonical styles (afk, casual, average, pro) and add **game-
 
 For each style, decide the parameter values for the `PlayStyle` struct (reaction mean/sigma, taps per second, lapse chance, miss chance, spend behavior — see `02-simulation-engine.md`) and the target win-rate band (see SKILL.md table). A style with no defined band cannot produce a verdict.
 
-## Step 7 — Write the extraction plan
+## Step 8 — Write the extraction plan
 
 For every data source found in Steps 2–5, write one line:
 
@@ -73,17 +96,20 @@ HP wave scaling      ← gameplay/waves/wave_spawner.gd      ← regex `1\.0 \+ 
 Mode rules           ← ui/main_menu/main_menu.gd           ← `rules.(\w+) = (.+)` inside `Kind\.(\w+):` sections
 Shop prices          ← ui/store/store.gd                   ← catalog entries / constants
 Trap slot unlocks    ← core/progression/level_progress.gd  ← `TRAP_SLOT_UNLOCK_LEVELS: Array[int] = [...]`
+Touch/input params   ← ui/hud/hud.gd                       ← button size constants, drag thresholds, pause behavior
 ```
 
 This table becomes the spec for `extract.rs`.
 
-## Step 8 — Confirm the plan
+## Step 9 — Confirm the plan
 
-Present the audit (genre, modes, content tables, influence graph, economy map, playstyle list with bands, extraction plan) to the user/designer before coding. Ask specifically about:
-- Target win-rate bands per style (accept defaults only if unchallenged)
-- Target grind minutes between shop purchases
+Present the audit (genre, modes, content tables, influence graph, economy map, platform input & session model, playstyle list with bands, extraction plan) to the user/designer before coding. Ask specifically about:
+- Target win-rate bands per style × input model cell (accept defaults only if unchallenged)
+- Target session length and interruption policy per platform (e.g. 3–7 min session on mobile, pause behavior)
+- Target grind minutes/sessions between shop purchases
 - Which modes/content are in scope for this pass
 
 ## Deliverable
 
 A `BALANCE_PLAN.md` in the tool directory containing all of the above. The simulator implementation in Phases 1–5 must not silently deviate from it.
+

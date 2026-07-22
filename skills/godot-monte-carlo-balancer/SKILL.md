@@ -1,6 +1,6 @@
 ---
 name: godot-monte-carlo-balancer
-description: "Use when designing, auditing, or recalibrating game balance: build a source-driven, high-performance Monte Carlo balance simulator (Rust + rayon) for ANY game (lane defense, tower defense, roguelike, stealth, idle, RTS), simulate real human playstyles (AFK, casual, average, pro, stealth, grinder), tune level difficulty, economy, shops, currency flow, replay rewards, dopamine loops, and interest curves. Keywords: balance lab, Monte Carlo, win rate, difficulty curve, level design, economy tuning, playstyle simulation, GDScript parser, rayon, bruteforce tuning, career simulation."
+description: "Use when designing, auditing, or recalibrating game balance: build a source-driven, high-performance Monte Carlo balance simulator (Rust + rayon) for ANY game (lane defense, tower defense, roguelike, stealth, idle, RTS), simulate real human playstyles (AFK, casual, average, pro, stealth, grinder) across platform input models (mouse, touch, gamepad), tune level difficulty, economy, shops, currency flow, replay rewards, dopamine loops, and interest curves. Keywords: balance lab, Monte Carlo, win rate, difficulty curve, level design, economy tuning, playstyle simulation, GDScript parser, rayon, bruteforce tuning, career simulation, mobile gamer, touch input, thumb reach, fat-finger, session length, interruption modeling, input model, platform adaptation."
 ---
 
 # Monte Carlo Game Balancer
@@ -10,7 +10,7 @@ description: "Use when designing, auditing, or recalibrating game balance: build
 This skill teaches you to **write a bespoke, source-driven Monte Carlo balance simulator for a specific game** — not to run a prebuilt tool. The reference architecture (Balance Lab) is a native Rust CLI that:
 
 1. **Extracts** live game data by dynamically parsing the game's source (e.g. `.gd` profiles, constants, and embedded formulas) at every run — zero config files, zero manual sync.
-2. **Simulates** thousands of full playthroughs at frame/tick resolution, as if a human is actually playing — with reaction delays, attention lapses, missed pickups, shopping decisions, trap placement, upgrades, and mode grinding.
+2. **Simulates** thousands of full playthroughs at frame/tick resolution, as if a human is actually playing on the target platform — with reaction delays, attention lapses, missed pickups, shopping decisions, trap placement, upgrades, mode grinding, and on mobile: touch imprecision, fat-finger misses, occlusion by thumbs, and short interrupted sessions.
 3. **Analyzes** win rates, star distributions, downtime, leaks, economy flow, and grind timelines against explicit per-playstyle target bands, and emits verdicts (`TOO HARD` / `OK` / `TOO EASY`) plus machine-readable JSON.
 4. **Tunes and generates**: bruteforces parameter candidates, generates new levels/weapons/content, and validates every candidate by simulation before accepting it.
 
@@ -31,19 +31,19 @@ Before writing a single line of the balancer: identify the genre and core loop, 
 Build the dynamic parser (`extract.rs`): regex-driven extraction of typed profiles, constants, and embedded formulas from game scripts, with project-root discovery and an `inspect` command that prints everything extracted so a human can verify the parser before trusting any simulation.
 
 ### Phase 2 — Simulation Engine → [references/02-simulation-engine.md](references/02-simulation-engine.md)
-Build the typed model (`model.rs`) and the frame-level simulator (`sim.rs`): entity state machines, parameterized `PlayStyle` structs with human-imperfection modeling (log-normal reaction delays, lapses, miss chances, budget fractions), deterministic seeded RNG, and rayon parallelism across independent jobs.
+Build the typed model (`model.rs`) and the frame-level simulator (`sim.rs`): entity state machines, parameterized `PlayStyle` structs with human-imperfection modeling (log-normal reaction delays, lapses, miss chances, budget fractions), input model definitions (`InputModel` for mouse/touch/gamepad), session and interruption modeling for mobile, deterministic seeded RNG, and rayon parallelism across independent jobs.
 
 ### Phase 3 — Analysis, Verdicts & Reporting → [references/03-analysis-reporting.md](references/03-analysis-reporting.md)
-Build `analysis.rs`: the level × style × loadout run matrix, aggregation into rich metrics, per-style target win-rate bands with verdicts, human-readable table reports, and `--json` output for agent pipelines and regression diffs.
+Build `analysis.rs`: the level × style × input model × loadout run matrix, aggregation into rich metrics, per-style/input target win-rate bands with verdicts, human-readable table reports, and `--json` output for agent pipelines and regression diffs.
 
 ### Phase 4 — Economy, Retention & Dopamine Loop → [references/04-economy-retention.md](references/04-economy-retention.md)
-Model the full economic life of a player: currency earn rates per minute per mode, shop price ladders, career/grind timelines ("how many minutes to afford item X"), replay reward decay, farming-exploit detection, interest-curve shape, and dopamine-loop checkpoints.
+Model the full economic life of a player: currency earn rates per minute per mode, shop price ladders, career/grind timelines ("how many minutes or sessions to afford item X"), replay reward decay, farming-exploit detection, interest-curve shape, and dopamine-loop checkpoints.
 
 ### Phase 5 — Tuning, Bruteforce & Content Generation → [references/05-tuning-generation.md](references/05-tuning-generation.md)
-Build `generate.rs` and the tuning commands: bruteforce search over parameter candidates scored against target bands, level/content generators whose output is validated by simulation before acceptance, and the recalibration workflow for when content changes.
+Build `generate.rs` and the tuning commands: bruteforce search over parameter candidates scored against target bands across all input models, level/content generators whose output is validated by simulation before acceptance, and the recalibration workflow for when content changes.
 
 ### Phase 6 — Genre & Engine Adaptation → [references/06-genre-adaptation.md](references/06-genre-adaptation.md)
-Map the abstract model (Threats, Defenses, Faults, Resources, Economy, Session) onto other genres — stealth, roguelike, idle, RTS, platformer — and onto non-Godot engines. Read this whenever the target game is not lane defense.
+Map the abstract model (Threats, Defenses, Faults, Resources, Economy, Session) onto other genres — stealth, roguelike, idle, RTS, platformer — and onto non-Godot engines, as well as target platform input models (touch, mouse, gamepad). Read this whenever the target game is not lane defense.
 
 ## Templates
 
@@ -58,7 +58,7 @@ Self-rebuilding launchers: detect when any `.rs` source or the manifest is newer
 ```text
 balance-lab inspect                                  # print ALL extracted data — verify parser first
 balance-lab simulate --level 3 --style average --runs 1000
-balance-lab simulate --runs 300                      # full matrix: every level × default styles
+balance-lab simulate --runs 300                      # full matrix: every level × default styles & input models
 balance-lab career --style casual --runs 200         # whole-progression grind timeline
 balance-lab mode <key> --runs 500                    # secondary game modes
 balance-lab bruteforce --level 4 ...                 # parameter search scored by target bands
@@ -70,14 +70,22 @@ balance-lab --seed 42 <any command>                  # reproducible runs
 
 ## Target Difficulty Bands (default; tune per game in Phase 0)
 
-| Style   | Win-rate target | Verdict below | Verdict above |
-|---------|-----------------|---------------|---------------|
-| afk     | 5% – 55%        | TOO HARD      | TOO EASY      |
-| casual  | 55% – 90%       | TOO HARD      | TOO EASY      |
-| average | 70% – 95%       | TOO HARD      | TOO EASY      |
-| pro     | 90% – 100%      | TOO HARD      | —             |
+Bands are defined per `style × input_model` cell. Default input model is `mouse`.
 
-A level is only `OK` when **every** simulated style lands inside its band. Difficulty must come from the level curve, not from punishing input speed alone.
+| Style   | Input | Win-rate target | Verdict below | Verdict above |
+|---------|-------|-----------------|---------------|---------------|
+| afk     | mouse | 5% – 55%        | TOO HARD      | TOO EASY      |
+| casual  | mouse | 55% – 90%       | TOO HARD      | TOO EASY      |
+| average | mouse | 70% – 95%       | TOO HARD      | TOO EASY      |
+| pro     | mouse | 90% – 100%      | TOO HARD      | —             |
+| afk     | touch | 5% – 55%        | TOO HARD      | TOO EASY      |
+| casual  | touch | 55% – 90%       | TOO HARD      | TOO EASY      |
+| average | touch | 65% – 92%       | TOO HARD      | TOO EASY      |
+| pro     | touch | 85% – 100%      | TOO HARD      | —             |
+
+A level is only OK when every simulated style lands inside its band. Difficulty must come from the level curve, not from punishing input speed alone.
+
+> **Platform Rule**: If the game ships on mobile, the matrix MUST include touch input models. A level that is OK on mouse but TOO HARD on touch is TOO HARD.
 
 ## NEVER Do (Expert Balancer Rules)
 
@@ -90,6 +98,9 @@ A level is only `OK` when **every** simulated style lands inside its band. Diffi
 ### Simulation Fidelity
 - **NEVER simulate only optimal play** — A game balanced solely against frame-perfect play is unplayable for humans. Every matrix must include the weakest realistic style (AFK/idle) and the strongest (pro).
 - **NEVER model humans as instantaneous** — Every player action gets a reaction delay (log-normal: mean + sigma), a lapse chance with extra delay, and a miss chance. Tap/interaction rates get jitter.
+- **NEVER reuse desktop reaction/tap parameters for mobile** — touch has lower taps/sec, higher miss chance, and occlusion; balancing against mouse numbers ships an unplayable mobile game.
+- **NEVER assume uninterrupted sessions on mobile** — model interruptions (notifications, app switching) and session-length caps; a level requiring 12 minutes of unbroken attention fails the platform.
+- **NEVER let precision-dependent mechanics go untested on touch** — any mechanic requiring accurate/fast pointing must be simulated with the touch accuracy model before sign-off.
 - **NEVER skip the meta-game in simulation** — Real players shop, upgrade, place traps, grind secondary modes, and replay for rewards. If the sim never spends currency, the economy is unvalidated.
 - **NEVER use unseeded or thread-order-dependent RNG** — Derive every run's seed as `seed_for(base, &[level_id, stable_hash(style), stable_hash(loadout), run_index])`. Results must be identical regardless of rayon scheduling. Keep a unit test asserting seed-determinism.
 - **NEVER parallelize by mutating shared state** — Structure work as independent `(level, style, loadout)` jobs, `into_par_iter().map(...)` over them, aggregate afterwards. Each job owns its `SmallRng`.
@@ -112,7 +123,7 @@ A level is only `OK` when **every** simulated style lands inside its band. Diffi
 
 1. `inspect` output verified line-by-line against game source.
 2. Seed-determinism test passes; same seed ⇒ identical aggregates.
-3. Full matrix (all levels × all styles, ≥1000 runs/cell) — every cell `OK`.
+3. Full matrix (all levels × all styles × all shipped input models, ≥1000 runs/cell) — every cell `OK`.
 4. All modes simulated; currency/minute per mode within design targets; no dominant farm.
 5. Career simulation: every shop item reachable within target grind time; interest curve has no dead plateau and no spike.
 6. Regression JSON snapshot saved so the next content change can be diffed.

@@ -38,6 +38,18 @@ In Phase 0, fill this table for the target game. If a row has no mapping, that s
 ### Action / platformer
 - Hardest to simulate at input level; simulate at *encounter granularity*: per-encounter success probability as a function of style skill parameters and encounter stats, calibrated from playtest data if available. Monte Carlo over encounter chains still yields level-level win rates, grind, and economy — which is what balancing needs.
 
+## Platform & Input Adaptation
+
+Parallel to genre adaptation, map the game's target platform onto interaction and session models:
+
+| Platform | Input model | Session model | Key risks to simulate |
+|---|---|---|---|
+| Desktop | mouse+kb | long uninterrupted | twitch ceiling too low (boring) |
+| Mobile two-thumb | touch | 3–7 min, interruptions | tap-rate caps, fat-finger, occlusion |
+| Mobile one-hand | touch (1 point) | 1–5 min, heavy interruptions | simultaneous-action mechanics impossible |
+| Tablet | touch, larger targets | medium | between desktop and phone |
+| Gamepad/console | gamepad | long | cursor-precision mechanics need snap/assist |
+
 ## Engine adaptation (extraction layer only)
 
 Only `extract.rs` and the launcher are engine-specific; `model/sim/analysis/generate` never touch the engine.
@@ -56,7 +68,9 @@ Root discovery marker changes per engine (`project.godot`, `*.uproject`, `Assets
 
 - Source-extraction as the single source of truth, verified via `inspect`.
 - Parameterized `PlayStyle` structs with human-imperfection modeling.
+- The `PlayStyle × InputModel` decomposition — skill and platform are always independent axes.
 - Seeded determinism (`seed_for` + `stable_hash`) and rayon job-level parallelism.
-- Target bands per style, full-matrix verdicts, JSON snapshots, regression diffs.
+- Target bands per style × input model, full-matrix verdicts, JSON snapshots, regression diffs.
 - Economy careers, replay-income vs frontier-income analysis, interest-curve checks.
 - Bruteforce tuning scored against bands; generation validated by simulation.
+

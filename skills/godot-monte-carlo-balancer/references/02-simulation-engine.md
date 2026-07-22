@@ -24,9 +24,9 @@ pub struct GameData {
 
 Everything is `Serialize` so `--json` output is free. Use `IndexMap` (with the `serde` feature) wherever iteration order should match source order (stable reports, stable diffs).
 
-## `PlayStyle` — the heart of human simulation
+## `PlayStyle` & `InputModel` — the heart of human simulation
 
-A style is a plain struct of *behavioral parameters*, not code branches scattered through the sim:
+A simulated human player is defined by the composition of a **`PlayStyle`** (skill and behavioral habits) and an **`InputModel`** (hardware/platform interaction constraints): `PlayStyle × InputModel` (e.g. `casual@touch`, `pro@mouse`). Default input model is `mouse`.
 
 ```rust
 pub struct PlayStyle {
@@ -64,6 +64,57 @@ Canonical reference values (tune per game; keep the monotonic ordering afk → p
 | places_traps / budget | no / 0.0 | yes / 0.5 | yes / 0.7 | yes / 0.85 |
 | buys_upgrades / reserve | no / 0 | yes / 60 | yes / 45 | yes / 30 |
 
+### `InputModel` struct
+
+Platform interaction parameters separate platform constraints from player skill:
+
+```rust
+pub struct InputModel {
+    pub name: &'static str,          // "mouse", "touch", "gamepad"
+    pub taps_per_second_cap: f64,    // hard ceiling regardless of style
+    pub tap_accuracy_sigma: f64,     // spatial error; drives fat-finger misses
+    pub fat_finger_miss_chance: f64, // tap lands on wrong/no target
+    pub occlusion_penalty: f64,      // extra reaction delay while finger covers the screen
+    pub drag_speed_mult: f64,        // drag/placement actions slower on touch
+    pub simultaneous_actions: u32,   // mouse=2 (mouse+kb), one-thumb touch=1
+    pub reaction_mult: f64,          // multiplier on style reaction means
+}
+```
+
+Canonical input model defaults:
+
+| param | mouse | touch (two thumbs) | touch (one hand) |
+|---|---|---|---|
+| taps_per_second_cap | 12.0 | 7.0 | 4.5 |
+| fat_finger_miss_chance | 0.01 | 0.06 | 0.10 |
+| occlusion_penalty | 0.0 | 0.15 | 0.25 |
+| drag_speed_mult | 1.0 | 0.75 | 0.6 |
+| simultaneous_actions | 2 | 2 | 1 |
+| reaction_mult | 1.0 | 1.1 | 1.25 |
+
+**Effective behavior composition**:
+- `effective_tps = min(style.taps_per_second, input.taps_per_second_cap)`
+- `effective_reaction = style.fault_reaction_mean * input.reaction_mult + input.occlusion_penalty`
+- Every tap rolls `fat_finger_miss_chance`; on miss, a retry delay is added.
+
+**Canonical mobile rows**: ship default combos `afk@touch`, `casual@touch`, `average@touch`, `pro@touch(two-thumb)`, `commuter@touch(one-hand)`.
+
+### `SessionModel` struct (Mobile Interruption Modeling)
+
+Mobile play is short and fragmented. The session model tracks session length caps and interruptions:
+
+```rust
+pub struct SessionModel {
+    pub session_length_cap_mean: f64,     // e.g. 300.0s (5 min)
+    pub interruption_rate_per_min: f64,   // e.g. 0.2 (one interruption per 5 min)
+    pub interruption_duration_mean: f64, // e.g. 15.0s
+    pub interruption_duration_sigma: f64,
+    pub pauses_game_on_interruption: bool, // extracted from Phase 0 audit
+}
+```
+
+During an interruption, the player performs zero actions. If `pauses_game_on_interruption` is `false`, this becomes a pure vulnerability window where enemies advance/attack freely.
+
 Add game-specific styles from Phase 0 (stealth, rusher, grinder…) as more rows, and extend the struct with new behavioral axes when the game affords them (e.g. `avoids_combat: bool`, `route_optimality: f64`). Every parameter must be *behavior*, not outcome — never encode "wins more" directly.
 
 Human delays are sampled log-normally so they are always positive and occasionally bad:
@@ -79,11 +130,12 @@ Simulate with a fixed timestep (match the game's tick where possible, e.g. `1.0 
 
 ```rust
 fn update_spawning(...)              // wave curves, weighted enemy pools
-fn update_supplies(..., style, ...)  // pickup spawns + human reaction/miss model
+fn update_supplies(..., style, input_model, ...)  // pickup spawns + human reaction/miss/touch model
 fn update_cooling_and_clearing(...)  // fault minigames: jam clearing, heat venting
 fn update_firing(...)                // targeting, ammo, heat, jam counters
 fn update_projectiles_and_traps(...) // travel, hits, trap triggers/expiry
 fn update_enemies(...)               // movement, attacks, leaks, barricade damage
+fn update_interruptions(..., session_model, ...) // mobile notifications / backgrounding
 fn maybe_buy_upgrade(..., style, ..) // style-gated economic decisions
 fn place_story_traps / refill_mode_traps(..., style, ..) // slot & budget logic
 fn kill_enemy(...) / finalize(...)   // rewards, bookkeeping
@@ -107,10 +159,12 @@ pub struct RunResult {
     pub cash_end: i32, pub upgrades_bought: i32, pub traps_placed: i32,
     pub coins_new_best: i32, pub coins_replay: i32, pub challenge_coins: i32,
     pub peak_heat_ratio: f64, pub avg_heat_ratio: f64, pub time_to_first_fault: f64,
+    pub fat_finger_misses: i32, pub interruptions: i32, pub interruption_downtime: f64,
+    pub actions_dropped_by_occlusion: i32,
 }
 ```
 
-Adapt field names to the game, but always cover: outcome + grade, time, damage taken/dealt, failure-pressure metrics (downtime, leaks by kind), resource flow (income, waste, misses), economy (spend, end balance, meta-currency earned), and "feel" proxies (peak/avg pressure, time to first fault).
+Adapt field names to the game, but always cover: outcome + grade, time, damage taken/dealt, failure-pressure metrics (downtime, leaks by kind), resource flow (income, waste, misses), economy (spend, end balance, meta-currency earned), "feel" proxies (peak/avg pressure, time to first fault), and mobile metrics (fat-finger misses, interruptions, occlusion drops).
 
 ## Determinism (non-negotiable)
 
@@ -118,7 +172,7 @@ Adapt field names to the game, but always cover: outcome + grade, time, damage t
 pub fn stable_hash(text: &str) -> u64            // FNV/xxhash-style, no HashMap default hasher
 pub fn seed_for(base: u64, parts: &[u64]) -> u64 // mix base + parts (splitmix64-style)
 
-// per job:  base = seed_for(cli_seed, &[level.id, stable_hash(style), stable_hash(weapon.id)])
+// per job:  base = seed_for(cli_seed, &[level.id, stable_hash(style.name), stable_hash(input_model.name), stable_hash(weapon.id)])
 // per run:  seed = seed_for(base, &[run_index])
 // each run: SmallRng::seed_from_u64(seed)
 ```
@@ -129,10 +183,10 @@ pub fn seed_for(base: u64, parts: &[u64]) -> u64 // mix base + parts (splitmix64
 
 ## Parallelism with rayon
 
-Parallelize across **independent jobs** (level × style × loadout cells), each of which runs its N seeded runs sequentially:
+Parallelize across **independent jobs** (level × style × input model × loadout cells), each of which runs its N seeded runs sequentially:
 
 ```rust
-jobs.into_par_iter().map(|(li, wi, style)| {
+jobs.into_par_iter().map(|(li, wi, style, input_model)| {
     let results: Vec<RunResult> = (0..runs).map(|i| simulate_run(..., seed_for(base, &[i as u64]))).collect();
     aggregate(&results, ...)
 }).collect::<Vec<Aggregate>>()
@@ -144,11 +198,11 @@ If a single cell is requested with a huge run count, parallelize the inner loop 
 
 - `simulate_mode_run(...)`: same engine, mode rule deltas applied (timers, spawn multipliers, restricted loadouts, different reward function).
 - `default_loadout(data, level_id)`: reproduce the game's own "what would a player own here" logic (purchases unlocked so far) so matrix runs use realistic gear, not god-loadouts.
-- Career simulation (see `04-economy-retention.md`) chains runs: play level → earn → shop → maybe grind modes → next level, all driven by the same `PlayStyle`.
+- Career simulation (see `04-economy-retention.md`) chains runs: play level → earn → shop → maybe grind modes → next level, all driven by the same `PlayStyle` and `InputModel` within the player's `SessionModel`.
 
 ## Performance checklist
 
 - Release profile from `templates/Cargo.toml` (`opt-level = 3`, `lto = "fat"`, `codegen-units = 1`).
 - `SmallRng`, preallocated `Vec`s in `RunState`, swap-remove for dead entities, no per-frame allocation.
 - No string formatting inside the hot loop; aggregate first, print once.
-- Target: a full matrix (5 levels × 4 styles × 1000 runs) in seconds on a laptop. If slower, profile before adding approximations.
+- Target: a full matrix (5 levels × 4 styles × 2 input models × 1000 runs) in seconds on a laptop. If slower, profile before adding approximations.
