@@ -18,3 +18,14 @@ void fragment() {
 	// Visualize Y-height (useful for checking water depth)
 	ALBEDO = vec3(clamp(world_pos.y * 0.1, 0.0, 1.0));
 }
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/shaders/advanced_postprocessing.html
+# - https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/spatial_shader.html
+# - https://docs.godotengine.org/en/stable/tutorials/shaders/custom_postprocessing.html
+# Related skills:
+# - ../godot-camera-systems/SKILL.md — projection/view matrices for depth unproject
+# - ../godot-3d-lighting/SKILL.md — fog/water depth effects paired with lighting
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md
+# =============================================================================

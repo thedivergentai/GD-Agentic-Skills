@@ -70,3 +70,18 @@ func add_resource_safely(amount: int) -> void:
     _inventory_mutex.lock()
     total_resources += amount
     _inventory_mutex.unlock()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_os.html — low_processor_usage_mode for idle gather UIs
+# - https://docs.godotengine.org/en/stable/classes/class_time.html — unix offline tick delta
+# - https://docs.godotengine.org/en/stable/classes/class_workerthreadpool.html — batch yield math off main thread
+# - https://docs.godotengine.org/en/stable/classes/class_mutex.html — lock shared inventory from workers
+# - https://docs.godotengine.org/en/stable/classes/class_scenetreetimer.html — await gather delays without Timer nodes
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html — resource_updated UI bus
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — idle/low-processor and thread batching
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — validate offline/income rates after wiring
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — unbind/bus patterns for harvest UI
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-game-loop-harvest/SKILL.md
+# =============================================================================

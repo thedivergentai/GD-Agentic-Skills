@@ -11,3 +11,13 @@ func apply_shake(intensity: float, duration: float):
 	
 	# Ensure the camera returns to 0,0 at the very end
 	tween.finished.connect(func(): offset = Vector2.ZERO)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_tween.html
+# - https://docs.godotengine.org/en/stable/classes/class_camera2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — shake vs follow ownership on Camera2D
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — finished reset of offset
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md
+# =============================================================================

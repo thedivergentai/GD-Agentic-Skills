@@ -6,18 +6,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Godot Build
         uses: firebelley/godot-export@v5.2.1
         with:
-          godot_executable_download_url: https://downloads.tuxfamily.org/godotengine/4.2.1/Godot_v4.2.1-stable_linux_headless.64.zip
+          godot_executable_download_url: https://github.com/godotengine/godot-builds/releases/download/4.7-stable/Godot_v4.7-stable_linux.x86_64.zip
           export_debug: false
-          export_templates_download_url: https://downloads.tuxfamily.org/godotengine/4.2.1/Godot_v4.2.1-stable_export_templates.tpz
+          export_templates_download_url: https://github.com/godotengine/godot-builds/releases/download/4.7-stable/Godot_v4.7-stable_export_templates.tpz
           verbose: true
           # Note: Presets must match export_presets.cfg
-          
+
       - name: Archive Production Build
         uses: actions/upload-artifact@v4
         with:
           name: game-builds
           path: build/
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html
+# - https://docs.godotengine.org/en/stable/tutorials/export/exporting_projects.html
+# - https://docs.godotengine.org/en/stable/tutorials/export/feature_tags.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-testing-patterns/SKILL.md — CI artifact verification jobs
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — diagnose CI-only export failures
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md
+# =============================================================================

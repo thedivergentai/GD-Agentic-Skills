@@ -19,3 +19,13 @@ func mark_occupied(cell: Vector2i, occupied: bool) -> void:
 
 func is_cell_valid(cell: Vector2i) -> bool:
     return not astar_grid.is_point_solid(cell)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_astargrid2d.html
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_introduction_2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md — grid placement path checks
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-builder/SKILL.md — base-building placement loops
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rts/SKILL.md
+# =============================================================================

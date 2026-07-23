@@ -22,3 +22,13 @@ func execute_explosion(radius: float, damage: float) -> void:
         var target = hit["collider"]
         if target.has_method(&"take_damage"):
             target.take_damage(damage)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html — direct_space_state queries
+# - https://docs.godotengine.org/en/stable/classes/class_physicsdirectspacestate3d.html — intersect_shape AoE
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — duck-typed take_damage on hits
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md — explosion execute() payloads
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md
+# =============================================================================

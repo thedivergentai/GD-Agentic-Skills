@@ -18,3 +18,13 @@ func close_focused_tab() -> void:
 	if control:
 		# TabContainer automatically removes the tab when the child is freed
 		control.queue_free()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_tabcontainer.html
+# - https://docs.godotengine.org/en/stable/tutorials/ui/gui_containers.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — tab_changed / close request wiring
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md — tab content as packed scenes
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md
+# =============================================================================

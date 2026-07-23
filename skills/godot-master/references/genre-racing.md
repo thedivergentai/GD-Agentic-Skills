@@ -49,9 +49,12 @@ Expert blueprint for racing games balancing physics, competition, and sense of s
 
 ### Modular Components
 - [arcade_vehicle_controller.gd](../scripts/genre_racing_arcade_vehicle_controller.gd) - Alternative tight, raycast-based vehicle movement model for non-physics karts.
+- [raycast_vehicle_controller.gd](../scripts/genre_racing_raycast_vehicle_controller.gd) - RigidBody3D + RayCast suspension for crisp arcade sims.
+- [lap_checkpoint_manager.gd](../scripts/genre_racing_lap_checkpoint_manager.gd) - Sequential checkpoint / lap authority.
+- [spline_track_spawner.gd](../scripts/genre_racing_spline_track_spawner.gd) - Path3D track scaffolding for AI lines.
 - [slipstream_handler.gd](../scripts/genre_racing_slipstream_handler.gd) - Drafting zones with relative dot-product checks for speed boosts.
 - [lap_tracker.gd](../scripts/genre_racing_lap_tracker.gd) - High-precision lap management with sequential checkpoint logic.
-- [ghost_recorder.gd](../scripts/game_loop_time_trial_ghost_recorder.gd) - Binary transform serialization for lightweight ghost car playback.
+- [ghost_recorder.gd](../scripts/genre_racing_ghost_recorder.gd) - Binary transform serialization for lightweight ghost car playback.
 - [engine_audio_controller.gd](../scripts/genre_racing_engine_audio_controller.gd) - RPM-to-pitch audio synthesis for engine revving and gear shifts.
 - [skid_mark_emitter.gd](../scripts/genre_racing_skid_mark_emitter.gd) - Conditional tire-slip trail system for persistent visual feedback.
 - [minimap_icon_projector.gd](../scripts/genre_racing_minimap_icon_projector.gd) - 3D-to-2D bridge for projecting racers onto a localized UI.
@@ -68,170 +71,89 @@ Expert blueprint for racing games balancing physics, competition, and sense of s
 4.  **Tune**: Player adjusts vehicle stats (grip, acceleration).
 5.  **Master**: Player learns track layouts and optimal lines.
 
-## Skill Chain
+## Related Skills (build order)
 
-| Phase | Skills | Purpose |
-|-------|--------|---------|
-| 1. Physics | `physics-bodies`, `vehicle-wheel-3d` | Car movement, suspension, collisions |
-| 2. AI | `navigation`, `steering-behaviors` | Opponent pathfinding, rubber-banding |
-| 3. Input | `input-mapping` | Analog steering, acceleration, braking |
-| 4. UI | `progress-bars`, `labels` | Speedometer, lap timer, minimap |
-| 5. Feel | `camera-shake`, `godot-particles` | Speed perception, tire smoke, sparks |
+Use the **Reference → Related Skills** lattice — do not invent skill ids:
 
-## Architecture Overview
+1. **Prerequisites** — [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md), [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md), [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md)
+2. **Complements** — [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md), [godot-ai-navigation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ai-navigation/SKILL.md), [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md), [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md), [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md)
+3. **Downstream** — [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md), [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md)
 
-### 1. Vehicle Controller
-Handling the physics of movement.
+## Decision Tree — Vehicle Model
 
-```gdscript
-# car_controller.gd
-extends VehicleBody3D
+| Feel | Choose | **MANDATORY** |
+|------|--------|---------------|
+| VehicleBody3D arcade (torque / wheel slip) | Built-in wheels + gravity/friction tweaks | [arcade_vehicle_physics.gd](../scripts/genre_racing_arcade_vehicle_physics.gd) |
+| Custom suspension / kart crispness | RigidBody3D + RayCast springs | [raycast_vehicle_controller.gd](../scripts/genre_racing_raycast_vehicle_controller.gd) (+ [raycast_suspension.gd](../scripts/genre_racing_raycast_suspension.gd)) |
 
-@export var max_torque: float = 300.0
-@export var max_steering: float = 0.4
+Do **not** paste a bare `VehicleBody3D` sample — read the chosen script first. Optional input shim: [arcade_vehicle_controller.gd](../scripts/genre_racing_arcade_vehicle_controller.gd).
 
-func _physics_process(delta: float) -> void:
-    steering = lerp(steering, Input.get_axis("right", "left") * max_steering, 5 * delta)
-    engine_force = Input.get_axis("back", "forward") * max_torque
-```
+## Golden Path (script order)
 
-### 2. Checkpoint System
-Essential for tracking progress and preventing cheating.
+1. **Vehicle** — pick physics script above.
+2. **Checkpoints / laps** — [racing_checkpoint.gd](../scripts/genre_racing_racing_checkpoint.gd) → [lap_checkpoint_manager.gd](../scripts/genre_racing_lap_checkpoint_manager.gd) / [lap_tracker.gd](../scripts/genre_racing_lap_tracker.gd).
+3. **AI** — [spline_track_spawner.gd](../scripts/genre_racing_spline_track_spawner.gd) → [spline_ai_controller.gd](../scripts/genre_racing_spline_ai_controller.gd).
+4. **Ghost** — [ghost_recorder.gd](../scripts/genre_racing_ghost_recorder.gd).
 
-```gdscript
-# checkpoint_manager.gd
-extends Node
+Also wire as needed: [slipstream_handler.gd](../scripts/genre_racing_slipstream_handler.gd), [skid_mark_emitter.gd](../scripts/genre_racing_skid_mark_emitter.gd), [engine_audio_controller.gd](../scripts/genre_racing_engine_audio_controller.gd), [force_feedback_router.gd](../scripts/genre_racing_force_feedback_router.gd), [minimap_icon_projector.gd](../scripts/genre_racing_minimap_icon_projector.gd).
 
-var checkpoints: Array[Area3D] = []
-var current_checkpoint_index: int = 0
-signal lap_completed
+## Floaty Physics / Feel — Fallback Table
 
-func _on_checkpoint_entered(body: Node3D, index: int) -> void:
-    if index == current_checkpoint_index + 1:
-        current_checkpoint_index = index
-    elif index == 0 and current_checkpoint_index == checkpoints.size() - 1:
-        complete_lap()
-```
-
-### 3. Race Manager
-high-level state machine.
-
-```gdscript
-# race_manager.gd
-enum State { COUNTDOWN, RACING, FINISHED }
-var current_state: State = State.COUNTDOWN
-
-func start_race() -> void:
-    # 3.. 2.. 1.. GO!
-    await countdown()
-    current_state = State.RACING
-    start_timer()
-```
-
-## Key Mechanics Implementation
-
-### Drifting
-Arcade drifting usually involves faking physics. Reduce friction or apply a sideways force.
-
-```gdscript
-func apply_drift_mechanic() -> void:
-    if is_drifting:
-        # Reduce sideways traction
-        wheel_friction_slip = 1.0 
-        # Add slight forward boost on exit
-    else:
-        wheel_friction_slip = 3.0 # High grip
-```
-
-### Rubber Banding AI
-Keep the race competitive by adjusting AI speed based on player distance.
-
-```gdscript
-func update_ai_speed(ai_car: VehicleBody3D, player: VehicleBody3D) -> void:
-    var dist = ai_car.global_position.distance_to(player.global_position)
-    if ai_car_is_ahead_of_player(ai_car, player):
-        ai_car.max_speed = base_speed * 0.9 # Slow down
-    else:
-        ai_car.max_speed = base_speed * 1.1 # Speed up
-```
-
-## Godot-Specific Tips
-
-*   **VehicleBody3D**: Godot's built-in node for vehicle physics. It's decent for arcade, but for sims, you might want a custom RayCast suspension.
-*   **Path3D / PathFollow3D**: Excellent for simple AI traffic or fixed-path racers (on-rails).
-*   **AudioBus**: Use the `Doppler` effect on the AudioListener for realistic passing sounds.
-*   **SubViewport**: Use for the rear-view mirror or minimap texture.
-
-## Common Pitfalls
-
-1.  **Floaty Physics**: Cars feel like they are on ice. **Fix**: Increase gravity scale (2x-3x) and adjust wheel friction. Realism < Fun.
-2.  **Bad Camera**: Camera is rigidly attached to the car. **Fix**: Use a `Marker3D` with a `lerp` script to follow the car smoothly with a slight delay.
-3.  **Tunnel Vision**: No sense of speed. **Fix**: Increase FOV as speed increases, add camera shake, wind lines, and motion blur.
-
+| Symptom | Knob | Where |
+|---------|------|-------|
+| Car floats / weak stick | Raise `gravity_scale` (≈2–3×); Fun > raw realism | [arcade_vehicle_physics.gd](../scripts/genre_racing_arcade_vehicle_physics.gd) |
+| Tips / rolls easily | Lower COM (`center_of_mass_mode` + offset) | VehicleBody3D / RigidBody3D |
+| Ice-skating lateral slip | Raise `wheel_friction_slip` / `normal_friction_slip`; lower drift slip only while drifting | [arcade_vehicle_physics.gd](../scripts/genre_racing_arcade_vehicle_physics.gd) |
+| Raycast kart too bouncy | Tune `spring_stiffness` / `spring_damping` / `tire_grip` | [raycast_vehicle_controller.gd](../scripts/genre_racing_raycast_vehicle_controller.gd), [raycast_suspension.gd](../scripts/genre_racing_raycast_suspension.gd) |
+| Bad / rigid camera | `Marker3D` + lerp follow; never hard-parent to chassis | [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) |
+| Tunnel vision / no speed read | Scale FOV with speed; optional shake, wind lines, motion blur | Camera3D + Environment; FOV tween on boost |
 
 ## Advanced Racing Meta-Systems
 
-Elite implementation of competitive integrity, aerodynamics, and auditory realism.
+Do **not** paste inline DriftBoost/Ghost samples — extend the scripts:
 
-### 1. Drift-Boost (Mini-Turbo)
-Implement a drift-boost mechanic by accumulating a charge variable during the `_physics_process()` callback while the player is in a drift state. Upon release, apply a burst of speed using `apply_central_impulse()` on the `RigidBody3D` (or `VehicleBody3D`), creating the classic arcade "Mini-Turbo" effect.
-
-```gdscript
-class_name DriftBoostSystem extends Node
-
-var drift_charge: float = 0.0
-const BOOST_MULTIPLIER = 1000.0
-
-func _physics_process(delta: float) -> void:
-    if owner.is_drifting:
-        drift_charge += delta
-    elif drift_charge > 0:
-        execute_boost()
-
-func execute_boost() -> void:
-    var boost_force := owner.global_transform.basis.z * (drift_charge * BOOST_MULTIPLIER)
-    owner.apply_central_impulse(boost_force)
-    drift_charge = 0.0
-```
-
-### 2. Tire-Smoke Particles
-Attach a `GPUParticles3D` node to each wheel and toggle the `emitting` property based on the wheel's traction state. This provides immediate visual feedback for drifting, burnouts, and high-speed braking.
-
-```gdscript
-class_name TireSmokeManager extends Node3D
-
-@export var smoke_particles: GPUParticles3D
-@export var wheel: VehicleWheel3D
-
-func _process(_delta: float) -> void:
-    # Emit smoke if the wheel is slipping significantly
-    smoke_particles.emitting = wheel.get_skidinfo() < 0.5
-```
-
-### 3. Replay-Ghost Binary Storage
-For high-performance ghost car replays, convert positional and rotational data into a `PackedVector2Array` or use Godot's binary `.res` format via `ResourceSaver`. This is significantly faster and more compact than text-based formats for storing frame-by-frame data.
-
-```gdscript
-class_name GhostRecorder extends Node
-
-var frame_data: PackedVector3Array = []
-
-func record_frame(pos: Vector3) -> void:
-    frame_data.append(pos)
-
-func save_ghost_binary(path: String) -> void:
-    var file := FileAccess.open(path, FileAccess.WRITE)
-    if file:
-        file.store_var(frame_data) # Binary Variant serialization
-        file.close()
-```
-
-**Architectural Tip**: When implementing Drift-Boost, use a `Tween` to briefly increase the Camera FOV during the boost to enhance the sense of sudden acceleration.
-
+1. **Drift-Boost / Mini-Turbo** — **MANDATORY**: use drift hooks in [arcade_vehicle_physics.gd](../scripts/genre_racing_arcade_vehicle_physics.gd) (`is_drifting`, `drift_friction_slip`); charge + `apply_central_impulse` on release; brief Camera FOV tween for boost feel.
+2. **Tire-Smoke / skids** — **MANDATORY**: [skid_mark_emitter.gd](../scripts/genre_racing_skid_mark_emitter.gd) gated by `get_skidinfo()`; pair with [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — never spawn particles every physics frame.
+3. **Replay-Ghost binary** — **MANDATORY**: [ghost_recorder.gd](../scripts/genre_racing_ghost_recorder.gd) for transform serialization; persist via [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md).
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
 
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
 
-## Reference
-- Master Skill: [godot-master](../SKILL.md)
+### Official Documentation
+- [VehicleBody3D](https://docs.godotengine.org/en/stable/classes/class_vehiclebody3d.html) — built-in chassis forces, steering, and engine_force integration for arcade/sim hybrids.
+- [VehicleWheel3D](https://docs.godotengine.org/en/stable/classes/class_vehiclewheel3d.html) — per-wheel friction_slip, suspension, and skidinfo used by drift and tire-smoke logic.
+- [Rigid body](https://docs.godotengine.org/en/stable/tutorials/physics/rigid_body.html) — RigidBody3D force/impulse discipline for custom raycast vehicles and drift-boost impulses.
+- [Ray-casting](https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html) — RayCast3D suspension, ground contact, and look-ahead probes without full nav mesh queries.
+- [Path3D](https://docs.godotengine.org/en/stable/classes/class_path3d.html) — racing-line curves that spline AI and track spawners sample each physics tick.
+- [Curve3D](https://docs.godotengine.org/en/stable/classes/class_curve3d.html) — baked samples and up-vectors for banked track props and look-ahead steering points.
+- [Area3D](https://docs.godotengine.org/en/stable/classes/class_area3d.html) — checkpoint gates and slipstream draft volumes with body_entered ownership.
+- [Camera3D](https://docs.godotengine.org/en/stable/classes/class_camera3d.html) — FOV and follow transforms that sell sense-of-speed without rigid mount sickness.
+- [Controllers, gamepads, and joysticks](https://docs.godotengine.org/en/stable/tutorials/inputs/controllers_gamepads_joysticks.html) — analog steer/throttle deadzones and force-feedback routing for racing pads.
+- [Audio streams](https://docs.godotengine.org/en/stable/tutorials/audio/audio_streams.html) — pitch_scale / player setup for RPM-mapped engine loops and Doppler pass-bys.
+- [Environment and post-processing](https://docs.godotengine.org/en/stable/tutorials/3d/environment_and_post_processing.html) — motion blur and camera attributes that reinforce high-speed FOV ramps.
+- [Binary serialization API](https://docs.godotengine.org/en/stable/tutorials/io/binary_serialization_api.html) — compact ghost/replay transform storage via FileAccess store_var.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, InputMap actions, and Project Settings physics layers before wiring VehicleBody3D tracks.
+- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — RigidBody3D/VehicleBody3D integration, collision layers, and gravity scale patterns racing handling depends on.
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — analog axes, just-pressed gear/drift taps, and gamepad deadzone curves for steering authority.
+
+#### Complements
+- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — smooth follow, FOV ramps, and shake that sell speed without rigid camera mounts.
+- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — bus layout, Doppler, and layered engine/tire loops beyond a single pitch_scale mapping.
+- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — suspension rays, surface probes, and look-ahead casts shared with custom kart controllers.
+- [godot-ai-navigation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ai-navigation/SKILL.md) — when spline rubber-banding is not enough and opponents need NavigationAgent3D detours around blockers.
+- [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — tire smoke, sparks, and trail meshes gated by skidinfo instead of per-frame GPUParticles spam.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — lap_completed, checkpoint, and race-state signals without cross-scene ownership loops.
+- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — speedometer, lap timer, and minimap HUD layout that stays readable at race pace.
+
+#### Downstream / consumers
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — sample rubber-band curves, drift-boost windows, and AI look-ahead knobs for competitive fairness.
+- [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md) — post-race currency and part upgrades that consume lap/placement outcomes from this genre loop.
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — persist ghost binaries, best laps, and unlock state built on race recordings.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.

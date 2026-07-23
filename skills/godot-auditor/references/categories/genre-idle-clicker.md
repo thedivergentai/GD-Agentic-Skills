@@ -13,3 +13,14 @@
 - NEVER make the "Prestige" reset feel like a loss; strictly provide a global multiplier that makes the next run **significantly** faster (2-5x).
 - NEVER calculate offline time using `Time.get_ticks_msec()`; strictly use **Persistent UNIX timestamps** as ticks reset on app restart.
 - NEVER use Node hierarchies for raw data; strictly use `RefCounted` or `Resource` objects for lightweight, serializable logic.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-idle-clicker/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — simulate balance impact of structural fixes
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

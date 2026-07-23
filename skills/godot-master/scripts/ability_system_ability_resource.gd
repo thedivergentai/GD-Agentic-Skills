@@ -40,3 +40,14 @@ func execute(user: Node2D, target_position: Vector2) -> bool:
 ## - ProjectileAbility.gd (Overwrites execute to spawn an object)
 ## - BuffAbility.gd (Overwrites execute to apply a modifier)
 ## This follows 'Composition over Inheritance' at the data layer.
+# ---
+# GDSkills research links (agents)
+# Docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html — scriptable ability data
+# - https://docs.godotengine.org/en/stable/classes/class_resource.html — Resource base + duplicate semantics
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_exports.html — Inspector metadata/stats/effects
+# Related:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — Resource composition for effects arrays
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md — energy_cost and stat-affecting effects
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md — prefer effect Resources over deep ability subclasses
+# ---

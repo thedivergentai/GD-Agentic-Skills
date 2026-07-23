@@ -15,3 +15,14 @@ func update_stats(new_atk, new_hp):
 	attack = new_atk
 	health = new_hp
 	emit_changed()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_exports.html
+# - https://docs.godotengine.org/en/stable/classes/class_resource.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — duplicate-before-mutate for match buffs
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — Resource.changed → reactive card faces
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-card-game/SKILL.md
+# =============================================================================

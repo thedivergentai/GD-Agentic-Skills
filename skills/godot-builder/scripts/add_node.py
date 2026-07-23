@@ -18,3 +18,15 @@ def main():
     os.remove(script)
 
 if __name__ == "__main__": main()
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/scene_tree.html
+# - https://docs.godotengine.org/en/stable/classes/class_packedscene.html
+# - https://docs.godotengine.org/en/stable/classes/class_resourcesaver.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — set owner or nodes vanish on save
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md — prefer composition over deep hardcoded trees
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-builder/SKILL.md
+# =============================================================================

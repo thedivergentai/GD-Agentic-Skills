@@ -10,3 +10,13 @@ func can_see_target(target: Node3D) -> bool:
 	
 	var result = space_state.intersect_ray(query)
 	return result.is_empty() or result.collider == target
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html
+# - https://docs.godotengine.org/en/stable/classes/class_physicsdirectspacestate3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md — query masks, exclusions, and ShapeCast recipes
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md — LOS checks alongside nav agents
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md
+# =============================================================================

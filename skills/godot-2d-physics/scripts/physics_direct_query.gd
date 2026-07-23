@@ -13,3 +13,14 @@ func is_grounded() -> bool:
     
     var result = space_state.intersect_ray(query)
     return !result.is_empty()
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_physicsdirectspacestate2d.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md — lightweight ground/LOS queries
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md — grounding without extra Area2D nodes
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md
+# =============================================================================

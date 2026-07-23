@@ -95,3 +95,15 @@ func _process_recovery(delta: float) -> void:
 ## EXPERT USAGE:
 ## Assign a Sprite or Polygon2D as 'TelegraphVisual'.
 ## Enemy freezes during Charge, giving player time to dodge.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html — wind-up/attack in _physics_process
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/groups.html — player group targeting
+# - https://docs.godotengine.org/en/stable/tutorials/physics/using_area_2d.html — Hitbox Area2D strikes
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md — CHARGE/ATTACK/RECOVERY states
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md — chase movement
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — telegraph → damage window
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md
+# =============================================================================

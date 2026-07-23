@@ -15,11 +15,17 @@ Resource-based stats, modifier stacks, and derived calculations define flexible 
 
 ## Available Scripts
 
+> **MANDATORY** by scenario — read before implementing:
+> - Templates / base attributes → [base_stats_resource.gd](scripts/base_stats_resource.gd)
+> - Runtime stack + reactive recalc → [stats_component_reactive.gd](scripts/stats_component_reactive.gd) + [stat_modifier_stacking.gd](scripts/stat_modifier_stacking.gd)
+> - Buff/debuff data → [status_effect_data.gd](scripts/status_effect_data.gd) (`Type.ADDITIVE` / `MULTIPLICATIVE` / `OVERRIDE`)
+> - Combat math → [damage_formula_handler.gd](scripts/damage_formula_handler.gd)
+
 ### [base_stats_resource.gd](scripts/base_stats_resource.gd)
 Core data container for base attributes (Str, Dex, Int) and derived scaling rules.
 
 ### [status_effect_data.gd](scripts/status_effect_data.gd)
-Serialized data definition for buffs/debuffs (Additive, Multiplicative, Override).
+Serialized buff/debuff definition using `StatusEffectData.Type` { ADDITIVE, MULTIPLICATIVE, OVERRIDE }.
 
 ### [stats_component_reactive.gd](scripts/stats_component_reactive.gd)
 Orchestrator for JIT (Just-In-Time) stat calculation with active modifier stacking.
@@ -47,251 +53,106 @@ Logic for awarding experience and triggering level-up benefits.
 
 ## NEVER Do in RPG Stats
 
-- **NEVER use integers for percentages** — `critical_chance = 50`? Integer division (e.g., in formulas) causes truncation. Always use `float` (0.0 to 1.0 or 0.0 to 100.0) [20].
-- **NEVER modify current_health without emitting signals** — UI elements like health bars will desync if you don't broadcast changes to the system [21].
-- **NEVER rely solely on additive modifiers** — +10 strength is huge at level 1 but negligible at level 50. Use multiplicative or hybrid scaling for balance [22].
-- **NEVER add modifiers without a unique ID or Key** — Without a reference (e.g., "potion_buff"), you cannot remove specific effects without clearing the entire stack [23].
-- **NEVER use exponential XP formulas without a growth cap** — Uncapped `pow()` scaling quickly leads to unreachable levels or integer overflows [24].
-- **NEVER forget to clamp derived values** — Negative vitality from a debuff could result in negative max HP, crashing your health logic. Use `maxi(val, 1)` [25].
-- **NEVER perform heavy stat recalculations in `_process()`** — Only recalculate when a modifier is added/removed or base stats change. Use the "Reactive" pattern.
-- **NEVER hardcode stat names in logic** — Use StringNames or an Enum for attributes to prevent typos and facilitate refactoring (e.g., `get_attribute("strength")`).
-- **NEVER store temporary "Runtime Only" buffs in a permanent Save Resource** — Clear short-duration modifiers before serializing player progress to disk.
-- **NEVER calculate damage directly in the Character script** — Centralize combat math in a `DamageFormula` class to ensure consistency across Players and NPCs.
+- **NEVER use integers for percentages** — Always use `float` (0.0–1.0 or 0.0–100.0) to avoid truncation.
+- **NEVER modify current_health without emitting signals** — UI desyncs without broadcasts.
+- **NEVER rely solely on additive modifiers** — Use multiplicative or hybrid scaling for long progressions.
+- **NEVER add modifiers without a unique ID or Key** — Required to remove specific effects.
+- **NEVER use exponential XP formulas without a growth cap** — Uncapped `pow()` overflows or soft-locks levels.
+- **NEVER forget to clamp derived values** — Negative vitality must not yield negative max HP (`maxi(val, 1)`).
+- **NEVER perform heavy stat recalculations in `_process()`** — Recalc only on modifier/base change (reactive).
+- **NEVER hardcode stat names in logic** — Use StringNames or enums.
+- **NEVER store temporary runtime buffs in a permanent Save Resource** — Strip short-duration modifiers before serialize.
+- **NEVER calculate damage directly in the Character script** — Centralize in [damage_formula_handler.gd](scripts/damage_formula_handler.gd).
+- **NEVER invent Dictionary-only modifier APIs in examples** — Align with `StatusEffectData.Type` and the stacking scripts.
 
 ---
 
-```gdscript
-# stats.gd
-class_name Stats
-extends Resource
+## Decision Tree
 
-signal stat_changed(stat_name: String, old_value: float, new_value: float)
-signal level_up(new_level: int)
+| Layer | Responsibility | Script |
+|-------|----------------|--------|
+| **Resource template** | Designer-authored base attributes, curves, inheritance | [base_stats_resource.gd](scripts/base_stats_resource.gd), [exp_progression_resource.gd](scripts/exp_progression_resource.gd), [resource_stat_inheritance.gd](scripts/resource_stat_inheritance.gd) |
+| **Runtime StatsComponent** | Duplicate/instance template, apply/remove modifiers, emit signals, JIT derived stats | **MANDATORY** [stats_component_reactive.gd](scripts/stats_component_reactive.gd) + [stat_modifier_stacking.gd](scripts/stat_modifier_stacking.gd) |
+| **StatusEffectData** | Typed buff rows (`ADDITIVE` / `MULTIPLICATIVE` / `OVERRIDE`) | [status_effect_data.gd](scripts/status_effect_data.gd) |
+| **DamageFormula (RefCounted)** | Pure combat math shared by Player/NPC | **MANDATORY** [damage_formula_handler.gd](scripts/damage_formula_handler.gd) |
+| **Persistence** | Save progression; strip runtime buffs first | [persistent_character_stats.gd](scripts/persistent_character_stats.gd) |
+| **UI sync** | Labels listen to signals — no polling | [dynamic_stat_label_sync.gd](scripts/dynamic_stat_label_sync.gd) |
 
-@export var level: int = 1
-@export var experience: int = 0
-@export var experience_to_next_level: int = 100
-
-# Base stats
-@export var strength: int = 10
-@export var dexterity: int = 10
-@export var intelligence: int = 10
-@export var vitality: int = 10
-
-# Derived stats (calculated from base)
-var max_health: int:
-    get: return vitality * 10
-var attack_power: int:
-    get: return strength * 2
-var defense: int:
-    get: return strength + (vitality / 2)
-var magic_power: int:
-    get: return intelligence * 3
-var critical_chance: float:
-    get: return dexterity * 0.01
-
-# Modifiers
-var modifiers: Dictionary = {}
-
-func add_experience(amount: int) -> void:
-    experience += amount
-    
-    while experience >= experience_to_next_level:
-        level_up_character()
-
-func level_up_character() -> void:
-    level += 1
-    experience -= experience_to_next_level
-    experience_to_next_level = int(experience_to_next_level * 1.5)
-    
-    # Increase base stats
-    strength += 2
-    dexterity += 2
-    intelligence += 2
-    vitality += 2
-    
-    level_up.emit(level)
-
-func get_stat(stat_name: String) -> float:
-    var base_value: float = get(stat_name)
-    var modifier_bonus := get_modifier_total(stat_name)
-    return base_value + modifier_bonus
-
-func add_modifier(stat_name: String, modifier_id: String, value: float) -> void:
-    if not modifiers.has(stat_name):
-        modifiers[stat_name] = {}
-    
-    modifiers[stat_name][modifier_id] = value
-
-func remove_modifier(stat_name: String, modifier_id: String) -> void:
-    if modifiers.has(stat_name):
-        modifiers[stat_name].erase(modifier_id)
-
-func get_modifier_total(stat_name: String) -> float:
-    if not modifiers.has(stat_name):
-        return 0.0
-    
-    var total := 0.0
-    for value in modifiers[stat_name].values():
-        total += value
-    return total
-```
-
-## Equipment Stats
-
-```gdscript
-# equipment_item.gd
-extends Item
-class_name EquipmentItem
-
-@export var stat_bonuses: Dictionary = {
-    "strength": 5,
-    "dexterity": 3
-}
-
-func on_equip(stats: Stats) -> void:
-    for stat_name in stat_bonuses:
-        stats.add_modifier(stat_name, "equipment_" + id, stat_bonuses[stat_name])
-
-func on_unequip(stats: Stats) -> void:
-    for stat_name in stat_bonuses:
-        stats.remove_modifier(stat_name, "equipment_" + id)
-```
-
-## Status Effects
-
-```gdscript
-# status_effect.gd
-class_name StatusEffect
-extends Resource
-
-@export var effect_id: String
-@export var duration: float
-@export var stat_modifiers: Dictionary = {}
-
-func apply(stats: Stats) -> void:
-    for stat_name in stat_modifiers:
-        stats.add_modifier(stat_name, "status_" + effect_id, stat_modifiers[stat_name])
-
-func remove(stats: Stats) -> void:
-    for stat_name in stat_modifiers:
-        stats.remove_modifier(stat_name, "status_" + effect_id)
-```
-
-## Damage Calculation
-
-```gdscript
-func calculate_damage(attacker_stats: Stats, defender_stats: Stats) -> float:
-    var base_damage := float(attacker_stats.attack_power)
-    var defense := float(defender_stats.defense)
-    
-    # Damage reduction formula
-    var damage := base_damage * (100.0 / (100.0 + defense))
-    
-    # Critical hit
-    if randf() < attacker_stats.critical_chance:
-        damage *= 2.0
-    
-    return maxf(damage, 1.0)  # Minimum 1 damage
-```
-
-## Skill Requirements
-
-```gdscript
-# skill.gd
-class_name Skill
-extends Resource
-
-@export var required_level: int = 1
-@export var required_stats: Dictionary = {
-    "strength": 15,
-    "intelligence": 10
-}
-
-func can_use(stats: Stats) -> bool:
-    if stats.level < required_level:
-        return false
-    
-    for stat_name in required_stats:
-        if stats.get_stat(stat_name) < required_stats[stat_name]:
-            return false
-    
-    return true
-```
-
-## Best Practices
-
-1. **Derived Stats** - Calculate from base stats
-2. **Modifiers** - Temporary/permanent bonuses
-3. **Formula Balance** - Avoid exponential power creep
+Do **not** paste beginner `class_name Stats` / Dictionary equipment tutorials — route to the scripts above.
 
 ---
 
-## Elite Godot 4.x Patterns
-
-### 1. Robust Stat Cap System
-Encapsulate stats in a `Resource` and use property setters to enforce caps and prevent technical overflows.
+## API alignment (StatusEffectData)
 
 ```gdscript
-# rpg_stat.gd
-class_name RPGStat extends Resource
+# Author buffs as Resources — not ad-hoc Dictionary modifiers
+var haste := StatusEffectData.new()
+haste.name = "Haste"
+haste.type = StatusEffectData.Type.MULTIPLICATIVE
+haste.attribute = "speed"
+haste.value = 1.25
+haste.duration = 8.0
 
-signal stat_changed(old_value: int, new_value: int)
+var flat_str := StatusEffectData.new()
+flat_str.type = StatusEffectData.Type.ADDITIVE
+flat_str.attribute = "strength"
+flat_str.value = 5.0
 
-@export var stat_name: String = "Strength"
-@export var max_cap: int = 999
-@export var current_value: int = 10:
-    set(value):
-        var old := current_value
-        current_value = clampi(value, 0, max_cap)
-        if old != current_value:
-            stat_changed.emit(old, current_value)
+var break_def := StatusEffectData.new()
+break_def.type = StatusEffectData.Type.OVERRIDE
+break_def.attribute = "defense"
+break_def.value = 0.0
 ```
 
-### 2. Reactive Stat Dependency Graphs
-Use the Observer pattern to handle derived stats. Instead of polling every frame, connect signals so derived stats (like Speed) only recalculate when their dependencies (like Agility) change.
+Stacking / refresh / unique-vs-stackable behavior: **MANDATORY** [stat_modifier_stacking.gd](scripts/stat_modifier_stacking.gd). Apply through [stats_component_reactive.gd](scripts/stats_component_reactive.gd) so derived stats recalc once per change.
 
-```gdscript
-# derived_stat.gd
-class_name DerivedStat extends RPGStat
+---
 
-@export var multiplier: float = 1.0
-@export var base_stat: RPGStat:
-    set(new_base):
-        if base_stat: base_stat.stat_changed.disconnect(_on_dependency_changed)
-        base_stat = new_base
-        if base_stat:
-            base_stat.stat_changed.connect(_on_dependency_changed)
-            _recalculate()
+## Elite reminders (script-backed)
 
-func _recalculate() -> void:
-    current_value = int(base_stat.current_value * multiplier)
-
-func _on_dependency_changed(_old, _new) -> void:
-    _recalculate()
-```
-
-### 3. Equipment Comparison UI Helper
-Override `_make_custom_tooltip` on UI controls to generate dynamic, BBCode-formatted stat differentials when hovering over equipment.
-
-```gdscript
-# equipment_slot_ui.gd
-func _make_custom_tooltip(_text: String) -> Object:
-    var container := VBoxContainer.new()
-    var rtf := RichTextLabel.new()
-    rtf.bbcode_enabled = true
-    
-    var diff := hovered_stat.current_value - equipped_stat.current_value
-    var color := "green" if diff > 0 else "red"
-    var sign := "+" if diff > 0 else ""
-    
-    rtf.text = "[color=%s]%s: %d (%s%d)[/color]" % [
-        color, hovered_stat.stat_name, hovered_stat.current_value, sign, diff
-    ]
-    container.add_child(rtf)
-    return container
-```
+1. **Caps** — Clamp on setters; never allow overflow attributes.
+2. **Dependency graphs** — Derived stats recalc from signals when bases change (reactive component), never `_process`.
+3. **Equipment** — Register/remove modifier IDs on equip/unequip via the stacking API (peer inventory skill for item ownership).
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
-- Related: Matrix-test power curves and modifier stacks with [godot-monte-carlo-balancer](../godot-monte-carlo-balancer/SKILL.md).
+
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
+
+### Official Documentation
+- [Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html) — why base stats, curves, and status effects belong on `Resource` templates you duplicate or instance per character.
+- [Resource](https://docs.godotengine.org/en/stable/classes/class_resource.html) — `duplicate()`, `resource_local_to_scene`, and shared-vs-unique semantics that prevent every enemy sharing one HP Resource.
+- [GDScript exported properties](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_exports.html) — `@export` / `@export_group` so designers tune attributes and scaling in the Inspector without code edits.
+- [Using signals](https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html) — `stat_changed` / `stats_recalculated` so UI and derived stats react without `_process` polling.
+- [Saving games](https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html) — serialize progression Resources and strip runtime-only buffs before write.
+- [File paths in Godot projects](https://docs.godotengine.org/en/stable/tutorials/io/data_paths.html) — `user://` vs `res://` for persistent character `.tres` saves.
+- [ResourceSaver](https://docs.godotengine.org/en/stable/classes/class_resourcesaver.html) — write character stats Resources to disk after level-ups.
+- [ResourceLoader](https://docs.godotengine.org/en/stable/classes/class_resourceloader.html) — `exists` / load paths when restoring progression on boot.
+- [RefCounted](https://docs.godotengine.org/en/stable/classes/class_refcounted.html) — keep damage formulas and pure combat math off the scene tree.
+- [Random number generation](https://docs.godotengine.org/en/stable/tutorials/math/random_number_generation.html) — seeded crit / variance rolls that stay reproducible in balance tests.
+- [Label](https://docs.godotengine.org/en/stable/classes/class_label.html) — bind text to signal-driven attribute refresh for HUD sync.
+- [SceneTree](https://docs.godotengine.org/en/stable/classes/class_scenetree.html) — `create_timer` for timed buff expiry without a per-effect Node.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, Resources, and project layout before building CharacterStats assets.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed getters, setters, and signal wiring used by reactive stat components.
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — inheritance, `.tres` templates, and composition patterns for attribute data.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — ownership and fan-out rules so `hp_changed` / `level_up` do not create UI cycles.
+
+#### Complements
+- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — abilities that gate on level/attributes and apply temporary modifiers.
+- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — equipment bonuses that register and remove modifier IDs on equip/unequip.
+- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — hit resolution that consumes attack/defense/crit from this stack.
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — full save pipelines around ResourceSaver of progression data.
+- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — character sheets and tooltips that listen to recalculated stats.
+- [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md) — gold/XP sinks that couple with level curves and gear stat budgets.
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — matrix-test power curves, modifier stacks, and damage variance before shipping numbers.
+
+#### Downstream / consumers
+- [godot-genre-action-rpg](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md) — ARPG builds that rely on attributes, gear mods, and derived combat stats.
+- [godot-genre-roguelike](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md) — run-scoped modifiers and scaling that reset between runs.
+- [godot-turn-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-turn-system/SKILL.md) — turn-based combat that resolves damage formulas from shared stats.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.

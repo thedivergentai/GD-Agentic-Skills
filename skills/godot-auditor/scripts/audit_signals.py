@@ -49,3 +49,13 @@ if __name__ == "__main__":
     auditor = SignalAuditor(".")
     auditor.scan_files()
     auditor.generate_report()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/instancing_with_signals.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — typed Signal.connect and lambda disconnect rules
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — prove leaks with connection/orphan tooling
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+# =============================================================================

@@ -88,3 +88,15 @@ func _exit_tree() -> void:
 ## EXPERT USAGE:
 ## Configure tile_size to match terrain chunks. 
 ## Ensure scene files follow a naming convention or use a Resource directory.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/using_multiple_threads.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/thread_safe_apis.html
+# - https://docs.godotengine.org/en/stable/classes/class_thread.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md — chunk PackedScene ownership and load queues
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — unload/radius budgets to avoid OOM
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md
+# =============================================================================

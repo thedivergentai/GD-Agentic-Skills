@@ -1,6 +1,6 @@
 ---
 name: godot-game-loop-harvest
-description: Data-driven resource harvesting system (mining, logging, foraging) for Godot 4. Use when implementing gathering mechanics with tool/tier validation, health depletion, item spawning, and persistence.
+description: "Data-driven resource harvesting (mining, logging, foraging) for Godot 4: apply_hit tool/tier validation via HarvestToolData enums, HarvestResourceData yields, harvestable_node shake/deplete, respawn_manager world persistence, UNIX offline progress, autosave, and noise vein proc-gen. Trigger keywords: apply_hit, HarvestResourceData, HarvestToolData, offline UNIX, respawn_manager, tool tier, harvestable_node, FastNoiseLite veins."
 ---
 
 ## Godot 4.7 Baseline
@@ -11,109 +11,96 @@ description: Data-driven resource harvesting system (mining, logging, foraging) 
 
 # Godot Game Loop: Harvest
 
-Implement decoupled, data-driven gathering mechanics. This system handles tool validation, depletion, and respawning.
+Decoupled, data-driven gathering: tool/tier gates, health depletion, yields, respawn, and offline UNIX progress.
 
-## 1. Component Reference
+## Script Catalog (MANDATORY by path)
 
-| Component | Asset | Description |
-| :--- | :--- | :--- |
-| **Resource Data** | [resource_data.gd](scripts/resource_data.gd) | `Resource`: Defines health, yield, and tool requirements. |
-| **Tool Data** | [harvest_tool_data.gd](scripts/harvest_tool_data.gd) | `Resource`: Defines damage, type, and tier. |
-| **Harvestable Node** | [harvestable_node.gd](scripts/harvestable_node.gd) | `StaticBody3D`: The world interaction entity. |
-| **Respawn Manager** | [harvest_respawn_manager.gd](scripts/harvest_respawn_manager.gd) | `Node`: (Singleton) Manages world persistence. |
-| **Inventory Manager**| [harvest_inventory_manager.gd](scripts/harvest_inventory_manager.gd) | `Node`: Hub for resource collection. |
-| **Auto-Save Manager**| [harvest_autosave_manager.gd](scripts/harvest_autosave_manager.gd) | `Node`: Interval-based progress safety. |
+| Path | MANDATORY reads |
+|---|---|
+| **Hit / gather** | [harvestable_node.gd](scripts/harvestable_node.gd), [resource_data.gd](scripts/resource_data.gd), [harvest_tool_data.gd](scripts/harvest_tool_data.gd) |
+| **Offline / autosave** | [harvest_loop_patterns.gd](scripts/harvest_loop_patterns.gd), [harvest_autosave_manager.gd](scripts/harvest_autosave_manager.gd), [harvest_inventory_manager.gd](scripts/harvest_inventory_manager.gd) |
+| **Vein / respawn / world** | [harvest_respawn_manager.gd](scripts/harvest_respawn_manager.gd) + `FastNoiseLite` vein notes below |
 
-## 2. Implementation Guide
+## Setup (short)
 
-### Step 1: Resource Setup
-- Create a `HarvestResourceData` resource in the inspector.
-- Configure `Required Tool Type` (e.g., "pickaxe", "axe") and `Required Tier`.
-- Set `Yield Range` (Vector2i) and optional `Item Scene` for physical drops.
+1. Author `HarvestResourceData` / `HarvestToolData` `.tres` (tool **enum** + tier, yield range, optional drop scene).
+2. Attach `harvestable_node.gd` to `StaticBody3D`; assign data + `mesh_to_shake`; keep interaction on **Layer 1**.
+3. Autoload `harvest_respawn_manager.gd` as `HarvestRespawnManager` when world persistence is required.
 
-### Step 2: Node Configuration
-- Attach `harvestable_node.gd` to a `StaticBody3D` node.
-- Assign the `ResourceData` from Step 1.
-- Assign a child `Node3D` (e.g., a Mesh) to `mesh_to_shake` for visual feedback.
-- **Physics**: Ensure the node is on **Layer 1** for interaction.
+## Hit path
 
-### Step 3: Global Systems (Recommended)
-- Add `harvest_respawn_manager.gd` as an **Autoload** named `HarvestRespawnManager`.
-- The `HarvestableNode` will automatically use this manager if it is found at `/root/HarvestRespawnManager`.
-
-## 3. Interaction & Signals
-
-### Calling Hits
-When a player interacts (e.g., via RayCast), call `apply_hit(tool_data)`.
+Raycast/interact → `apply_hit(tool_data: HarvestToolData)`:
 
 ```gdscript
 if collider is HarvestableNode:
     collider.apply_hit(player_tool)
 ```
 
-### Signal Map
-| Signal | Payload | Integration |
-| :--- | :--- | :--- |
-| `harvested` | `(data, amount)` | Connect to `InventoryManager.add_resource`. |
-| `took_damage` | `(curr, max)` | Connect to a Progress Bar or Damage Popups. |
-| `interaction_failed`| `(reason: String)` | Handles `"wrong_tool"` or `"low_tier"` UI feedback. |
+| Signal | Payload | Wire to |
+|---|---|---|
+| `harvested` | `(data, amount)` | Inventory / `harvest_inventory_manager` |
+| `took_damage` | `(curr, max)` | HUD bar / popup pool |
+| `interaction_failed` | `(reason: StringName)` | `"wrong_tool"` / `"low_tier"` feedback |
 
 ## NEVER Do
 
-- **NEVER use float variables to store massively accumulated harvest resources** — Large floats lose precision, which can lead to "missing" resources in idle/clicker games. Always use `int` for core counts.
-- **NEVER process gathering logic in _process() without multiplying rates by delta** — If you don't use `delta`, the harvesting speed will fluctuate wildly based on the player's hardware performance/framerate.
-- **NEVER run heavy array mathematics for thousands of resources on the main thread** — This will cause micro-stutters. Distribute heavy calculations using `WorkerThreadPool`.
-- **NEVER leave a gathering game running at full GPU utilization** — For UI-heavy harvest games, enable `OS.low_processor_usage_mode` to drastically reduce battery drain on mobile/laptops.
-- **NEVER trust OS.get_ticks_msec() for offline progress** — This only tracks system uptime. Rely on `Time.get_unix_time_from_system()` to calculate real-world time passed between sessions.
-- **NEVER use Timer nodes for precise audio-visual harvesting synchronization** — Timer nodes are subject to framerate variations. For frame-perfect sync, use code-based timers or the animation system.
-- **NEVER couple your resource logic directly to UI counters** — Use a signal bus or event system to notify the UI of changes, keeping the game logic decoupled from the presentation.
-- **NEVER constantly instantiate and destroy Label nodes for "floating numbers"** — Frequent allocation/deallocation leads to memory fragmentation. Use an object pool for damage/harvest popups.
-- **NEVER modify a globally shared Resource without calling duplicate()** — If you modify a shared `Resource` (like a base crop yield), every instance using that resource will be updated. Use `duplicate(true)`.
-- **NEVER access shared harvest data from background threads without a Mutex** — Simultaneous access will eventually corrupt your inventory data. Always use a `Mutex` to lock sensitive blocks.
-- **NEVER hardcode yield values in your gathering scripts** — Use exports and custom `Resource` files so designers can balance the economy without touching the code.
-- **NEVER use queue_free() on a harvested node before the VFX/SFX finish** — You'll cut off the "juice." Hide the mesh and disable collision, then `queue_free()` once the effect signals completion.
-- **NEVER check tool requirements via string comparisons if possible** — Use enums or class types. Strings are prone to typos and are slower for high-frequency checks.
-- **NEVER neglect to save the UNIX timestamp on exit** — If you forget this, you lose the ability to calculate offline earnings when the player returns.
-- **NEVER scale collision shapes non-uniformly for harvestable objects** — This breaks the underlying physics calculations. Adjust the shape resource dimensions instead.
+- **NEVER use float for accumulated harvest counts** — use `int`.
+- **NEVER gather rates in `_process` without `delta`** — framerate-scales economy.
+- **NEVER trust `OS.get_ticks_msec()` for offline progress** — use `Time.get_unix_time_from_system()`.
+- **NEVER check tool type via free-form strings** — use `HarvestToolData.ToolType` / `StringName` enums (see scripts).
+- **NEVER mutate shared Resource templates** — `duplicate(true)` before runtime durability/health mutation.
+- **NEVER `queue_free()` before VFX/SFX finish** — hide mesh, swap collision layer, free after juice.
+- **NEVER skip saving UNIX timestamp on exit** — offline gains depend on it.
+- **NEVER couple harvest logic to UI counters** — signals only.
+- **NEVER scale collision shapes non-uniformly** — edit shape resource sizes.
 
----
+## Vein proc-gen (noise)
 
-## Available Scripts
+Use `FastNoiseLite` thresholds for organic clusters; spawn `HarvestableNode` instances where `noise.get_noise_2dv(pos) > threshold`. Persist depleted IDs via respawn manager — do not re-roll veins every load without a seed.
 
-> **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
+## Tool durability
 
-### [harvest_loop_patterns.gd](scripts/harvest_loop_patterns.gd)
-Expert patterns for idle optimization, UNIX-based offline gains, and threaded resource processing.
-
-### [resource_data.gd](scripts/resource_data.gd)
-`Resource` container: Defines health, yield, and tool requirements for a harvestable object.
-
-### [harvestable_node.gd](scripts/harvestable_node.gd)
-`StaticBody3D`: The world interaction entity that handles hits, shakes, and depletion.
-
-### [harvest_autosave_manager.gd](scripts/harvest_autosave_manager.gd)
-Manages interval-based auto-saving for harvest progress using `FileAccess`.
-
----
-
-## Expert Harvest Patterns
-
-### 1. Proc-Gen Resource Veins (Noise)
-Instead of random placement, use `FastNoiseLite` to create organic "clusters" of resources.
-
-```gdscript
-var noise = FastNoiseLite.new()
-func _should_spawn(pos: Vector2) -> bool:
-    # noise_val is -1.0 to 1.0. Higher thresholds create tighter veins.
-    return noise.get_noise_2dv(pos) > 0.5 
-```
-
-### 2. Tool Durability System
-Avoid hardcoding durability into the player; use a `Resource` to encapsulate tool state.
-
-- **Benefit**: Allows easy serialization, swapping tools, and sharing logic across different tools.
-- **Implementation**: See `harvest_tool_data.gd`. Tools should emit `durability_changed` and `tool_broken` signals.
+Keep durability on `HarvestToolData` (Resource), not the player node. Emit durability/break signals from the tool Resource after successful hits.
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
-- Related: Validate yield pacing and sink pressure with [godot-monte-carlo-balancer](../godot-monte-carlo-balancer/SKILL.md) career sims.
+
+> **Progressive disclosure:** Skim Official Documentation only for the APIs you are implementing (Resources, StaticBody3D hits, signals, timers, save/offline time). Open Related Skills when wiring inventory, autoloads, raycasts, or economy balance—do not preload the whole lattice.
+
+### Official Documentation
+- [Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html) — Author `HarvestResourceData` / `HarvestToolData` as shareable `.tres` assets so designers tune health, yield ranges, and tool gates without editing harvest scripts.
+- [Resource](https://docs.godotengine.org/en/stable/classes/class_resource.html) — Call `duplicate(true)` before mutating runtime harvest/tool state so one node’s depletion or durability cannot rewrite the shared template Resource.
+- [GDScript exports](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_exports.html) — `@export` / `@export_group` power Inspector-authored tool tiers, yield ranges, respawn times, and drop scenes on harvest data Resources.
+- [Using signals](https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html) — Emit `harvested`, `took_damage`, and `interaction_failed` so inventory, HUD bars, and feedback UI subscribe without coupling to `HarvestableNode` internals.
+- [StaticBody3D](https://docs.godotengine.org/en/stable/classes/class_staticbody3d.html) — World harvestables are static colliders players query/hit; keep them on an interaction layer and move to an inactive layer while depleted.
+- [Collision shapes (3D)](https://docs.godotengine.org/en/stable/tutorials/physics/collision_shapes_3d.html) — Size shape resources directly; non-uniform scale on collision shapes breaks hit tests for pickaxes/axes against trees and ore nodes.
+- [Idle and Physics Processing](https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html) — Multiply continuous gather rates by `delta` (prefer `_physics_process` for fixed-step economy ticks) so harvest speed is not framerate-dependent.
+- [Time](https://docs.godotengine.org/en/stable/classes/class_time.html) — Persist `Time.get_unix_time_from_system()` for offline gains; do not use `OS.get_ticks_msec()` / uptime for real-world absence math.
+- [Saving games](https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html) — Persist inventory counts, depleted-node IDs, and absolute respawn/offline timestamps with the rest of progression data.
+- [FileAccess](https://docs.godotengine.org/en/stable/classes/class_fileaccess.html) — Interval autosave writes JSON (or binary) under `user://` via `FileAccess.open` so harvest progress survives crashes between manual saves.
+- [Tween](https://docs.godotengine.org/en/stable/classes/class_tween.html) — Hit “juice” shakes use short property tweens on the mesh child without allocating disposable animation players per strike.
+- [Singletons (Autoload)](https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html) — Register `HarvestRespawnManager` as an Autoload so scattered harvestables resolve `/root/HarvestRespawnManager` for world-scale depletion persistence.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Harvest yields, tool stats, and drop scenes are Resource-first; establish composition/duplicate rules before baking economy numbers into nodes.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — `harvested` / `inventory_updated` ownership and safe connects keep gather nodes decoupled from HUD and inventory hubs.
+- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — `StaticBody3D` layers/masks and shape setup for interactable world props are prerequisites to reliable hit validation.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed Resources, `await` on `create_timer`, and Mutex/`WorkerThreadPool` patterns assume solid GDScript fundamentals.
+
+#### Complements
+- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — Connect `harvested` into a real inventory/stacking pipeline instead of leaving counts in a harvest-only dictionary.
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Round-trip warehouse totals, tool durability, and depleted-node timers through the project save schema beyond interval JSON dumps.
+- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Respawn and inventory managers belong in a disciplined Autoload graph with clear init order and signal-bus boundaries.
+- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — Player gather input typically raycasts or shapecasts to the harvestable collider before calling `apply_hit(tool_data)`.
+- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Expand hit shakes into polish tweens (squash, flash, camera punch) without cutting VFX short via early `queue_free()`.
+- [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md) — Wire harvest yields into sinks, crafting costs, and vendor loops so gathering feeds a coherent economy.
+
+#### Downstream / consumers
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — After yields, respawn times, and tool tiers are tunable Resources, Monte Carlo sims validate gather pacing and sink pressure before shipping curves.
+- [godot-genre-survival](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-survival/SKILL.md) — Survival loops compose harvesting with hunger, crafting, and world threat systems on top of this gather core.
+- [godot-game-loop-collection](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-game-loop-collection/SKILL.md) — Collection/scavenger objectives often consume the same harvest/inventory signals for “gather N of X” quests.
+- [godot-procedural-generation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md) — Noise-driven resource veins and world placement build on harvest node data once the interaction loop is solid.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.

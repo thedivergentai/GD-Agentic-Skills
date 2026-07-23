@@ -14,3 +14,15 @@ func configure_expert_bake() -> void:
     
     # Use denoiser for soft, realistic transitions
     use_denoiser = true
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/global_illumination/using_lightmap_gi.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/global_illumination/introduction_to_global_illumination.html
+# - https://docs.godotengine.org/en/stable/classes/class_lightmapgi.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md — static UV2-ready architecture
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md — bake mode and lightmap size hints
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md — prefer baked GI on Mobile
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md
+# =============================================================================

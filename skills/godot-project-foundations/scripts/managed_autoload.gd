@@ -24,3 +24,14 @@ func _initialize_subsystems() -> void:
 
 static func get_uptime() -> float:
 	return Time.get_unix_time_from_system() - session_start_time
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/autoloads_versus_regular_nodes.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/scene_tree.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — boot order and RefCounted delegation patterns
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — keep Autoload APIs signal-light when possible
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md
+# =============================================================================

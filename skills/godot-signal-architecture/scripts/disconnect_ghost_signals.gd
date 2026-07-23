@@ -14,3 +14,13 @@ func track_new_entity(entity: Node):
 
 func _on_target_died():
 	print("Current target lost.")
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_signal.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/scene_tree.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md — retarget listeners when entities swap
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — disconnect old target.died before tracking anew
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md
+# =============================================================================

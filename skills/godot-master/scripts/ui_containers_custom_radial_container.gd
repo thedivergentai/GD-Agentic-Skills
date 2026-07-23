@@ -30,3 +30,13 @@ func _do_radial_sort() -> void:
 		
 		# CRITICAL: Always use fit_child_in_rect to enforce layout [18]
 		fit_child_in_rect(child, rect)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/ui/custom_gui_controls.html
+# - https://docs.godotengine.org/en/stable/classes/class_container.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — radial menu selection input
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md — open/close radial motion
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md
+# =============================================================================

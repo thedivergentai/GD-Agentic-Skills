@@ -63,3 +63,14 @@ func _apply_margin(node: Control, side: Side, offset: float) -> void:
 ## EXPERT USAGE:
 ## Attach to a root Control. Assign margin containers (ColorRects or empty Controls) 
 ## that push your main UI content inward.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_displayserver.html
+# - https://docs.godotengine.org/en/stable/tutorials/rendering/multiple_resolutions.html
+# - https://docs.godotengine.org/en/stable/tutorials/ui/gui_containers.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — side margin Control wiring
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md — notch/cutout device testing
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md
+# =============================================================================

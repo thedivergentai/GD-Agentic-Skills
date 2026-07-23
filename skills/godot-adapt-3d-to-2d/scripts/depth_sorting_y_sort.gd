@@ -21,3 +21,13 @@ func _update_sorting() -> void:
     # If the world is larger, you must use CanvasLayer or scaled division.
     var calculated_z = int(global_position.y + depth_offset)
     z_index = clampi(calculated_z, RenderingServer.CANVAS_ITEM_Z_MIN, RenderingServer.CANVAS_ITEM_Z_MAX)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_canvasitem.html
+# - https://docs.godotengine.org/en/stable/tutorials/2d/introduction_to_2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md — sprite trees under Y-sort parents
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md — TileMapLayer Y-sort interaction
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-3d-to-2d/SKILL.md
+# =============================================================================

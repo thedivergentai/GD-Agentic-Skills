@@ -25,3 +25,14 @@ func _perform_respawn() -> void:
 	player_respawned.emit()
 
 ## Rule: Singletons should manage 'Player' lifecycle to decouple UI/World from player existence.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html — Autoload owns death→delay→respawn
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/groups.html — get_first_node_in_group("Player") for restore
+# - https://docs.godotengine.org/en/stable/classes/class_scenetreetimer.html — respawn_delay via create_timer
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — player_died / player_respawned ownership
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md — revive existing instance; do not reload whole level
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-mechanic-revival/SKILL.md
+# =============================================================================

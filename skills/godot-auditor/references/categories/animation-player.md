@@ -9,3 +9,13 @@
 - **NEVER leave unnecessary AnimationPlayers `active`** — If an entity is off-screen and its animation is purely visual (no logic tracks), set `active = false` to save significant CPU/GPU processing [317].
 - **NEVER change `AnimationLibrary` content while it is playing** — This causes immediate crashes or undefined transform states. Stop the player or wait for the `finished` signal before swapping libraries.
 - **NEVER rely on `speed_scale` for long-term synchronization** — For multiplayer or rhythm games, use `seek()` with a global time reference to prevent frame-drift.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

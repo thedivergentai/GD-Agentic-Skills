@@ -23,3 +23,14 @@ func export_all() -> void:
                 print("Successfully exported ", preset_name)
             else:
                 push_error("Failed to export ", preset_name, ". Exit code: ", exit_code)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/export/exporting_projects.html
+# - https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html
+# - https://docs.godotengine.org/en/stable/classes/class_os.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-desktop/SKILL.md — multi-preset desktop matrix
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md — include mobile presets in one-click export
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md
+# =============================================================================

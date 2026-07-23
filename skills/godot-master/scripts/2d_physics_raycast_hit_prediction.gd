@@ -20,3 +20,14 @@ func fire_shot() -> void:
 
 func _apply_impact_vfx(_point: Vector2, _normal: Vector2):
 	pass
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html
+# - https://docs.godotengine.org/en/stable/classes/class_raycast2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md — hitscan force_raycast_update timing
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — instant-hit weapon resolution
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md
+# =============================================================================

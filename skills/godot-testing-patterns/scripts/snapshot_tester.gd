@@ -29,3 +29,15 @@ func run_snapshot_test(scene_name: String) -> bool:
 		
 	print("Snapshot Test PASSED for %s" % scene_name)
 	return true
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_renderingserver.html
+# - https://docs.godotengine.org/en/stable/classes/class_viewport.html
+# - https://docs.godotengine.org/en/stable/classes/class_image.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md — visual drift from theme/layout changes
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — golden file I/O patterns for references
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-testing-patterns/SKILL.md
+# =============================================================================

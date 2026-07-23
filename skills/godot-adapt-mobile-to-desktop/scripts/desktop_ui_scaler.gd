@@ -25,3 +25,13 @@ func _shrink_recursive(node: Node) -> void:
             
     for child in node.get_children():
         _shrink_recursive(child)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/ui/size_and_anchors.html
+# - https://docs.godotengine.org/en/stable/tutorials/ui/gui_containers.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — anchors when shrinking touch targets
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md — desktop-density theme sizes
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-mobile-to-desktop/SKILL.md
+# =============================================================================

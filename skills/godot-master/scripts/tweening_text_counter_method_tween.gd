@@ -15,3 +15,13 @@ func update_score(target: int):
 
 func _set_score_text(val: int):
 	text = "Score: " + str(val)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_methodtweener.html
+# - https://docs.godotengine.org/en/stable/classes/class_tween.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md — label/score presentation while values tween
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — typed callables for tween_method
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md
+# =============================================================================

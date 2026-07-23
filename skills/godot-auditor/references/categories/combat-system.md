@@ -15,3 +15,14 @@
 - **NEVER use raw strings for elemental damage types** — Strings are slow and error-prone. Use `enum` flags (optionally with `@export_flags`) to manage multi-type damage efficiently.
 - **NEVER use standard strings for state names in high-frequency loops** — Use `StringName` (&"attacking", &"stunned") to drastically improve dictionary lookups and hash comparison speeds.
 - **NEVER forget to duplicate() a shared Resource stats block** — If you don't call `duplicate()` when instancing a mob, all enemies of that type will share the same health pool.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — simulate balance impact of structural fixes
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

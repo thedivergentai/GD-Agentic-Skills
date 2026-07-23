@@ -39,13 +39,24 @@ Physical simulation, emergent play, and player creativity define this genre.
 
 ## 🛠 Expert Components (scripts/)
 
-### Original Expert Patterns
-- [voxel_chunk_manager.gd](../scripts/genre_sandbox_voxel_chunk_manager.gd) - Professional chunk management using `MultiMeshInstance3D` with batch update logic.
-- [cellular_automata_liquid.gd](../scripts/genre_sandbox_cellular_automata_liquid.gd) - Optimized simulation of liquids and powders using property-based density checks.
-- [voxel_world.gd](../scripts/genre_sandbox_voxel_world.gd) - Top-level world controller for grid state, tool-based editing, and chunk lifecycle.
+> **MANDATORY / Do NOT Load by path**
+> - **2D falling-sand / CA only**: load `cellular_automata_liquid.gd` + property/tool patterns below. **Do NOT Load** `voxel_chunk_*.gd`, `voxel_world.gd`, or greedy-mesh paths.
+> - **3D voxel / chunk worlds**: load `voxel_world.gd` → `voxel_chunk_manager.gd` → **MANDATORY** `voxel_chunk_mesher.gd` for exterior-face meshes. **Do NOT Load** 2D CA liquid unless you also run a 2D element layer.
+> - **Placement / multiplayer validation**: load `dynamic_placement_validator.gd` before trusting client dig/place.
+> - **Persistence**: load `sandbox_world_serializer.gd` for RLE/binary chunk IO; keep `sandbox_patterns.gd` for async load + floating origin.
 
-### Modular Components
-- [sandbox_patterns.gd](../scripts/genre_sandbox_sandbox_patterns.gd) - Utility collection for async chunk loading, multithreading, and origin shifting.
+### Chunk / voxel (3D)
+- [voxel_world.gd](../scripts/genre_sandbox_voxel_world.gd) — Top-level world controller for grid state, tool-based editing, and chunk lifecycle.
+- [voxel_chunk_manager.gd](../scripts/genre_sandbox_voxel_chunk_manager.gd) — Chunk lifecycle + `MultiMeshInstance3D` batch updates for medium worlds.
+- [voxel_chunk_mesher.gd](../scripts/genre_sandbox_voxel_chunk_mesher.gd) — **MANDATORY** for large worlds: WorkerThreadPool visible-face `ArrayMesh` build + deferred `set_mesh`.
+
+### Elements / tools (2D CA)
+- [cellular_automata_liquid.gd](../scripts/genre_sandbox_cellular_automata_liquid.gd) — Liquids/powders via property-based density checks.
+
+### Placement / save / utilities
+- [dynamic_placement_validator.gd](../scripts/genre_sandbox_dynamic_placement_validator.gd) — Bounds/resource/server-side placement checks (do not trust client).
+- [sandbox_world_serializer.gd](../scripts/genre_sandbox_sandbox_world_serializer.gd) — RLE/binary chunk persistence patterns.
+- [sandbox_patterns.gd](../scripts/genre_sandbox_sandbox_patterns.gd) — Async chunk loading, multithreading helpers, floating-origin shift.
 
 ## Architecture Patterns
 
@@ -144,17 +155,17 @@ func use(world_pos: Vector2, world: WorldGrid) -> void:
 # Check world.can_place(target) before set_cell(), show visual feedback.
 ```
 
-### 4. Chunk-Based Rendering (3D Voxels)
-Only render visible faces. Use greedy meshing to merge adjacent blocks.
+### 4. Chunk-Based Rendering (3D Voxels) — MultiMesh vs ArrayMesh
 
-```gdscript
-# See scripts/voxel_chunk_manager.gd for full implementation
+**MANDATORY**: For exterior-face / greedy-style chunk meshes, read and adapt [voxel_chunk_mesher.gd](../scripts/genre_sandbox_voxel_chunk_mesher.gd) (WorkerThreadPool + `SurfaceTool` + `call_deferred("set_mesh")`). Do **not** inline incomplete mesher stubs in project code.
 
-# EXPERT DECISION TREE:
-# - Small worlds (<100k blocks): Single MeshInstance with SurfaceTool
-# - Medium worlds (100k-1M blocks): Chunked MultiMesh (see script)
-# - Large worlds (>1M blocks): Chunked + greedy meshing + LOD
-```
+| World scale | Render path | Load |
+|-------------|-------------|------|
+| Small (<100k blocks) | Single `MeshInstance3D` + `SurfaceTool` | Mesher patterns only |
+| Medium (100k–1M) | Chunked **`MultiMeshInstance3D`** (one mesh, many instances; batch buffer on edit complete) | **MANDATORY** [voxel_chunk_manager.gd](../scripts/genre_sandbox_voxel_chunk_manager.gd) |
+| Large (>1M) / editable terrain | Chunked **`ArrayMesh`** with **visible-face / greedy** quads + LOD; optional `RenderingServer` instance RIDs | **MANDATORY** [voxel_chunk_mesher.gd](../scripts/genre_sandbox_voxel_chunk_mesher.gd) + manager |
+
+**Rule**: Prefer MultiMesh when every instance shares one mesh and you only need per-instance transforms/colors. Prefer ArrayMesh meshing when adjacent voxels must merge into unique surfaces (greedy faces, UV atlases, per-chunk collision).
 
 ## Save System for Sandbox Worlds
 
@@ -234,55 +245,11 @@ func create_hinge(body_a: RigidBody2D, body_b: RigidBody2D, anchor: Vector2) -> 
 
 ## 🚀 Elite Technical Implementations (Batch 09)
 
-### 1. Greedy-Meshing Pattern (Quad Optimization)
-Rendering individual voxels is a bottleneck. Greedy meshing combines adjacent identical faces into single large quads. For maximum performance, bypass the SceneTree and submit generated arrays directly to the `RenderingServer`.
+### 1. Greedy / Visible-Face Meshing
+Do not paste placeholder meshers. **MANDATORY** read [voxel_chunk_mesher.gd](../scripts/genre_sandbox_voxel_chunk_mesher.gd) for threaded visible-face generation. Extend that pattern for full greedy quad merging; for MultiMesh vs ArrayMesh choice see §4 above. Extreme draw paths may push committed arrays via `RenderingServer` (see Official Documentation → Using servers) after the mesher owns the surface data.
 
-```gdscript
-class_name VoxelChunkMesher extends RefCounted
-
-## Generates optimized mesh data and pushes it to the RenderingServer.
-static func build_greedy_mesh(chunk_transform: Transform3D, scenario_rid: RID) -> RID:
-    var vertices := PackedVector3Array()
-    var normals := PackedVector3Array()
-    var indices := PackedInt32Array()
-    
-    # ... algorithm calculates optimized quads ...
-    
-    var surface_array := []
-    surface_array.resize(Mesh.ARRAY_MAX)
-    surface_array[Mesh.ARRAY_VERTEX] = vertices
-    surface_array[Mesh.ARRAY_NORMAL] = normals
-    surface_array[Mesh.ARRAY_INDEX] = indices
-    
-    var mesh_rid := RenderingServer.mesh_create()
-    RenderingServer.mesh_add_surface_from_arrays(mesh_rid, Mesh.PRIMITIVE_TRIANGLES, surface_array)
-    
-    var instance_rid := RenderingServer.instance_create()
-    RenderingServer.instance_set_base(instance_rid, mesh_rid)
-    RenderingServer.instance_set_transform(instance_rid, chunk_transform)
-    RenderingServer.instance_set_scenario(instance_rid, scenario_rid)
-    
-    return instance_rid
-```
-
-### 2. Voxel-GI-Server (Dynamic Global Illumination)
-For procedural sandbox worlds, use `VoxelGI` to provide real-time indirect lighting. Interface with the `RenderingServer` to allocate GI data for chunks dynamically as they are generated.
-
-```gdscript
-class_name VoxelGIServerManager extends Node
-
-var _gi_instance_rid: RID
-
-func _ready() -> void:
-    RenderingServer.voxel_gi_set_quality(RenderingServer.VOXEL_GI_QUALITY_LOW)
-    _gi_instance_rid = RenderingServer.voxel_gi_create()
-    RenderingServer.instance_set_scenario(_gi_instance_rid, get_world_3d().scenario)
-
-func allocate_chunk_gi(chunk_aabb: AABB) -> void:
-    # Allocation requires to_cell_xform and level_counts buffers
-    RenderingServer.voxel_gi_allocate_data(_gi_instance_rid, Transform3D(), chunk_aabb, Vector3i(64,64,64), PackedByteArray(), PackedByteArray(), PackedByteArray(), PackedInt32Array())
-    RenderingServer.voxel_gi_set_dynamic_range(_gi_instance_rid, 2.0)
-```
+### 2. VoxelGI (demoted — use docs + lighting skill)
+Sandbox chunk lighting is **not** owned by an incomplete `RenderingServer.voxel_gi_allocate_data` stub here. For dynamic GI on procedural volumes, follow [Using VoxelGI](https://docs.godotengine.org/en/stable/tutorials/3d/global_illumination/using_voxel_gi.html) and route implementation detail to [godot-3d-lighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md). Prefer baked/probe strategies from that skill unless you truly need runtime VoxelGI.
 
 ### 3. Blueprint-Sharing (Base64/JSON Serialization)
 Allow players to share creations via simple strings. Use `JSON` for readable serialization and `DisplayServer` for clipboard integration.
@@ -303,4 +270,46 @@ static func import_blueprint_from_clipboard() -> Dictionary:
 ```
 
 
-- Master Skill: [godot-master](../SKILL.md)
+## Reference
+
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
+
+### Official Documentation
+- [Using MultiMesh](https://docs.godotengine.org/en/stable/tutorials/performance/using_multimesh.html) — batch voxel/prop instances per chunk and avoid per-frame buffer rebuilds.
+- [Using GridMaps](https://docs.godotengine.org/en/stable/tutorials/3d/using_gridmaps.html) — MeshLibrary cell placement when structures need variety beyond a single MultiMesh mesh.
+- [ArrayMesh](https://docs.godotengine.org/en/stable/tutorials/3d/procedural_geometry/arraymesh.html) — push greedy-meshed exterior faces as one surface instead of per-block meshes.
+- [SurfaceTool](https://docs.godotengine.org/en/stable/tutorials/3d/procedural_geometry/surfacetool.html) — build and index chunk meshes with normals before committing to MeshInstance3D.
+- [Background loading](https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html) — ResourceLoader threaded chunk streaming so exploration does not hitch.
+- [Saving games](https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html) — persist player-built worlds (groups, JSON/`var_to_str`, binary Resources).
+- [Using multiple threads](https://docs.godotengine.org/en/stable/tutorials/performance/using_multiple_threads.html) — WorkerThreadPool meshing/generation with SceneTree mutations deferred.
+- [Using servers](https://docs.godotengine.org/en/stable/tutorials/performance/using_servers.html) — RenderingServer mesh/instance RIDs when bypassing the SceneTree for chunk draw.
+- [Using VoxelGI](https://docs.godotengine.org/en/stable/tutorials/3d/global_illumination/using_voxel_gi.html) — dynamic GI allocation for large procedural sandbox volumes.
+- [Large world coordinates](https://docs.godotengine.org/en/stable/tutorials/physics/large_world_coordinates.html) — precision limits and floating-origin strategies past ~32k units.
+- [Ray-casting](https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html) — aim/place/break queries via direct space state instead of per-voxel raycasts.
+- [PinJoint2D](https://docs.godotengine.org/en/stable/classes/class_pinjoint2d.html) — hinge-style joints for player-created physics contraptions.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, Resources, and import basics before chunk scenes and binary `.res` world data.
+- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — StaticBody colliders for terrain, RigidBody props, and shape queries used in placement validation.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed Dictionaries/Packed arrays, WorkerThreadPool tasks, and deferred SceneTree edits in meshers.
+
+#### Complements
+- [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md) — GridMap/MeshLibrary and bake flows that sandbox building tools often reuse.
+- [godot-3d-lighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md) — VoxelGI / probes / bake strategy for procedural volumes (do not invent RenderingServer GI stubs in this skill).
+- [godot-procedural-generation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md) — noise/dungeon generators that seed voxel chunks before player edits.
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — MultiMesh budgets, dirty-chunk simulation, and draw-call caps at sandbox scale.
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — RLE/binary chunk persistence and migrateable save schemas beyond ad-hoc JSON.
+- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — PhysicsDirectSpaceState picking and shape intersects for block tools.
+- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — PinJoint2D/RigidBody2D patterns for 2D sandbox contraptions and falling-sand props.
+- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — threaded load queues and chunk node lifecycle without orphaned branches.
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — tune crafting costs, element rarity, and economy loops that emerge from sandbox systems.
+
+#### Downstream / consumers
+- [godot-genre-open-world](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md) — streaming, floating origin, and HLOD layered on editable sandbox chunks.
+- [godot-genre-survival](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-survival/SKILL.md) — harvesting, needs, and crafting loops that consume destructible voxel/element worlds.
+- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — authoritative server placement validation for shared creative worlds.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.

@@ -25,3 +25,14 @@ void fragment() {
     ALPHA = albedo_tex.a;
     ALPHA_SCISSOR_THRESHOLD = 0.5;
 }
+// =============================================================================
+// GDSkills research links (agents) — does not affect runtime
+// Official docs:
+// - https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/spatial_shader.html
+// - https://docs.godotengine.org/en/stable/tutorials/shaders/your_first_shader/your_first_3d_shader.html
+// - https://docs.godotengine.org/en/stable/classes/class_geometryinstance3d.html
+// Related skills:
+// - ../godot-shaders-basics/SKILL.md — vertex displacement patterns
+// - ../godot-3d-world-building/SKILL.md — foliage/environment placement
+// Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md
+// =============================================================================

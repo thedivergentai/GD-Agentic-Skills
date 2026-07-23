@@ -51,3 +51,14 @@ func _enforce_square_ratio() -> void:
 ## 2. Set Min Item Width (e.g., 150px)
 ## 3. Set Children Size Flags to Expand (Horizontal)
 ## Result: Grid flows from 1 to N columns automatically as window resizes.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_gridcontainer.html
+# - https://docs.godotengine.org/en/stable/tutorials/ui/gui_containers.html
+# - https://docs.godotengine.org/en/stable/tutorials/rendering/multiple_resolutions.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md — width breakpoints driving columns
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md — item grids using dynamic columns
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md
+# =============================================================================

@@ -14,3 +14,13 @@ func test_delayed_respawn():
 	
 	assert_that(player.is_alive).is_true()
 	player.free()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html
+# - https://docs.godotengine.org/en/stable/classes/class_scenetree.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — await/process_frame timing
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md — multi-frame tween completion under test
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-testing-patterns/SKILL.md
+# =============================================================================

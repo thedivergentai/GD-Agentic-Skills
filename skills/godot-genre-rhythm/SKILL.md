@@ -16,12 +16,12 @@ Expert blueprint for rhythm games emphasizing audio-visual synchronization and f
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Audio Sync & Logic
-- NEVER use `Time.get_ticks_msec()` for rhythm sync; strictly use **`AudioServer.get_time_since_last_mix()`** combined with latency offsets for sub-frame accuracy.
+- NEVER use `Time.get_ticks_msec()` / `Time.get_ticks_usec()` as the song clock; strictly use **`AudioStreamPlayer.get_playback_position() + AudioServer.get_time_since_last_mix() - AudioServer.get_output_latency()`** (see [rhythm_conductor.gd](scripts/rhythm_conductor.gd)).
 - NEVER process song logic in `_process()`; strictly use **`_physics_process()`** or a conductor loop to ensure deterministic timing regardless of render frames.
 - NEVER use `_process()` to capture hit inputs; strictly use **`_input(event)`** to record the exact timestamp of the button press event.
 - NEVER scale engine time_scale for song speed; strictly use **`AudioStreamPlayer.pitch_scale`** to adjust speed and avoid globally breaking physics logic.
 - NEVER neglect **Audio Latency** calibration; strictly provide a tool for players to adjust for hardware/Bluetooth delays (~30-100ms) to prevent "unplayable" sync issues.
-- NEVER use standard `_process` delta for note-to-audio sync; strictly use the **Hardware Clock** via `AudioServer.get_playback_position() + AudioServer.get_time_since_last_mix()` for sub-frame accuracy.
+- NEVER use `_process` delta as the song clock; strictly read the conductor's `get_song_time()` (playback + mix − output latency).
 - NEVER move thousands of note sprites on the CPU; strictly use a **Shader-Based Highway** (UV scrolling) to offload track movement to the GPU.
 - NEVER use `yield` or `await` for beat timing; strictly use a sample-accurate **Delta Accumulator** tied to the audio clock.
 - NEVER assume a constant BPM; strictly build your conductor to handle a **Tempo Map** for complex track changes.
@@ -41,416 +41,109 @@ Expert blueprint for rhythm games emphasizing audio-visual synchronization and f
 
 ## 🛠 Expert Components (scripts/)
 
+> **MANDATORY reads** before implementing the matching system:
+> 1. [rhythm_conductor.gd](scripts/rhythm_conductor.gd) — canonical audio clock
+> 2. [input_judge_logic.gd](scripts/input_judge_logic.gd) — time-window judging
+> 3. [note_object_pool.gd](scripts/note_object_pool.gd) — pooled notes (no per-beat instantiate)
+> 4. [latency_calibrator.gd](scripts/latency_calibrator.gd) — player hardware offset
+
 ### Original Expert Patterns
-- [rhythm_conductor.gd](scripts/rhythm_conductor.gd) - High-precision BPM/beat tracker with latency compensation logic.
+- [rhythm_conductor.gd](scripts/rhythm_conductor.gd) - Song time = playback_position + mix − output latency.
+- [input_judge_logic.gd](scripts/input_judge_logic.gd) - ms windows vs song time (not pixel position).
+- [note_object_pool.gd](scripts/note_object_pool.gd) - Recycle note instances under dense charts.
+- [latency_calibrator.gd](scripts/latency_calibrator.gd) - Calibration UI offset applied on the conductor.
 
 ### Modular Components
-- [input_judge_logic.gd](scripts/input_judge_logic.gd) - Hit-window validation (Perfect/Good/Miss).
-- [latency_calibrator.gd](scripts/latency_calibrator.gd) - A/V offset measurement utility.
-- [note_object_pool.gd](scripts/note_object_pool.gd) - High-frequency recycling for dense highways.
-- [audio_spectrum_analyzer.gd](scripts/audio_spectrum_analyzer.gd) - Optimized engine-side frequency extraction.
-- [dynamic_bpm_handler.gd](scripts/dynamic_bpm_handler.gd) - Tempo map and fractional beat support.
-- [note_lane_manager.gd](scripts/note_lane_manager.gd) - Spawning routes and variable scroll speed control.
+- [note_orchestrator.gd](scripts/note_orchestrator.gd) - Spawn/schedule notes from chart data.
+- [rhythm_scoring_system.gd](scripts/rhythm_scoring_system.gd) - Score aggregation from judgments.
+- [score_combo_manager.gd](scripts/score_combo_manager.gd) - Combo / break rules.
+- [rhythm_ui_feedback.gd](scripts/rhythm_ui_feedback.gd) - Hit sparks / judgment labels.
+- [beat_synced_animator.gd](scripts/beat_synced_animator.gd) - Visuals locked to conductor beats.
+- [note_lane_manager.gd](scripts/note_lane_manager.gd) - Multi-lane layout helpers.
+- [dynamic_bpm_handler.gd](scripts/dynamic_bpm_handler.gd) - Tempo map / BPM changes.
+- [audio_spectrum_analyzer.gd](scripts/audio_spectrum_analyzer.gd) - Spectrum visuals (not the clock).
+
+> **Do NOT load** unused lanes: skip [audio_spectrum_analyzer.gd](scripts/audio_spectrum_analyzer.gd) unless building reactive viz; skip [dynamic_bpm_handler.gd](scripts/dynamic_bpm_handler.gd) for constant-BPM tracks.
 
 ---
 
 ## Core Loop
+1. **Calibrate latency** → 2. **Conductor clock** → 3. **Spawn pooled notes** → 4. **`_input` judge** → 5. **Score/combo UI**
 
-`Music Plays → Notes Appear → Player Inputs → Timing Judged → Score/Feedback → Combo Builds`
+## Decision Trees
+
+### Clock (one recipe)
+| Need | Action |
+|------|--------|
+| Song position | **MANDATORY** [rhythm_conductor.gd](scripts/rhythm_conductor.gd) `get_song_time()` |
+| Visual highway | Position from song time / beats — never `_process` delta integration as truth |
+| Hit timestamp | Capture in `_input` / `_unhandled_input`, compare to note target time |
+
+### Systems
+| Need | Action |
+|------|--------|
+| Judgment windows | [input_judge_logic.gd](scripts/input_judge_logic.gd) |
+| Scoring / combo | [rhythm_scoring_system.gd](scripts/rhythm_scoring_system.gd) + [score_combo_manager.gd](scripts/score_combo_manager.gd) |
+| Chart spawn | [note_orchestrator.gd](scripts/note_orchestrator.gd) + pool |
+| Juice | [rhythm_ui_feedback.gd](scripts/rhythm_ui_feedback.gd) / [beat_synced_animator.gd](scripts/beat_synced_animator.gd) |
+
+Do **not** re-inline MusicConductor / NoteHighway / JudgmentSystem / RhythmScoring classes in this skill — load the scripts.
 
 ## Skill Chain
 
-`godot-project-foundations`, `godot-input-handling`, `sound-manager`, `animation`, `ui-framework`
-
----
-
-## Audio Synchronization
-
-**THE most critical aspect** - notes MUST align perfectly with audio.
-
-### Music Time System
-
-```gdscript
-class_name MusicConductor
-extends Node
-
-signal beat(beat_number: int)
-signal measure(measure_number: int)
-
-@export var bpm := 120.0
-@export var music: AudioStream
-
-var seconds_per_beat: float
-var song_position: float = 0.0  # In seconds
-var song_position_in_beats: float = 0.0
-var last_reported_beat: int = 0
-
-@onready var audio_player: AudioStreamPlayer
-
-func _ready() -> void:
-    seconds_per_beat = 60.0 / bpm
-    audio_player.stream = music
-
-func _process(_delta: float) -> void:
-    # Get precise audio position with latency compensation
-    song_position = audio_player.get_playback_position() + AudioServer.get_time_since_last_mix()
-    
-    # Convert to beats
-    song_position_in_beats = song_position / seconds_per_beat
-    
-    # Emit beat signals
-    var current_beat := int(song_position_in_beats)
-    if current_beat > last_reported_beat:
-        beat.emit(current_beat)
-        if current_beat % 4 == 0:
-            measure.emit(current_beat / 4)
-        last_reported_beat = current_beat
-
-func start_song() -> void:
-    audio_player.play()
-    song_position = 0.0
-    last_reported_beat = 0
-
-func beats_to_seconds(beats: float) -> float:
-    return beats * seconds_per_beat
-
-func seconds_to_beats(secs: float) -> float:
-    return secs / seconds_per_beat
-```
-
----
-
-## Note System
-
-### Note Data Structure
-
-```gdscript
-class_name NoteData
-extends Resource
-
-@export var beat_time: float  # When to hit (in beats)
-@export var lane: int  # Which input lane (0-3 for 4-key, etc.)
-@export var note_type: NoteType
-@export var hold_duration: float = 0.0  # For hold notes (in beats)
-
-enum NoteType { TAP, HOLD, SLIDE, FLICK }
-```
-
-### Chart/Beatmap Loading
-
-```gdscript
-class_name ChartLoader
-extends Node
-
-func load_chart(chart_path: String) -> Array[NoteData]:
-    var notes: Array[NoteData] = []
-    var file := FileAccess.open(chart_path, FileAccess.READ)
-    
-    while not file.eof_reached():
-        var line := file.get_line()
-        if line.is_empty() or line.begins_with("#"):
-            continue
-        
-        var parts := line.split(",")
-        var note := NoteData.new()
-        note.beat_time = float(parts[0])
-        note.lane = int(parts[1])
-        note.note_type = NoteType.get(parts[2]) if parts.size() > 2 else NoteType.TAP
-        note.hold_duration = float(parts[3]) if parts.size() > 3 else 0.0
-        notes.append(note)
-    
-    notes.sort_custom(func(a, b): return a.beat_time < b.beat_time)
-    return notes
-```
-
----
-
-## Note Highway / Receptor
-
-```gdscript
-class_name NoteHighway
-extends Control
-
-@export var scroll_speed := 500.0  # Pixels per second
-@export var hit_position_y := 100.0  # From bottom
-@export var note_scene: PackedScene
-@export var look_ahead_beats := 4.0
-
-var active_notes: Array[NoteVisual] = []
-var chart: Array[NoteData]
-var next_note_index: int = 0
-
-func _process(_delta: float) -> void:
-    spawn_upcoming_notes()
-    update_note_positions()
-
-func spawn_upcoming_notes() -> void:
-    var look_ahead_time := MusicConductor.song_position_in_beats + look_ahead_beats
-    
-    while next_note_index < chart.size():
-        var note_data := chart[next_note_index]
-        if note_data.beat_time > look_ahead_time:
-            break
-        
-        var note_visual := note_scene.instantiate() as NoteVisual
-        note_visual.setup(note_data)
-        note_visual.position.x = get_lane_x(note_data.lane)
-        add_child(note_visual)
-        active_notes.append(note_visual)
-        next_note_index += 1
-
-func update_note_positions() -> void:
-    for note in active_notes:
-        var beats_until_hit := note.data.beat_time - MusicConductor.song_position_in_beats
-        var seconds_until_hit := MusicConductor.beats_to_seconds(beats_until_hit)
-        
-        # Note scrolls down from top
-        note.position.y = (size.y - hit_position_y) - (seconds_until_hit * scroll_speed)
-        
-        # Remove if too far past
-        if note.position.y > size.y + 100:
-            if not note.was_hit:
-                register_miss(note.data)
-            note.queue_free()
-            active_notes.erase(note)
-```
-
----
-
-## Timing Judgment
-
-```gdscript
-class_name JudgmentSystem
-extends Node
-
-signal note_judged(judgment: Judgment, note: NoteData)
-
-enum Judgment { PERFECT, GREAT, GOOD, BAD, MISS }
-
-# Timing windows in milliseconds (symmetric around hit time)
-const WINDOWS := {
-    Judgment.PERFECT: 25.0,
-    Judgment.GREAT: 50.0,
-    Judgment.GOOD: 100.0,
-    Judgment.BAD: 150.0
-}
-
-func judge_input(input_time: float, note_time: float) -> Judgment:
-    var difference := abs(input_time - note_time) * 1000.0  # ms
-    
-    if difference <= WINDOWS[Judgment.PERFECT]:
-        return Judgment.PERFECT
-    elif difference <= WINDOWS[Judgment.GREAT]:
-        return Judgment.GREAT
-    elif difference <= WINDOWS[Judgment.GOOD]:
-        return Judgment.GOOD
-    elif difference <= WINDOWS[Judgment.BAD]:
-        return Judgment.BAD
-    else:
-        return Judgment.MISS
-
-func get_timing_offset(input_time: float, note_time: float) -> float:
-    # Positive = late, Negative = early
-    return (input_time - note_time) * 1000.0
-```
-
----
-
-## Scoring System
-
-```gdscript
-class_name RhythmScoring
-extends Node
-
-signal score_changed(new_score: int)
-signal combo_changed(new_combo: int)
-signal combo_broken
-
-const JUDGMENT_SCORES := {
-    Judgment.PERFECT: 100,
-    Judgment.GREAT: 75,
-    Judgment.GOOD: 50,
-    Judgment.BAD: 25,
-    Judgment.MISS: 0
-}
-
-const COMBO_MULTIPLIER_THRESHOLDS := {
-    10: 1.5,
-    25: 2.0,
-    50: 2.5,
-    100: 3.0
-}
-
-var score: int = 0
-var combo: int = 0
-var max_combo: int = 0
-
-func register_judgment(judgment: Judgment) -> void:
-    if judgment == Judgment.MISS:
-        if combo > 0:
-            combo_broken.emit()
-        combo = 0
-    else:
-        combo += 1
-        max_combo = max(max_combo, combo)
-    
-    var base_score := JUDGMENT_SCORES[judgment]
-    var multiplier := get_combo_multiplier()
-    var earned := int(base_score * multiplier)
-    
-    score += earned
-    score_changed.emit(score)
-    combo_changed.emit(combo)
-
-func get_combo_multiplier() -> float:
-    var mult := 1.0
-    for threshold in COMBO_MULTIPLIER_THRESHOLDS:
-        if combo >= threshold:
-            mult = COMBO_MULTIPLIER_THRESHOLDS[threshold]
-    return mult
-```
-
----
-
-## Input Processing
-
-```gdscript
-class_name RhythmInput
-extends Node
-
-@export var lane_actions: Array[StringName] = [
-    &"lane_0", &"lane_1", &"lane_2", &"lane_3"
-]
-
-var held_notes: Dictionary = {}  # lane: NoteData for hold notes
-
-func _input(event: InputEvent) -> void:
-    for i in lane_actions.size():
-        if event.is_action_pressed(lane_actions[i]):
-            process_lane_press(i)
-        elif event.is_action_released(lane_actions[i]):
-            process_lane_release(i)
-
-func process_lane_press(lane: int) -> void:
-    var current_time := MusicConductor.song_position
-    var closest_note := find_closest_note_in_lane(lane, current_time)
-    
-    if closest_note:
-        var note_time := MusicConductor.beats_to_seconds(closest_note.beat_time)
-        var judgment := JudgmentSystem.judge_input(current_time, note_time)
-        
-        if judgment != Judgment.MISS:
-            hit_note(closest_note, judgment)
-            if closest_note.note_type == NoteType.HOLD:
-                held_notes[lane] = closest_note
-
-func process_lane_release(lane: int) -> void:
-    if held_notes.has(lane):
-        var hold_note := held_notes[lane]
-        var hold_end_time := hold_note.beat_time + hold_note.hold_duration
-        var current_beat := MusicConductor.song_position_in_beats
-        
-        # Check if released at correct time
-        if abs(current_beat - hold_end_time) < 0.25:  # Quarter beat tolerance
-            complete_hold_note(hold_note)
-        else:
-            drop_hold_note(hold_note)
-        
-        held_notes.erase(lane)
-```
-
----
-
-## Visual Feedback
-
-```gdscript
-func show_judgment_splash(judgment: Judgment, position: Vector2) -> void:
-    var splash := judgment_sprites[judgment].instantiate()
-    splash.position = position
-    add_child(splash)
-    
-    var tween := create_tween()
-    tween.tween_property(splash, "scale", Vector2(1.2, 1.2), 0.1)
-    tween.tween_property(splash, "scale", Vector2(1.0, 1.0), 0.1)
-    tween.tween_property(splash, "modulate:a", 0.0, 0.3)
-    tween.tween_callback(splash.queue_free)
-
-func pulse_receptor(lane: int, judgment: Judgment) -> void:
-    var receptor := lane_receptors[lane]
-    receptor.modulate = judgment_colors[judgment]
-    
-    var tween := create_tween()
-    tween.tween_property(receptor, "modulate", Color.WHITE, 0.15)
-```
-
----
+| Phase | Skills | Purpose |
+|-------|--------|---------|
+| 1. Audio | `godot-audio-systems` | Stream clock + latency |
+| 2. Input | `godot-input-handling` | Timestamped hits |
+| 3. UI | `godot-ui-containers` | Highway / HUD |
+| 4. Perf | pooling / shaders | Dense charts |
+| 5. Balance | `godot-monte-carlo-balancer` | Window difficulty bands |
 
 ## Common Pitfalls
 
 | Pitfall | Solution |
 |---------|----------|
-| Audio desync | Use `AudioServer.get_time_since_last_mix()` latency compensation |
-| Unfair judgment | Generous windows at low difficulty, offset calibration |
-| Notes bunched visually | Adjust scroll speed or spawn timing |
-| Hold notes janky | Separate hold body and tail rendering |
-| Frame drops cause misses | Decouple input from framerate |
-
----
-
-## Godot-Specific Tips
-
-1. **Audio latency**: Calibrate with `AudioServer` and custom offset
-2. **Input polling**: Use `_input` not `_process` for precise timing
-3. **Shaders**: UV scrolling for note highways
-4. **Particles**: Use `GPUParticles2D` for hit effects
-
-### 3. Hardware-Synced Latency Calibration
-Calculate precise offsets by compensating for OS/Hardware latency.
-
-```gdscript
-# latency_calibrator.gd
-func _record_tap(expected_time: float):
-    # Obtain precise hardware-synced audio position
-    var mix_time = audio_player.get_playback_position() + AudioServer.get_time_since_last_mix()
-    # Compensate for OS/Hardware output latency
-    var true_audio_time = mix_time - AudioServer.get_output_latency()
-    
-    var offset = true_audio_time - expected_time
-    save_offset(offset)
-```
-
-### 4. Ghost-Note Detection (Anti-Spam)
-Penalize inputs that don't correlate to an active note using `_unhandled_input`.
-
-```gdscript
-# input_manager.gd
-func _unhandled_input(event: InputEvent):
-    # Consume action only on initial press
-    if event.is_action_pressed("rhythm_hit", false, true):
-        if active_notes_in_window.is_empty():
-            # Anti-Cheat: Penalize spamming
-            ghost_note_detected.emit()
-        else:
-            _evaluate_hit()
-        get_viewport().set_input_as_handled()
-```
-
-### 5. Shader-Based Note Highway
-Ultra-smooth scrolling using UV manipulation on the GPU to bypass CPU bottlenecks.
-
-```glsl
-// highway.gdshader
-shader_type canvas_item;
-uniform float scroll_speed = 1.0;
-
-void fragment() {
-    vec2 scrolled_uv = UV;
-    // Offset Y over time to simulate movement
-    scrolled_uv.y -= TIME * scroll_speed;
-    COLOR = texture(TEXTURE, scrolled_uv);
-}
-```
-
+| `Time.get_ticks_*` conductor | Use playback + mix − latency |
+| Judge in `_process` | `_input` + song time |
+| Instantiate per note | [note_object_pool.gd](scripts/note_object_pool.gd) |
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
+
+### Official Documentation
+- [Sync the gameplay with audio and music](https://docs.godotengine.org/en/stable/tutorials/audio/sync_with_audio.html) — Playback-position helpers (`get_time_since_last_mix`, output latency) that every BPM conductor and judgment window must use.
+- [Audio streams](https://docs.godotengine.org/en/stable/tutorials/audio/audio_streams.html) — AudioStreamPlayer roles, pitch_scale for song speed, and how music reaches buses without breaking sync.
+- [Audio buses](https://docs.godotengine.org/en/stable/tutorials/audio/audio_buses.html) — Route Music / HitSFX / UI so judgment SFX never fight the track bus.
+- [Importing audio samples](https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_audio_samples.html) — WAV vs Ogg/MP3 tradeoffs for charts, hit clicks, and calibration tones.
+- [AudioServer](https://docs.godotengine.org/en/stable/classes/class_audioserver.html) — Mix/output latency APIs and bus-effect instances used by conductors and spectrum visuals.
+- [AudioStreamPlayer](https://docs.godotengine.org/en/stable/classes/class_audiostreamplayer.html) — Non-positional music/hit player API (`get_playback_position`, `pitch_scale`, pause) for the highway clock.
+- [AudioEffectSpectrumAnalyzer](https://docs.godotengine.org/en/stable/classes/class_audioeffectspectrumanalyzer.html) — Engine-side FFT effect for reactive highways without main-thread FFT work.
+- [Using InputEvent](https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html) — `_input` / action press timing for lane hits instead of polling in `_process`.
+- [CanvasItem shaders](https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/canvas_item_shader.html) — UV scroll patterns for GPU note highways that avoid moving thousands of sprites on CPU.
+- [Tween](https://docs.godotengine.org/en/stable/classes/class_tween.html) — Judgment splash, receptor pulse, and beat-synced scale pops without frame-tied lerps.
+- [Background loading](https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html) — Threaded chart/audio preload so dense tracks never stall the first note.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Audio latency project settings, bus layout names, and input map lane actions must exist before the conductor runs.
+- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — Buses, stream players, spectrum instances, and sync-with-audio helpers this genre skill consumes for BPM clocks.
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Action maps, `_input` vs `_unhandled_input`, and event timestamps for lane press/release and anti-spam.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed Resources for NoteData/charts, signals for beat/judgment events, and deterministic timing loops.
+
+#### Complements
+- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Judgment labels, receptor flashes, and beat pulses should be Tween-driven, not per-frame scale hacks.
+- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — Shader highways and spectrum-driven uniforms keep dense charts off the CPU.
+- [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — Hit sparks and combo flourishes via GPUParticles2D without instantiating VFX every Perfect.
+- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Score/combo HUD, calibration sliders, and lane receptor layout as Control trees.
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Persist A/V offset, scroll speed, and difficulty windows across sessions.
+- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Conductor / scoring / pool owners are typically Autoloads with a clear boot order.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Beat, judgment, combo-break, and chart-finished signals need owner boundaries so UI never owns the clock.
+
+#### Downstream / consumers
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Escalate when note pools, highway draw calls, or mix callbacks still hitch after pooling and shader scroll.
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Simulate timing-window width, scroll speed, and miss penalties against clear rates before shipping difficulty tiers.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting rhythm concern.

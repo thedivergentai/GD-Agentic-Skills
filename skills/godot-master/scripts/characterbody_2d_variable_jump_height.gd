@@ -17,3 +17,14 @@ func _physics_process(delta: float) -> void:
 		velocity.y = jump_velocity
 
 	move_and_slide()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/using_character_body_2d.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — release-to-cut jump height
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — short-hop vs full-jump balance
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md
+# =============================================================================

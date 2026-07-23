@@ -11,3 +11,13 @@ func clean_player_state(player: CharacterBody3D) -> void:
 		player.get_node("StateMachine").transition_to("Idle")
 
 ## Rule: Always zero out velocity on respawn. Failing to do so can cause 'momentum physics' crashes.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_characterbody3d.html — zero velocity on respawn
+# - https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html — clear residual physics state
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md — force Idle after death locks
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md — reset guard as child utility
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-mechanic-revival/SKILL.md
+# =============================================================================

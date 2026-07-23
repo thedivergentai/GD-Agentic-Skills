@@ -34,3 +34,15 @@ static func generate_mermaid_diagram() -> String:
 ## Prints the Mermaid code to console for use in documentation.
 static func print_diagram() -> void:
 	print(generate_mermaid_diagram())
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+# - https://docs.godotengine.org/en/stable/classes/class_projectsettings.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — document Autoload order as source of truth
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — visualize circular boot deps
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-builder/SKILL.md — architecture docs for agent planning
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md
+# =============================================================================

@@ -50,3 +50,16 @@ func _scale_ui_elements() -> void:
 ## EXPERT USAGE:
 ## Add to Main Scene. Assign Virtual Joystick scene. 
 ## Group small buttons as "touch_interactive" to auto-scale them.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/rendering/multiple_resolutions.html
+# - https://docs.godotengine.org/en/stable/classes/class_os.html
+# - https://docs.godotengine.org/en/stable/tutorials/ui/gui_containers.html
+# - https://docs.godotengine.org/en/stable/classes/class_touchscreenbutton.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — scale touch button minimum sizes
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md — feature-tag mobile detection
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — enable touch controls vs mouse
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md
+# =============================================================================

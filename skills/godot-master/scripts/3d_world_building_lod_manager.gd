@@ -21,3 +21,16 @@ func setup_mesh_lod(mesh_instance: MeshInstance3D) -> void:
 ## Always prefer the Importer's automatic LOD generation for static meshes.
 ## Use manual Visibility Ranges (this script) only for complex hierarchical objects 
 ## or when swapping between a high-poly Mesh and a Billboards/Impostor.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/mesh_lod.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/visibility_ranges.html
+# - https://docs.godotengine.org/en/stable/classes/class_geometryinstance3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — distance thresholds relative to active camera
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — when visibility ranges beat full mesh LOD
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md — HLOD / impostors at outdoor scale
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md
+# =============================================================================

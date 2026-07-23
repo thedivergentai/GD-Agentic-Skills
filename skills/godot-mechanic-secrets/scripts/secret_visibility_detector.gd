@@ -21,3 +21,15 @@ func _on_player_looking() -> void:
 	pass
 
 ## Tip: Use Dot Product instead of Raycasts for 'Look-at' triggers to reduce physics overhead.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/math/vector_math.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html
+# - https://docs.godotengine.org/en/stable/tutorials/shaders/introduction_to_shaders.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — camera forward for look-at dots
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md — reveal/dissolve on look trigger
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-mechanic-secrets/SKILL.md
+# =============================================================================

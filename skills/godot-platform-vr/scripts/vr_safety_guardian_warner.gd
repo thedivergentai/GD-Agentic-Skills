@@ -20,3 +20,14 @@ func _warn_player_out_of_bounds() -> void:
 	pass
 
 ## Rule: Respecting real-world physical space is a safety requirement for VR.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/xr/xr_room_scale.html
+# - https://docs.godotengine.org/en/stable/classes/class_xrserver.html
+# - https://docs.godotengine.org/en/stable/classes/class_xrcamera3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — headset pose vs play-area bounds checks
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md — warn with spatial SFX near guardian edges
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-vr/SKILL.md
+# =============================================================================

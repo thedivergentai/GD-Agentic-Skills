@@ -56,3 +56,16 @@ func setup_hybrid_lighting() -> void:
 # EXPERT NOTE: Drop 3D render rate to 12fps/15fps to match stop-motion 2D art.
 func set_low_fidelity_3d_timer(viewport: SubViewport) -> void:
     viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/2d/introduction_to_2d.html
+# - https://docs.godotengine.org/en/stable/classes/class_camera3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_subviewport.html
+# - https://docs.godotengine.org/en/stable/tutorials/rendering/viewports.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-2d-to-3d/SKILL.md — inverse pattern set
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — ortho vs perspective choices
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — when SubViewport cost bites
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-3d-to-2d/SKILL.md
+# =============================================================================

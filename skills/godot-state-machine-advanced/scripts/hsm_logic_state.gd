@@ -52,3 +52,15 @@ func _process(delta: float) -> void:
 ## states without global variables.
 ## NEVER transition to a state if it is already active; use a 
 ## 'can_transition_to' check to avoid recursive overflows.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html
+# - https://docs.godotengine.org/en/stable/classes/class_inputevent.html
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — prefer signal-driven transition_to over per-frame polls
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md — hierarchical update often ends in move_and_slide on the actor
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md
+# =============================================================================

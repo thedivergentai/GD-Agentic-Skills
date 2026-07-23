@@ -18,3 +18,14 @@ void fragment() {
 	// Add emissive glow
 	EMISSION = ghost_color.rgb * glow_intensity;
 }
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/spatial_shader.html — ALPHA/EMISSION soul pulse
+# - https://docs.godotengine.org/en/stable/tutorials/shaders/introduction_to_shaders.html — spatial shader_type basics
+# - https://docs.godotengine.org/en/stable/classes/class_shadermaterial.html — assign spectral material at runtime
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md — ghost/emissive patterns
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md — when StandardMaterial3D transparency suffices first
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-mechanic-revival/SKILL.md
+# =============================================================================

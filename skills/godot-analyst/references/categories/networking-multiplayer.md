@@ -22,3 +22,13 @@ The shared manifestation of the vision. This rubric measures the stability, secu
 
 ## 🌟 Visionary's Final Decree
 To reach **Elite** status, you must achieve 'Network Transparency'. The logic shouldn't care *where* the node is; it should only care *what* the node does. Use **State Sync** only for the essential; let the clients simulate the fluff. Slop is a laggy world; Vision is a shared reality.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

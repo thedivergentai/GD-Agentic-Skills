@@ -32,3 +32,13 @@ func transition_to(target_name: StringName) -> void:
 	current_state.exit()
 	current_state = get_node(str(target_name))
 	current_state.enter()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/scene_tree.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md — production FSM transitions beyond node-child boilerplate
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — unhandled_input and physics_update wiring
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-templates/SKILL.md
+# =============================================================================

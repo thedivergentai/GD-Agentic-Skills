@@ -71,3 +71,14 @@ func _print_issues(issues: Array[Dictionary]) -> void:
 
 ## EXPERT NOTE:
 ## Run before building to catch missing resource data.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_resourceloader.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_exports.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — res:// scan hygiene before export
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — EditorScript tooling for data QA
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md
+# =============================================================================

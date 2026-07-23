@@ -80,3 +80,15 @@ func _spawn_at(pos: Vector3) -> void:
 	var item = item_scene.instantiate()
 	add_child(item)
 	item.global_position = pos
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_marker3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_collisionshape3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_packedscene.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/nodes_and_scene_instances.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — spawn_chance and max_spawn_count tuning
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md — place Marker3D hunts inside authored levels
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-game-loop-collection/SKILL.md
+# =============================================================================

@@ -6,7 +6,7 @@ extends StaticBody3D
 
 signal harvested(data: HarvestResourceData, amount: int)
 signal took_damage(current_health: int, max_health: int)
-signal interaction_failed(reason: String) # Feedback for "Wrong Tool" or "Low Tier"
+signal interaction_failed(reason: StringName) # Feedback for &"wrong_tool" or &"low_tier"
 
 @export var resource_data: HarvestResourceData
 @export var mesh_to_shake: Node3D # "Hit Juice" visual target
@@ -25,13 +25,13 @@ func _ready() -> void:
 		_original_mesh_pos = mesh_to_shake.position
 
 func apply_hit(tool: HarvestToolData) -> void:
-	# 1. Tool-Specific Validation
-	if resource_data.required_tool_type != "any" and tool.tool_type != resource_data.required_tool_type:
-		interaction_failed.emit("wrong_tool")
+	# 1. Tool-Specific Validation (enums — never free-form strings)
+	if resource_data.required_tool_type != HarvestToolData.ToolType.ANY 			and tool.tool_type != resource_data.required_tool_type:
+		interaction_failed.emit(&"wrong_tool")
 		return
-	
+
 	if tool.tier < resource_data.required_tier:
-		interaction_failed.emit("low_tier")
+		interaction_failed.emit(&"low_tier")
 		return
 		
 	# 2. Damage Logic
@@ -79,3 +79,18 @@ func respawn() -> void:
 	current_health = resource_data.health
 	collision_layer = 1 << 0 # Layer 1 (World)
 	show()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_staticbody3d.html — world harvest collider entity
+# - https://docs.godotengine.org/en/stable/tutorials/physics/collision_shapes_3d.html — layer swap on deplete/respawn
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html — harvested/took_damage/interaction_failed
+# - https://docs.godotengine.org/en/stable/classes/class_tween.html — mesh hit-shake juice
+# - https://docs.godotengine.org/en/stable/classes/class_scenetreetimer.html — local create_timer respawn fallback
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — StaticBody3D layers for interactables
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md — player raycast → apply_hit
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md — extend hit juice beyond position shake
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — surface harvest signals to HUD/inventory
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-game-loop-harvest/SKILL.md
+# =============================================================================

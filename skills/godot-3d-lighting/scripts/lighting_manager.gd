@@ -29,3 +29,16 @@ func configure_sdfgi_for_scene(optimization_level: String = "balanced") -> void:
 ## 1. Set Environment Nodes to Bake Mode: 'Static'
 ## 2. Generate LightmapGI
 ## 3. Enable SDFGI but set its 'Energy' low (0.2) to fill in dynamic gaps.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/lights_and_shadows.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/optimizing_3d_performance.html
+# - https://docs.godotengine.org/en/stable/classes/class_light3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_omnilight3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — escalate light-pool hotspots
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure shadow toggles
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — central light pool owner
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md
+# =============================================================================

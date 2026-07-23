@@ -2,8 +2,9 @@
 extends Node
 class_name AbilityManager
 
-## Ability Manager Expert Pattern
+## Ability Manager Expert Pattern (scene-scoped under the caster)
 ## Orchestrates ability execution, cooldown stacks, and energy consumption.
+## Do NOT register as Autoload combat oracle — attach as child of the caster.
 
 @onready var owner_node: Node2D = get_parent()
 
@@ -44,3 +45,15 @@ func get_cooldown_progress(ability: AbilityResource) -> float:
 ## WHY THIS WAY?
 ## This manager is completely decoupled from the specific 'Character' logic.
 ## It can be attached to Players, Enemies, or even Turrets.
+# ---
+# GDSkills research links (agents)
+# Docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html — tick cooldowns with stable delta
+# - https://docs.godotengine.org/en/stable/classes/class_time.html — timestamp-based cooldown registry
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html — cast/ready UI hooks
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html — keep manager decoupled from Character
+# Related:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — damage/targeting after execute()
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — ability_cast / cooldown signal ownership
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — validate cooldown/cost balance after wiring
+# ---

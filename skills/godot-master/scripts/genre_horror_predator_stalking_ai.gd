@@ -47,3 +47,15 @@ func _find_hiding_spot() -> Vector2:
 ## EXPERT NOTE:
 ## For true 'Stalking' feel, use NavigationRegion2D to find points that 
 ## have NO occlusion to the player, but are within a specific distance.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_introduction_3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_characterbody2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-stealth/SKILL.md — view-cone stalker and hiding-spot patterns
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md — patrol/chase/search transitions
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md — honest LoS instead of Area overlap
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-horror/SKILL.md
+# =============================================================================

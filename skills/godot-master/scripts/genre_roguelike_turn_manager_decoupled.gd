@@ -32,3 +32,12 @@ func _on_entity_turn_finished() -> void:
 func _trigger_turn() -> void:
 	if _entities.is_empty(): return
 	turn_started.emit(_entities[_current_index])
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — signal-driven turn coordination
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — global turn Autoload without entity coupling
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md
+# =============================================================================

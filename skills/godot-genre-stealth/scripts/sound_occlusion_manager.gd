@@ -24,3 +24,17 @@ func emit_noise(origin: Vector3, radius: float) -> void:
 
 ## [SKILL NOTICE]: Use raycasts to 'muffle' sounds when blocked 
 ## by static geometry, creating realistic acoustic occlusion.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html
+# - https://docs.godotengine.org/en/stable/tutorials/audio/audio_buses.html
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationpaths.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/groups.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md — emit loud events onto AI-audible buses
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md — prefer path-length hearing over Euclidean
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md — geometry muffling via world-layer rays
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-stealth/SKILL.md
+# =============================================================================

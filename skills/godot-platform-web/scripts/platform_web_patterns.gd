@@ -74,3 +74,16 @@ func connect_via_websocket(url: String) -> void:
 func set_web_canvas_policy() -> void:
     # 0 = Proportional, 1 = Full window, 2 = Programmatic
     ProjectSettings.set_setting("html/canvas_resize_policy", 2)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/platform/web/index.html
+# - https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_web.html
+# - https://docs.godotengine.org/en/stable/classes/class_javascriptbridge.html
+# - https://docs.godotengine.org/en/stable/classes/class_displayserver.html
+# - https://docs.godotengine.org/en/stable/classes/class_projectsettings.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — web feature tags + canvas resize policy
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md — ship patterns with HTML5 presets
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-web/SKILL.md
+# =============================================================================

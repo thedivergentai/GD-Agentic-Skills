@@ -24,3 +24,13 @@ func _exit_tree() -> void:
 	for body in _bodies:
 		PhysicsServer3D.free_rid(body)
 	PhysicsServer3D.free_rid(_shape)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_physicsserver3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/rigid_body.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — RID swarm pooling vs SceneTree RigidBody3D cost
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — projectile layer/mask consumers of server bodies
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md
+# =============================================================================

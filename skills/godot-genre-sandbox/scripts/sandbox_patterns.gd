@@ -78,3 +78,19 @@ func shift_world_origin(new_origin: Vector3) -> void:
     for child in get_tree().root.get_children():
         if child is Node3D:
             child.global_position -= new_origin
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/using_multiple_threads.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/using_gridmaps.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/procedural_geometry/surfacetool.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/global_illumination/using_voxel_gi.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md — block aim via intersect_ray
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — binary ResourceSaver chunk dumps
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md — VoxelGI quality/range with procedural data
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-sandbox/SKILL.md
+# =============================================================================

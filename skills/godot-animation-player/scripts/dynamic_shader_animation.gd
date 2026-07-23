@@ -17,3 +17,15 @@ func setup_dissolve_track(anim: Animation) -> void:
 	
 	# Use Cubic interpolation for smoother visual transitions
 	anim.track_set_interpolation_type(track_idx, Animation.INTERPOLATION_CUBIC)
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/animation/animation_track_types.html
+# - https://docs.godotengine.org/en/stable/classes/class_animation.html
+# - https://docs.godotengine.org/en/stable/classes/class_shadermaterial.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md — shader_parameter paths and instance uniforms
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md — material_override vs embedded resource bloat
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md
+# =============================================================================

@@ -42,3 +42,13 @@ func _unhandled_input(event: InputEvent) -> void:
             deg_to_rad(min_pitch), 
             deg_to_rad(max_pitch)
         )
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/mouse_and_input_coordinates.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — mouse-look / pitch-yaw camera rigs
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — capture toggle and relative motion
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-mobile-to-desktop/SKILL.md
+# =============================================================================

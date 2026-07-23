@@ -41,3 +41,14 @@ func is_feature_enabled(feature_tag: String) -> bool:
 
 ## EXPERT USAGE:
 ## label.text = VersionManager.full_version_string
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/export/feature_tags.html
+# - https://docs.godotengine.org/en/stable/classes/class_os.html
+# - https://docs.godotengine.org/en/stable/classes/class_projectsettings.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — VersionManager as Autoload
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — surface version strings in menus
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md
+# =============================================================================

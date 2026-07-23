@@ -28,3 +28,14 @@ func _process(delta: float) -> void:
     
     # Optional: Rotate the shadow entirely if the light source orbits
     # rotation = sun_direction.angle()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/2d/2d_transforms.html
+# - https://docs.godotengine.org/en/stable/classes/class_transform2d.html
+# - https://docs.godotengine.org/en/stable/classes/class_sprite2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md — shadow Sprite2D under characters
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md — soft-shadow alternatives
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-3d-to-2d/SKILL.md
+# =============================================================================

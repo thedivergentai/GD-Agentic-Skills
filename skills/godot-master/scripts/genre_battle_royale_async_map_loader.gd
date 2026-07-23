@@ -16,3 +16,13 @@ func _process(_delta):
 		_attach_sector(scene)
 
 func _attach_sector(_s): pass
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html
+# - https://docs.godotengine.org/en/stable/classes/class_resourceloader.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md — sector/chunk streaming for large maps
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — avoid main-thread hitch on load
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-battle-royale/SKILL.md
+# =============================================================================

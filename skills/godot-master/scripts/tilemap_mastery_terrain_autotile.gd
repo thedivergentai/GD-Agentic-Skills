@@ -33,3 +33,14 @@ func erase_terrain_cells(coords_list: Array[Vector2i]) -> void:
     # Refresh neighbors to fix transitions
     # We pass -1 or a specific terrain to force refresh
     # set_cells_terrain_connect(neighbors, terrain_set, -1, true)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/2d/using_tilemaps.html
+# - https://docs.godotengine.org/en/stable/classes/class_tilemaplayer.html
+# - https://docs.godotengine.org/en/stable/tutorials/2d/using_tilesets.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md — generators batching terrain connect instead of per-cell set_cell
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — why set_cells_terrain_connect beats looped placement
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md
+# =============================================================================

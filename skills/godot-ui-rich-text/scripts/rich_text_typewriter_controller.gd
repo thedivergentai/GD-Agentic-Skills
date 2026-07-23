@@ -62,3 +62,14 @@ func skip() -> void:
 	visible_characters = -1 # Show all
 	_is_active = false
 	message_completed.emit()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_richtextlabel.html
+# - https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html
+# - https://docs.godotengine.org/en/stable/classes/class_tween.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-dialogue-system/SKILL.md — feed pause/speed event tags from dialogue runners
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — skip/advance actions for visible_characters
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md
+# =============================================================================

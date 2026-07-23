@@ -30,3 +30,14 @@ func add_item(item_res: Resource, amount: int) -> void:
 ## [SKILL NOTICE]: Use 'ItemResource' files for static data and 
 ## 'InventorySlot' objects for items currently in the bag to avoid 
 ## modifying shared resource files during gameplay.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+# - https://docs.godotengine.org/en/stable/classes/class_refcounted.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md — stack merge / bag controllers
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — ItemResource vs slot state
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-survival/SKILL.md
+# =============================================================================

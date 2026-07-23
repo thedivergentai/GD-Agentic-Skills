@@ -65,3 +65,13 @@ func _return_to_pool(lbl: Node2D) -> void:
 ## EXPERT USAGE:
 ## Add to Main Scene (CanvasLayer). 
 ## Call `DamageLabelManager.spawn_label(enemy.global_position, 100)`
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/nodes_and_scene_instances.html — PackedScene pool instantiate
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html — float/fade ticks
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — spawn_label from hit resolve
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md — pooled VFX as sibling components
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md
+# =============================================================================

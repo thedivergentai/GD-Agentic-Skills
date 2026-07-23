@@ -13,3 +13,14 @@
 - **NEVER forget alpha in color gradients** — Particles that disappear instantly at the end of their lifetime look harsh; always add a gradient point at 1.0 with 0.0 alpha for a smooth exit.
 - **NEVER use `EMISSION_SHAPE_POINT` for volumentric explosions** — Spawning all particles at a single point looks flat. Use a Sphere or Box shape for natural 3D spread.
 - **NEVER forget to set `emitting = false` initially for one-shot VFX** — This prevents unwanted emission at the scene origin before you've had a chance to position the node via script.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/performance/gpu_optimization.html
+- https://docs.godotengine.org/en/stable/classes/class_performance.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — remediation after profiler confirmation
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

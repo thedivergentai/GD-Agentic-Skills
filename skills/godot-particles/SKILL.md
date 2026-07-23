@@ -2,7 +2,6 @@
 name: godot-particles
 description: "Expert blueprint for GPU particle systems (explosions, magic effects, weather, trails) using GPUParticles2D/3D, ParticleProcessMaterial, gradients, sub-emitters, and custom shaders. Use when creating VFX, environmental effects, or visual feedback. Keywords GPUParticles2D, ParticleProcessMaterial, emission_shape, color_ramp, sub_emitter, one_shot."
 ---
-
 ## Godot 4.7 Baseline
 
 - Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
@@ -11,45 +10,7 @@ description: "Expert blueprint for GPU particle systems (explosions, magic effec
 
 # Particle Systems
 
-GPU-accelerated rendering, material-based configuration, and sub-emitters define performant VFX.
-
-## Available Scripts
-
-### [vfx_shader_manager.gd](scripts/vfx_shader_manager.gd)
-Expert custom shader integration for advanced particle VFX.
-
-### [particle_burst_emitter.gd](scripts/particle_burst_emitter.gd)
-One-shot particle bursts with auto-cleanup - essential for VFX systems.
-
-### [custom_particle_logic.gdshader](scripts/custom_particle_logic.gdshader)
-Expert procedural particle movement logic. Demonstrates persistent `CUSTOM` data and `USERDATA` injection for dynamic wind/orbit effects.
-
-### [sub_emitter_impact.gdshader](scripts/sub_emitter_impact.gdshader)
-High-performance collision handling. Triggers sub-emitters (splashes/debris) using `emit_subparticle()` and `COLLISION_NORMAL`.
-
-### [particle_attractor_opt.gd](scripts/particle_attractor_opt.gd)
-Optimization pattern using `cull_mask` to isolate particle-attractor interactions, preventing global performance bottlenecks.
-
-### [massive_swarm_multimesh.gd](scripts/massive_swarm_multimesh.gd)
-Bypassing GPUParticles for millions of entities (fish, insects). Uses `set_buffer_interpolated()` for jitter-free high-count movement.
-
-### [dynamic_userdata_modulation.gd](scripts/dynamic_userdata_modulation.gd)
-Clean architectual pattern for passing runtime variables to particle shaders via `USERDATA` to preserve GPU batching.
-
-### [local_vs_global_coords.gd](scripts/local_vs_global_coords.gd)
-Expert logic for switching between localized (Auras) and global (Trails) space. Includes correct `restart()` handling for teleports.
-
-### [smart_oneshot_recycler.gd](scripts/smart_oneshot_recycler.gd)
-Robust lifecycle management using the `finished` signal and `restart()` to avoid async emission failures.
-
-### [screenspace_weather_heightfield.gd](scripts/screenspace_weather_heightfield.gd)
-Optimizing global weather (Rain/Snow) using Camera-snapped `GPUParticlesCollisionHeightField3D`.
-
-### [particle_lod_manager.gd](scripts/particle_lod_manager.gd)
-Hierarchical LOD for environmental VFX. Uses `visibility_range` and margins to cull distant torches or fires completely.
-
-### [2d_physics_interpolation_fix.gd](scripts/2d_physics_interpolation_fix.gd)
-Expert workaround for 2D particle stuttering. Switches to `CPUParticles2D` with `fract_delta` for smooth physics-parented movement.
+GPU-accelerated VFX with material-driven emission, recyclers, and MultiMesh swarms — not beginner effect recipes.
 
 ## NEVER Do in Particle Systems
 
@@ -58,7 +19,7 @@ Expert workaround for 2D particle stuttering. Switches to `CPUParticles2D` with 
 - **NEVER set `preprocess` to extremely high values** — High values (e.g., 60s) will force the GPU to simulate thousands of frames in a single render tick, potentially causing an immediate GPU crash.
 - **NEVER leave `visibility_aabb` unconfigured for large systems** — Incorrect AABBs cause frustum culling errors (particles popping out) and break LOD calculations. Generate AABBs using the editor toolbar.
 - **NEVER enable turbulence on Mobile/Web without testing** — 3D noise evaluation per particle is extremely heavy. Disable via Feature Tags on lower-end platforms.
-- **NEVER forget to `queue_free()` one-shot particles** — Use the `finished` signal instead of an arbitrary Timer for safe lifecycle management.
+- **NEVER use a Timer to lifetime-cleanup one-shots** — Prefer [smart_oneshot_recycler.gd](scripts/smart_oneshot_recycler.gd): `finished` + `restart()`, or `queue_free()` only on truly disposable instances.
 - **NEVER use `local_coords = true` for trails** — Smoke or fire left behind by a projectile MUST use global space (`local_coords = false`) or the trail will follow the projectile like a stiff stick.
 - **NEVER expect GPUParticles2D to interpolate correctly in Godot 4.3** — They stutter when parented to physics bodies. Use `CPUParticles2D` with `fract_delta = true` for high-speed 2D movement.
 - **NEVER trigger `emitting = true` immediately after a `finished` signal** — Async GPU state delays can cause the restart to fail. Use the `restart()` method instead.
@@ -67,273 +28,112 @@ Expert workaround for 2D particle stuttering. Switches to `CPUParticles2D` with 
 - **NEVER use `EMISSION_SHAPE_POINT` for volumentric explosions** — Spawning all particles at a single point looks flat. Use a Sphere or Box shape for natural 3D spread.
 - **NEVER forget to set `emitting = false` initially for one-shot VFX** — This prevents unwanted emission at the scene origin before you've had a chance to position the node via script.
 
----
 
-### Basic Setup
+## Choose Table (load only the matching script)
 
-```gdscript
-# Add GPUParticles2D node
-# Set Amount: 32
-# Set Lifetime: 1.0
-# Set One Shot: true (for explosions)
-```
+> **MANDATORY** for the chosen row. **Do NOT Load** unused particle scripts for a single effect.
 
-### Particle Material
+| Goal | Prefer | Script |
+|------|--------|--------|
+| Burst / one-shot VFX (hit, muzzle, explode) | `GPUParticles*` + recycle | **MANDATORY** [particle_burst_emitter.gd](scripts/particle_burst_emitter.gd) + [smart_oneshot_recycler.gd](scripts/smart_oneshot_recycler.gd) |
+| Trails behind movers | `local_coords = false` | **MANDATORY** [local_vs_global_coords.gd](scripts/local_vs_global_coords.gd) |
+| Weather (rain/snow) heightfield | camera-snapped collision | **MANDATORY** [screenspace_weather_heightfield.gd](scripts/screenspace_weather_heightfield.gd) |
+| Million-entity swarms | MultiMesh, not GPUParticles | **MANDATORY** [massive_swarm_multimesh.gd](scripts/massive_swarm_multimesh.gd) |
+| Custom GPU motion / userdata | process material shader | [custom_particle_logic.gdshader](scripts/custom_particle_logic.gdshader), [dynamic_userdata_modulation.gd](scripts/dynamic_userdata_modulation.gd) |
+| Impact sub-emitters | collision subparticle | [sub_emitter_impact.gdshader](scripts/sub_emitter_impact.gdshader) |
+| Attractors without global cost | cull_mask isolation | [particle_attractor_opt.gd](scripts/particle_attractor_opt.gd) |
+| Distant env VFX LOD | visibility_range | [particle_lod_manager.gd](scripts/particle_lod_manager.gd) |
+| 2D physics-parented trails stutter | `CPUParticles2D` + fract_delta | **MANDATORY** [2d_physics_interpolation_fix.gd](scripts/2d_physics_interpolation_fix.gd) |
+| Shader param orchestration | material helpers | [vfx_shader_manager.gd](scripts/vfx_shader_manager.gd) |
 
-```gdscript
-# Create ParticleProcessMaterial
-var material := ParticleProcessMaterial.new()
+**GPUParticles vs CPUParticles vs MultiMesh**
+- **GPUParticles*** — default for desktop/console VFX amount budgets.
+- **CPUParticles2D** — only when 2D physics interpolation / smooth parenting is required (see NEVER).
+- **MultiMesh** — when entity count leaves the particle domain (fish/insects/debris fields).
 
-# Emission shape
-material.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
-material.emission_sphere_radius = 10.0
+## Available Scripts
 
-# Gravity
-material.gravity = Vector3(0, 98, 0)
+### [smart_oneshot_recycler.gd](scripts/smart_oneshot_recycler.gd)
+Golden path for one-shot lifecycle: `finished` + `restart()` — never Timer-based free.
 
-# Velocity
-material.initial_velocity_min = 50.0
-material.initial_velocity_max = 100.0
+### [particle_burst_emitter.gd](scripts/particle_burst_emitter.gd)
+One-shot bursts wired to the recycler.
 
-# Color
-material.color = Color.ORANGE_RED
+### [local_vs_global_coords.gd](scripts/local_vs_global_coords.gd)
+Aura vs trail coordinate space + teleport `restart()`.
 
-# Apply to godot-particles
-$GPUParticles2D.process_material = material
-```
+### [screenspace_weather_heightfield.gd](scripts/screenspace_weather_heightfield.gd)
+Global weather via camera-snapped heightfield collision.
 
-## Common Effects
+### [massive_swarm_multimesh.gd](scripts/massive_swarm_multimesh.gd)
+Million-entity path with `set_buffer_interpolated()`.
 
-### Explosion
+### [custom_particle_logic.gdshader](scripts/custom_particle_logic.gdshader)
+Procedural GPU particle motion with CUSTOM/USERDATA.
 
-```gdscript
-extends GPUParticles2D
+### [sub_emitter_impact.gdshader](scripts/sub_emitter_impact.gdshader)
+Collision-driven `emit_subparticle()` impacts.
 
-func _ready() -> void:
-    one_shot = true
-    amount = 64
-    lifetime = 0.8
-    explosiveness = 0.9
-    
-    var mat := ParticleProcessMaterial.new()
-    mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
-    mat.emission_sphere_radius = 5.0
-    mat.initial_velocity_min = 100.0
-    mat.initial_velocity_max = 200.0
-    mat.gravity = Vector3(0, 200, 0)
-    mat.scale_min = 0.5
-    mat.scale_max = 1.5
-    
-    process_material = mat
-    emitting = true
-```
+### [particle_attractor_opt.gd](scripts/particle_attractor_opt.gd)
+Attractor `cull_mask` isolation.
 
-### Smoke Trail
+### [dynamic_userdata_modulation.gd](scripts/dynamic_userdata_modulation.gd)
+Runtime USERDATA without breaking GPU batches.
 
-```gdscript
-extends GPUParticles2D
+### [particle_lod_manager.gd](scripts/particle_lod_manager.gd)
+`visibility_range` hierarchy for env VFX.
 
-func _ready() -> void:
-    amount = 16
-    lifetime = 2.0
-    
-    var mat := ParticleProcessMaterial.new()
-    mat.direction = Vector3(0, -1, 0)
-    mat.initial_velocity_min = 20.0
-    mat.initial_velocity_max = 40.0
-    mat.scale_min = 0.5
-    mat.scale_max = 1.0
-    mat.color = Color(0.5, 0.5, 0.5, 0.5)
-    
-    process_material = mat
-```
+### [2d_physics_interpolation_fix.gd](scripts/2d_physics_interpolation_fix.gd)
+CPUParticles2D + `fract_delta` for physics-parented 2D trails.
 
-### Sparkles/Stars
+### [vfx_shader_manager.gd](scripts/vfx_shader_manager.gd)
+Custom shader integration helpers for particle materials.
 
-```gdscript
-var mat := ParticleProcessMaterial.new()
-mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
-mat.emission_box_extents = Vector3(100, 100, 0)
-mat.gravity = Vector3.ZERO
-mat.angular_velocity_min = -180
-mat.angular_velocity_max = 180
-mat.scale_min = 0.1
-mat.scale_max = 0.5
+## Expert Pointers
 
-# Use star texture
-$GPUParticles2D.texture = load("res://textures/star.png")
-$GPUParticles2D.process_material = mat
-```
-
-## Spawn Particles on Demand
-
-```gdscript
-# player.gd
-const EXPLOSION_EFFECT := preload("res://effects/explosion.tscn")
-
-func die() -> void:
-    var explosion := EXPLOSION_EFFECT.instantiate()
-    get_parent().add_child(explosion)
-    explosion.global_position = global_position
-    explosion.emitting = true
-    queue_free()
-```
-
-## 3D Particles
-
-```gdscript
-extends GPUParticles3D
-
-func _ready() -> void:
-    amount = 100
-    lifetime = 3.0
-    
-    var mat := ParticleProcessMaterial.new()
-    mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
-    mat.emission_box_extents = Vector3(10, 0.1, 10)
-    mat.direction = Vector3.UP
-    mat.initial_velocity_min = 2.0
-    mat.initial_velocity_max = 5.0
-    mat.gravity = Vector3(0, -9.8, 0)
-    
-    process_material = mat
-```
-
-## Color Gradients
-
-```gdscript
-var mat := ParticleProcessMaterial.new()
-
-# Create gradient
-var gradient := Gradient.new()
-gradient.add_point(0.0, Color.YELLOW)
-gradient.add_point(0.5, Color.ORANGE)
-gradient.add_point(1.0, Color(0.5, 0.0, 0.0, 0.0))  # Fade to transparent red
-
-var gradient_texture := GradientTexture1D.new()
-gradient_texture.gradient = gradient
-
-mat.color_ramp = gradient_texture
-```
-
-## Sub-Emitters
-
-```gdscript
-# Particles that spawn godot-particles (fireworks)
-$ParentParticles.sub_emitter = $ChildParticles.get_path()
-$ParentParticles.sub_emitter_mode = GPUParticles2D.SUB_EMITTER_AT_END
-```
-
-## Best Practices
-
-### 1. Use Texture for Shapes
-
-```gdscript
-# Add texture to godot-particles
-$GPUParticles2D.texture = load("res://textures/particle.png")
-```
-
-### 2. Lifetime Management
-
-```gdscript
-# Auto-delete one-shot godot-particles
-if one_shot:
-    await get_tree().create_timer(lifetime).timeout
-    queue_free()
-```
-
-### 3. Performance
-
-```gdscript
-# Reduce amount for mobile
-if OS.get_name() == "Android":
-    amount = amount / 2
-```
-
----
-
-## Expert Pattern: Particle-Audio-Syncer (Collision Sub-Emitters)
-
-GPU particles do not emit CPU signals for individual collisions. To sync visual impacts, use the Sub-Emitter system to spawn secondary effects (sparks, dust) on contact.
-
-```gdscript
-func setup_collision_vfx(primary: GPUParticles3D, impact: GPUParticles3D) -> void:
-    # 1. Assign impact system as sub-emitter
-    primary.sub_emitter = primary.get_path_to(impact)
-    
-    var mat := primary.process_material as ParticleProcessMaterial
-    if mat:
-        # 2. Enable collision and set trigger mode
-        mat.collision_mode = ParticleProcessMaterial.COLLISION_RIGID
-        mat.sub_emitter_mode = ParticleProcessMaterial.SUB_EMITTER_AT_COLLISION
-        mat.sub_emitter_amount_at_collision = 1 # Spawn 1 spark per impact
-```
-
-> [!IMPORTANT]
-> Since the CPU cannot track individual GPU collisions, sync audio by playing a randomized looping "impact" sound while the primary emitter is active, or use `CPUParticles` for precise RayCast-driven audio timing.
-
----
-
-## Expert Pattern: Fluid-Simulation-Particles (Custom Shaders)
-
-For high-performance liquid or swarm effects, bypass `ParticleProcessMaterial` and use a custom `particles` shader with state persistence.
-
-```glsl
-shader_type particles;
-// 'keep_data' allows the shader to remember state between frames
-render_mode keep_data;
-
-void start() {
-    if (RESTART) {
-        // Initialize position and custom fluid density
-        TRANSFORM[3].xyz = EMISSION_TRANSFORM[3].xyz;
-        CUSTOM.x = 1.0; 
-    }
-}
-
-void process() {
-    // Apply gravity and attractor forces
-    VELOCITY += ATTRACTOR_FORCE * DELTA;
-    
-    // Built-in GPU collision handling
-    if (COLLIDED) {
-        VELOCITY = reflect(VELOCITY, COLLISION_NORMAL) * 0.5;
-        TRANSFORM[3].xyz += COLLISION_NORMAL * COLLISION_DEPTH;
-    }
-}
-```
-
----
-
-## Expert Pattern: VFX-Pool-Manager
-
-Prevent frame-spikes from frequent `instantiate()` and `queue_free()` calls by pooling and reusing one-shot particle systems.
-
-```gdscript
-class_name VFXPool extends Node
-
-@export var vfx_scene: PackedScene
-var pool: Array[GPUParticles3D] = []
-
-func _ready() -> void:
-    for i in 20:
-        var inst := vfx_scene.instantiate() as GPUParticles3D
-        add_child(inst)
-        inst.emitting = false
-        inst.finished.connect(func(): pool.append(inst))
-        pool.append(inst)
-
-func spawn(pos: Vector3) -> void:
-    if pool.is_empty(): return
-    var vfx = pool.pop_back()
-    vfx.global_position = pos
-    # Use restart() to avoid async GPU state delays
-    vfx.restart()
-```
+- One-shots: `emitting = false` at scene origin → place → `restart()` ([smart_oneshot_recycler.gd](scripts/smart_oneshot_recycler.gd)).
+- Trails: `local_coords = false` or the trail sticks to the projectile.
+- Do not invent explosion/smoke/sparkle material recipes here — Official Docs cover material UI; this skill owns lifecycle, coords, LOD, and swarm routing.
 
 ## Reference
-- [Godot Docs: Particles](https://docs.godotengine.org/en/stable/tutorials/2d/particle_systems_2d.html)
 
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
 
-### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+### Official Documentation
+- [Particle systems (2D)](https://docs.godotengine.org/en/stable/tutorials/2d/particle_systems_2d.html) — GPUParticles2D/CPUParticles2D setup, amount/lifetime/one-shot, and when 2D trails need CPU particles for smooth motion.
+- [ParticleProcessMaterial 2D](https://docs.godotengine.org/en/stable/tutorials/2d/particle_process_material_2d.html) — emission shapes, gravity/velocity curves, and color ramps that drive most 2D VFX without custom shaders.
+- [Creating a 3D particle system](https://docs.godotengine.org/en/stable/tutorials/3d/particles/creating_a_3d_particle_system.html) — GPUParticles3D scene wiring, process material assignment, and first-emission checklist for 3D VFX.
+- [Process material properties](https://docs.godotengine.org/en/stable/tutorials/3d/particles/process_material_properties.html) — ParticleProcessMaterial emission, forces, scale/color curves, and collision/sub-emitter modes used by expert patterns.
+- [Particle properties](https://docs.godotengine.org/en/stable/tutorials/3d/particles/properties.html) — node-level amount, lifetime, explosiveness, local_coords, visibility AABB, preprocess, and restart/finished lifecycle.
+- [Particle subemitters](https://docs.godotengine.org/en/stable/tutorials/3d/particles/subemitters.html) — chaining impact/debris systems and why a particle system cannot recurse as its own sub-emitter.
+- [Particle collision](https://docs.godotengine.org/en/stable/tutorials/3d/particles/collision.html) — GPUParticlesCollision* shapes, rigid/hide modes, and GPU collision limits versus CPU-synced SFX.
+- [Particle attractors](https://docs.godotengine.org/en/stable/tutorials/3d/particles/attractors.html) — attractor types plus cull_mask/layer isolation so global weather does not pay every attractor cost.
+- [Particle trails](https://docs.godotengine.org/en/stable/tutorials/3d/particles/trails.html) — trail ribbons and why smoke/fire trails must use global space (`local_coords = false`).
+- [Particle shader](https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/particle_shader.html) — `shader_type particles`, CUSTOM/USERDATA, COLLIDED/`emit_subparticle()`, and keep_data process loops.
+- [Using MultiMesh](https://docs.godotengine.org/en/stable/tutorials/performance/using_multimesh.html) — when millions of entities should bypass GPUParticles via MultiMesh + interpolated buffers.
+- [Visibility ranges](https://docs.godotengine.org/en/stable/tutorials/3d/visibility_ranges.html) — GeometryInstance3D distance fade/hysteresis that stops distant environmental particle processing.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scenes, resources, and import basics before packing VFX Prefabs and GradientTexture1D materials.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed GPUParticles APIs, `finished` handlers, and safe `restart()`/await patterns used by pools and burst spawners.
+- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — ShaderMaterial workflow and shading-language fundamentals required before `shader_type particles` process logic.
+
+#### Complements
+- [godot-3d-materials](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md) — draw materials, transparency sorting, and next_pass stacks that render quads/meshes spawned by GPUParticles3D.
+- [godot-3d-lighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md) — emissive fire/sparks vs environment exposure; pair particle albedo with real lights when VFX must light the scene.
+- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — impact/loop SFX while GPU emitters are active when per-particle collision audio is unavailable.
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — amount budgets, visibility AABB, attractor masks, and MultiMesh cutovers when VFX dominate GPU time.
+- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — camera-follow heightfields, visibility-range thresholds, and frustum-aware weather emitters.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — `finished` and one-shot connection hygiene for pooled recyclers that must not leak ghost callbacks.
+- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — physics-parented 2D trails where CPUParticles2D + interpolation replaces stuttering GPUParticles2D.
+
+#### Downstream / consumers
+- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — hit sparks, blood/debris bursts, and muzzle FX spawned from damage resolution.
+- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — cast/channel/impact VFX attached to ability lifecycle and targeting feedback.
+- [godot-genre-shooter](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md) — muzzle flash, tracers, explosions, and environmental smoke stacks built on these particle patterns.
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — when VFX density/readability changes perceived difficulty or telegraph clarity, simulate juice budgets with combat outcomes.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.

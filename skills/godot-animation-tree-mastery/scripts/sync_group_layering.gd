@@ -14,3 +14,14 @@ func setup_reload_sync() -> void:
 	# This ensures the secondary animation follows the primary's phase.
 	# Note: In Godot 4, this is the 'sync' property on AnimationNodeSync nodes.
 	pass # Logic primarily configuration-based
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_animationnodesync.html
+# - https://docs.godotengine.org/en/stable/classes/class_animationnodeblendtree.html
+# - https://docs.godotengine.org/en/stable/tutorials/animation/animation_tree.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — reload/walk phase alignment
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md — layered cycles that still need Sync
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-tree-mastery/SKILL.md
+# =============================================================================

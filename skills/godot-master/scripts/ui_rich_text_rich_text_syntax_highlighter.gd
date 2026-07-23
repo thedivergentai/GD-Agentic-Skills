@@ -28,3 +28,14 @@ static func highlight(code: String) -> String:
 			# But for a snippet, it demonstrates the pattern.
 	
 	return result # In a real expert tool, this would be a multi-pass tokenized string.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html
+# - https://docs.godotengine.org/en/stable/classes/class_richtextlabel.html
+# - https://docs.godotengine.org/en/stable/classes/class_syntaxhighlighter.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-educational/SKILL.md — code-block lessons in rich text panels
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — RegEx keyword/string/comment coloring
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md
+# =============================================================================

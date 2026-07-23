@@ -18,3 +18,13 @@ func detect_stuck_state():
 		# Object is stuck. 'normal' points away from collision.
 		return res.normal
 	return null
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_physicsshapequeryparameters3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_physicsdirectspacestate3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — stuck body resolution with rest info
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — diagnosing overlap normals
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md
+# =============================================================================

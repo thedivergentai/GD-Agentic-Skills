@@ -19,3 +19,14 @@ func _physics_process(_delta: float) -> void:
 func _apply_surface_logic(friction: float, lethal: bool) -> void:
 	# Apply friction to movement or damage if lethal
 	pass
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_tiledata.html
+# - https://docs.godotengine.org/en/stable/classes/class_tilemaplayer.html
+# - https://docs.godotengine.org/en/stable/tutorials/2d/using_tilesets.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md — friction/hazard custom data driving movement feel
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — simulate damage/friction values stored on tiles
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md
+# =============================================================================

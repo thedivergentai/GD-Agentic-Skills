@@ -17,3 +17,14 @@ func _process_custom_fx(char_fx: CharFXTransform) -> bool:
 	char_fx.color = Color.from_hsv(hue, sat, val, char_fx.color.a)
 	
 	return true
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_richtexteffect.html
+# - https://docs.godotengine.org/en/stable/classes/class_charfxtransform.html
+# - https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md — escalate beyond CharFX when panel-wide FX needed
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-dialogue-system/SKILL.md — register custom tags in dialogue lines
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md
+# =============================================================================

@@ -12,3 +12,13 @@ func set_active(is_active: bool) -> void:
 	mesh.material_override = active_material if is_active else inactive_material
 
 ## Tip: Use a 'WorldEnvironment' glow to make active checkpoints highly visible.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_shadermaterial.html — active vs inactive material_override
+# - https://docs.godotengine.org/en/stable/tutorials/3d/introduction_to_3d.html — MeshInstance3D material swap feedback
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md — emissive active shrine materials
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md — glow when material flags are not enough
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-mechanic-revival/SKILL.md
+# =============================================================================

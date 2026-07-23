@@ -27,490 +27,124 @@ Expert guidance for scaling mobile games to desktop platforms.
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
+### [desktop_input_adapter.gd](scripts/desktop_input_adapter.gd)
+**MANDATORY first read for input remap** — Bridges mobile actions to keyboard/mouse without rewriting gameplay. Emits `mouse_look_bridge_requested` when FPS capture is needed — pair with mouse_capture_look.
+
+### [hover_bridge.gd](scripts/hover_bridge.gd)
+**MANDATORY when UI needs hover** — Restores desktop hover/focus affordances mobile never had. Prefer this over ad-hoc `mouse_entered` dumps.
+
 ### [mouse_capture_look.gd](scripts/mouse_capture_look.gd)
-Expert Mouse Capture Controller that completely overrides mobile touch/swipe logic by accumulating `InputEventMouseMotion.relative` against pitch/yaw variables while clamped.
+Captured look via `InputEventMouseMotion.relative` — use for FPS/orbit when adapter alone is not enough.
 
 ### [dynamic_window_manager.gd](scripts/dynamic_window_manager.gd)
-Crucial lifecycle manager handling the expectation of PC gamers to toggle between Windowed, Fullscreen Exclusive, and modern Borderless Fullscreen via `DisplayServer` flags.
+**MANDATORY** — Windowed / exclusive fullscreen / borderless via DisplayServer.
 
 ### [keybinding_remapper.gd](scripts/keybinding_remapper.gd)
-Complete runtime input remapper. Mobile relies on hardcoded touch zones, but PC requires the ability to swap WASD to custom keycodes via `InputMap` and saving to `ConfigFile`.
+Runtime InputMap remap + ConfigFile persistence.
 
 ### [cursor_state_manager.gd](scripts/cursor_state_manager.gd)
-Hardware cursor state machine. Replaces the default OS arrow with custom `Texture2D` hardware cursors and handles hiding the cursor during combat while freeing it in menus.
+Hardware cursor show/hide/combat vs menu states.
 
 ### [uncapped_framerate.gd](scripts/uncapped_framerate.gd)
-Expert VSync and FPS unlocker. Mobile locks at 60FPS to save battery; PC gamers expect the ability to disable VSync and unlock `Engine.max_fps` for 144Hz+ monitors.
+VSync / `Engine.max_fps` unlock for 144Hz+.
 
 ### [resolution_dropdown.gd](scripts/resolution_dropdown.gd)
-Query engine utilizing `DisplayServer.screen_get_size` to build an OptionButton of supported native 16:9, 21:9, and 4K resolutions without exceeding the user's physical monitor.
+Native resolution OptionButton from `DisplayServer.screen_get_size`.
 
 ### [desktop_ui_scaler.gd](scripts/desktop_ui_scaler.gd)
-Recursive SceneTree crawler that scales down massive thumb-sized mobile buttons by a percentage shrink factor specifically on Desktop builds while retaining their anchor points.
+**MANDATORY** — Shrink thumb-sized mobile Controls for mouse density.
 
 ### [scroll_wheel_zoom.gd](scripts/scroll_wheel_zoom.gd)
-Replaces the mobile Pinch-to-Zoom gesture with discrete physical mouse wheel ticks, smoothly interpolating the Camera2D zoom continuously via `delta`.
+Mouse-wheel zoom replacing pinch.
 
 ### [quit_confirmation.gd](scripts/quit_confirmation.gd)
-Hooks `get_tree().set_auto_accept_quit(false)` to intercept the OS-level 'X' window button, pausing the game and prompting the user to save instead of instantly terminating like mobile.
+**MANDATORY** — `set_auto_accept_quit(false)` + save prompt on WM close.
 
 ### [multi_monitor_handling.gd](scripts/multi_monitor_handling.gd)
-Advanced PC window placement script that queries the mouse position to identify the active screen on multi-monitor setups, ensuring the game launches exactly where the user is looking.
+Launch/place window on the screen under the cursor.
 
 ---
 
-## Control Scheme Expansion
+## Decision Tree — Input Script Picks
 
-### Touch → Mouse Conversion
+| Need | Use |
+|------|-----|
+| Map touch actions → WASD/mouse without rewriting movers | **desktop_input_adapter** |
+| Button/Control hover styles & tooltips | **hover_bridge** |
+| Captured mouselook (FPS/3P orbit) | **mouse_capture_look** — **MANDATORY** when aim/Look requires captured relative motion; adapter `get_aim_vector()` alone is top-down only |
+| Rebindable keys | **keybinding_remapper** |
+| Pinch → wheel zoom | **scroll_wheel_zoom** |
 
-```gdscript
-# Mobile: Virtual joystick for movement
-var direction: Vector2 = virtual_joystick.get_direction()
+When `desktop_input_adapter` emits `mouse_look_bridge_requested`, attach or enable [mouse_capture_look.gd](scripts/mouse_capture_look.gd) on the player/camera rig — do not stop after InputMap injection.
 
-# ⬇️ Desktop: WASD + mouse aim
+## Port Procedure (ordered)
 
-extends CharacterBody2D
+1. **MANDATORY** desktop_input_adapter (+ hover_bridge for UI) so every touch action has a precision equivalent.
+2. desktop_ui_scaler + expanded layouts (hotbar/chat/minimap) — godot-ui-containers for structure.
+3. dynamic_window_manager + multi_monitor_handling + quit_confirmation.
+4. resolution_dropdown + uncapped_framerate + graphics quality ladder (persist ConfigFile).
+5. Deeper OS integration → godot-platform-desktop.
 
-func _physics_process(delta: float) -> void:
-    # Keyboard movement (WASD)
-    var input := Input.get_vector("move_left", "move_right", "move_up", "move_down")
-    velocity = input.normalized() * SPEED
-    
-    # Mouse aiming
-    var mouse_pos := get_global_mouse_position()
-    look_at(mouse_pos)
-    
-    move_and_slide()
+## Platform Services Decision Tree (Steam / Discord)
 
-# Configure Project Settings → Input Map:
-# move_left: A, Left Arrow
-# move_right: D, Right Arrow
-# move_up: W, Up Arrow
-# move_down: S, Down Arrow
-```
+| Goal | Decision |
+|------|----------|
+| Ship on Steam with cloud/achievements | Add **GDExtension** bridge (e.g. GodotSteam); keep init behind `OS.has_feature("steam")` / editor-safe stubs. Do **not** paste fake `Steam.*` tutorials into gameplay scripts. |
+| Discord Rich Presence only | Prefer a thin GDExtension/plugin; update presence from an Autoload on scene change — never block `_ready` on network. |
+| No store integration this milestone | **Cut** — omit Steam/Discord code paths entirely; document as future GDExtension spike. |
 
-### Add Keyboard Shortcuts
+## Deep Recipes
 
-```gdscript
-# desktop_shortcuts.gd
-extends Node
+> **MANDATORY** when porting beyond the ordered procedure: read [desktop-port-deep.md](references/desktop-port-deep.md). **Do NOT Load** it for a first-pass keyboard/mouse remap.
 
-func _input(event: InputEvent) -> void:
-    if event.is_action_pressed("toggle_fullscreen"):
-        toggle_fullscreen()
-    
-    if event.is_action_pressed("quick_save"):
-        save_game()
-    
-    if event.is_action_pressed("toggle_inventory"):
-        $UI/Inventory.visible = not $UI/Inventory.visible
+## Testing (before ship)
 
-func toggle_fullscreen() -> void:
-    if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN:
-        DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-    else:
-        DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+> **MANDATORY** before declaring the port complete: run [desktop-port-testing-checklist.md](references/desktop-port-testing-checklist.md). Do not inline a partial checklist — use the reference file.
 
-# Add to Project Settings → Input Map:
-# toggle_fullscreen: F11
-# quick_save: F5
-# toggle_inventory: I, Tab
-```
+## Expert Techniques (short)
 
-### Scroll Wheel Support
-
-```gdscript
-# Mobile: Pinch to zoom
-# Desktop: Scroll wheel
-
-func _input(event: InputEvent) -> void:
-    if event is InputEventMouseButton:
-        if event.button_index == MOUSE_BUTTON_WHEEL_UP:
-            camera.zoom *= 1.1
-        elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-            camera.zoom *= 0.9
-```
-
----
-
-## Graphics Enhancement
-
-### Resolution Scaling
-
-```gdscript
-# mobile_settings.gd (mobile)
-func _ready() -> void:
-    get_viewport().size = Vector2i(1280, 720)  # Mobile resolution
-
-# ⬇️ desktop_settings.gd (desktop)
-
-extends Node
-
-@export var supported_resolutions: Array[Vector2i] = [
-    Vector2i(1280, 720),
-    Vector2i(1920, 1080),
-    Vector2i(2560, 1440),
-    Vector2i(3840, 2160)
-]
-
-func _ready() -> void:
-    if OS.get_name() in ["Windows", "macOS", "Linux"]:
-        # Start at native resolution
-        var screen_size := DisplayServer.screen_get_size()
-        get_window().size = screen_size
-        
-        # Enable higher  quality
-        enable_desktop_graphics()
-
-func enable_desktop_graphics() -> void:
-    # Enable MSAA
-    get_viewport().msaa_2d = Viewport.MSAA_2X
-    get_viewport().msaa_3d = Viewport.MSAA_4X
-    
-    # Enable screen space AA
-    get_viewport().screen_space_aa = Viewport.SCREEN_SPACE_AA_FXAA
-    
-    # Higher shadow resolution
-    RenderingServer.directional_shadow_atlas_set_size(4096, true)
-    
-    # Enable post-processing
-    var env := get_viewport().world_3d.environment
-    if env:
-        env.glow_enabled = true
-        env.ssao_enabled = true
-        env.adjustment_enabled = true
-```
-
-### Settings Menu
-
-```gdscript
-# graphics_settings.gd
-extends Control
-
-@onready var resolution_option: OptionButton = $VBoxContainer/Resolution
-@onready var quality_option: OptionButton = $VBoxContainer/Quality
-@onready var vsync_check: CheckBox = $VBoxContainer/VSync
-@onready var fullscreen_check: CheckBox = $VBoxContainer/Fullscreen
-
-func _ready() -> void:
-    populate_settings()
-    load_settings()
-
-func populate_settings() -> void:
-    # Resolution options
-    resolution_option.add_item("1280x720")
-    resolution_option.add_item("1920x1080")
-    resolution_option.add_item("2560x1440")
-    resolution_option.add_item("3840x2160")
-    
-    # Quality presets
-    quality_option.add_item("Low")
-    quality_option.add_item("Medium")
-    quality_option.add_item("High")
-    quality_option.add_item("Ultra")
-
-func _on_resolution_selected(index: int) -> void:
-    var resolutions := [
-        Vector2i(1280, 720),
-        Vector2i(1920, 1080),
-        Vector2i(2560, 1440),
-        Vector2i(3840, 2160)
-    ]
-    
-    get_window().size = resolutions[index]
-    save_settings()
-
-func _on_quality_selected(index: int) -> void:
-    match index:
-        0:  # Low
-            apply_low_quality()
-        1:  # Medium
-            apply_medium_quality()
-        2:  # High
-            apply_high_quality()
-        3:  # Ultra
-            apply_ultra_quality()
-    
-    save_settings()
-
-func apply_ultra_quality() -> void:
-    get_viewport().msaa_3d = Viewport.MSAA_8X
-    get_viewport().screen_space_aa = Viewport.SCREEN_SPACE_AA_FXAA
-    RenderingServer.directional_shadow_atlas_set_size(8192, true)
-    
-    var env := get_viewport().world_3d.environment
-    if env:
-        env.glow_enabled = true
-        env.ssao_enabled = true
-        env.ssil_enabled = true
-        env.sdfgi_enabled = true
-
-func _on_vsync_toggled(enabled: bool) -> void:
-    if enabled:
-        DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED)
-    else:
-        DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
-    
-    save_settings()
-
-func _on_fullscreen_toggled(enabled: bool) -> void:
-    if enabled:
-        DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
-    else:
-        DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-    
-    save_settings()
-
-func save_settings() -> void:
-    var config := ConfigFile.new()
-    config.set_value("graphics", "resolution_index", resolution_option.selected)
-    config.set_value("graphics", "quality", quality_option.selected)
-    config.set_value("graphics", "vsync", vsync_check.button_pressed)
-    config.set_value("graphics", "fullscreen", fullscreen_check.button_pressed)
-    config.save("user://settings.cfg")
-
-func load_settings() -> void:
-    var config := ConfigFile.new()
-    if config.load("user://settings.cfg") == OK:
-        resolution_option.selected = config.get_value("graphics", "resolution_index", 1)
-        quality_option.selected = config.get_value("graphics", "quality", 2)
-        vsync_check.button_pressed = config.get_value("graphics", "vsync", true)
-        fullscreen_check.button_pressed = config.get_value("graphics", "fullscreen", false)
-        
-        # Apply settings
-        _on_resolution_selected(resolution_option.selected)
-        _on_quality_selected(quality_option.selected)
-        _on_vsync_toggled(vsync_check.button_pressed)
-        _on_fullscreen_toggled(fullscreen_check.button_pressed)
-```
-
----
-
-## UI Layout Expansion
-
-### Mobile UI → Desktop UI
-
-```gdscript
-# Mobile: Compact HUD, large touch buttons
-# Scene: MobileHUD.tscn
-# - Virtual joystick (bottom-left)
-# - Action buttons (bottom-right, 80x80px)
-
-# ⬇️ Desktop: Spread UI, smaller elements
-
-# Scene: DesktopHUD.tscn
-# - Health/Mana bars (top-left, 40px tall)
-# - Minimap (top-right, 200x200px)
-# - Hotbar (bottom-center, 50x50px slots)
-# - Chat (bottom-left, resizable)
-
-extends Control
-
-func _ready() -> void:
-    if OS.has_feature("mobile"):
-        _setup_mobile_ui()
-    else:
-        _setup_desktop_ui()
-
-func _setup_mobile_ui() -> void:
-    # Large buttons, bottom corners
-    $VirtualJoystick.visible = true
-    $ActionButtons.scale = Vector2(1.5, 1.5)
-    $Minimap.visible = false  # Too cluttered
-
-func _setup_desktop_ui() -> void:
-    # Compact, corners and edges
-    $VirtualJoystick.visible = false
-    $ActionButtons.scale = Vector2(0.8, 0.8)
-    $Minimap.visible = true
-    $ChatBox.visible = true
-```
-
----
-
-## Window Management
-
-### Multi-Monitor Support
-
-```gdscript
-# window_manager.gd
-extends Node
-
-func _ready() -> void:
-    # Detect monitors
-    var screen_count := DisplayServer.get_screen_count()
-    print("Detected %d monitors" % screen_count)
-    
-    # Allow window dragging between monitors
-    DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, false)
-
-func move_to_monitor(monitor_index: int) -> void:
-    var screen_pos := DisplayServer.screen_get_position(monitor_index)
-    var screen_size := DisplayServer.screen_get_size(monitor_index)
-    
-    # Center window on target monitor
-    var window_size := get_window().size
-    var centered_pos := screen_pos + (screen_size - window_size) / 2
-    
-    DisplayServer.window_set_position(centered_pos)
-```
-
-### Borderless Fullscreen
-
-```gdscript
-func set_borderless_fullscreen(enabled: bool) -> void:
-    if enabled:
-        # Get screen size
-        var screen_size := DisplayServer.screen_get_size()
-        
-        # Set window to screen size
-        get_window().size = screen_size
-        get_window().position = Vector2i.ZERO
-        
-        # Remove border
-        DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, true)
-    else:
-        DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, false)
-        DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-```
-
----
-
-## Platform-Specific Features
-
-### Steam Integration (Example)
-
-```gdscript
-# Requires GodotSteam plugin
-extends Node
-
-var steam_initialized := false
-
-func _ready() -> void:
-    if OS.get_name() in ["Windows", "Linux", "macOS"]:
-        initialize_steam()
-
-func initialize_steam() -> void:
-    var init_result := Steam.steamInit()
-    if init_result.status == Steam.STEAM_OK:
-        steam_initialized = true
-        print("Steam initialized")
-        
-        # Enable achievements
-        Steam.requestStats()
-
-func unlock_achievement(achievement_id: String) -> void:
-    if steam_initialized:
-        Steam.setAchievement(achievement_id)
-        Steam.storeStats()
-```
-
-### Discord Rich Presence
-
-```gdscript
-# Requires Discord SDK integration
-extends Node
-
-func update_presence(state: String, details: String) -> void:
-    if OS.get_name() == "Windows":
-        # Update Discord presence
-        # (Requires plugin)
-        pass
-```
-
----
-
-## Performance Enhancements
-
-### Unlock Frame Rate
-
-```gdscript
-# Mobile: Locked to 60 FPS
-Engine.max_fps = 60
-
-# Desktop: Unlock or  match monitor refresh rate
-func _ready() -> void:
-    if not OS.has_feature("mobile"):
-        Engine.max_fps = 0  # Unlimited (use VSync to cap)
-        
-        # Or match monitor:
-        var refresh_rate := DisplayServer.screen_get_refresh_rate()
-        Engine.max_fps = int(refresh_rate)
-```
-
-### Increased Draw Distance
-
-```gdscript
-# Mobile: Low draw distance
-var camera: Camera3D
-camera.far = 100.0
-
-# Desktop: Higher
-camera.far = 500.0
-
-# Also increase shadow distance
-var sun: DirectionalLight3D
-sun.directional_shadow_max_distance = 200.0  # Up from 50
-```
-
----
-
-## Testing Checklist
-
-- [ ] Mouse controls feel precise (no acceleration issues)
-- [ ] All mobile touch controls have keyboard/mouse equivalents
-- [ ] Graphics settings menu works correctly
-- [ ] Fullscreen, windowed, borderless modes all function
-- [ ] Multi-monitor setup works (dragging window, centering)
-- [ ] Resolution changes don't crash or distort UI
-- [ ] VSync toggle works
-- [ ] Runs at 144+ FPS on high-end hardware
-- [ ] Settings persist across sessions
-- [ ] Game scales well to ultrawide monitors (21:9, 32:9)
-
-## Expert Techniques & Optimizations
-
-### 1. Standalone Desktop Launcher
-For heavy desktop builds, use a lightweight Godot "Launcher" executable. This allows users to configure settings via `ConfigFile` before spawning the main game process using `OS.create_process()`.
-
-```gdscript
-func launch_game() -> void:
-    # Save settings to user://settings.cfg
-    config.save("user://settings.cfg")
-    
-    # Spawn main game with data pack argument
-    var path := OS.get_executable_path()
-    var args := PackedStringArray(["--main-pack", "game_data.pck"])
-    var pid := OS.create_process(path, args)
-    
-    if pid > 0:
-        get_tree().quit()
-```
-
-### 2. Graphics Benchmark Mode
-Automatically suggest optimal settings by running a 5-second performance test. Use `ProjectSettings.set_setting()` to toggle high-end features like Screen Space AA or SDFGI half-resolution based on average FPS.
-
-```gdscript
-func _evaluate_benchmark(frame_count: int, duration: float) -> void:
-    var avg_fps := frame_count / duration
-    if avg_fps < 30.0:
-        # Disable heavy features
-        ProjectSettings.set_setting("rendering/anti_aliasing/quality/screen_space_aa", 0)
-        ProjectSettings.set_setting("rendering/global_illumination/gi/use_half_resolution", true)
-    
-    ProjectSettings.save_custom("user://override.cfg")
-```
-
-### 3. Steamworks Integration (GDExtension)
-While Godot doesn't natively include Steamworks, the expert approach is to use a GDExtension (like GodotSteam) to bridge the Steam SDK for cloud saves and achievements. This keeps the core engine binary small while providing deep platform integration.
-
-```gdscript
-# Example using GodotSteam GDExtension
-func _ready() -> void:
-    if Steam.steamInit().status == Steam.STEAM_OK:
-        print("Steam Cloud and Achievements Active")
-        Steam.requestStats()
-```
+- Optional lightweight launcher via `OS.create_process` + `user://settings.cfg` before main pack.
+- Short FPS benchmark → write `user://override.cfg` quality suggestions.
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+
+> Progressive disclosure: open Official Documentation links only when researching a specific API;
+> load Related Skills when routing work to a peer domain — do not preload the whole lattice.
+
+### Official Documentation
+- [Using InputEvent](https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html) — Event pipeline for replacing `InputEventScreenTouch`/`ScreenDrag` with mouse motion, buttons, and keyboard actions on desktop.
+- [Mouse and input coordinates](https://docs.godotengine.org/en/stable/tutorials/inputs/mouse_and_input_coordinates.html) — Viewport vs canvas transforms so mouse aim and hover hit the same UI/game space as former touch targets.
+- [Custom mouse cursor](https://docs.godotengine.org/en/stable/tutorials/inputs/custom_mouse_cursor.html) — Hardware cursor shapes and hide/show rules for combat vs menus (`Input.set_custom_mouse_cursor`).
+- [Input examples](https://docs.godotengine.org/en/stable/tutorials/inputs/input_examples.html) — Practical WASD, mouse-look, and action patterns that map onto mobile virtual-joystick / button actions.
+- [Handling quit requests](https://docs.godotengine.org/en/stable/tutorials/inputs/handling_quit_requests.html) — `NOTIFICATION_WM_CLOSE_REQUEST` / `set_auto_accept_quit(false)` so the OS close button can prompt save instead of silent exit.
+- [Multiple resolutions](https://docs.godotengine.org/en/stable/tutorials/rendering/multiple_resolutions.html) — Stretch mode, aspect, and content scale when leaving fixed mobile base resolutions for 1080p–4K and ultrawide.
+- [DisplayServer](https://docs.godotengine.org/en/stable/classes/class_displayserver.html) — Window modes, VSync, screen count/size/position, and refresh-rate queries behind fullscreen and multi-monitor ports.
+- [Window](https://docs.godotengine.org/en/stable/classes/class_window.html) — Per-window size, position, and mode APIs used with borderless / exclusive fullscreen toggles.
+- [InputMap](https://docs.godotengine.org/en/stable/classes/class_inputmap.html) — Runtime remapping of actions to keycodes so PC players can rebind what mobile hard-coded as touch zones.
+- [Size and anchors](https://docs.godotengine.org/en/stable/tutorials/ui/size_and_anchors.html) — Anchor/offset contracts when shrinking thumb-sized controls for mouse density without breaking layout.
+- [Using Containers](https://docs.godotengine.org/en/stable/tutorials/ui/gui_containers.html) — Box/Grid/Margin layout rules for expanded desktop HUDs (hotbars, chat, minimap) vs compact mobile stacks.
+- [Feature tags](https://docs.godotengine.org/en/stable/tutorials/export/feature_tags.html) — `pc` / `mobile` / OS tags for branching input, UI scale, and graphics quality without separate projects.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Shared InputEvent buffering, action maps, and device detection before injecting WASD/mouse equivalents for mobile actions.
+- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Anchors, containers, and minimum sizes so desktop UI shrink/expand passes keep layout correct across resolutions.
+- [godot-platform-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md) — Inventory the mobile lifecycle, touch, and safe-area assumptions you are replacing before desktop window/input paths take over.
+
+#### Complements
+- [godot-platform-desktop](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-desktop/SKILL.md) — Deeper Windows/macOS/Linux DisplayServer and OS integration once the mobile→desktop control and settings remap is in place.
+- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — Mouse-look, orbit, and scroll-wheel zoom rigs that replace swipe/pinch camera controls.
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Profiling and quality ladders when unlocking FPS, MSAA, shadows, and draw distance for desktop GPUs.
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Durable save ownership hooked to window-close confirmation and settings `ConfigFile` persistence.
+- [godot-ui-theming](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md) — Theme type variations and hover styles that mobile never showed but desktop players expect on buttons/menus.
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Display stretch, renderer, and feature-tag project defaults that every desktop port branch depends on.
+- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Singleton homes for window managers, input adapters, and graphics settings that must outlive scene changes.
+
+#### Downstream / consumers
+- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — Packaging and CI export presets for Windows/macOS/Linux after input/UI/window gates pass on desktop.
+- [godot-adapt-desktop-to-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md) — Inverse lattice when the same codebase must keep or regain touch-first paths after a desktop-first pass.
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Re-tune difficulty when mouse precision and higher FPS invalidate mobile touch timing and aim curves.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for discovering this adapt skill beside sibling domains.

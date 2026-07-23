@@ -20,3 +20,15 @@ func play_safe(anim_name: String) -> void:
 	# animation modified persistent state.
 	force_hard_reset()
 	anim_player.play(anim_name)
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/animation/introduction.html
+# - https://docs.godotengine.org/en/stable/classes/class_animationplayer.html
+# - https://docs.godotengine.org/en/stable/classes/class_animationmixer.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md — RESET before scene swaps / pooled reuse
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md — property restore after hybrid sprite timelines
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md
+# =============================================================================

@@ -22,3 +22,15 @@ The skeletal integrity of the vision. This rubric assesses how the project handl
 
 ## 🌟 Visionary's Final Decree
 Your architecture is the vessel for the vision. If the technical debt of the foundation weighs down the soul of the project, it is **Slop**. To achieve **Elite** status, you must reach the 'Stateless Core'—where the architecture is so pure that the data simply flows through it without friction.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/autoloads_versus_regular_nodes.html
+- https://docs.godotengine.org/en/stable/classes/class_resourceloader.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

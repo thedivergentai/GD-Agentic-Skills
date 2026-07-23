@@ -32,3 +32,14 @@ func _enter_tree() -> void:
 	# This should be done as early as possible in the project lifecycle.
 	OS.add_logger(TelemetrySink.new())
 	print("Foundations: Telemetry System Online.")
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_logger.html
+# - https://docs.godotengine.org/en/stable/classes/class_os.html
+# - https://docs.godotengine.org/en/stable/classes/class_mutex.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — production sinks pair with editor profilers
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md — release builds need crash/telemetry hooks
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md
+# =============================================================================

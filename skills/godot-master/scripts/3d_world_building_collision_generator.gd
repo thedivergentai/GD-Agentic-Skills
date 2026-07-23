@@ -36,3 +36,15 @@ static func create_multiple_convex_collision(mesh_instance: MeshInstance3D) -> S
 ## EXPERT USAGE:
 ## Call in _ready() or EditorScript for procedurally loaded meshes.
 ## Use Trimesh for static scenery, Convex for dynamic objects (if needed).
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/collision_shapes_3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_concavepolygonshape3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_convexpolygonshape3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — trimesh vs convex rules for static levels
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — collision cost of concave world hulls
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md
+# =============================================================================

@@ -29,3 +29,14 @@ void fragment() {
         COLOR = texture(TEXTURE, warped_uv);
     }
 }
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/shaders/introduction_to_shaders.html
+# - https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/canvas_item_shader.html
+# - https://docs.godotengine.org/en/stable/tutorials/2d/canvas_layers.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md — Mode-7 / pitch warp CanvasItem shader
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — screen-space FX placement
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-3d-to-2d/SKILL.md
+# =============================================================================

@@ -23,3 +23,14 @@ func _physics_process(_delta: float) -> void:
 func _process_basic_locomotion() -> void: pass
 func _process_dash_physics() -> void: pass
 func _process_wall_slide() -> void: pass
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html
+# - https://docs.godotengine.org/en/stable/classes/class_@gdscript.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md — hierarchical traversal/combat states
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md — ability unlocks that enable state branches
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md — physics body driven by state matches
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-metroidvania/SKILL.md
+# =============================================================================

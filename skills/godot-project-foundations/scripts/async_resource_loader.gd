@@ -38,3 +38,14 @@ func _process(_delta: float) -> void:
 		ResourceLoader.THREAD_LOAD_FAILED, ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
 			loading_failed.emit(_target_path)
 			_target_path = ""
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html
+# - https://docs.godotengine.org/en/stable/classes/class_resourceloader.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/change_scenes_manually.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md — full transition managers wrap threaded loads
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — avoid main-thread load() stalls
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md
+# =============================================================================

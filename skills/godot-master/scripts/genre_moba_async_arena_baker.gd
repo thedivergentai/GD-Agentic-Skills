@@ -17,3 +17,13 @@ func update_nav_mesh() -> void:
     # Wait for completion without locking the game loop.
     await navigation_region.bake_finished
     print("Arena navigation updated asynchronously.")
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationmeshes.html
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationservers.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md — threaded bake patterns
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md — arena collision vs nav source
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-moba/SKILL.md
+# =============================================================================

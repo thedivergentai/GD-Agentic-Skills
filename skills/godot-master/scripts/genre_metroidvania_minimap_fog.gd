@@ -62,3 +62,14 @@ func load_save_data(data: Dictionary) -> void:
 ## EXPERT USAGE:
 ## Assign a TileMapLayer used as an overlay. Fill it with 'Fog' tiles.
 ## As player moves, fog is erased/replaced.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/2d/using_tilemaps.html
+# - https://docs.godotengine.org/en/stable/classes/class_tilemaplayer.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md — TileMapLayer fog overlay authorship
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — serialize visited Vector2i cells
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-metroidvania/SKILL.md
+# =============================================================================

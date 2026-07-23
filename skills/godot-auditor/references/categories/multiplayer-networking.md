@@ -9,3 +9,13 @@
 - **NEVER allow unlimited RPC calls per second** — An attacker can flood the server with 1,000 "Attack" RPCs to crash the game. Use `net_packet_rate_limiter.gd`.
 - **NEVER expose PeerIDs to the end-user** — PeerIDs are internal. Always map them to persistent `UserIDs` (`net_custom_id_mapper.gd`) from a database.
 - **NEVER run a dedicated server with a GUI enabled** — Use `--headless` (`net_headless_server_auto_start.gd`) to save resources and ensure stability.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/performance/using_multiple_threads.html
+- https://docs.godotengine.org/en/stable/tutorials/performance/thread_safe_apis.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

@@ -79,3 +79,14 @@ func _drop() -> void:
 ## EXPERT USAGE:
 ## Attach this script to LeftHand/RightHand nodes.
 ## Ensure child 'GrabArea' exists with collision shape.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_xrcontroller3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_rigidbody3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/xr/xr_action_map.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — grab freeze / throw linear_velocity on RigidBody3D
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — grip actions without hardcoded device paths
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-vr/SKILL.md
+# =============================================================================

@@ -41,3 +41,14 @@ func perform_shapecast(origin: Vector2, shape: Shape2D, motion: Vector2) -> Arra
 ## WHY USE THIS?
 ## Bypassing the Node2D tree for physics queries is significantly faster 
 ## when performing hundreds of checks (e.g., AI vision, projectile prediction).
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_physicsdirectspacestate2d.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md — ray/point/shape query cookbook
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — hundreds of queries per tick
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md
+# =============================================================================

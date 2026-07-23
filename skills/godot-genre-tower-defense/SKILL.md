@@ -56,218 +56,84 @@ Strategic placement, resource management, and escalating difficulty define tower
 ### Modular Components
 - [tower_defense_patterns.gd](scripts/tower_defense_patterns.gd) - Collection of patterns for furthest-target logic and PhysicsServer projectile optimization.
 
----
 
-| Phase | Skills | Purpose |
-|-------|--------|---------|
-| 1. Grid/Path | `godot-tilemap-mastery`, `navigation-2d` | Defining where enemies walk and towers build |
-| 2. Towers | `math-geometry`, `area-2d` | Range checks, rotation, projectile prediction |
-| 3. Enemies | `path-following`, `steering-behaviors` | Movement along paths |
-| 4. Management | `state-machines`, `loop-management` | Wave spawning logic, game phases |
-| 5. UI | `ui-system`, `drag-and-drop` | Building towers, inspecting stats |
+## Decision Trees (MANDATORY script reads)
 
-## Architecture Overview
+### Path style
+| Style | Approach | Scripts / APIs |
+|-------|----------|----------------|
+| Fixed lanes | `Path2D` / `PathFollow2D` `progress` | [wave_manager.gd](scripts/wave_manager.gd), [wave_resource_spawner.gd](scripts/wave_resource_spawner.gd) |
+| Mazing | Seal-check before place | `NavigationServer2D.map_get_path` / `AStarGrid2D` (NEVER) |
+| Organic curves | Bezier PathFollow `progress` | Prefer PathFollow over per-frame seek |
 
-### 1. Wave Manager
-Handles the timing and godot-composition of enemy waves.
+### Targeting priority
+| Priority | Sort key | **MANDATORY** |
+|----------|----------|---------------|
+| FIRST | Highest `progress` (closest to exit) | [tower_targeting_system.gd](scripts/tower_targeting_system.gd) |
+| LAST | Lowest `progress` | same — LAST implemented |
+| STRONGEST / WEAKEST | `health` desc / asc | same — WEAKEST implemented |
 
-```gdscript
-# wave_manager.gd
-extends Node
-
-signal wave_started(wave_index: int)
-signal wave_cleared
-signal enemy_spawned(enemy: Node2D)
-
-@export var waves: Array[Resource] # Array of WaveDefinition resources
-var current_wave_index: int = 0
-var active_enemies: int = 0
-
-func start_next_wave() -> void:
-    if current_wave_index >= waves.size():
-        print("All waves cleared!")
-        return
-        
-    var wave_data = waves[current_wave_index]
-    wave_started.emit(current_wave_index)
-    _spawn_wave(wave_data)
-    current_wave_index += 1
-
-func _spawn_wave(wave: WaveResource) -> void:
-    for group in wave.groups:
-        await get_tree().create_timer(group.delay).timeout
-        for i in group.count:
-            var enemy = group.enemy_scene.instantiate()
-            add_child(enemy)
-            active_enemies += 1
-            enemy.tree_exiting.connect(_on_enemy_died)
-            await get_tree().create_timer(group.interval).timeout
-
-func _on_enemy_died() -> void:
-    active_enemies -= 1
-    if active_enemies <= 0:
-        wave_cleared.emit()
-```
-
-### 2. Tower Logic (State Machine)
-Towers act as autonomous agents.
-
-*   **States**: `Idle`, `AcquireTarget`, `Attack`, `Cooldown`.
-*   **Targeting Priority**: `First`, `Last`, `Strongest`, `Weakest`, `Closest`.
-
-```gdscript
-# tower.gd
-extends Node2D
-
-var targets_in_range: Array[Node2D] = []
-var current_target: Node2D
-
-func _physics_process(delta: float) -> void:
-    if current_target == null or not is_instance_valid(current_target):
-        _acquire_target()
-    
-    if current_target:
-        _rotate_turret(current_target.global_position)
-        if can_fire():
-            fire_projectile()
-
-func _acquire_target() -> void:
-    # Example: Target closest to end of path
-    var max_progress = -1.0
-    for enemy in targets_in_range:
-        if enemy.progress > max_progress:
-            current_target = enemy
-            max_progress = enemy.progress
-```
-
-### 3. Pathfinding Variants
-
-#### A. Fixed Path (Kingdom Rush style)
-Enemies follow a pre-defined `Path2D`.
-*   **Implementation**: `PathFollow2D` as parent of Enemy.
-*   **Pros**: Deterministic, easy to balance, optimized.
-*   **Cons**: Less player agency in shaping the path.
-
-#### B. Mazing (Fieldrunners style)
-Players build towers to block/reroute enemies.
-*   **Implementation**: `NavigationAgent2D` on enemies. Towers update `NavigationRegion2D` (bake on separate thread).
-*   **Pros**: High strategic depth.
-*   **Cons**: Computationally expensive recalculation, needs anti-blocking logic (don't let player seal the exit).
-
-## Key Mechanics Implementation
-
-### Targeting Math (Projectile Prediction)
-To hit a moving target, you must predict where it will be.
-
-```gdscript
-func get_predicted_position(target: Node2D, projectile_speed: float) -> Vector2:
-    var to_target = target.global_position - global_position
-    var time_to_hit = to_target.length() / projectile_speed
-    return target.global_position + (target.velocity * time_to_hit)
-```
+Use **signal-cached** range `Area` enter/exit + **frame-sliced** acquire (`acquire_interval_frames`). Never `get_overlapping_bodies()` every frame.
 
 ### Economy
-Money management is the secondary core loop.
-*   **Kill Rewards**: Direct feedback for success.
-*   **Interest/Income**: Rewarding saved money (risk/reward).
-*   **Early Calling**: Bonus money for starting the next wave early.
+| Concern | Rule | Script |
+|---------|------|--------|
+| Wave composition | Resource `.tres` waves | [wave_manager.gd](scripts/wave_manager.gd) |
+| Co-op purchases | Server validates gold | [tower_defense_patterns.gd](scripts/tower_defense_patterns.gd) |
+| Comeback | Interest / early-call bonus | Design-level — not tower FSM |
 
-## Common Pitfalls
+## PhysicsServer Projectile Golden Path
 
-1.  **Death Spirals**: If a player leaks one enemy, they lose money/lives, making the next wave harder, leading to inevitable failure. **Fix**: Catch-up mechanics or discrete wave difficulty.
-2.  **Useless Towers**: Every tower type must have a distinct niche (AoE, Slow, Armor Pierce, Anti-Air).
-3.  **Path Blocking**: In mazing games, ensure players cannot completely block the path to the exit. Use `NavigationServer2D.map_get_path` to validate placement before building.
+When count > ~500:
 
-## Godot-Specific Tips
+1. **MANDATORY** [tower_defense_patterns.gd](scripts/tower_defense_patterns.gd) `spawn_fast_bullet` (`PhysicsServer3D` kinematic RIDs).
+2. Pool RIDs; AoE via `intersect_shape`; defer collision disable on death.
+3. Modest counts: [homing_projectile_3d.gd](scripts/homing_projectile_3d.gd) / pooled Nodes OK.
 
-*   **Physics Layers**: Put enemies on a specific layer (e.g., Layer 2) and tower "range" Areas on a different mask to avoid towers detecting each other or walls.
-*   **Area2D Performance**: For massive numbers of enemies, avoid `monitorable/monitoring` on every frame if possible. Use `PhysicsServer2D` queries for optimization if enemy count > 500.
-*   **Object Pooling**: Essential for projectiles and enemies to avoid garbage collection stutters during intense waves.
+## Tower FSM
 
-
----
-
-## 🚀 Elite Technical Implementations (Batch 09)
-
-### 1. Navigation-Path-Validation (Maze Sealing Prevention)
-In mazing TD games, players must not be able to block the exit. Use `AStarGrid2D` to simulate building placement and verify that a valid path still exists from spawn to core.
-
-```gdscript
-class_name GridPathValidator extends Node
-
-var _astar_grid: AStarGrid2D
-@export var spawn_point: Vector2i = Vector2i(0, 0)
-@export var core_point: Vector2i = Vector2i(20, 20)
-
-func _ready() -> void:
-    _astar_grid = AStarGrid2D.new()
-    _astar_grid.region = Rect2i(0, 0, 40, 40)
-    _astar_grid.cell_size = Vector2(64, 64)
-    _astar_grid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
-    _astar_grid.update()
-
-## Simulates placing a tower. Returns true if the path remains valid.
-func can_build_tower_at(cell_coords: Vector2i) -> bool:
-    if _astar_grid.is_point_solid(cell_coords):
-        return false
-        
-    # 1. Temporarily mark the cell as solid
-    _astar_grid.set_point_solid(cell_coords, true)
-    
-    # 2. Query path from start to finish
-    var test_path: Array[Vector2i] = _astar_grid.get_id_path(spawn_point, core_point)
-    
-    # 3. If empty, maze is sealed. Revert and deny.
-    if test_path.is_empty():
-        _astar_grid.set_point_solid(cell_coords, false)
-        return false
-        
-    return true
-```
-
-### 2. Burst-Searching (Frame-Sliced Targeting)
-Towers scanning for enemies every frame create CPU spikes. Use `Engine.get_process_frames()` with a random offset to distribute targeting logic across multiple frames.
-
-```gdscript
-class_name BurstSearchTower extends Node2D
-
-@export var search_interval_frames: int = 10
-@export var attack_range: float = 250.0
-
-var _frame_offset: int = 0
-var _current_target: Node2D = null
-
-func _ready() -> void:
-    # Stagger search frame per tower
-    _frame_offset = randi() % search_interval_frames
-
-func _physics_process(_delta: float) -> void:
-    # Execute expensive logic only once every N frames
-    if (Engine.get_process_frames() + _frame_offset) % search_interval_frames == 0:
-        _burst_search_for_target()
-
-func _burst_search_for_target() -> void:
-    var enemies: Array[Node] = get_tree().get_nodes_in_group("enemies")
-    # ... distance squared logic to pick closest target ...
-```
-
-### 3. Bezier-Path-Follow (Organic Movement)
-Smooth, curved enemy movement is achieved using `Path2D` and `PathFollow2D`. Increase the `progress` property to move the enemy along the spline.
-
-```gdscript
-class_name OrganicEnemyMovement extends PathFollow2D
-
-@export var move_speed: float = 150.0
-
-func _physics_process(delta: float) -> void:
-    # Use 'progress' (Godot 4) to advance along the Curve2D
-    progress += move_speed * delta
-    
-    if progress_ratio >= 1.0:
-        # Reached the core
-        queue_free()
-```
+**MANDATORY**: [tower.gd](scripts/tower.gd) for idle → acquire → windup → fire. Targeting stays in [tower_targeting_system.gd](scripts/tower_targeting_system.gd).
 
 
-- Master Skill: [godot-master](../godot-master/SKILL.md)
-- Related: Prove wave/economy bands with [godot-monte-carlo-balancer](../godot-monte-carlo-balancer/SKILL.md) (see also lane-defense example ref).
+## Reference
+
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
+
+### Official Documentation
+- [Navigation introduction (2D)](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_introduction_2d.html) — NavigationRegion2D baking and map queries for mazing TD path validity.
+- [Using NavigationAgents](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationagents.html) — agent path following and avoidance when towers reshape walkable space.
+- [NavigationServer2D](https://docs.godotengine.org/en/stable/classes/class_navigationserver2d.html) — `map_get_path` seal checks before committing tower placement.
+- [AStarGrid2D](https://docs.godotengine.org/en/stable/classes/class_astargrid2d.html) — integer-grid path probes that simulate build cells without a full nav bake.
+- [PathFollow2D](https://docs.godotengine.org/en/stable/classes/class_pathfollow2d.html) — `progress` / `progress_ratio` for fixed-lane enemies and First/Last targeting.
+- [PathFollow3D](https://docs.godotengine.org/en/stable/classes/class_pathfollow3d.html) — 3D track followers used by wave spawners and homing aim references.
+- [Using Area2D](https://docs.godotengine.org/en/stable/tutorials/physics/using_area_2d.html) — signal-driven range caches (`body_entered` / `body_exited`) instead of per-frame overlap polls.
+- [Physics introduction](https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html) — layers/masks so tower ranges hit enemies, not other towers or walls.
+- [Using servers](https://docs.godotengine.org/en/stable/tutorials/performance/using_servers.html) — PhysicsServer bodies for high-count projectiles without Node overhead.
+- [Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html) — WaveDefinition `.tres` data instead of hard-coded spawn switches.
+- [Using multiple threads](https://docs.godotengine.org/en/stable/tutorials/performance/using_multiple_threads.html) — WorkerThreadPool / Thread patterns for async navigation rebakes during placement.
+- [Using TileMaps](https://docs.godotengine.org/en/stable/tutorials/2d/using_tilemaps.html) — TileMapLayer grids for build cells, paths, and placement snapping.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — project settings, layers, and scene structure before wave/tower wiring.
+- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — NavigationServer bake, agents, and path queries that mazing TD depends on.
+- [godot-tilemap-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md) — TileMapLayer/TileSet grids for buildable cells and lane painting.
+
+#### Complements
+- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — Area2D range, layers, and PhysicsServer2D projectile patterns for dense waves.
+- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — StringName tower FSM states (Idle/Acquire/Attack/Cooldown).
+- [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md) — kill rewards, interest, and early-call income without death spirals.
+- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — damage types, armor pierce, splash, and projectile hit resolution.
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — typed Wave/Tower Resources and `duplicate(true)` for balance edits.
+- [godot-game-loop-waves](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-game-loop-waves/SKILL.md) — prepare/defend/reward phase orchestration around the spawner.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — wave_started / enemy_died / currency_changed buses without frame polling.
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — pooling, server bodies, and throttled acquire searches under heavy projectile counts.
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — sample wave DPS, leak rates, and economy bands before shipping difficulty curves.
+
+#### Downstream / consumers
+- [godot-genre-rts](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rts/SKILL.md) — base defense and unit-placement loops that reuse path validation and economy pressure.
+- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — authoritative purchase validation and unreliable minion sync for co-op TD.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.

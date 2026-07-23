@@ -18,3 +18,13 @@ func roll_item(rng: RandomNumberGenerator) -> Resource:
 func add_entry(item: Resource, weight: float) -> void:
 	items.append(item)
 	weights.append(weight)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_randomnumbergenerator.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md — drop Resources into run inventories
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — dead-item and pity-timer validation
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md
+# =============================================================================

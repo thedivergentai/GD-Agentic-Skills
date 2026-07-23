@@ -20,3 +20,13 @@ func raycast_pierce(from: Vector3, to: Vector3, max_hits: int = 5):
 			break
 			
 	return hits
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_physicsrayqueryparameters3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_physicsdirectspacestate3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — pierce damage per successive hit
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md — multi-enemy pierce projectiles
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md
+# =============================================================================

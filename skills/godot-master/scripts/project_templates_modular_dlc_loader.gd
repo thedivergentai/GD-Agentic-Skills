@@ -31,3 +31,14 @@ static func load_all_dlc_in_folder(folder_path: String) -> void:
 			if file_name.ends_with(".pck"):
 				load_dlc(folder_path + "/" + file_name)
 			file_name = dir.get_next()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/export/exporting_pcks.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/data_paths.html
+# - https://docs.godotengine.org/en/stable/classes/class_projectsettings.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md — building and signing PCK packs for DLC
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md — loading scenes after pack mount overrides
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-templates/SKILL.md
+# =============================================================================

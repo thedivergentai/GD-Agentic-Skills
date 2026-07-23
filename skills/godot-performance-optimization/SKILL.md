@@ -2,7 +2,6 @@
 name: godot-performance-optimization
 description: "Expert blueprint for performance profiling and optimization (frame drops, memory leaks, draw calls) using Godot Profiler, object pooling, visibility culling, and bottleneck identification. Use when diagnosing lag, optimizing for target FPS, or reducing memory usage. Keywords profiling, Godot Profiler, bottleneck, object pooling, VisibleOnScreenNotifier, draw calls, MultiMesh."
 ---
-
 ## Godot 4.7 Baseline
 
 - Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
@@ -11,39 +10,7 @@ description: "Expert blueprint for performance profiling and optimization (frame
 
 # Performance Optimization
 
-Profiler-driven analysis, object pooling, and visibility culling define optimized game performance.
-
-## Available Scripts
-
-### [worker_thread_pool_manager.gd](scripts/worker_thread_pool_manager.gd)
-Expert logic for offloading heavy computation to Godot 4's WorkerThreadPool for multi-threaded processing.
-
-### [object_pool_system.gd](scripts/object_pool_system.gd)
-Minimal allocation strategy using node visibility and process toggling instead of constant instantiation.
-
-### [rendering_server_direct.gd](scripts/rendering_server_direct.gd)
-Bypassing the SceneTree logic for massive canvas item rendering directly via the RenderingServer.
-
-### [low_level_physics_query.gd](scripts/low_level_physics_query.gd)
-High-performance direct physics space state queries, faster than using RayCast nodes for hundreds of checks.
-
-### [custom_monitor_profiler.gd](scripts/custom_monitor_profiler.gd)
-Implementation of real-time performance monitoring using Performance.get_monitor() for bottleneck detection.
-
-### [manual_culling_logic.gd](scripts/manual_culling_logic.gd)
-Disabling off-screen logic manually using VisibilityNotifiers to cull CPU-heavy processing.
-
-### [shared_resource_strategy.gd](scripts/shared_resource_strategy.gd)
-Expert management of Local-to-Scene vs Shared resources to balance memory usage and unique instance states.
-
-### [texture_array_batching.gd](scripts/texture_array_batching.gd)
-Reducing draw calls and state changes by utilizing TextureArrays for multi-item shader-based batching.
-
-### [multimesh_optimizer.gd](scripts/multimesh_optimizer.gd)
-Rendering thousands of animated mesh instances via hardware instancing (MultiMeshInstance3D).
-
-### [navigation_agent_optimization.gd](scripts/navigation_agent_optimization.gd)
-Staggered path update strategy for massive AI crowds to prevent pathfinding bottlenecks in a single frame.
+Profiler-first bottleneck routing to pooling, culling, servers, MultiMesh, and threads — not generic pool tutorials.
 
 ## NEVER Do in Performance Optimization
 
@@ -70,61 +37,100 @@ Tabs:
 - **Network**: RPCs, bandwidth
 - **Physics**: Collision checks
 
-## Common Optimizations
+## Profiler-Tab Decision Tree
 
-### Object Pooling
+> Open **Debug → Profiler** first. **MANDATORY** load only the script for the hot tab/symptom.
+>
+> **Do NOT Load** every perf script for a single hitch.
 
-```gdscript
-var bullet_pool: Array[Node] = []
+| Profiler / symptom | Likely cause | Script |
+|--------------------|--------------|--------|
+| **Time** — same script hot | Alloc / get_node / process | [object_pool_system.gd](scripts/object_pool_system.gd), cache `@onready`; [custom_monitor_profiler.gd](scripts/custom_monitor_profiler.gd) |
+| **Time** — off-screen AI/VFX | Process while invisible | **MANDATORY** [manual_culling_logic.gd](scripts/manual_culling_logic.gd) |
+| **Memory** — climbs over time | Leaks / unique resources | [shared_resource_strategy.gd](scripts/shared_resource_strategy.gd); pair with debugging orphan tools |
+| **Physics** — collision spikes | Query/node RayCast spam | **MANDATORY** [low_level_physics_query.gd](scripts/low_level_physics_query.gd) |
+| **GPU / draw calls** | Unique sprites/meshes | **MANDATORY** [multimesh_optimizer.gd](scripts/multimesh_optimizer.gd) / [multimesh_foliage_manager.gd](scripts/multimesh_foliage_manager.gd) / [texture_array_batching.gd](scripts/texture_array_batching.gd) |
+| SceneTree overhead at scale | Canvas/mesh item spam | **MANDATORY** [rendering_server_direct.gd](scripts/rendering_server_direct.gd) |
+| Main-thread hitch (gen/parse) | Sync heavy work | **MANDATORY** [worker_thread_pool_manager.gd](scripts/worker_thread_pool_manager.gd) |
+| Crowd path spikes | Nav agents same frame | [navigation_agent_optimization.gd](scripts/navigation_agent_optimization.gd) |
+| Custom game metrics | Missing monitors | [custom_performance_monitor.gd](scripts/custom_performance_monitor.gd) |
 
-func get_bullet() -> Node:
-    if bullet_pool.is_empty():
-        return Bullet.new()
-    return bullet_pool.pop_back()
+## Available Scripts
 
-func return_bullet(bullet: Node) -> void:
-    bullet.hide()
-    bullet_pool.append(bullet)
-```
+### [object_pool_system.gd](scripts/object_pool_system.gd)
+**MANDATORY** for hot-path spawn/despawn — reuse, do not invent Array pop pools inline.
 
-### Visibility Notifier
+### [manual_culling_logic.gd](scripts/manual_culling_logic.gd)
+VisibilityNotifier-driven process disable for CPU-heavy off-screen entities.
 
-```gdscript
-# Add VisibleOnScreenNotifier2D
-# Disable processing when off-screen
-func _on_screen_exited() -> void:
-    set_process(false)
+### [rendering_server_direct.gd](scripts/rendering_server_direct.gd)
+RenderingServer canvas/mesh path when SceneTree overhead dominates.
 
-func _on_screen_entered() -> void:
-    set_process(true)
-```
+### [low_level_physics_query.gd](scripts/low_level_physics_query.gd)
+Direct space-state queries vs hundreds of RayCast nodes.
 
-### AStar-Throttler (Pathfinding Budget)
-Spreading pathfinding costs over multiple frames to prevent frame-time spikes.
-- **Implementation**:
-    ```gdscript
-    var _query_queue: Array[Callable] = []
-    const TIME_BUDGET_USEC := 1000 # 1ms budget
+### [worker_thread_pool_manager.gd](scripts/worker_thread_pool_manager.gd)
+WorkerThreadPool offload for heavy jobs.
 
-    func _process(_delta):
-        var start_time := Time.get_ticks_usec()
-        while not _query_queue.is_empty() and (Time.get_ticks_usec() - start_time) < TIME_BUDGET_USEC:
-            var query = _query_queue.pop_front()
-            query.call()
-    ```
+### [multimesh_optimizer.gd](scripts/multimesh_optimizer.gd) / [multimesh_foliage_manager.gd](scripts/multimesh_foliage_manager.gd)
+Hardware instancing for dense meshes/foliage.
 
-### Shader-Preloading (Zero-Hitch Strategy)
-- **Forward+ / Mobile**: Godot 4.4+ uses **Ubershaders** for automatic precompilation. Ensure scenes are instantiated at least once (even if invisible) at load-time to trigger pipeline detection [19].
-- **Compatibility (OpenGL)**: Place a hidden `Camera3D` looking at a small area containing every unique mesh and material in your project for 1 frame during the loading screen [20].
+### [texture_array_batching.gd](scripts/texture_array_batching.gd)
+Texture2DArray batching to cut material switches.
 
-### VRAM Compression Guide
-- **S3TC (Desktop)**: Best for high-quality textures on Windows/Linux/macOS.
-- **BPTC (Desktop)**: Superior quality for HDR and normal maps; slightly higher VRAM usage.
-- **ETC2 (Mobile)**: The standard for Android/iOS; ensure textures are opaque where possible for maximum compatibility [13].
+### [shared_resource_strategy.gd](scripts/shared_resource_strategy.gd)
+Shared vs local-to-scene memory tradeoffs.
+
+### [navigation_agent_optimization.gd](scripts/navigation_agent_optimization.gd)
+Staggered path updates for crowds.
+
+### [custom_monitor_profiler.gd](scripts/custom_monitor_profiler.gd) / [custom_performance_monitor.gd](scripts/custom_performance_monitor.gd)
+`Performance.get_monitor` / custom monitors for game-specific spikes.
+
+## Expert Pointers (keep short)
+
+- Compatibility renderer: pre-warm pipelines (hidden camera + unique meshes/materials one frame). Forward+/Mobile: Ubershaders still need instantiate-once detection.
+- VRAM: S3TC/BPTC desktop, ETC2 mobile; skip compression for pixel art.
+- AStar/path budgets belong in [navigation_agent_optimization.gd](scripts/navigation_agent_optimization.gd) — do not paste thrashy queue snippets as the golden path.
 
 ## Reference
-- [Godot Docs: Performance Optimization](https://docs.godotengine.org/en/stable/tutorials/performance/general_optimization.html)
 
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
 
-### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+### Official Documentation
+- [General optimization](https://docs.godotengine.org/en/stable/tutorials/performance/general_optimization.html) — profiler-first workflow so you measure Time/Memory/Physics before changing code.
+- [CPU optimization](https://docs.godotengine.org/en/stable/tutorials/performance/cpu_optimization.html) — process cost, node lookups, allocations, and why hot-path patterns dominate frame time.
+- [GPU optimization](https://docs.godotengine.org/en/stable/tutorials/performance/gpu_optimization.html) — draw calls, overdraw, and VRAM compression choices that cut render cost.
+- [Using MultiMesh](https://docs.godotengine.org/en/stable/tutorials/performance/using_multimesh.html) — hardware instancing for thousands of meshes and why spatial splits restore culling.
+- [Using Servers and Resources](https://docs.godotengine.org/en/stable/tutorials/performance/using_servers.html) — RenderingServer/PhysicsServer direct APIs when SceneTree overhead is the bottleneck.
+- [Using multiple threads](https://docs.godotengine.org/en/stable/tutorials/performance/using_multiple_threads.html) — WorkerThreadPool task model for heavy work off the main thread.
+- [Thread-safe APIs](https://docs.godotengine.org/en/stable/tutorials/performance/thread_safe_apis.html) — which engine APIs are safe from worker tasks versus SceneTree-only calls.
+- [Pipeline compilations](https://docs.godotengine.org/en/stable/tutorials/performance/pipeline_compilations.html) — shader/pipeline hitch causes and pre-warm strategies per renderer.
+- [Optimizing 3D performance](https://docs.godotengine.org/en/stable/tutorials/performance/optimizing_3d_performance.html) — LOD, cull distances, and mesh complexity budgets for 3D scenes.
+- [Occlusion culling](https://docs.godotengine.org/en/stable/tutorials/3d/occlusion_culling.html) — OccluderInstance3D tradeoffs when frustum culling alone is not enough.
+- [Performance](https://docs.godotengine.org/en/stable/classes/class_performance.html) — built-in monitors plus custom metrics for game-specific bottleneck dashboards.
+- [Optimizing Navigation Performance](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_optimizing_performance.html) — agent update budgets and bake costs for large crowds.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, resources, and import basics required before profiling or pooling patterns make sense.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed hot paths, callables, and @onready caching that keep optimization scripts correct.
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — shared vs local-to-scene resource ownership that drives memory and unique-instance tradeoffs.
+
+#### Complements
+- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — collision layers, queries, and body counts that show up as Physics profiler spikes.
+- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — 3D shape cost and RigidBody budgets when optimizing simulation-heavy scenes.
+- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — direct space-state query patterns that replace heavy RayCast node stacks.
+- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — material/shader complexity and Texture2DArray batching that reduce GPU state changes.
+- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — threaded loads and scene packing that prevent hitch spikes during streaming.
+- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — agent path budgets and async bake that pair with staggered AI updates.
+- [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md) — GridMap/LOD/occlusion level layout that sets the ceiling for draw-call budgets.
+
+#### Downstream / consumers
+- [godot-adapt-desktop-to-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md) — resolution/shader fallbacks and battery modes that apply these budgets on weaker GPUs.
+- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — export presets and renderer choices where compression and Compatibility pre-warm matter.
+- [godot-genre-open-world](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md) — chunk streaming and HLOD systems that consume MultiMesh, culling, and thread-pool patterns at scale.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.

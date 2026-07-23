@@ -80,3 +80,15 @@ func load_gallery() -> void:
 		if file:
 			var data = file.get_var()
 			unlocked_cgs = data.get("unlocked_cgs", [])
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/data_paths.html
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — gallery + route flag persistence
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-visual-novel/SKILL.md — CG unlock presentation
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-quest-system/SKILL.md — route lock as story gate
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-romance/SKILL.md
+# =============================================================================

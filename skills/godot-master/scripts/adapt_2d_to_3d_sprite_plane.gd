@@ -81,3 +81,14 @@ func world_to_screen_rect() -> Rect2:
 ## EXPERT USAGE:
 ## Attach to Sprite3D. Use 'world_to_screen_rect()' to position 2D UI elements
 ## exactly over the 3D sprite (e.g. health bars).
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_sprite3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/standard_material_3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_camera3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md — billboard / alpha-cut materials for Sprite3D planes
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — screen-space UI anchored via world_to_screen_rect()
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-2d-to-3d/SKILL.md
+# =============================================================================

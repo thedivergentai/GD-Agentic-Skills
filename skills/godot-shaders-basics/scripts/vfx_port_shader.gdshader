@@ -61,3 +61,14 @@ void fragment() {
 // EXPERT USAGE:
 // Copy-paste for Fire, Magic, Water effects. 
 // Use Proximity Fade logic for intersecting geometry softness.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/spatial_shader.html
+# - https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/shading_language.html
+# - https://docs.godotengine.org/en/stable/classes/class_shadermaterial.html
+# Related skills:
+# - ../godot-3d-materials/SKILL.md — VFX often start from StandardMaterial3D then graduate to spatial
+# - ../godot-particles/SKILL.md — soft collision / dissolve patterns for particle mats
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md
+# =============================================================================

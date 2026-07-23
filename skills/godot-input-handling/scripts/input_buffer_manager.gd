@@ -33,3 +33,14 @@ func consume_action(action: String) -> void:
 ## Combine with 'Coyote Time' for the industry-standard "Tight Controls" feel.
 ## For 'input-handling', implement 'Action Remapping' by saving modified 
 ## 'InputMap' settings to a 'ConfigFile' for persistence.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html
+# - https://docs.godotengine.org/en/stable/classes/class_inputeventaction.html
+# - https://docs.godotengine.org/en/stable/classes/class_input.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — Autoload buffer service
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md — frame-window consume in physics
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md
+# =============================================================================

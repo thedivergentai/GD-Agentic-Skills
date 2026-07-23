@@ -27,3 +27,13 @@ func _check_distance() -> void:
 
 ## [SKILL NOTICE]: Use 'distance_squared_to' for LOD checks. 
 ## It skips expensive square-root math, vital for 1000s of entities.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/performance/cpu_optimization.html
+# - https://docs.godotengine.org/en/stable/classes/class_scenetree.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — PROCESS_MODE_DISABLED for far AI/logic
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md — disable path agents outside active radius
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md
+# =============================================================================

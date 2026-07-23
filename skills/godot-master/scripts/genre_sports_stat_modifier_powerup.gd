@@ -21,3 +21,14 @@ func _revert_buff(stat_id: String) -> void:
 
 ## [SKILL NOTICE]: Use 'bind()' on timer signals to pass specific 
 ## stat IDs back to the callback for clean duration management.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_scenetreetimer.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — buff duration/multiplier fairness sims
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — timer.timeout.bind context for buff expiry
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-sports/SKILL.md
+# =============================================================================

@@ -31,3 +31,13 @@ func get_killer_rankings() -> Array:
 ## For true Battle Royale scale (100+ players), use 'Area Interest' 
 ## networking to only send kill-feed data to players whom it concerns, 
 ## unless it's a 'Major Event' like the top 10 players remaining.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html
+# - https://docs.godotengine.org/en/stable/classes/class_multiplayersynchronizer.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — local elimination event bus
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md — interest-scoped kill events
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-battle-royale/SKILL.md
+# =============================================================================

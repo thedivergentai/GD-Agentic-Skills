@@ -16,3 +16,14 @@ func transition_to(state_name: String) -> void:
 		current_state = next_state
 		current_state.enter()
 		state_changed.emit(state_name)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/scene_tree.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md — child-node states with enter/exit transitions
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — state_changed fans out to visuals/AI listeners
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md
+# =============================================================================

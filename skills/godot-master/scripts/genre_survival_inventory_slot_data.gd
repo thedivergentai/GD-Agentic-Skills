@@ -14,3 +14,14 @@ func can_stack_with(other_slot: InventorySlotData) -> bool:
 
 ## EXPERT USAGE:
 ## Used internally by InventoryData.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+# - https://docs.godotengine.org/en/stable/classes/class_resource.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — slot Resources for serialization
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md — stackable slot payloads
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-survival/SKILL.md
+# =============================================================================

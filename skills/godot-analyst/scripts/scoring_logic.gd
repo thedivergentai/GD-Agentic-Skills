@@ -29,3 +29,14 @@ static func audit_script_complexity(source_code: String) -> Dictionary:
 			results["multiline_complexity_warnings"] += 1
 			
 	return results
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_regex.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_styleguide.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — typed GDScript patterns audited by RegEx
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — line-level compliance after complexity flags
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+# =============================================================================

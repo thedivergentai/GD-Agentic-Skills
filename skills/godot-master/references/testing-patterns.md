@@ -1,6 +1,6 @@
 ---
 name: godot-testing-patterns
-description: "Expert blueprint for testing patterns using GUT (Godot Unit Test), integration tests, mock/stub patterns, async testing, and validation techniques. Covers assert patterns, signal testing, and CI/CD integration. Use when implementing tests OR validating game logic. Keywords GUT, unit test, integration test, assert, mock, stub, GutTest, watch_signals, TDD."
+description: "Expert testing decision trees for GdUnit4: unit vs scene vs CI gates, headless runners, snapshots, and mock networks. Use when choosing test layers, wiring CI, or validating signals/physics without beginner assert catalogs. Keywords: GdUnit4, GdUnitTestSuite, headless CI, snapshot test, mock network, scene integration test, TDD."
 ---
 
 ## Godot 4.7 Baseline
@@ -9,336 +9,131 @@ description: "Expert blueprint for testing patterns using GUT (Godot Unit Test),
 - Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
 - **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
 
-# Testing Patterns
+# Testing Patterns (GdUnit4)
 
-GUT framework, assertion patterns, mocking, and async testing define automated validation.
+**Framework: GdUnit4 only** (`extends GdUnitTestSuite`). Do not mix GUT `GutTest` / `watch_signals` APIs in new tests.
+
+## Decision Tree → Scripts
+
+| Need | Choice | Script (MANDATORY when chosen) |
+| :--- | :--- | :--- |
+| Pure logic / no tree | Unit | [basic_unit_test.gd](../scripts/testing_patterns_basic_unit_test.gd), [mock_dependency_test.gd](../scripts/testing_patterns_mock_dependency_test.gd), [test_data_factory.gd](../scripts/testing_patterns_test_data_factory.gd) |
+| Node interaction after instantiate | Scene integration | [scene_integration_test.gd](../scripts/testing_patterns_scene_integration_test.gd), [integration_test_base.gd](../scripts/testing_patterns_integration_test_base.gd) |
+| Signal contracts | Unit or scene | [signal_emission_test.gd](../scripts/testing_patterns_signal_emission_test.gd) |
+| Multi-frame / physics step | Async scene | [wait_for_frame_test.gd](../scripts/testing_patterns_wait_for_frame_test.gd), [physics_collision_test.gd](../scripts/testing_patterns_physics_collision_test.gd) |
+| Flaky physics / timing races | Frame step gate | **MANDATORY** [wait_for_frame_test.gd](../scripts/testing_patterns_wait_for_frame_test.gd) — never wall-clock sleep |
+| CI / no display | Headless gate | **MANDATORY** [headless_test_runner.gd](../scripts/testing_patterns_headless_test_runner.gd) |
+| Save/UI regression | Snapshot | **MANDATORY** [snapshot_tester.gd](../scripts/testing_patterns_snapshot_tester.gd) |
+| RPC without live peers | Mock network | **MANDATORY** [mock_network_provider.gd](../scripts/testing_patterns_mock_network_provider.gd) |
+| Perf budget in CI | Benchmark gate | [performance_benchmark_runner.gd](../scripts/testing_patterns_performance_benchmark_runner.gd) |
+| Orphans after suite | Leak detect | [memory_leak_detector.gd](../scripts/testing_patterns_memory_leak_detector.gd) |
+| Edge input space | Fuzz | [parameter_fuzz_tester.gd](../scripts/testing_patterns_parameter_fuzz_tester.gd) |
+
+**Do NOT Load** assert-catalog tutorials or manual gameplay checklists into context — pick a row, read the script, implement.
+
+## MANDATORY Triggers
+
+- **CI / `--headless`**: always read [headless_test_runner.gd](../scripts/testing_patterns_headless_test_runner.gd) first (`OS.exit_code`, GdUnit4 CLI: `godot --headless -s addons/gdUnit4/bin/GdUnitCmdTool.gd -a res://test`).
+- **State or visual golden files**: read [snapshot_tester.gd](../scripts/testing_patterns_snapshot_tester.gd) before writing JSON/image goldens. **Approve workflow:** first run saves reference; intentional UI change → delete or overwrite `res://tests/snapshots/<name>.png`, re-run to regenerate, commit new golden; never hand-edit PNG bytes.
+- **Any RPC / MultiplayerSynchronizer test**: read [mock_network_provider.gd](../scripts/testing_patterns_mock_network_provider.gd) before standing up real peers.
 
 ## Available Scripts
 
 ### [basic_unit_test.gd](../scripts/testing_patterns_basic_unit_test.gd)
-Minimal GdUnit4 test structure for verifying simple logic and arithmetic.
+Minimal GdUnit4 (`GdUnitTestSuite`) structure for pure logic.
 
 ### [signal_emission_test.gd](../scripts/testing_patterns_signal_emission_test.gd)
-Expert pattern for monitoring and verifying signal emissions in decoupled architectures.
+Signal emission monitoring for decoupled architectures.
 
 ### [mock_dependency_test.gd](../scripts/testing_patterns_mock_dependency_test.gd)
-Using Mocks and Doubles to isolate test subjects from external services or databases.
+Mocks/doubles to isolate external services.
 
-### [scene_integration_test.gd](../scripts/testing_patterns_scene_integration_test.gd)
-Full scene lifecycle testing, verifying node interactions after instantiation.
+### [scene_integration_test.gd](../scripts/testing_patterns_scene_integration_test.gd) / [integration_test_base.gd](../scripts/testing_patterns_integration_test_base.gd)
+Scene lifecycle + node interaction fixtures.
+
+### [headless_test_runner.gd](../scripts/testing_patterns_headless_test_runner.gd)
+CI headless orchestration and exit codes.
+
+### [snapshot_tester.gd](../scripts/testing_patterns_snapshot_tester.gd)
+Dictionary/UI golden snapshot comparison.
+
+### [mock_network_provider.gd](../scripts/testing_patterns_mock_network_provider.gd)
+Loopback / offline multiplayer peer for RPC tests.
 
 ### [performance_benchmark_runner.gd](../scripts/testing_patterns_performance_benchmark_runner.gd)
-High-precision execution time measurement using microsecond-scale timers.
+Microsecond timers + Performance monitor gates.
 
 ### [memory_leak_detector.gd](../scripts/testing_patterns_memory_leak_detector.gd)
-Automated orphan node detection to catch memory leaks during long-running tests.
+Orphan node detection across long suites.
 
 ### [parameter_fuzz_tester.gd](../scripts/testing_patterns_parameter_fuzz_tester.gd)
-Stress testing systems with randomized data ranges to catch edge-case crashes.
+Randomized ranges for edge crashes.
 
-### [wait_for_frame_test.gd](../scripts/testing_patterns_wait_for_frame_test.gd)
-Advanced async testing for logic that spans multiple frames or game ticks.
-
-### [physics_collision_test.gd](../scripts/testing_patterns_physics_collision_test.gd)
-Automated verification of physics layer interactions and collision resolution.
+### [wait_for_frame_test.gd](../scripts/testing_patterns_wait_for_frame_test.gd) / [physics_collision_test.gd](../scripts/testing_patterns_physics_collision_test.gd)
+Frame/physics-step async verification.
 
 ### [test_data_factory.gd](../scripts/testing_patterns_test_data_factory.gd)
-Centralized data generation patterns for clean, schemas-compliant test objects.
+Schema-compliant fixture builders.
 
-## NEVER Do in Testing
+## NEVER Do in Testing (GdUnit4)
 
-- **NEVER test implementation details** — `assert_eq(player._internal_state, 5)`? Private variables = brittle tests. Test PUBLIC behavior, not internals [20].
-- **NEVER share state between tests** — Test 1 modifies global variable, test 2 assumes clean state? Flaky tests. Use `before_each()` for fresh setup [21].
-- **NEVER use sleep() for timing** — `await get_tree().create_timer(1.0).timeout` in tests? Slow + unreliable. Use GUT's `wait_seconds()` OR manual frame stepping [22].
-- **NEVER skip cleanup in after_each()** — Test spawns 100 nodes, doesn't free? Memory leak + slow test suite. ALWAYS free nodes in `after_each()` [23].
-- **NEVER test randomness without seeding** — `randi()` in test = non-deterministic failure. Use `seed(12345)` for repeatable tests [24].
-- **NEVER forget to watch signals** — `assert_signal_emitted(obj, "died")` without `watch_signals`? Fails silently. MUST call `watch_signals(obj)` first [25].
-- **NEVER perform tests without an explicit "Definition of Done"** — Vague tests like `assert_true(true)` provide zero value. Every test should verify a specific requirement.
-- **NEVER rely on editor-only features for CI/CD tests** — Headless environments lack Viewports. Ensure tests are `headless`-compatible.
-- **NEVER ignore the cost of "Integration Tests"** — Testing a whole level is slow. Favor narrow Unit Tests for logic and small Scene Tests for interaction.
-- **NEVER hardcode file paths in tests** — Use `Path` constants or project-relative strings. If a resource directory moves, your suite shouldn't break.
-- **NEVER test third-party plugins** — Trust the library; test YOUR integration of it.
+- **NEVER test private implementation details** — Assert public behavior only.
+- **NEVER share mutable state between tests** — Fresh setup per test (`before_test` / equivalent).
+- **NEVER use wall-clock `sleep` / blind timers** — Prefer frame steppers from wait_for_frame patterns.
+- **NEVER skip cleanup** — Free instantiated nodes after each test.
+- **NEVER test randomness without seeding**.
+- **NEVER assert signals without the GdUnit signal assert/monitor helpers** from [signal_emission_test.gd](../scripts/testing_patterns_signal_emission_test.gd).
+- **NEVER mix GUT and GdUnit4 APIs** in one suite.
+- **NEVER rely on editor-only features for CI** — Headless-compatible tests only.
+- **NEVER default to full-level integration tests** — Prefer unit + small scene tests; escalate only when the decision tree says so.
+- **NEVER hardcode brittle absolute file paths** in fixtures.
+- **NEVER test third-party plugin internals** — Test your integration only.
 
----
+## Expert Gates (short)
 
-### Installation
-
-1. Download from AssetLib: "GUT - Godot Unit Test"
-2. Enable in Project Settings → Plugins
-3. Create `res://test/` directory
-
-### Basic Test
-
-```gdscript
-# test/test_player.gd
-extends GutTest
-
-var player: CharacterBody2D
-
-func before_each() -> void:
-    player = preload("res://entities/player/player.tscn").instantiate()
-    add_child(player)
-
-func after_each() -> void:
-    player.queue_free()
-
-func test_initial_health() -> void:
-    assert_eq(player.health, 100, "Player should start with 100 health")
-
-func test_take_damage() -> void:
-    player.take_damage(25)
-    assert_eq(player.health, 75, "Health should be 75 after 25 damage")
-
-func test_cannot_have_negative_health() -> void:
-    player.take_damage(200)
-    assert_gte(player.health, 0, "Health should not go below 0")
-```
-
-### Running Tests
-
-```gdscript
-# Via GUT panel in editor
-# Or command line:
-# godot --headless -s addons/gut/gut_cmdln.gd
-```
-
-## Assertion Patterns
-
-```gdscript
-# Equality
-assert_eq(actual, expected, "message")
-assert_ne(actual, not_expected, "message")
-
-# Comparison
-assert_gt(value, min_value, "should be greater")
-assert_lt(value, max_value, "should be less")
-assert_gte(value, min_value, "should be >= min")
-assert_lte(value, max_value, "should be <= max")
-
-# Boolean
-assert_true(condition, "should be true")
-assert_false(condition, "should be false")
-
-# Null
-assert_not_null(object, "should exist")
-assert_null(object, "should be null")
-
-# Arrays
-assert_has(array, element, "should contain element")
-assert_does_not_have(array, element, "should not contain")
-
-# Signals
-watch_signals(object)
-assert_signal_emitted(object, "signal_name")
-```
-
-## Testing Signals
-
-```gdscript
-func test_death_signal() -> void:
-    watch_signals(player)
-    
-    player.take_damage(100)
-    
-    assert_signal_emitted(player, "died")
-    assert_signal_emitted_with_parameters(player, "died", [player])
-```
-
-## Testing Async
-
-```gdscript
-func test_delayed_action() -> void:
-    player.start_ability()
-    
-    # Wait for timer
-    await wait_seconds(1.0)
-    
-    assert_true(player.ability_active, "Ability should be active after delay")
-```
-
-## Mock/Stub Patterns
-
-```gdscript
-# Double (mock) pattern
-func test_with_mock() -> void:
-    var mock_enemy := double(Enemy).new()
-    stub(mock_enemy, "get_damage").to_return(50)
-    
-    player.collide_with(mock_enemy)
-    
-    assert_eq(player.health, 50, "Should take mocked damage")
-```
-
-## Integration Testing
-
-```gdscript
-# test/test_combat_system.gd
-extends GutTest
-
-func test_player_kills_enemy() -> void:
-    var level := preload("res://levels/test_arena.tscn").instantiate()
-    add_child(level)
-    
-    var player := level.get_node("Player")
-    var enemy := level.get_node("Enemy")
-    
-    # Simulate combat
-    for i in range(5):
-        player.attack(enemy)
-        await wait_frames(1)
-    
-    assert_true(enemy.is_dead, "Enemy should be dead")
-    assert_gt(player.score, 0, "Player should have score")
-    
-    level.queue_free()
-```
-
-## Manual Testing Checklist
-
-```markdown
-## Gameplay
-- [ ] Player can move in all directions
-- [ ] Jump height feels right
-- [ ] Enemies respond to player
-- [ ] Damage numbers are correct
-
-## UI
-- [ ] All buttons work
-- [ ] Text is readable
-- [ ] Responsive on different resolutions
-
-## Audio
-- [ ] Music plays
-- [ ] SFX trigger correctly
-- [ ] Volume levels balanced
-
-## Performance
-- [ ] Maintains 60 FPS
-- [ ] No stuttering
-- [ ] Memory stable
-```
-
-## Validation Helpers
-
-```gdscript
-# validation.gd (for runtime checks)
-class_name Validation
-
-static func assert_valid_health(health: int) -> void:
-    assert(health >= 0 and health <= 100, "Invalid health: %d" % health)
-
-static func assert_valid_position(pos: Vector2, bounds: Rect2) -> void:
-    assert(bounds.has_point(pos), "Position out of bounds: %s" % pos)
-```
-
-## Test Organization
-
-```
-test/
-├── unit/
-│   ├── test_player.gd
-│   ├── test_enemy.gd
-│   └── test_inventory.gd
-├── integration/
-│   ├── test_combat.gd
-│   └── test_save_load.gd
-└── fixtures/
-    ├── test_level.tscn
-    └── mock_data.tres
-```
-
-## Best Practices
-
-### 1. Test Edge Cases
-
-```gdscript
-func test_edge_cases() -> void:
-    player.take_damage(0)  # Zero damage
-    assert_eq(player.health, 100)
-    
-    player.take_damage(-10)  # Negative (heal?)
-    assert_eq(player.health, 100)  # Should not change
-```
-
-### 2. Isolate Tests
-
-```gdscript
-# Each test should be independent
-func before_each() -> void:
-    # Fresh setup for each test
-    player = create_fresh_player()
-```
-
-### 3. Test Critical Paths First
-
-```
-Priority:
-1. Core gameplay (movement, combat)
-2. Save/load system
-3. Level transitions
-4. UI interactions
-```
-
-## Expert Testing Patterns
-
-### 1. State-Snapshot-Testing (Data Regression)
-Verifying that complex game states (Inventory, Quests, Stats) remain consistent across versions.
-- **Implementation**: Serialize the target node's state into a `Dictionary`, then compare against a "Golden JSON" reference.
-    ```gdscript
-    func test_inventory_snapshot() -> void:
-        var current_state = inventory.serialize() # Returns Dictionary
-        var reference = load_json("res://tests/goldens/inventory_v1.json")
-        assert_eq(current_state, reference, "State drifted from golden reference")
-    ```
-- **Expert Note**: Use `JSON.stringify(dict, "\t")` to save snapshots with human-readable indentation for easy git diffing.
-
-### 2. Snapshot-Testing-UI (Visual Regression)
-Verifying that UI layouts remain pixel-perfect across updates.
-- **Capture**: Await `RenderingServer.frame_post_draw`, then capture the viewport's `Image`.
-- **Comparison**: Compare the raw byte data of the current image against a "golden" reference image stored in `res://tests/snapshots/`.
-
-### 2. Headless-CLI-CI (Automated Pipelines)
-Running the test suite in non-GUI environments like GitHub Actions.
-- **Flags**: Use the `--headless` engine flag to skip display server initialization.
-- **Scripted Execution**: Use `-s` to run a master test orchestrator script.
-- **Exit Codes**: Explicitly call `SceneTree.quit(0)` for success and `quit(1)` for failures. CI runners use these codes to determine pipeline pass/fail status.
-
-### 3. Fuzz-Testing-Input (Stress Analysis)
-Generating randomized inputs to catch edge-case crashes in input handlers.
-- **Implementation**: Create randomized `InputEvent` objects and inject them via `Input.parse_input_event()`.
-    ```gdscript
-    func fuzz_inputs(iterations: int = 100):
-        for i in iterations:
-            var event = InputEventKey.new()
-            event.keycode = randi_range(KEY_A, KEY_Z)
-            event.pressed = true
-            Input.parse_input_event(event)
-    ```
-- **Benefit**: Discovers unhandled null-refs or state-machine illegal transitions that manual testing misses.
-
-### 4. CI/CD-Performance-Gate (Automated Audit)
-Automatically failing builds that regress in performance metrics.
-- **Metric Tracking**: Use `Performance.get_monitor(Performance.TIME_PROCESS)` and `Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME`.
-- **Implementation**:
-    ```gdscript
-    func test_performance_bench() -> void:
-        # Run heavy gameplay simulation for 100 frames
-        await wait_frames(100)
-        var avg_draw_calls = _get_average_draw_calls()
-        assert_lt(avg_draw_calls, 500, "Draw calls exceeded budget!")
-    ```
-- **Expert Note**: Combined with `--headless`, this ensures that architectural "slop" (like material duplication) blocks the merge.
-
-### 5. Mock-Network-Provider (Local Multiplayer Testing)
-Testing RPC logic and replication without requiring a live server or second client.
-- **Implementation**: Create a `MockPeer` class that inherits from `OfflineMultiplayerPeer` or `SceneMultiplayer`.
-- **Pattern**: Override `send_packet` to redirect messages directly to the local `multiplayer.on_packet_received` signal, simulating "Loopback" networking.
-- **Benefit**: Allows unit testing of `_rpc` methods and `MultiplayerSynchronizer` state in isolation.
+- **Snapshot**: serialize → compare golden ([snapshot_tester.gd](../scripts/testing_patterns_snapshot_tester.gd)); regenerate reference PNG on approved visual changes.
+- **CI**: `--headless` + `OS.exit_code` non-zero on failure ([headless_test_runner.gd](../scripts/testing_patterns_headless_test_runner.gd)).
+- **Network**: mock peer before real ENet (`mock_network_provider.gd`).
+- **Perf**: `Performance` monitors / draw-call caps in benchmark runner.
 
 ## Reference
-- [GUT Documentation](https://github.com/bitwes/Gut)
 
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
 
-### Related
-- Master Skill: [godot-master](../SKILL.md)
-- Related: Seeded headless gameplay sims calibrate [godot-monte-carlo-balancer](../SKILL.md) Phase 7 golden cells.
+### Official Documentation
+- [Command line tutorial](https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html) — `--headless`, `-s`, and exit-code patterns for CI test runners.
+- [Overview of debugging tools](https://docs.godotengine.org/en/stable/tutorials/scripting/debug/overview_of_debugging_tools.html) — debugger, profiler, and remote inspect when a failing test needs engine-side diagnosis.
+- [Custom performance monitors](https://docs.godotengine.org/en/stable/tutorials/scripting/debug/custom_performance_monitors.html) — `Performance` monitors and custom metrics for benchmark gates and orphan detection.
+- [Idle and physics processing](https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html) — frame/`_physics_process` timing that `wait_frames` / yield helpers must respect.
+- [Using SceneTree](https://docs.godotengine.org/en/stable/tutorials/scripting/scene_tree.html) — tree lifecycle, `quit()`, and process modes used by headless orchestrators.
+- [Nodes and scene instances](https://docs.godotengine.org/en/stable/tutorials/scripting/nodes_and_scene_instances.html) — instantiate/add_child/free hygiene for scene integration tests.
+- [Instancing with signals](https://docs.godotengine.org/en/stable/tutorials/scripting/instancing_with_signals.html) — signal wiring patterns that signal-emission tests verify.
+- [High-level multiplayer](https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html) — RPC/peer APIs mocked via OfflineMultiplayerPeer or latency simulators.
+- [Using InputEvent](https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html) — synthetic `InputEvent*` injection for fuzz and UI interaction tests.
+- [Random number generation](https://docs.godotengine.org/en/stable/tutorials/math/random_number_generation.html) — seeding for deterministic fuzz and Monte Carlo harnesses.
+- [Saving games](https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html) — serialize/deserialize patterns behind golden JSON and save/load integration tests.
+- [Physics introduction](https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html) — layers/masks and step timing for collision integration tests.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — project layout, scenes, and resources before standing up a `res://test/` suite.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed GDScript, `await`, and assert idioms used in every unit/integration test.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — emit/connect contracts that `watch_signals` / signal monitors assert against.
+
+#### Complements
+- [godot-debugging-profiling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md) — profiler and ObjectDB tools when a red test needs runtime evidence, not another assert.
+- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — scene packing/load patterns mirrored in scene integration fixtures.
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — action maps and event parsing exercised by fuzz and UI press tests.
+- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — layer matrices and body APIs that physics collision tests must keep green.
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Resource schemas that test data factories and snapshot dictionaries serialize.
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — persistence pipelines covered by save/load integration and golden-state tests.
+
+#### Downstream / consumers
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — seeded headless gameplay sims that reuse these harnesses for Phase 7 golden cells.
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — budgets that CI performance gates (`Performance` monitors, draw-call caps) enforce.
+- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — RPC/replication logic validated through mock peers and lag injection.
+- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — headless export/CI pipelines that invoke the same `--headless` test entrypoints.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.

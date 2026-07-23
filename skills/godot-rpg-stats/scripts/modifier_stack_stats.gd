@@ -49,3 +49,13 @@ func get_stat(stat_name: String) -> float:
 ## whenever a parent stat is modified.
 ## NEVER allow direct modification of 'max_health' variable; 
 ## always use the 'add_modifier' protocol to prevent 'Value Leakage'.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+# - https://docs.godotengine.org/en/stable/classes/class_dictionary.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — per-stat stat_changed fan-out
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — read get_stat during damage pipeline
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md
+# =============================================================================

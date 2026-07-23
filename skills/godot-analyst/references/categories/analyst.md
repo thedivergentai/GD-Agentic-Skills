@@ -14,3 +14,13 @@ Evaluating the evaluator. High marks for self-correction and deep reasoning.
 
 ---
 *Analyst & Auditor update v0.0.7*
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/classes/class_performance.html
+- https://docs.godotengine.org/en/stable/classes/class_resourceloader.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

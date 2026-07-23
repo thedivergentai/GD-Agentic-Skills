@@ -36,3 +36,16 @@ func _has_line_of_sight(target: Node3D) -> bool:
 
 ## [SKILL NOTICE]: Use 'intersect_ray' instead of multiple RayCast3D 
 ## nodes for dynamic, high-performance line-of-sight checks.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html
+# - https://docs.godotengine.org/en/stable/classes/class_physicsdirectspacestate3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_physicsrayqueryparameters3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md — dot-product FOV then intersect_ray confirmation
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — collider identity checks on ray results
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — FOV/view_distance/detection_speed knobs
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-stealth/SKILL.md
+# =============================================================================

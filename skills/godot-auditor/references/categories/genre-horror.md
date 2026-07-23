@@ -20,3 +20,14 @@
 - NEVER rely on AnimationPlayer for random flickering; use `Tween` for programmatic, clean energy manipulation.
 - NEVER load heavy scare scenes or 4K textures synchronously via `load()`; strictly use `ResourceLoader.load_threaded_request()` to prevent frame stalls.
 - NEVER scale CollisionShape3D non-uniformly; strictly adjust internal shape resource parameters (radius, height) to prevent erratic physics.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-horror/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — simulate balance impact of structural fixes
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

@@ -21,3 +21,13 @@ func save_game(save_name: String = "puzzle_save.json") -> void:
     var file := FileAccess.open(path, FileAccess.WRITE)
     if file:
         file.store_line(JSON.stringify(save_dict))
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html
+# - https://docs.godotengine.org/en/stable/classes/class_json.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/runtime_file_loading_and_saving.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — versioned progress beyond one-off board JSON
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-puzzle/SKILL.md
+# =============================================================================

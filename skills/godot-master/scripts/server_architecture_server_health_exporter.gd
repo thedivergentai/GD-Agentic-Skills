@@ -50,3 +50,15 @@ func _get_enet_bandwidth_in() -> float:
 
 func _get_enet_bandwidth_out() -> float:
 	return 0.0
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_performance.html
+# - https://docs.godotengine.org/en/stable/classes/class_displayserver.html
+# - https://docs.godotengine.org/en/stable/classes/class_enetmultiplayerpeer.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — Performance monitors and headless telemetry habits
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — act on FPS/memory/orphan signals from exporters
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-server-architecture/SKILL.md
+# =============================================================================

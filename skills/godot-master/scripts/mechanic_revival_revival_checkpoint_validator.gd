@@ -14,3 +14,14 @@ func _on_area_entered(area: Area3D) -> void:
 			RevivalGlobalManager.set_active_checkpoint(global_position, checkpoint_id, progress_index)
 
 ## Rule: Always use a 'Progress Index' to prevent backtracking from overriding endgame checkpoints.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_area3d.html — shrine Area3D progress gate
+# - https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html — layer/mask filtering for player enter
+# - https://docs.godotengine.org/en/stable/classes/class_marker3d.html — place checkpoints as scene Markers, not hardcoded coords
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — checkpoint activate events
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md — progress-index shrines in ARPG loops
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-mechanic-revival/SKILL.md
+# =============================================================================

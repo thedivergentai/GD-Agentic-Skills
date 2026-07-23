@@ -33,3 +33,13 @@ func generate() -> void:
 
 ## [SKILL NOTICE]: Use 'AStarGrid2D' to validate connectivity in noise-based 
 ## dungeons. It is highly optimized for 2D grids and corridor carving.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_fastnoiselite.html
+# - https://docs.godotengine.org/en/stable/classes/class_astargrid2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md — noise caves + connectivity repair
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md — AStarGrid2D corridor carving
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md
+# =============================================================================

@@ -17,44 +17,62 @@ Expert guidance for porting desktop games to mobile platforms.
 
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 ## Godot 4.7: Desktop→Mobile
 
 - Use built-in **virtual joystick** instead of third-party touch plugins where possible.
 
 ## Available Scripts
 
-> **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
+> **MANDATORY**: Read the appropriate script before implementing the corresponding pattern. Do not paste joystick/gesture/UI tutorials inline.
 
 ### [dynamic_joystick_spawner.gd](scripts/dynamic_joystick_spawner.gd)
-Expert Dynamic Virtual Joystick that appears exactly where the user touches the left half of the screen instead of relying on fixed UI positions.
+**MANDATORY for move sticks** — Joystick appears where the user touches the left half (prefer over fixed-position recipes).
 
-### [resolution_scaler.gd](scripts/resolution_scaler.gd)
-Adaptive Viewport scaler that dynamically drops the `scaling_3d_scale` to maintain 60FPS on weak GPUs while keeping the 2D UI perfectly sharp.
+### [virtual_joystick.gd](scripts/virtual_joystick.gd)
+Fixed-base stick Control — use when UI art requires a static well; otherwise prefer dynamic_joystick_spawner.
 
 ### [gesture_combo_system.gd](scripts/gesture_combo_system.gd)
-Advanced touch gesture recognizer tracking duration, distance, and multi-touch ratios to output precise swipe and pinch-to-zoom signals.
+**MANDATORY for swipe/pinch** — Duration/distance/multi-touch ratio → signals.
+
+### [mobile_ui_adapter.gd](scripts/mobile_ui_adapter.gd)
+**MANDATORY for Control remaps** — Scales/reanchors desktop HUD for thumb reach + density.
+
+### [resolution_scaler.gd](scripts/resolution_scaler.gd)
+Adaptive `scaling_3d_scale` to hold 60FPS while keeping 2D UI sharp.
 
 ### [battery_saver_mode.gd](scripts/battery_saver_mode.gd)
-Crucial lifecycle manager that hooks `NOTIFICATION_APPLICATION_PAUSED` to instantly lock `Engine.max_fps = 1` and pause physics to prevent the OS from killing the app due to background battery drain.
+**MANDATORY** — `NOTIFICATION_APPLICATION_PAUSED` → `Engine.max_fps = 1` + pause physics.
 
 ### [ui_safe_area_margins.gd](scripts/ui_safe_area_margins.gd)
-Dynamic MarginContainer script querying `DisplayServer.get_display_safe_area()` to automatically pad UI elements around iPhone notches and Android hole-punch cameras.
+`DisplayServer.get_display_safe_area()` padding for notches / hole-punch.
 
 ### [touch_camera_pan_zoom.gd](scripts/touch_camera_pan_zoom.gd)
-Smooth Camera2D controller combining 1-finger relative panning and 2-finger distance-ratio pinch zooming simultaneously.
+1-finger pan + 2-finger pinch Camera2D.
 
 ### [haptic_feedback_manager.gd](scripts/haptic_feedback_manager.gd)
-Centralized singleton triggering `Input.vibrate_handheld` for Android, and demonstrating the hook pattern for iOS native haptic plugins.
+`Input.vibrate_handheld` + iOS plugin hook pattern.
 
 ### [mobile_shader_fallback.gd](scripts/mobile_shader_fallback.gd)
-SceneTree crawler that strips expensive sub-surface scattering, clearcoats, and dynamic shading from `StandardMaterial3D` on weak mobile renderers.
+Strip SSS/clearcoat/heavy shading on weak mobile renderers.
 
 ### [on_screen_keyboard_handler.gd](scripts/on_screen_keyboard_handler.gd)
-Listens to `DisplayServer.virtual_keyboard_update` to tween the entire UI upward, preventing the OS keyboard from occluding LineEdits.
+Virtual keyboard occlusion → tween UI up. **Use for LineEdit/TextEdit focus** — not a substitute for HUD scaling.
+
+### [mobile_ui_adapter.gd](scripts/mobile_ui_adapter.gd) vs on_screen_keyboard_handler
+
+| Need | Script |
+|------|--------|
+| Scale/reanchor HUD, spawn virtual sticks, thumb-reach density | **mobile_ui_adapter** |
+| OS virtual keyboard covers focused text field | **on_screen_keyboard_handler** (often both: adapter for layout, OSK handler for text fields) |
 
 ### [offline_save_sync.gd](scripts/offline_save_sync.gd)
-Memory-based save dictionary that bypasses `NOTIFICATION_WM_CLOSE_REQUEST` (which fails on mobile kill) and guarantees encrypted disk writes during the App Pause lifecycle.
-
+**MANDATORY** — Persist on App Pause (WM_CLOSE is unreliable on mobile kill).
 
 ---
 
@@ -62,454 +80,80 @@ Memory-based save dictionary that bypasses `NOTIFICATION_WM_CLOSE_REQUEST` (whic
 
 ### Decision Matrix
 
-| Genre | Recommended Control | Example |
-|-------|-------------------|---------|
-| Platformer | Virtual joystick (left) + jump button (right) | Super Mario Run |
-| Top-down shooter | Dual-stick (move left, aim right) | Brawl Stars |
-| Turn-based | Direct tap on units/tiles | Into the Breach |
-| Puzzle | Tap, swipe, pinch gestures | Candy Crush |
-| Card game | Drag-and-drop | Hearthstone |
-| Racing | Tilt steering or tap left/right | Asphalt 9 |
-
-### Virtual Joystick
-
-```gdscript
-# virtual_joystick.gd
-extends Control
-
-signal direction_changed(direction: Vector2)
-
-@export var dead_zone: float = 0.2
-@export var max_distance: float = 100.0
-
-var stick_center: Vector2
-var is_pressed: bool = false
-var touch_index: int = -1
-
-@onready var base: Sprite2D = $Base
-@onready var knob: Sprite2D = $Knob
-
-func _ready() -> void:
-    stick_center = base.position
-
-func _input(event: InputEvent) -> void:
-    if event is InputEventScreenTouch:
-        if event.pressed and is_point_inside(event.position):
-            is_pressed = true
-            touch_index = event.index
-        elif not event.pressed and event.index == touch_index:
-            is_pressed = false
-            reset_knob()
-    
-    elif event is InputEventScreenDrag and event.index == touch_index:
-        update_knob(event.position)
-
-func is_point_inside(point: Vector2) -> bool:
-    return base.get_rect().has_point(base.to_local(point))
-
-func update_knob(touch_pos: Vector2) -> void:
-    var local_pos := to_local(touch_pos)
-    var offset := local_pos - stick_center
-    
-    # Clamp to max distance
-    if offset.length() > max_distance:
-        offset = offset.normalized() * max_distance
-    
-    knob.position = stick_center + offset
-    
-    # Calculate direction (-1 to 1)
-    var direction := offset / max_distance
-    if direction.length() < dead_zone:
-        direction = Vector2.ZERO
-    
-    direction_changed.emit(direction)
-
-func reset_knob() -> void:
-    knob.position = stick_center
-    direction_changed.emit(Vector2.ZERO)
-```
-
-### Gesture Detection
-
-```gdscript
-# gesture_detector.gd
-extends Node
-
-signal swipe_detected(direction: Vector2)  # Normalized
-signal pinch_detected(scale: float)  # > 1.0 = zoom in
-signal tap_detected(position: Vector2)
-
-const SWIPE_THRESHOLD := 100.0  # Pixels
-const TAP_MAX_DISTANCE := 20.0
-const TAP_MAX_DURATION := 0.3  # Seconds
-
-var touch_start: Dictionary = {}  # index → {position: Vector2, time: float}
-var pinch_start_distance: float = 0.0
-
-func _input(event: InputEvent) -> void:
-    if event is InputEventScreenTouch:
-        if event.pressed:
-            touch_start[event.index] = {
-                "position": event.position,
-                "time": Time.get_ticks_msec() * 0.001
-            }
-        else:
-            _handle_release(event)
-    
-    elif event is InputEventScreenDrag:
-        _handle_drag(event)
-
-func _handle_release(event: InputEventScreenTouch) -> void:
-    if event.index not in touch_start:
-        return
-    
-    var start_data = touch_start[event.index]
-    var distance := event.position.distance_to(start_data.position)
-    var duration := (Time.get_ticks_msec() * 0.001) - start_data.time
-    
-    # Tap detection
-    if distance < TAP_MAX_DISTANCE and duration < TAP_MAX_DURATION:
-        tap_detected.emit(event.position)
-    
-    # Swipe detection
-    elif distance > SWIPE_THRESHOLD:
-        var direction := (event.position - start_data.position).normalized()
-        swipe_detected.emit(direction)
-    
-    touch_start.erase(event.index)
-
-func _handle_drag(event: InputEventScreenDrag) -> void:
-    # Pinch detection (requires 2 touches)
-    if touch_start.size() == 2:
-        var positions := []
-        for idx in touch_start.keys():
-            if idx == event.index:
-                positions.append(event.position)
-            else:
-                positions.append(touch_start[idx].position)
-        
-        var current_distance := positions[0].distance_to(positions[1])
-        
-        if pinch_start_distance == 0.0:
-            pinch_start_distance = current_distance
-        else:
-            var scale := current_distance / pinch_start_distance
-            pinch_detected.emit(scale)
-            pinch_start_distance = current_distance
-```
-
----
-
-## UI Scaling
-
-### Responsive Layout
-
-```gdscript
-# Adjust UI for different screen sizes
-extends Control
-
-func _ready() -> void:
-    get_viewport().size_changed.connect(_on_viewport_resized)
-    _on_viewport_resized()
-
-func _on_viewport_resized() -> void:
-    var viewport_size := get_viewport_rect().size
-    var aspect_ratio := viewport_size.x / viewport_size.y
-    
-    # Adjust for different aspect ratios
-    if aspect_ratio > 2.0:  # Ultra-wide (tablets in landscape)
-        scale_ui_for_tablet()
-    elif aspect_ratio < 0.6:  # Tall (phones in portrait)
-        scale_ui_for_phone()
-    
-    # Adjust touch button sizes
-    for button in get_tree().get_nodes_in_group("touch_buttons"):
-        var min_size := 88  # 44pt * 2 for Retina
-        button.custom_minimum_size = Vector2(min_size, min_size)
-
-func scale_ui_for_tablet() -> void:
-    # Spread UI to edges, use horizontal space
-    $LeftControls.position.x = 100
-    $RightControls.position.x = get_viewport_rect().size.x - 100
-
-func scale_ui_for_phone() -> void:
-    # Keep  UI at bottom, vertically compact
-    $LeftControls.position.y = get_viewport_rect().size.y - 200
-    $RightControls.position.y = get_viewport_rect().size.y - 200
-```
-
----
-
-## Performance Optimization
-
-### Mobile-Specific Settings
-
-```gdscript
-# project.godot or autoload
-extends Node
-
-func _ready() -> void:
-    if OS.get_name() in ["Android", "iOS"]:
-        apply_mobile_optimizations()
-
-func apply_mobile_optimizations() -> void:
-    # Reduce rendering quality
-    get_viewport().msaa_2d = Viewport.MSAA_DISABLED
-    get_viewport().msaa_3d = Viewport.MSAA_DISABLED
-    get_viewport().screen_space_aa = Viewport.SCREEN_SPACE_AA_DISABLED
-    
-    # Lower shadow quality
-    RenderingServer.directional_shadow_atlas_set_size(2048, false)  # Down from 4096
-    
-    # Reduce particle counts
-    for particle in get_tree().get_nodes_in_group("godot-particles"):
-        if particle is GPUParticles2D:
-            particle.amount = max(10, particle.amount / 2)
-    
-    # Lower physics tick rate
-    Engine.physics_ticks_per_second = 30  # Down from 60
-    
-    # Disable expensive effects
-    var env := get_viewport().world_3d.environment
-    if env:
-        env.glow_enabled = false
-        env.ssao_enabled = false
-        env.ssr_enabled = false
-```
-
-### Adaptive Performance
-
-```gdscript
-# Dynamically adjust quality based on FPS
-extends Node
-
-@export var target_fps: int = 60
-@export var check_interval: float = 2.0
-
-var timer: float = 0.0
-var quality_level: int = 2  # 0=low, 1=med, 2=high
-
-func _process(delta: float) -> void:
-    timer += delta
-    if timer >= check_interval:
-        var current_fps := Engine.get_frames_per_second()
-        
-        if current_fps < target_fps - 10 and quality_level > 0:
-            quality_level -= 1
-            apply_quality(quality_level)
-        elif current_fps > target_fps + 5 and quality_level < 2:
-            quality_level += 1
-            apply_quality(quality_level)
-        
-        timer = 0.0
-
-func apply_quality(level: int) -> void:
-    match level:
-        0:  # Low
-            get_viewport().scaling_3d_scale = 0.5
-        1:  # Medium
-            get_viewport().scaling_3d_scale = 0.75
-        2:  # High
-            get_viewport().scaling_3d_scale = 1.0
-```
-
----
-
-## Battery Life Management
-
-### Background Behavior
-
-```gdscript
-#  mobile_lifecycle.gd
-extends Node
-
-func _ready() -> void:
-    get_tree().on_request_permissions_result.connect(_on_permissions_result)
-
-func _notification(what: int) -> void:
-    match what:
-        NOTIFICATION_APPLICATION_PAUSED:
-            _on_app_backgrounded()
-        NOTIFICATION_APPLICATION_RESUMED:
-            _on_app_foregrounded()
-
-func _on_app_backgrounded() -> void:
-    # Reduce FPS drastically
-    Engine.max_fps = 5
-    
-    # Pause physics
-    get_tree().paused = true
-    
-    # Stop audio
-    AudioServer.set_bus_mute(AudioServer.get_bus_index("Master"), true)
-
-func _on_app_foregrounded() -> void:
-    # Restore FPS
-    Engine.max_fps = 60
-    
-    # Resume
-    get_tree().paused = false
-    AudioServer.set_bus_mute(AudioServer.get_bus_index("Master"), false)
-```
-
----
-
-## Platform-Specific Features
-
-### Safe Area Insets (iPhone Notch)
-
-```gdscript
-# Handle notch/status bar
-func _ready() -> void:
-    if OS.get_name() == "iOS":
-        var safe_area := DisplayServer.get_display_safe_area()
-        var viewport_size := get_viewport_rect().size
-        
-        # Adjust UI margins
-        $TopBar.position.y = safe_area.position.y
-        $BottomControls.position.y = viewport_size.y - safe_area.end.y - 100
-```
-
-### Vibration Feedback
-
-```gdscript
-func trigger_haptic(intensity: float) -> void:
-    if OS.has_feature("mobile"):
-        # Android
-        if OS.get_name() == "Android":
-            var duration_ms := int(intensity * 100)
-            OS.vibrate_handheld(duration_ms)
-        
-        # iOS (requires plugin)
-        # Use third-party plugin for iOS haptics
-```
-
----
-
-## Input Remapping
-
-### Mouse → Touch Conversion
-
-```gdscript
-# Desktop mouse input
-func _input(event: InputEvent) -> void:
-    if event is InputEventMouseButton and event.pressed:
-        _on_click(event.position)
-
-# ⬇️ Convert to touch:
-
-func _input(event: InputEvent) -> void:
-    # Support both mouse (desktop testing) and touch
-    if event is InputEventMouseButton and event.pressed:
-        _on_click(event.position)
-    elif event is InputEventScreenTouch and event.pressed:
-        _on_click(event.position)
-
-func _on_click(position: Vector2) -> void:
-    # Handle click/tap
-    pass
-```
-
----
-
-## Edge Cases
-
-### Keyboard Popup Blocking UI
-
-```gdscript
-# Problem: Virtual keyboard covers text input
-# Solution: Detect keyboard, scroll UI up
-
-func _on_text_edit_focus_entered() -> void:
-    if OS.has_feature("mobile"):
-        # Keyboard height varies; estimate 300px
-        var keyboard_offset := 300
-        $UI.position.y -= keyboard_offset
-
-func _on_text_edit_focus_exited() -> void:
-    $UI.position.y = 0
-```
-
-### Accidental Touch Inputs
-
-```gdscript
-# Problem: Palm resting on screen triggers inputs
-# Solution: Ignore touches near screen edges
-
-func is_valid_touch(position: Vector2) -> bool:
-    var viewport_size := get_viewport_rect().size
-    var edge_margin := 50.0
-    
-    return (position.x > edge_margin and
-            position.x < viewport_size.x - edge_margin and
-            position.y > edge_margin and
-            position.y < viewport_size.y - edge_margin)
-```
-
----
-
-## Testing Checklist
-
-- [ ] Touch controls work with fat fingers (test on real device)
-- [ ] UI doesn't block gameplay-critical elements
-- [ ] Game pauses when app goes to background
-- [ ] Performance is 60 FPS on target device (iPhone 12, Galaxy S21)
-- [ ] Battery drain is < 10% per hour
-- [ ] Safe area respected (notch, status bar)
-- [ ] Works in both portrait and landscape
-- [ ] Text is readable on smallest target device (iPhone SE)
-
-## Expert Techniques & Optimizations
-
-### 1. Unified IAP Manager (iOS & Android)
-Mobile In-App Purchases (IAP) rely on platform-specific singletons (`GodotGooglePlayBilling` for Android and `InAppStore` for iOS). Use feature tags to abstract these behind a unified interface.
-
-```gdscript
-class_name IAPManager extends Node
-
-var android_billing: Object
-var ios_store: Object
-
-func _ready() -> void:
-    if OS.has_feature("android") and Engine.has_singleton("GodotGooglePlayBilling"):
-        android_billing = Engine.get_singleton("GodotGooglePlayBilling")
-        android_billing.start_connection()
-    elif OS.has_feature("ios") and Engine.has_singleton("InAppStore"):
-        ios_store = Engine.get_singleton("InAppStore")
-        ios_store.set_auto_finish_transaction(true)
-
-func purchase_product(id: String) -> void:
-    if android_billing:
-        android_billing.purchase(id)
-    elif ios_store:
-        ios_store.purchase({ "product_id": id })
-```
-
-### 2. App Store Asset Pipeline (Screenshot Automation)
-Generating store screenshots across multiple resolutions is tedious. Automate this by capturing the viewport texture after the frame is drawn.
-
-```gdscript
-func capture_screenshot(filename: String) -> void:
-    # Wait for the frame to finish rendering
-    await RenderingServer.frame_post_draw
-    
-    var img: Image = get_viewport().get_texture().get_image()
-    var path := "user://screenshots/%s.png" % filename
-    img.save_png(path)
-    print("Screenshot saved to: ", path)
-```
-
-### 3. Mobile Debug Overlay (Memory Monitoring)
-Mobile devices have strict memory limits. Use `OS.get_memory_info()` to monitor physical and available memory in real-time.
-
-```gdscript
-func _process(_delta: float) -> void:
-    var mem: Dictionary = OS.get_memory_info()
-    var physical_mb := float(mem.get("physical", 0)) / 1048576.0
-    var available_mb := float(mem.get("available", 0)) / 1048576.0
-    
-    $DebugLabel.text = "Mem: %.2f / %.2f MB" % [available_mb, physical_mb]
-```
+| Genre | Recommended Control | Script |
+|-------|-------------------|--------|
+| Platformer | Virtual joystick (left) + jump button (right) | dynamic_joystick_spawner / virtual_joystick |
+| Top-down shooter | Dual-stick (move left, aim right) | dynamic_joystick_spawner ×2 |
+| Turn-based | Direct tap on units/tiles | gesture_combo_system (tap) |
+| Puzzle | Tap, swipe, pinch | gesture_combo_system |
+| Card game | Drag-and-drop | mobile_ui_adapter + drag Controls |
+| Racing | Tilt or tap left/right | platform-mobile / Input sensors |
+
+### Port Procedure (ordered)
+
+1. **MANDATORY** [mobile-port-checklist.md](references/mobile-port-checklist.md) — confirm pre-port inventory and gate rows before remapping controls.
+2. Replace hover/right-click/scroll with touch equivalents (decision matrix).
+3. **MANDATORY** safe-area + mobile_ui_adapter for 44–48dp targets; keep critical HUD above fingers.
+4. Hook battery_saver_mode + offline_save_sync on pause/resume.
+5. Enable resolution_scaler + mobile_shader_fallback until device FPS is stable.
+6. Deep Android/iOS IAP/permissions → godot-platform-mobile (Do NOT Load full platform skill until control/UI/perf gates pass).
+
+## Edge Cases (checklist)
+
+- Multi-touch index conflicts on dual sticks
+- OSK covering LineEdit (on_screen_keyboard_handler)
+- Background kill without save (offline_save_sync)
+- Notch clipping (ui_safe_area_margins)
+
+## Deep Recipes
+
+> **MANDATORY** when porting beyond the decision matrix: read [mobile-port-deep.md](references/mobile-port-deep.md). **Do NOT Load** it for a first-pass control remap.
+
+## Expert Techniques (short)
+
+- Capture store screenshots via `await RenderingServer.frame_post_draw` + viewport image.
+- Debug overlay: `OS.get_memory_info()` — do not spam heavy allocs while monitoring.
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+
+> Progressive disclosure: open Official Documentation links only when researching a specific API;
+> load Related Skills when routing work to a peer domain — do not preload the whole lattice.
+
+### Official Documentation
+- [Using InputEvent](https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html) — Event pipeline and why `InputEventScreenTouch` / `InputEventScreenDrag` replace hover/mouse-motion assumptions on mobile.
+- [Mouse and input coordinates](https://docs.godotengine.org/en/stable/tutorials/inputs/mouse_and_input_coordinates.html) — Viewport vs canvas transforms so touch positions land on the same UI/game space as desktop mouse tests.
+- [Input examples](https://docs.godotengine.org/en/stable/tutorials/inputs/input_examples.html) — Practical multi-touch and drag patterns that map to virtual joysticks, swipes, and pinch gestures.
+- [Multiple resolutions](https://docs.godotengine.org/en/stable/tutorials/rendering/multiple_resolutions.html) — Stretch modes, aspect, and content scale so phone/tablet layouts keep touch targets readable.
+- [Resolution scaling](https://docs.godotengine.org/en/stable/tutorials/3d/resolution_scaling.html) — `scaling_3d_scale` / FSR tradeoffs used by adaptive quality when mobile GPUs miss frame budget.
+- [Introduction to the 3 rendering methods](https://docs.godotengine.org/en/stable/tutorials/rendering/renderers.html) — Why ports should prefer **Mobile** or **Compatibility** over Forward+ for fill-rate and feature set.
+- [Handling quit requests](https://docs.godotengine.org/en/stable/tutorials/inputs/handling_quit_requests.html) — `NOTIFICATION_APPLICATION_PAUSED` / resume lifecycle that mobile OSes use instead of reliable window-close saves.
+- [DisplayServer](https://docs.godotengine.org/en/stable/classes/class_displayserver.html) — `get_display_safe_area()`, virtual keyboard APIs, and screen metrics behind notches and OSK occlusion.
+- [Using Containers](https://docs.godotengine.org/en/stable/tutorials/ui/gui_containers.html) — Margin/Box/Grid container contracts for safe-area padding and large touch targets.
+- [TouchScreenButton](https://docs.godotengine.org/en/stable/classes/class_touchscreenbutton.html) — Built-in on-screen buttons that emit Input actions without custom hit-testing.
+- [Exporting for Android](https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_android.html) — Permissions, APK/AAB, and device testing gates after the control/UI port is ready.
+- [Exporting for iOS](https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_ios.html) — Xcode export, capabilities, and App Store constraints that catch desktop leftovers late.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Shared InputEvent buffering, deadzones, and multi-touch gesture foundations before building virtual joysticks or swipe combos.
+- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Anchors, containers, and minimum sizes so 44–48px touch targets and safe-area margins stay layout-correct.
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Feature tags (`mobile`/`android`/`ios`), display stretch, and renderer defaults that every port branch depends on.
+
+#### Complements
+- [godot-platform-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md) — Deeper Android/iOS platform APIs (permissions, IAP, thermal) once the desktop→touch control remap is in place.
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Profiling and CPU/GPU cuts when adaptive `scaling_3d_scale` and material fallbacks are not enough.
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Durable save ownership that hooks pause/resume instead of desktop-only quit notifications.
+- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — Camera2D/3D follow and zoom contracts used by one-finger pan + two-finger pinch controllers.
+- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — Cheaper CanvasItem/Spatial shader paths when stripping desktop-only visual features for mobile GPUs.
+- [godot-3d-materials](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md) — StandardMaterial3D feature flags (SSS, clearcoat) that `mobile_shader_fallback` disables on weak renderers.
+- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Smooth UI lifts when the OS virtual keyboard covers LineEdits/TextEdits.
+- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Singleton homes for haptic feedback, battery saver, and offline save sync managers.
+
+#### Downstream / consumers
+- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — Packaging, signing, and CI export presets after touch/UI/perf gates pass on devices.
+- [godot-platform-desktop](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-desktop/SKILL.md) — Keep desktop mouse/keyboard paths working when the same project remains dual-input after the mobile adapt.
+- [godot-genre-puzzle](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-puzzle/SKILL.md) — Tap/swipe/pinch control schemes that consume the gesture and UI scaling patterns from this skill.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for discovering this adapt skill beside sibling domains.

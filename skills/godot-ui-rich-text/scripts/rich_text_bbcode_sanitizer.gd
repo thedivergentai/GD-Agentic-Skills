@@ -17,3 +17,14 @@ static func sanitize(input: String, allow_list: Array[String] = ["b", "i", "u", 
 			result = result.replace(m.get_string(), "")
 			
 	return result
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html
+# - https://docs.godotengine.org/en/stable/classes/class_richtextlabel.html
+# - https://docs.godotengine.org/en/stable/tutorials/i18n/internationalizing_games.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-educational/SKILL.md — strip unsafe tags from student/chat input
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — RegEx allow/deny tag filters
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md
+# =============================================================================

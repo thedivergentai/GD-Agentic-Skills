@@ -25,3 +25,13 @@ func generate_obstacles() -> void:
 
 ## [SKILL NOTICE]: Use 'sample_baked_up_vector()' when spawning items 
 ## on splines to ensure they respect the track's banking and slopes.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_path3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_curve3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — Path3D/Curve3D scene setup
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — spawned obstacle collision
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-racing/SKILL.md
+# =============================================================================

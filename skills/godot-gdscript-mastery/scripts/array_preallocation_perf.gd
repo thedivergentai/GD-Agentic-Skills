@@ -16,3 +16,13 @@ func fast_generate_lattice(size: int) -> PackedVector3Array:
 			lattice[i * size + j] = Vector3(i, 0, j)
 			
 	return lattice
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_array.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/cpu_optimization.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — resize before append storms
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md — pre-size lattices/meshes in generators
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md
+# =============================================================================

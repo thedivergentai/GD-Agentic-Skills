@@ -44,3 +44,15 @@ func _update_subtitles(current_time: float) -> void:
 			subtitle_show.emit(_subtitle_track[_current_index].text)
 		else:
 			subtitle_hide.emit()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/audio/sync_with_audio.html
+# - https://docs.godotengine.org/en/stable/classes/class_audiostreamplayer.html
+# - https://docs.godotengine.org/en/stable/classes/class_audioserver.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-dialogue-system/SKILL.md — VO lines + subtitle keys
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md — Audio Playback track alternative
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md — render localized subtitle text
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md
+# =============================================================================

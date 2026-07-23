@@ -24,3 +24,14 @@ func _process_custom_fx(char_fx: CharFXTransform) -> bool:
 		char_fx.color.a *= 0.3
 		
 	return true
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_richtexteffect.html
+# - https://docs.godotengine.org/en/stable/classes/class_charfxtransform.html
+# - https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md — screen-space glitch when glyph jitter is not enough
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-visual-novel/SKILL.md — horror VN line presentation
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md
+# =============================================================================

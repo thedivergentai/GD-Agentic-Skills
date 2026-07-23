@@ -21,3 +21,15 @@ func _process_goal() -> void:
 
 ## [SKILL NOTICE]: Use 'Area3D' for spatial triggers (goals/bounds) 
 ## and an 'enum' State Machine to manage rule logic.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_area3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_scenetreetimer.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/scene_tree.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md — PRE_GAME/ACTIVE/POST_GOAL match phases
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — goal Area3D body_entered event wiring
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-sports/SKILL.md
+# =============================================================================

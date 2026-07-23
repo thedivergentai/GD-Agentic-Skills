@@ -15,3 +15,14 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _check_interaction():
 	pass
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html
+# - https://docs.godotengine.org/en/stable/classes/class_control.html
+# - https://docs.godotengine.org/en/stable/classes/class_viewport.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — menus accept_event before gameplay
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — interact only when UI idle
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md
+# =============================================================================

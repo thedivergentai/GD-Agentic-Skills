@@ -17,3 +17,15 @@ func _refresh_ui_text():
 func get_apples_text(count: int) -> String:
 	# EXPERT: Pluralization support via TranslationServer
 	return atr_n("APPLE_COUNT_ONE", "APPLE_COUNT_MANY", count)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/i18n/internationalizing_games.html
+# - https://docs.godotengine.org/en/stable/tutorials/i18n/localization_using_gettext.html
+# - https://docs.godotengine.org/en/stable/classes/class_translationserver.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md — refresh BBCode after locale change
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md — font fallbacks per locale
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — persist student language preference
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-educational/SKILL.md
+# =============================================================================

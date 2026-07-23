@@ -34,161 +34,108 @@ Turn order calculation, action points, phase management, and timeline systems de
 - NEVER forget to call **`update()`** on `AStarGrid2D` after changing obstacle states; if you toggle `set_point_solid()`, the grid MUST refresh before the next query.
 - NEVER lock the main thread with `while` loops for input; strictly use the **await keyword** or signals to yield execution back to the Tree.
 - NEVER handle turn decisions with `is_action_pressed()`; strictly use `is_action_just_pressed()` for discrete, frame-locked menu input.
-- NEVER skip turn timeouts in networked games; strictly implement a **server-side timer** with a default "pass" action to prevent griefing.
+- NEVER skip turn timeouts in networked games; strictly implement a **server-side timer** with a default "pass" action to prevent griefing. See **Networked Turn Timeout** golden path below.
 
 ---
 
-## 🛠 Expert Components (scripts/)
+## Decision Tree — Pick a Turn Model
 
-### Original Expert Patterns
-- [active_time_battle.gd](../scripts/turn_system_active_time_battle.gd) - Framework for ATB systems with dynamic progress bars and async action support.
-- [timeline_turn_manager.gd](../scripts/turn_system_timeline_turn_manager.gd) - Advanced manager for timeline-based turns with interrupts and predictive visualization.
+| Need | Choose | **MANDATORY** script |
+|------|--------|----------------------|
+| Discrete rounds (chess / tactics / card phases) | Round + initiative queue + AP phases | [turn_system_patterns.gd](../scripts/turn_system_turn_system_patterns.gd) |
+| Continuous gauges (FF-style ATB) | Per-actor gauge fill in `_process` | [active_time_battle.gd](../scripts/turn_system_active_time_battle.gd) |
+| Timeline / CTB with interrupts & prediction | Event timeline + predictive UI | [timeline_turn_manager.gd](../scripts/turn_system_timeline_turn_manager.gd) |
 
-### Modular Components
-- [turn_system_patterns.gd](../scripts/turn_system_turn_system_patterns.gd) - Collection of patterns for match state machines, UndoRedo, and A* Grid setup.
+> **Do NOT** invent a fourth model inline. Read the matching script before coding.
 
----
+## Expert Components (scripts/)
+
+- [turn_system_patterns.gd](../scripts/turn_system_turn_system_patterns.gd) — Match-based phase machines, UndoRedo, `AStarGrid2D` board helpers.
+- [active_time_battle.gd](../scripts/turn_system_active_time_battle.gd) — ATB gauges, pause-on-ready, async action handoff.
+- [timeline_turn_manager.gd](../scripts/turn_system_timeline_turn_manager.gd) — Timeline / CTB with interrupts and pre-visualization.
+
+## TurnManager Autoload — Interface Contract Only
+
+Keep the Autoload thin. **Do not** paste full queue math here — implement in the script chosen above.
 
 ```gdscript
-# turn_manager.gd (AutoLoad)
+# turn_manager.gd (AutoLoad) — contract only
 extends Node
-
 signal turn_started(combatant: Node)
 signal turn_ended(combatant: Node)
 signal round_ended
+signal turn_timed_out(combatant: Node)  # multiplayer: server default-pass
 
-var combatants: Array[Node] = []
-var turn_order: Array[Node] = []
-var current_turn_index: int = 0
-
-func start_combat(participants: Array[Node]) -> void:
-    combatants = participants
-    calculate_turn_order()
-    start_next_turn()
-
-func calculate_turn_order() -> void:
-    turn_order = combatants.duplicate()
-    turn_order.sort_custom(func(a, b): return a.speed > b.speed)
-
-func start_next_turn() -> void:
-    if current_turn_index >= turn_order.size():
-        current_turn_index = 0
-        round_ended.emit()
-        calculate_turn_order()  # Recalculate each round
-    
-    var current := turn_order[current_turn_index]
-    turn_started.emit(current)
-
-func end_turn() -> void:
-    var current := turn_order[current_turn_index]
-    turn_ended.emit(current)
-    current_turn_index += 1
-    start_next_turn()
+func start_combat(participants: Array[Node]) -> void: pass
+func end_turn() -> void: pass
+func request_pass(combatant: Node) -> void: pass  # default action on timeout
 ```
 
-## Action Point System
+## Networked Turn Timeout (Golden Path)
+
+Referenced from NEVER: server owns the clock; clients never decide "pass."
+
+1. On `turn_started`, server starts a one-shot `Timer` / `SceneTreeTimer` (authoritative).
+2. On timeout: server calls `request_pass(current)` (or auto-end-turn), then emits `turn_timed_out`.
+3. Clients only render the countdown; never mutate the turn queue locally.
+4. Pair with [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) for host-auth RPC.
+
+## Action Points (Contract)
 
 ```gdscript
-# combatant.gd
-extends Node
-
-@export var max_action_points: int = 3
-var current_action_points: int = 3
-
-func start_turn() -> void:
-    current_action_points = max_action_points
-
 func can_perform_action(cost: int) -> bool:
     return current_action_points >= cost
 
 func perform_action(cost: int) -> bool:
     if not can_perform_action(cost):
         return false
-    
     current_action_points -= cost
     return true
 ```
 
-## Turn Phases
+Phases: prefer `enum Phase { DRAW, MAIN, END }` + `match`, or route to [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md). Full ATB / timeline math lives in the MANDATORY scripts — do not duplicate Elite snippets here.
 
-```gdscript
-enum Phase { DRAW, MAIN, END }
-
-var current_phase: Phase = Phase.DRAW
-
-func advance_phase() -> void:
-    match current_phase:
-        Phase.DRAW:
-            current_phase = Phase.MAIN
-        Phase.MAIN:
-            current_phase = Phase.END
-        Phase.END:
-            TurnManager.end_turn()
-            current_phase = Phase.DRAW
-```
-
-## Best Practices
-
-1. **Speed-Based** - Initiative determines order
-2. **Action Points** - Limit actions per turn
-3. **Timeout** - Add turn timer for online play
-
----
-
-## Elite Godot 4.x Patterns
-
-### 1. Active Time Battle (ATB) Implementation
-Track time elapsed in seconds using `_process(delta)` to advance combatant gauges independently of framerate.
-
-```gdscript
-# combat_atb_manager.gd
-func _process(delta: float) -> void:
-    if not is_combat_active: return
-    
-    for actor in combatants:
-        if actor.atb_gauge < 100.0:
-            actor.atb_gauge += actor.speed * delta
-            if actor.atb_gauge >= 100.0:
-                actor.atb_gauge = 100.0
-                is_combat_active = false # Pause for action
-                turn_ready.emit(actor)
-                break
-```
-
-### 2. Turn Pre-visualization (Timeline Prediction)
-Simulate ATB iterations mathematically to predict and display the future turn order in the UI.
-
-```gdscript
-# turn_predictor.gd
-func predict_turns(actors: Array, count: int) -> Array:
-    var timeline := []
-    var sim_data := actors.map(func(a): return {"id": a, "gauge": a.atb_gauge, "speed": a.speed})
-    
-    while timeline.size() < count:
-        for s in sim_data:
-            s.gauge += s.speed * 0.1 # Simulated step
-            if s.gauge >= 100.0:
-                timeline.append(s.id)
-                s.gauge = 0.0
-                if timeline.size() >= count: break
-    return timeline
-```
-
-### 3. Combat Prediction Helper
-Encapsulate predictive math within `Resource` scripts to show expected damage numbers to players before they commit to an action.
-
-```gdscript
-# combat_stats_resource.gd
-func get_expected_damage(target: CombatStats) -> int:
-    # Deterministic calculation for UI display
-    var raw := attack_power - target.defense
-    return max(0, raw)
-
-# UI usage
-func _on_action_hover(target: Enemy):
-    var damage := player_stats.get_expected_damage(target.stats)
-    damage_preview_label.text = "Expected: %d" % damage
-```
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+
+> Progressive disclosure: open Official Documentation links only when researching a specific API;
+> load Related Skills when routing work to a peer domain — do not preload the whole lattice.
+
+### Official Documentation
+- [Idle and Physics Processing](https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html) — When turn ticks belong in `_process` vs `_physics_process` vs pure event steps.
+- [Using signals](https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html) — Turn-start / turn-end / unit-acted events without polling gauges.
+- [Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html) — Initiative/speed stats as Resources for sim and UI prediction.
+- [Singletons (Autoload)](https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html) — TurnManager ownership boundaries.
+- [GDScript basics](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html) — `await` sequencing for multi-phase turns.
+- [Object](https://docs.godotengine.org/en/stable/classes/class_object.html) — Signal connect flags for turn bus listeners.
+- [SceneTree](https://docs.godotengine.org/en/stable/classes/class_scenetree.html) — Pausing gameplay while menus resolve turn choices.
+- [Timer](https://docs.godotengine.org/en/stable/classes/class_timer.html) — Optional realtime turn clocks without busy loops.
+- [Tween](https://docs.godotengine.org/en/stable/classes/class_tween.html) — Animating ATB gauges and turn handoff juice.
+- [AnimationPlayer](https://docs.godotengine.org/en/stable/classes/class_animationplayer.html) — Action animations that must finish before the next turn.
+- [MultiplayerAPI](https://docs.godotengine.org/en/stable/classes/class_multiplayerapi.html) — Authoritative turn order in networked matches.
+- [JSON](https://docs.godotengine.org/en/stable/classes/class_json.html) — Deterministic turn replay / seed logs for balance labs.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Scene and Autoload placement for TurnManager.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Turn bus contracts (signals up, commands down).
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Speed/initiative Resources shared with combat/UI.
+- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Lifecycle of a global turn orchestrator.
+
+#### Complements
+- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — Per-unit states nested under turn phases.
+- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Actions resolved inside a granted turn.
+- [godot-rpg-stats](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md) — Speed/AGI feeding ATB gauges.
+- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — Cooldowns measured in turns, not wall-clock only.
+- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Gauge fill and handoff presentation.
+- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — Host-auth turn order and lockstep.
+
+#### Downstream / consumers
+- [godot-genre-action-rpg](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md) — ATB/turn hybrids in ARPG/JRPG-adjacent combat.
+- [godot-genre-card-game](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-card-game/SKILL.md) — Card turns and priority windows.
+- [godot-genre-rts](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rts/SKILL.md) — Discrete orders in strategy loops.
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Simulate turn matrices for speed/action fairness.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for turn systems.

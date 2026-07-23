@@ -19,3 +19,13 @@ func transition_to_bounds(new_limits: Rect2) -> void:
     _active_tween.tween_property(self, ^"limit_right", int(new_limits.end.x), 0.5)
     _active_tween.tween_property(self, ^"limit_top", int(new_limits.position.y), 0.5)
     _active_tween.tween_property(self, ^"limit_bottom", int(new_limits.end.y), 0.5)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_camera2d.html
+# - https://docs.godotengine.org/en/stable/classes/class_tween.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — room limits and transition polish
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md — camera handoff timing with room loads
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-metroidvania/SKILL.md
+# =============================================================================

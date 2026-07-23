@@ -69,3 +69,14 @@ func add_stress(amount: float) -> void:
 ## EXPERT USAGE:
 ## Autoload this script. Connect to music/lighting systems.
 ## Call add_stress() from gameplay triggers.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/using_multiple_threads.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — simulate sawtooth peak/relief budgets
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — Director as central pacing owner
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-stealth/SKILL.md — suspicion peaks share tension curves
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-horror/SKILL.md
+# =============================================================================

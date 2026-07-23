@@ -13,3 +13,13 @@ func start_boss_intro():
 	
 	print("Battle Start!")
 	$UI/BossBar.show()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md — await animation_finished in intros
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — linear await vs timer flag soup
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md
+# =============================================================================

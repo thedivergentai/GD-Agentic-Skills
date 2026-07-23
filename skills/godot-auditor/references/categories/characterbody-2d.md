@@ -10,3 +10,13 @@
 - **NEVER forget Ceiling Bonk detection** — If you don't reset `velocity.y` to 0 when `is_on_ceiling()`, the player will "float" against the ceiling until gravity pulls them down.
 - **NEVER use high-precision physics for pixel art visuals** — Keep physics math high-precision, but round your Sprite nodal positions in `_process` to avoid visual sub-pixel jitter.
 - **NEVER use `queue_free()` on characters every frame** — Use object pooling for bullets or enemies to avoid SceneTree performance spikes.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

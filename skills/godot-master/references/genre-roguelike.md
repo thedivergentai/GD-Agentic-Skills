@@ -47,6 +47,13 @@ Expert blueprint for roguelikes balancing challenge, progression, and replayabil
 
 ## 🛠 Expert Components (scripts/)
 
+> **MANDATORY** before implementing generation, seed sharing, or meta unlocks — read these first (do not reinvent from inline samples):
+> - [dungeon_generator_walker.gd](../scripts/genre_roguelike_dungeon_generator_walker.gd) — Drunkard's Walk with **local** `RandomNumberGenerator` (`rng.randi() % n`, never `Array.pick_random()`).
+> - [seeded_rng_resource.gd](../scripts/genre_roguelike_seeded_rng_resource.gd) — seed persistence for shareable / daily runs.
+> - [meta_progression_manager.gd](../scripts/genre_roguelike_meta_progression_manager.gd) — permanent unlock currency + save boundaries vs run state.
+>
+> **Do NOT Load** the full scripts/ folder for a single task. Open only the script that matches the phase below.
+
 ### Original Expert Patterns
 - [meta_progression_manager.gd](../scripts/genre_roguelike_meta_progression_manager.gd) - Foundational meta-progression logic with secure data persistence and currency unlocks.
 - [roguelike_patterns.gd](../scripts/genre_roguelike_roguelike_patterns.gd) - 10 Essential Roguelike Expert Snippets (AStar, BSP, WorkerThreadPool, ShuffleBag, etc.).
@@ -76,207 +83,34 @@ Expert blueprint for roguelikes balancing challenge, progression, and replayabil
 
 | Phase | Skills | Purpose |
 |-------|--------|---------|
-| 1. Architecture | `state-machines`, `autoloads` | Managing Run State vs Meta State |
-| 2. World Gen | `godot-procedural-generation`, `tilemap`, `noise` | Creating unique levels every run |
-| 3. Combat | `godot-combat-system`, `enemy-ai` | Fast-paced, high-stakes encounters |
-| 4. Progression | `loot-tables`, `godot-inventory-system` | Managing run-specific items/relics |
-| 5. Persistence | `save-system`, `resources` | Saving meta-progress between runs |
+| 1. Architecture | `godot-autoload-architecture`, `godot-state-machine-advanced` | Run State vs Meta State boundaries |
+| 2. World Gen | `godot-procedural-generation`, `godot-tilemap-mastery` | Unique levels every run (walker/BSP/noise) |
+| 3. Combat | `godot-combat-system`, `godot-ai-navigation` | High-stakes encounters + FOV/pathing |
+| 4. Progression | `godot-inventory-system`, `godot-resource-data-patterns` | Run items/relics + typed Resources |
+| 5. Persistence | `godot-save-load-systems` | Meta unlocks + anti-scum mid-run deletes |
 | 6. Balance | `godot-monte-carlo-balancer` | Win% vs meta level; dead-item detection |
 
 ## Architecture Overview
 
 Roguelikes require a strict separation between **Run State** (temporary) and **Meta State** (persistent).
 
-### 1. Run Manager (AutoLoad)
-Handles the lifespan of a single run. Resets completely on death.
+- **Run lifespan / seed**: Own an AutoLoad that resets on death; seed via **MANDATORY** [seeded_rng_resource.gd](../scripts/genre_roguelike_seeded_rng_resource.gd). Never leak run HP/gold into meta saves.
+- **Meta unlocks**: **MANDATORY** [meta_progression_manager.gd](../scripts/genre_roguelike_meta_progression_manager.gd) + [meta_progression_resource.gd](../scripts/genre_roguelike_meta_progression_resource.gd) — subtle permanent bonuses only (+5–15%).
+- **Serialize**: Prefer [json_state_serializer.gd](../scripts/genre_roguelike_json_state_serializer.gd) / `user://` JSON-binary; never treat `.tscn` as a run save.
 
-```gdscript
-# run_manager.gd
-extends Node
-
-signal run_started
-signal run_ended(victory: bool)
-signal floor_changed(new_floor: int)
-
-var current_seed: int
-var current_floor: int = 1
-var player_stats: Dictionary = {}
-var inventory: Array[Resource] = []
-var rng: RandomNumberGenerator
-
-func start_run(seed_val: int = -1) -> void:
-    rng = RandomNumberGenerator.new()
-    if seed_val == -1:
-        rng.randomize()
-        current_seed = rng.seed
-    else:
-        current_seed = seed_val
-        rng.seed = current_seed
-        
-    current_floor = 1
-    _reset_run_state()
-    run_started.emit()
-
-func _reset_run_state() -> void:
-    player_stats = { "hp": 100, "gold": 0 }
-    inventory.clear()
-
-func next_floor() -> void:
-    current_floor += 1
-    floor_changed.emit(current_floor)
-    
-func end_run(victory: bool) -> void:
-    run_ended.emit(victory)
-    # Trigger meta-progression save here
-```
-
-### 2. Meta-Progression (Resource)
-Stores permanent unlocks.
-
-```gdscript
-# meta_progression.gd
-class_name MetaProgression
-extends Resource
-
-@export var total_runs: int = 0
-@export var unlocked_weapons: Array[String] = ["sword_basic"]
-@export var currency: int = 0
-@export var skill_tree_nodes: Dictionary = {} # node_id: level
-
-func save() -> void:
-    ResourceSaver.save(self, "user://meta_progression.tres")
-
-static func load_or_create() -> MetaProgression:
-    if ResourceLoader.exists("user://meta_progression.tres"):
-        return ResourceLoader.load("user://meta_progression.tres")
-    return MetaProgression.new()
-```
-
-## Key Mechanics implementation
+## Key Mechanics (route to scripts/)
 
 ### Procedural Dungeon Generation
-- **Drunkard's Walk (Walker)**: Ideal for organic, cave-like or connected room layouts.
-- **Binary Space Partitioning (BSP)**: Best for rectangular, connected room-and-hallway dungeons.
-- **Wave Function Collapse (WFC)**: For highly detailed, rule-based tile environments and modular room assembly.
+- **Drunkard's Walk**: **MANDATORY** [dungeon_generator_walker.gd](../scripts/genre_roguelike_dungeon_generator_walker.gd) — pass a local seeded `RandomNumberGenerator`; directions via `rng.randi() % directions.size()` (never `Array.pick_random()`).
+- **Critical drops / fairness**: Use Shuffle Bag patterns in [roguelike_patterns.gd](../scripts/genre_roguelike_roguelike_patterns.gd) or weights in [weighted_loot_table.gd](../scripts/genre_roguelike_weighted_loot_table.gd).
+- **BSP / room orchestrator**: [dungeon_generator.gd](../scripts/genre_roguelike_dungeon_generator.gd); deeper WFC/noise → peer `godot-procedural-generation`.
+- **Pathing after gen**: [astar_grid_handler.gd](../scripts/genre_roguelike_astar_grid_handler.gd) — call `update()` after solid-cell edits; rebake `NavigationRegion2D` if using nav meshes.
 
-```gdscript
-# dungeon_generator.gd
-extends Node
-
-@export var map_width: int = 50
-@export var map_height: int = 50
-@export var max_walkers: int = 5
-@export var max_steps: int = 500
-
-func generate_dungeon(tilemap: TileMapLayer, rng: RandomNumberGenerator) -> void:
-    tilemap.clear()
-    var walkers: Array[Vector2i] = [Vector2i(map_width/2, map_height/2)]
-    var floor_tiles: Array[Vector2i] = []
-    
-    for step in max_steps:
-        var new_walkers: Array[Vector2i] = []
-        for walker in walkers:
-            floor_tiles.append(walker)
-            # 25% chance to destroy walker, 25% to spawn new one
-            if rng.randf() < 0.25 and walkers.size() > 1:
-                continue # Destroy
-            if rng.randf() < 0.25 and walkers.size() < max_walkers:
-                new_walkers.append(walker) # Spawn
-            
-            # Move walker
-            var direction = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT].pick_random()
-            new_walkers.append(walker + direction)
-        
-        walkers = new_walkers
-    
-    # Set tiles
-    for pos in floor_tiles:
-        tilemap.set_cell(pos, 0, Vector2i(0,0)) # Assuming source_id 0 is floor
-    
-    # Post-process: Add walls, spawn points, etc.
-```
-
-### Item/Relic System (Resource-based)
-Relics modify stats or add behavior.
-
-```gdscript
-# relic.gd
-class_name Relic
-extends Resource
-
-@export var id: String
-@export var name: String
-@export var icon: Texture2D
-@export_multiline var description: String
-
-# Hook system for complex interactions
-func on_pickup(player: Node) -> void:
-    pass
-
-func on_damage_dealt(player: Node, target: Node, damage: int) -> int:
-    return damage # Return modified damage
-
-func on_kill(player: Node, target: Node) -> void:
-    pass
-```
-
-```gdscript
-# example_relic_vampirism.gd
-extends Relic
-
-func on_kill(player: Node, target: Node) -> void:
-    player.heal(5)
-    print("Vampirism triggered!")
-```
-
-### 4. Director-AI (Pacing Manager)
-Use frame-slicing to evaluate student performance and adjust difficulty without CPU spikes.
-
-```gdscript
-# director_ai.gd (Autoload)
-func _process(_delta):
-    # Only evaluate every 60 frames
-    if Engine.get_process_frames() % 60 == 0:
-        _update_pacing_logic()
-
-func _update_pacing_logic():
-    if player_health < 30:
-        spawn_rate -= 0.5 # Ease up
-    elif player_kills > 100:
-        spawn_rate += 1.0 # Challenge more
-```
-
-### 5. Procedural Room Assembler (Markers)
-Snap rooms together using connection markers for pixel-perfect stitching.
-
-```gdscript
-# room_assembler.gd
-func add_room(new_scene: PackedScene, prev_exit: Marker2D):
-    var inst = new_scene.instantiate()
-    add_child(inst)
-    await inst.tree_entered # Wait for node to be ready
-    
-    var entrance = inst.get_node("Entrance")
-    # Snap room so entrance matches previous exit
-    var offset = inst.global_position - entrance.global_position
-    inst.global_position = prev_exit.global_position + offset
-```
-
-### 6. Synergy-Tag System (Relics)
-Use tag aggregation on ItemData resources to trigger synergistic effects.
-
-```gdscript
-# synergy_manager.gd
-func check_synergies(inventory: Array[ItemData]):
-    var tags = {}
-    for item in inventory:
-        for tag in item.synergy_tags:
-            tags[tag] = tags.get(tag, 0) + 1
-            
-    if tags.get(&"Fire", 0) >= 1 and tags.get(&"Projectile", 0) >= 1:
-        activate_synergy(&"Flaming_Arrow")
-```
-```
+### Relics, turns, fog, pacing
+- Relic hooks / synergy tags: Resource subclasses + [weighted_loot_table.gd](../scripts/genre_roguelike_weighted_loot_table.gd); inventory peer `godot-inventory-system`.
+- Turns: [turn_manager_decoupled.gd](../scripts/genre_roguelike_turn_manager_decoupled.gd) + [move_command_object.gd](../scripts/genre_roguelike_move_command_object.gd).
+- Fog / LOS: [fog_of_war_masker.gd](../scripts/genre_roguelike_fog_of_war_masker.gd), [fov_raycast_calculator.gd](../scripts/genre_roguelike_fov_raycast_calculator.gd).
+- Director pacing: frame-slice with `Engine.get_process_frames() % N` (see NEVER); keep heuristics out of every-frame `_process` work.
 
 ## Common Pitfalls
 
@@ -299,4 +133,43 @@ func check_synergies(inventory: Array[ItemData]):
 
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
+
+### Official Documentation
+- [Using TileMaps](https://docs.godotengine.org/en/stable/tutorials/2d/using_tilemaps.html) — TileMapLayer cells, sources, and runtime placement for procedural floors/walls.
+- [TileMapLayer](https://docs.godotengine.org/en/stable/classes/class_tilemaplayer.html) — `set_cell` / `get_used_cells` APIs used after walker/BSP generation and fog clears.
+- [AStarGrid2D](https://docs.godotengine.org/en/stable/classes/class_astargrid2d.html) — grid pathfinding with heuristics, diagonal modes, and `update()` after solid-cell edits.
+- [RandomNumberGenerator](https://docs.godotengine.org/en/stable/classes/class_randomnumbergenerator.html) — seeded PCG32 for shareable runs; prefer local instances over global `randi()`.
+- [WorkerThreadPool](https://docs.godotengine.org/en/stable/classes/class_workerthreadpool.html) — offload heavy dungeon generation without freezing the main thread.
+- [Using multiple threads](https://docs.godotengine.org/en/stable/tutorials/performance/using_multiple_threads.html) — when WorkerThreadPool/tasks are safe versus SceneTree ownership rules.
+- [Thread-safe APIs](https://docs.godotengine.org/en/stable/tutorials/performance/thread_safe_apis.html) — generate data off-thread, then apply tiles/nodes on the main thread only.
+- [Saving games](https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html) — `user://` persistence patterns for meta unlocks and anti-scum mid-run deletes.
+- [Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html) — Resource-backed meta/run data, `duplicate(true)`, and save/load of `.tres`/custom resources.
+- [Singletons (AutoLoad)](https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html) — isolate RunManager vs MetaManager so run death cannot wipe permanent progress.
+- [Ray-casting](https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html) — PhysicsDirectSpaceState queries for FOV / line-of-sight without Area2D spam.
+- [FastNoiseLite](https://docs.godotengine.org/en/stable/classes/class_fastnoiselite.html) — noise fields for cave-style maps before connectivity validation with AStarGrid2D.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — project layout, Autoloads, and Resource basics before run/meta split.
+- [godot-tilemap-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md) — TileMapLayer authorship and runtime cell edits that procedural generators write into.
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Resource duplication, typed data, and save-friendly schemas for relics/meta stats.
+- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — singleton boundaries so Run state resets cleanly without touching Meta state.
+
+#### Complements
+- [godot-procedural-generation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md) — deeper Walker/BSP/WFC generators that feed this genre's dungeon loop.
+- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — NavigationRegion rebake and agent pathing when not using pure AStarGrid2D.
+- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — hit/hurt pipelines and turn-paced encounters inside generated floors.
+- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — run bags, relic slots, and item Resources consumed by loot tables.
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — JSON/binary persistence, floor-transition saves, and permadeath delete-on-load.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — decoupled turn/floor/run signals without SceneTree as grid source of truth.
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — thread pools, fog GPU masks, and frame-sliced director heuristics at scale.
+
+#### Downstream / consumers
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — simulate win% vs meta level, pity timers, and dead-item detection across seeded runs.
+- [godot-genre-action-rpg](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md) — action-RPG combat/progression layers that often consume roguelike run/meta patterns.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.

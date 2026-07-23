@@ -22,3 +22,15 @@ func _start_lockout() -> void:
 	failed_attempts = 0
 
 ## Rule: Always provide a subtle 'Denied' sound cue when a player is in lockout mode.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html
+# - https://docs.godotengine.org/en/stable/tutorials/audio/audio_buses.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — fail counting around sequence buffers
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md — denied lockout cue
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-mechanic-secrets/SKILL.md
+# =============================================================================

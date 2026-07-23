@@ -21,3 +21,13 @@ func interact():
 func _show_offer_dialogue():
 	# If player accepts in UI:
 	QuestManager.accept_quest(quest_to_give)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-dialogue-system/SKILL.md — offer/reminder/thanks lines from quest status
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — query QuestManager Autoload from NPC interact
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-quest-system/SKILL.md
+# =============================================================================

@@ -14,3 +14,13 @@ class_name BaseStats extends Resource
 func _init(p_max_health = 100, p_atk = 10):
 	max_health = p_max_health
 	attack_power = p_atk
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html — stats as .tres data
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_exports.html — Inspector-tuned attributes
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — Resource composition for RPG data
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md — modifiers on top of base stats
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md
+# =============================================================================

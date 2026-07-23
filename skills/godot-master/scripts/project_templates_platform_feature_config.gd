@@ -32,3 +32,14 @@ func _initialize_server_logic() -> void:
 	# Disable visual processing in headless mode
 	set_process(false)
 	set_physics_process(true)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/export/feature_tags.html
+# - https://docs.godotengine.org/en/stable/tutorials/export/exporting_projects.html
+# - https://docs.godotengine.org/en/stable/tutorials/rendering/multiple_resolutions.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md — custom feature tags on export presets
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md — mobile FPS and rendering downgrades
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-templates/SKILL.md
+# =============================================================================

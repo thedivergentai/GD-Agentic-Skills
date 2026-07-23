@@ -5,19 +5,19 @@ description: "Expert patterns for AnimationPlayer including track types (Value, 
 
 # AnimationPlayer
 
-Expert guidance for Godot's timeline-based keyframe animation system.
+Timeline-based keyframe animation: track choice, RESET, root motion, libraries — scripts own recipes.
 
 ## NEVER Do
 
-- **NEVER forget RESET tracks** — Without a RESET track, animated properties don't restore to initial values when changing scenes. Create RESET animation with all default states [12].
-- **NEVER use `Animation.CALL_MODE_CONTINUOUS` for function calls** — This calls the method EVERY frame during the keyframe. Use `CALL_MODE_DISCRETE` (calls once) to avoid logic spam [13, 77].
-- **NEVER animate resource properties directly** — Animating `material.albedo_color` creates embedded resources that bloat file size. Store the material in a variable or use `instance uniform` instead [14].
-- **NEVER use `animation_finished` for looping animations** — This signal doesn't fire for looped animations. Use `animation_looped` or check `current_animation` in `_process()`.
-- **NEVER hardcode animation names as strings across large codebases** — Use constants or enums. Typos cause silent failures.
-- **NEVER use `seek()` without `update=true` for same-frame logic** — If you need properties to update immediately (e.g., for physics checks), you MUST set the `update` parameter to `true`.
-- **NEVER leave unnecessary AnimationPlayers `active`** — If an entity is off-screen and its animation is purely visual (no logic tracks), set `active = false` to save significant CPU/GPU processing [317].
-- **NEVER change `AnimationLibrary` content while it is playing** — This causes immediate crashes or undefined transform states. Stop the player or wait for the `finished` signal before swapping libraries.
-- **NEVER rely on `speed_scale` for long-term synchronization** — For multiplayer or rhythm games, use `seek()` with a global time reference to prevent frame-drift.
+- **NEVER forget RESET tracks** — Animated properties otherwise stick across scene changes.
+- **NEVER use `Animation.CALL_MODE_CONTINUOUS` for one-shot logic** — Use `CALL_MODE_DISCRETE`.
+- **NEVER animate embedded resource properties directly** — Prefer instance uniforms / owned materials.
+- **NEVER use `animation_finished` for looping clips** — Use `animation_looped` or poll `current_animation`.
+- **NEVER hardcode animation name strings at scale** — Constants / `StringName`.
+- **NEVER `seek()` without `update=true` when same-frame reads matter**.
+- **NEVER leave off-screen visual-only players `active`** — Cull with notifiers.
+- **NEVER mutate a playing `AnimationLibrary`** — Stop / wait for finished first.
+- **NEVER rely on `speed_scale` for long sync** — Prefer `seek()` against a shared clock.
 
 ---
 
@@ -26,455 +26,94 @@ Expert guidance for Godot's timeline-based keyframe animation system.
 - Animation editor tracks can be **collapsed** for dense timelines.
 - `Animation.length` metadata is **double** precision (was float).
 
-## Available Scripts
-
-> **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
-
-### [method_track_logic.gd](scripts/method_track_logic.gd)
-Expert logic triggers using `CALL_MODE_DISCRETE` for high-precision hitbox and state management.
-
-### [runtime_anim_lib_swapper.gd](scripts/runtime_anim_lib_swapper.gd)
-Managing multiple `AnimationLibrary` resources (Stances, Weapons) on a single `AnimationPlayer`.
-
-### [dynamic_shader_animation.gd](scripts/dynamic_shader_animation.gd)
-Animating shader uniforms (e.g., dissolve, glow) in sync with timeline keyframes.
-
-### [procedural_track_modifier.gd](scripts/procedural_track_modifier.gd)
-Runtime modification of existing tracks (e.g., jump height tweaking) without creating new Animation resources.
-
-### [reset_track_orchestrator.gd](scripts/reset_track_orchestrator.gd)
-Pattern for forced, immediate state resets across complex multi-track node setups.
-
-### [bezier_curve_extraction.gd](scripts/bezier_curve_extraction.gd)
-Extracting numeric data from Bezier tracks at runtime to drive procedural VFX or physics.
-
-### [active_animation_culler.gd](scripts/active_animation_culler.gd)
-Performance optimization: using `VisibleOnScreenNotifier` to disable `AnimationPlayer.active`.
-
-### [root_motion_physics_sync.gd](scripts/root_motion_physics_sync.gd)
-Expert 3D CharacterBody motion extraction using `get_root_motion_position`.
-
-### [character_part_swapper_tracks.gd](scripts/character_part_swapper_tracks.gd)
-Character customization (equipment/slots) managed entirely through Animation timeline tracks.
-
-### [precise_audio_sync.gd](scripts/precise_audio_sync.gd)
-Perfectly timed SFX using `TYPE_AUDIO` tracks with volume, pitch, and start-offset control.
-
----
-
-## Track Types Deep Dive
-
-### Value Tracks (Property Animation)
-
-```gdscript
-# Animate ANY property: position, color, volume, custom variables
-var anim := Animation.new()
-anim.length = 2.0
-
-# Position track
-var pos_track := anim.add_track(Animation.TYPE_VALUE)
-anim.track_set_path(pos_track, ".:position")
-anim.track_insert_key(pos_track, 0.0, Vector2(0, 0))
-anim.track_insert_key(pos_track, 1.0, Vector2(100, 0))
-anim.track_set_interpolation_type(pos_track, Animation.INTERPOLATION_CUBIC)
-
-# Color track (modulate)
-var color_track := anim.add_track(Animation.TYPE_VALUE)
-anim.track_set_path(color_track, "Sprite2D:modulate")
-anim.track_insert_key(color_track, 0.0, Color.WHITE)
-anim.track_insert_key(color_track, 2.0, Color.TRANSPARENT)
-
-$AnimationPlayer.add_animation("fade_move", anim)
-$AnimationPlayer.play("fade_move")
-```
-
-### Method Tracks (Function Calls)
-
-```gdscript
-# Call functions at specific timestamps
-var method_track := anim.add_track(Animation.TYPE_METHOD)
-anim.track_set_path(method_track, ".")  # Path to node
-
-# Insert method calls
-anim.track_insert_key(method_track, 0.5, {
-    "method": "spawn_particle",
-    "args": [Vector2(50, 50)]
-})
-
-anim.track_insert_key(method_track, 1.5, {
-    "method": "play_sound",
-    "args": ["res://sounds/explosion.ogg"]
-})
-
-# CRITICAL: Set call mode to DISCRETE
-anim.track_set_call_mode(method_track, Animation.CALL_MODE_DISCRETE)
-
-# Methods must exist on target node:
-func spawn_particle(pos: Vector2) -> void:
-    # Spawn particle at position
-    pass
-
-func play_sound(sound_path: String) -> void:
-    $AudioStreamPlayer.stream = load(sound_path)
-    $AudioStreamPlayer.play()
-```
-
-### Audio Tracks
-
-```gdscript
-# Synchronize audio with animation
-var audio_track := anim.add_track(Animation.TYPE_AUDIO)
-anim.track_set_path(audio_track, "AudioStreamPlayer")
-
-# Insert audio playback
-var audio_stream := load("res://sounds/footstep.ogg")
-anim.audio_track_insert_key(audio_track, 0.3, audio_stream)
-anim.audio_track_insert_key(audio_track, 0.6, audio_stream)  # Second footstep
-
-# Set volume for specific key
-anim.audio_track_set_key_volume(audio_track, 0, 1.0)  # Full volume
-anim.audio_track_set_key_volume(audio_track, 1, 0.7)  # Quieter
-```
-
-### Bezier Tracks (Custom Curves)
-
-```gdscript
-# For smooth, custom interpolation curves
-var bezier_track := anim.add_track(Animation.TYPE_BEZIER)
-anim.track_set_path(bezier_track, ".:custom_value")
-
-# Insert bezier points with handles
-anim.bezier_track_insert_key(bezier_track, 0.0, 0.0)
-anim.bezier_track_insert_key(bezier_track, 1.0, 100.0,
-    Vector2(0.5, 0),    # In-handle
-    Vector2(-0.5, 0))   # Out-handle
-
-# Read value in _process
-func _process(delta: float) -> void:
-    var value := $AnimationPlayer.get_bezier_value("custom_value")
-    # Use value for custom effects
-```
-
----
-
-## Root Motion Extraction
-
-### Problem: Animated Movement Disconnected from Physics
-
-```gdscript
-# Character walks in animation, but position doesn't change in world
-# Animation modifies Skeleton bone, not CharacterBody3D root
-```
-
-### Solution: Root Motion
-
-```gdscript
-# Scene structure:
-# CharacterBody3D (root)
-#   ├─ MeshInstance3D
-#   │   └─ Skeleton3D
-#   └─ AnimationPlayer
-
-# AnimationPlayer setup:
-@onready var anim_player: AnimationPlayer = $AnimationPlayer
-
-func _ready() -> void:
-    # Enable root motion (point to root bone)
-    anim_player.root_motion_track = NodePath("MeshInstance3D/Skeleton3D:root")
-    anim_player.play("walk")
-
-func _physics_process(delta: float) -> void:
-    # Extract root motion
-    var root_motion_pos := anim_player.get_root_motion_position()
-    var root_motion_rot := anim_player.get_root_motion_rotation()
-    var root_motion_scale := anim_player.get_root_motion_scale()
-    
-    # Apply to CharacterBody3D
-    var transform := Transform3D(basis.rotated(basis.y, root_motion_rot.y), Vector3.ZERO)
-    transform.origin = root_motion_pos
-    global_transform *= transform
-    
-    # Velocity from root motion
-    velocity = root_motion_pos / delta
-    move_and_slide()
-```
-
----
-
-## Animation Sequences & Queueing
-
-### Chaining Animations
-
-```gdscript
-# Play animations in sequence
-@onready var anim: AnimationPlayer = $AnimationPlayer
-
-func play_attack_combo() -> void:
-    anim.play("attack_1")
-    await anim.animation_finished
-    anim.play("attack_2")
-    await anim.animation_finished
-    anim.play("idle")
-
-# Or use queue:
-func play_with_queue() -> void:
-    anim.play("attack_1")
-    anim.queue("attack_2")
-    anim.queue("idle")  # Auto-plays after attack_2
-```
-
-### Blend Times
-
-```gdscript
-# Smooth transitions between animations
-anim.play("walk")
-
-# 0.5s blend from walk → run
-anim.play("run", -1, 1.0, 0.5)  # custom_blend = 0.5
-
-# Or set default blend
-anim.set_default_blend_time(0.3)  # 0.3s for all transitions
-anim.play("idle")
-```
-
----
-
-## RESET Track Pattern
-
-### Problem: Properties Don't Reset
-
-```gdscript
-# Animate sprite position from (0,0) → (100, 0)
-# Change scene, sprite stays at (100, 0)!
-```
-
-### Solution: RESET Animation
-
-```gdscript
-# Create RESET animation with default values
-var reset_anim := Animation.new()
-reset_anim.length = 0.01  # Very short
-
-var track := reset_anim.add_track(Animation.TYPE_VALUE)
-reset_anim.track_set_path(track, "Sprite2D:position")
-reset_anim.track_insert_key(track, 0.0, Vector2(0, 0))  # Default position
-
-track = reset_anim.add_track(Animation.TYPE_VALUE)
-reset_anim.track_set_path(track, "Sprite2D:modulate")
-reset_anim.track_insert_key(track, 0.0, Color.WHITE)  # Default color
-
-anim_player.add_animation("RESET", reset_anim)
-
-# AnimationPlayer automatically plays RESET when scene loads
-# IF "Reset on Save" is enabled in AnimationPlayer settings
-```
-
----
-
-## Procedural Animation Generation
-
-### Generate Animation from Code
-
-```gdscript
-# Create bounce animation programmatically
-func create_bounce_animation() -> void:
-    var anim := Animation.new()
-    anim.length = 1.0
-    anim.loop_mode = Animation.LOOP_LINEAR
-    
-    # Position track (Y bounce)
-    var track := anim.add_track(Animation.TYPE_VALUE)
-    anim.track_set_path(track, ".:position:y")
-    
-    # Generate sine wave keyframes
-    for i in range(10):
-        var time := float(i) / 9.0  # 0.0 to 1.0
-        var value := sin(time * TAU) * 50.0  # Bounce height 50px
-        anim.track_insert_key(track, time, value)
-    
-    anim.track_set_interpolation_type(track, Animation.INTERPOLATION_CUBIC)
-    $AnimationPlayer.add_animation("bounce", anim)
-    $AnimationPlayer.play("bounce")
-```
-
----
-
-## Advanced Patterns
-
-### Play Animation Backwards
-
-```gdscript
-# Play animation in reverse (useful for closing doors, etc.)
-anim.play("door_open", -1, -1.0)  # speed = -1.0 = reverse
-
-# Pause and reverse
-anim.pause()
-anim.play("current_animation", -1, -1.0, false)  # from_end = false
-```
-
-### Animation Callbacks (Signal-Based)
-
-```gdscript
-# Emit custom signal at specific frame
-func _ready() -> void:
-    $AnimationPlayer.animation_finished.connect(_on_anim_finished)
-
-func _on_anim_finished(anim_name: String) -> void:
-    match anim_name:
-        "attack":
-            deal_damage()
-        "die":
-            queue_free()
-```
-
-### Seek to Specific Time
-
-```gdscript
-# Jump to 50% through animation
-anim.seek(anim.current_animation_length * 0.5)
-
-# Scrub through animation (cutscene editor)
-func _input(event: InputEvent) -> void:
-    if event is InputEventMouseMotion and scrubbing:
-        var normalized_pos := event.position.x / get_viewport_rect().size.x
-        anim.seek(anim.current_animation_length * normalized_pos)
-```
-
----
-
-## Performance Optimization
-
-### Disable When Off-Screen
-
-```gdscript
-extends VisibleOnScreenNotifier2D
-
-func _ready() -> void:
-    screen_exited.connect(_on_screen_exited)
-    screen_entered.connect(_on_screen_entered)
-
-func _on_screen_exited() -> void:
-    $AnimationPlayer.pause()
-
-func _on_screen_entered() -> void:
-    $AnimationPlayer.play()
-```
-
----
-
-## Edge Cases
-
-### Animation Not Playing
-
-```gdscript
-# Problem: Forgot to add animation to player
-# Solution: Check if animation exists
-if anim.has_animation("walk"):
-    anim.play("walk")
-else:
-    push_error("Animation 'walk' not found!")
-
-# Better: Use constants
-const ANIM_WALK = "walk"
-const ANIM_IDLE = "idle"
-
-if anim.has_animation(ANIM_WALK):
-    anim.play(ANIM_WALK)
-```
-
-### Method Track Not Firing
-
-```gdscript
-# Problem: Call mode is CONTINUOUS
-# Solution: Set to DISCRETE
-var method_track_idx := anim.find_track(".:method_name", Animation.TYPE_METHOD)
-anim.track_set_call_mode(method_track_idx, Animation.CALL_MODE_DISCRETE)
-```
-
----
-
-## Decision Matrix: AnimationPlayer vs Tween
-
-| Feature | AnimationPlayer | Tween |
-|---------|-----------------|-------|
-| **Timeline editing** | ✅ Visual editor | ❌ Code only |
-| **Multiple properties** | ✅ Many tracks | ❌ One property |
-| **Reusable** | ✅ Save as resource | ❌ Create each time |
-| **Dynamic runtime** | ❌ Static | ✅ Fully dynamic |
-| **Method calls** | ✅ Method tracks | ❌ Use callbacks |
-| **Performance** | ✅ Optimized | ❌ Slightly slower |
-
-**Use AnimationPlayer for**: Cutscenes, character animations, complex UI
-**Use Tween for**: Simple runtime effects, one-off transitions
-
-
----
-
-## Expert Pattern: Shared-Animation-Library
-
-Efficiently reuse animation data across multiple different models (e.g., all humanoid NPCs) by decoupling animations into an `AnimationLibrary` resource. This prevents VRAM and memory bloat from duplicated tracks.
-
-```gdscript
-class_name SharedAnimationManager extends Node
-
-@export var shared_library: AnimationLibrary
-@onready var anim_player: AnimationPlayer = $AnimationPlayer
-
-func _ready() -> void:
-    # 1. Inject the shared library under a unique key
-    anim_player.add_animation_library(&"shared_human", shared_library)
-    
-    # 2. Access animations using the 'library/animation' syntax
-    anim_player.play(&"shared_human/walk")
-```
-
----
-
-## Expert Pattern: Animation-Event-Signaling
-
-Instead of calling hardcoded functions directly from method tracks, use a generalized "Signaler" pattern to decouple the animation timeline from gameplay logic.
-
-```gdscript
-class_name AnimationSignaler extends Node
-
-## Emitted when the animation reaches a marked event key
-signal animation_event(event_type: String)
-
-## Generic receiver for AnimationPlayer Method Tracks
-func emit_event(event_type: String) -> void:
-    animation_event.emit(event_type)
-
-# Setup in AnimationPlayer:
-# 1. Add Method Track pointing to this node
-# 2. Keyframe: method="emit_event", args=["spawn_footstep_vfx"]
-# 3. Other systems connect to 'animation_event' signal
-```
-
----
-
-## Expert Pattern: Animation-Budget-Manager
-
-Save significant CPU time in scenes with many characters by manually controlling the animation processing frequency based on visibility.
-
-```gdscript
-class_name AnimationBudgetManager extends Node3D
-
-@onready var anim_player: AnimationPlayer = $AnimationPlayer
-@onready var visibility_notifier: VisibleOnScreenNotifier3D = $VisibleOnScreenNotifier3D
-
-func _ready() -> void:
-    # 1. Disable automatic engine processing
-    anim_player.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL
-
-func _process(delta: float) -> void:
-    # 2. Cull updates for off-screen entities
-    if not visibility_notifier.is_on_screen():
-        return
-        
-    # 3. Manually step the animation forward
-    # Optional: Throttle updates (e.g., only call every 2nd frame) for distant entities
-    anim_player.advance(delta)
-```
+## Available Scripts (MANDATORY triggers)
+
+> Open the matching script **before** implementing that pattern. Edge-case recipes live in [references/edge-cases.md](references/edge-cases.md) — keep this body lean.
+
+| Need | Script |
+|---|---|
+| Method-track hit/state keys | [method_track_logic.gd](scripts/method_track_logic.gd) |
+| Stance/weapon library swap | [runtime_anim_lib_swapper.gd](scripts/runtime_anim_lib_swapper.gd) |
+| Shader uniform timelines | [dynamic_shader_animation.gd](scripts/dynamic_shader_animation.gd) |
+| Runtime track tweak | [procedural_track_modifier.gd](scripts/procedural_track_modifier.gd) |
+| Forced RESET orchestration | [reset_track_orchestrator.gd](scripts/reset_track_orchestrator.gd) |
+| Bezier → procedural drive | [bezier_curve_extraction.gd](scripts/bezier_curve_extraction.gd) |
+| Off-screen `active` cull | [active_animation_culler.gd](scripts/active_animation_culler.gd) |
+| Root motion ↔ physics | [root_motion_physics_sync.gd](scripts/root_motion_physics_sync.gd) |
+| Part/equipment tracks | [character_part_swapper_tracks.gd](scripts/character_part_swapper_tracks.gd) |
+| TYPE_AUDIO footstep sync | [precise_audio_sync.gd](scripts/precise_audio_sync.gd) |
+| Queue/branch sequences | [animation_sequencer.gd](scripts/animation_sequencer.gd) |
+| Code-built Animation resources | [programmatic_anim.gd](scripts/programmatic_anim.gd) |
+| Alt audio-track setup notes | [audio_sync_tracks.gd](scripts/audio_sync_tracks.gd) |
+
+## Track decision matrix
+
+| Track | Use when | Avoid when |
+|---|---|---|
+| **Value** | Animate properties (pos, modulate, uniforms) | One-off runtime juice → Tween |
+| **Method** | Hitboxes, SFX hooks, state flips at timestamps | CONTINUOUS call mode / missing method on path |
+| **Audio** | Footsteps / VO locked to frames | Loose `AudioStreamPlayer.play()` drift |
+| **Bezier** | Custom easing curves sampled at runtime | Simple linear fades |
+
+## Root motion (physics)
+
+`CharacterBody3D` + `Skeleton3D` + `AnimationPlayer`: extract with `get_root_motion_position()` / rotation on the physics tick — see [root_motion_physics_sync.gd](scripts/root_motion_physics_sync.gd). Do not leave walk displacement only on bones.
+
+## Sequences, blends, RESET
+
+- Chain: `animation_set_next` / `queue` / [animation_sequencer.gd](scripts/animation_sequencer.gd).
+- Blend times for walk↔run polish; default blend on the player when shared.
+- Always author a **RESET** clip with defaults; enable Reset on Save when editing.
+
+## AnimationPlayer vs Tween
+
+| Need | Prefer |
+|---|---|
+| Timeline / many properties / reusable | **AnimationPlayer** |
+| One-shot runtime / interruptible | **Tween** ([godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md)) |
+
+## Expert pointers (scripts, not dumps)
+
+- Shared libraries: [runtime_anim_lib_swapper.gd](scripts/runtime_anim_lib_swapper.gd) — `add_animation_library` + `library/anim` play paths.
+- Decoupled timeline events: method track → small signaler node → gameplay listeners ([method_track_logic.gd](scripts/method_track_logic.gd)).
+- Budget: [active_animation_culler.gd](scripts/active_animation_culler.gd) or manual `advance()` when off-screen.
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+
+> Progressive disclosure: open Official Documentation links only when researching a specific API;
+> load Related Skills when routing work to a peer domain — do not preload the whole lattice.
+
+### Official Documentation
+- [Introduction to the animation features](https://docs.godotengine.org/en/stable/tutorials/animation/introduction.html) — When AnimationPlayer owns timelines vs Tweens/sprites, and how libraries, RESET, and the editor fit together.
+- [Animation track types](https://docs.godotengine.org/en/stable/tutorials/animation/animation_track_types.html) — Value, Method, Bezier, and Audio tracks plus call-mode and keying rules this skill’s patterns depend on.
+- [AnimationPlayer](https://docs.godotengine.org/en/stable/classes/class_animationplayer.html) — `play`/`queue`/`seek`, blend times, `animation_finished` vs `animation_looped`, and `active` culling.
+- [Animation](https://docs.godotengine.org/en/stable/classes/class_animation.html) — Track APIs (`track_insert_key`, call modes, audio/bezier helpers) and length/loop metadata.
+- [AnimationLibrary](https://docs.godotengine.org/en/stable/classes/class_animationlibrary.html) — Shared stance/weapon clip packs added via `add_animation_library` without duplicating tracks per model.
+- [AnimationMixer](https://docs.godotengine.org/en/stable/classes/class_animationmixer.html) — Root-motion getters, callback process modes, and `advance()` used by physics sync and budget managers.
+- [Using AnimationTree](https://docs.godotengine.org/en/stable/tutorials/animation/animation_tree.html) — When blends/state machines should drive an underlying AnimationPlayer instead of manual `queue`.
+- [Tween](https://docs.godotengine.org/en/stable/classes/class_tween.html) — Runtime one-shot motion counterpart for the AnimationPlayer-vs-Tween decision matrix.
+- [Adding animations (Your first 3D game)](https://docs.godotengine.org/en/stable/getting_started/first_3d_game/09.adding_animations.html) — Practical import → AnimationPlayer play loop before advanced track authoring.
+- [VisibleOnScreenNotifier3D](https://docs.godotengine.org/en/stable/classes/class_visibleonscreennotifier3d.html) — Screen enter/exit signals used to toggle `AnimationPlayer.active` for off-screen CPU savings.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Safe `animation_finished` / `animation_looped` / custom method-track signaling without lifecycle leaks.
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Shared `.tres` AnimationLibrary ownership so runtime swaps do not duplicate or mutate playing resources unsafely.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed programmatic track generation, path strings, and Dictionary method-track payloads.
+
+#### Complements
+- [godot-animation-tree-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-tree-mastery/SKILL.md) — Blend trees, OneShot layers, and `travel()` when locomotion outgrows AnimationPlayer `queue`/`set_next`.
+- [godot-2d-animation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md) — AnimatedSprite2D / Skeleton2D presentation that still relies on AnimationPlayer method and property tracks.
+- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Interruptible runtime tweens when baking a full Animation resource would be overkill.
+- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — ShaderMaterial uniforms driven by value tracks (`shader_parameter/*`) without embedding materials.
+- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — Bus/voice pooling around TYPE_AUDIO tracks and footstep/SFX timing on the timeline.
+- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — CharacterBody3D integration for root-motion position/rotation extraction on the physics tick.
+
+#### Downstream / consumers
+- [godot-genre-fighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-fighting/SKILL.md) — Frame-perfect hitbox windows and discrete method tracks for cancel windows.
+- [godot-genre-platformer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md) — Jump/land/run clips, RESET hygiene, and blend times on 2D/3D movers.
+- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Attack timelines that emit damage/VFX events from AnimationPlayer method tracks.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for cross-skill discovery.

@@ -39,3 +39,14 @@ func _load_game_data() -> void:
         if file:
             game_data = file.get_var()
             file.close()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/handling_quit_requests.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/data_paths.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — pause-lifecycle save ownership
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — always-on save Autoload
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md
+# =============================================================================

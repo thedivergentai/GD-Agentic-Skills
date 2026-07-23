@@ -28,3 +28,14 @@ static func validate_autoload_order() -> void:
 	
 	for system in BOOTSTRAP_PRIORITY.keys():
 		print("- System: %s (Priority: %d)" % [system, BOOTSTRAP_PRIORITY[system]])
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/autoloads_versus_regular_nodes.html
+# - https://docs.godotengine.org/en/stable/classes/class_projectsettings.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — validating Autoload priority lists at boot
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — project.godot Autoload registration hygiene
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-templates/SKILL.md
+# =============================================================================

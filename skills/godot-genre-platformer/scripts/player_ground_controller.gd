@@ -22,3 +22,13 @@ func _physics_process(delta: float) -> void:
     velocity.x = input_dir * speed
     
     move_and_slide()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_characterbody2d.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/using_character_body_2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md — floor_constant_speed and snap on slopes
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md — slope max angle / snap interplay
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md
+# =============================================================================

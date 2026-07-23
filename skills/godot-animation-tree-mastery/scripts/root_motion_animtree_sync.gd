@@ -23,3 +23,14 @@ func _physics_process(delta: float) -> void:
 		velocity.y -= 9.8 * delta
 	
 	move_and_slide()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_animationtree.html
+# - https://docs.godotengine.org/en/stable/classes/class_animationmixer.html
+# - https://docs.godotengine.org/en/stable/tutorials/animation/animation_tree.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — CharacterBody3D + move_and_slide with root motion
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md — root motion tracks on source clips
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-tree-mastery/SKILL.md
+# =============================================================================

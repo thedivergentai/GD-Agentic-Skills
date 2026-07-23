@@ -18,3 +18,13 @@ func reveal_circular_area(world_pos: Vector2, radius_cells: int) -> void:
             if Vector2(x, y).length() <= radius_cells:
                 # pass -1 to layer to "clear" the fog cell.
                 fog_layer.set_cell(center + Vector2i(x, y), -1)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_tilemaplayer.html
+# - https://docs.godotengine.org/en/stable/tutorials/rendering/viewports.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md — TileMapLayer fog clear cells
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md — vision-mask shader consumers
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rts/SKILL.md
+# =============================================================================

@@ -16,3 +16,15 @@ func _load_asset(path: String) -> void:
 	print("Console: Prefetched ", path)
 
 ## Rule: Only prefetch non-critical assets (SFX, MeshData) to avoid I/O bottlenecks.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/using_multiple_threads.html
+# - https://docs.godotengine.org/en/stable/classes/class_workerthreadpool.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md — prefetch queues tied to scene transitions
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — I/O budgets on slow console storage
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-console/SKILL.md
+# =============================================================================

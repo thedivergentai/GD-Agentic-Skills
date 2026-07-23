@@ -27,3 +27,14 @@ func configure_sss(depth: float) -> void:
 ## EXPERT NOTE:
 ## When updating parameters every frame (like rain), ensure you are caching 
 ## the material reference in _ready() to avoid repeated get_active_material() calls.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_basematerial3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_standardmaterial3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/standard_material_3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md — SSS/transmittance needs Forward+ lighting setup
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md — custom skin/leaf shaders when flags are insufficient
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md
+# =============================================================================

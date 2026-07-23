@@ -55,3 +55,13 @@ func _override_stylebox(control: Control, theme_item: String, color: Color) -> v
 	
 	new_style.bg_color = color
 	control.add_override(theme_item, new_style)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/ui/gui_skinning.html
+# - https://docs.godotengine.org/en/stable/classes/class_tween.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md — base Theme architecture
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md — confetti/shimmer VFX
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-theme-easter/SKILL.md
+# =============================================================================

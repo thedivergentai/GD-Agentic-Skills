@@ -28,3 +28,14 @@ func place_impact_decal(pos: Vector3, normal: Vector3, texture: Texture2D) -> vo
 		decal.queue_free()
 		_decal_count -= 1
 	)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/using_decals.html
+# - https://docs.godotengine.org/en/stable/classes/class_decal.html
+# - https://docs.godotengine.org/en/stable/classes/class_geometryinstance3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md — environmental detail without unique mats
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md — impact FX pairing with decals
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md
+# =============================================================================

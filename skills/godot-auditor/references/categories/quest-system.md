@@ -10,3 +10,13 @@
 - **NEVER allow multiple instances of the same Quest Resource to be active** — Ensure you're tracking unique Quest IDs to prevent accidental duplication of missions.
 - **NEVER use complex UI logic to calculate progress** — The UI should only display what the `Quest` resource provides. Keep formulas in the `QuestManager`.
 - **NEVER award rewards directly inside the quest script** — Delegate reward distribution to the `InventoryManager` or `EconomyManager` via signals for decoupling.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-quest-system/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

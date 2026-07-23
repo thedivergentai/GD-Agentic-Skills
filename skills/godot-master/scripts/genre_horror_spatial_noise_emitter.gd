@@ -16,3 +16,15 @@ func emit_noise(origin: Transform3D, noise_shape_rid: RID) -> void:
         # Check for modular 'listener' component or detection method.
         if hit.collider.has_method(&"investigate_noise"):
             hit.collider.investigate_noise(origin.origin)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html
+# - https://docs.godotengine.org/en/stable/classes/class_physicsdirectspacestate3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/audio/audio_streams.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md — spatial cues that feed sensory AI
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md — shape queries for hear radius
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-stealth/SKILL.md — noise attracts suspicion meters
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-horror/SKILL.md
+# =============================================================================

@@ -1,6 +1,6 @@
 ---
 name: godot-game-loop-collection
-description: Use when implementing collection quests, scavenger hunts, or "find all X" objectives.
+description: "Expert collection-loop systems for collectible IDs, scavenger hunts, completion archives, nearest-item compass UI, hidden spawners, and persistent find-all-X progress. Use when implementing collectibles, scavenger hunts, completion% archives, or compass-guided item hunts. Keywords: collectible_id, scavenger_hunt, collection_manager, collection_compass, completion_archive, hidden_item_spawner, find_all, collectible_item."
 ---
 
 ## Godot 4.7 Baseline
@@ -11,66 +11,85 @@ description: Use when implementing collection quests, scavenger hunts, or "find 
 
 # Collection Game Loops
 
-## Overview
-This skill provides a standardized framework for "Collection Loops" – gameplay objectives where the player must find and gather a specific set of items (e.g., hidden eggs, data logs, coins).
+Stable collectible IDs → manager → compass → save. Not generic game-loop boilerplate.
 
-## NEVER Do
+## NEVER Do (collection landmines)
 
-- **NEVER use free() to destroy an active state node or level** — This can cause crashes if the node is still processing. Always use `queue_free()` to safely dispose of it at the end of the frame.
-- **NEVER calculate physics-dependent game state in _process()** — Movement and precise collisions must happen in `_physics_process()` to stay synced with the engine's fixed timestep.
-- **NEVER execute heavy state transitions (like loading massive levels) synchronously** — Calling `load()` on a huge scene stalls the main thread. Use `ResourceLoader.load_threaded_request()`.
-- **NEVER use exact floating-point equality (==) for time-based states** — Floating-point errors will eventually cause missed triggers. Use `is_equal_approx()` or relative comparisons.
-- **NEVER manipulate the active SceneTree from a background thread** — The SceneTree is not thread-safe. Use `call_deferred()` to push results back to the main thread.
-- **NEVER rely on a monolithic "GameManager" with hardcoded absolute paths** — This creates tight coupling. Use groups, signals, and exported references for a modular architecture.
-- **NEVER assume child nodes are ready before their parent** — `_ready()` executes from bottom-to-top. If you need child references, use `@onready` or `await ready`.
-- **NEVER use string-based signals for critical state transitions** — Avoid `connect("signal", _on_func)`. Use the Signal object syntax (`signal.connect(_on_func)`) for compile-time validation.
-- **NEVER poll for input state every frame for discrete menu events** — Use the `_unhandled_input()` callback to cleanly intercept events without wasting CPU cycles in `_process()`.
-- **NEVER crash the engine intentionally via CRASH_NOW_MSG** — Regular state handling should always recover gracefully. Crashing is for unrecoverable internal engine failures.
-- **NEVER hardcode spawn positions in code** — Always use `Marker3D` or `CollisionShape3D` nodes in the scene so designers can adjust layout without touching code.
-- **NEVER neglect "juice" before an item disappears** — Immediate `queue_free()` feels dry. Always spawn particles or play a sound before removal.
-- **NEVER use global variables for local collection progress** — Keep counts encapsulated within the `CollectionManager` and emit signals to update the UI.
-- **NEVER leave orphaned nodes in the tree during state swaps** — Always ensure the previous level/state is properly queued for deletion before instantiating the new one.
-- **NEVER scale collision shapes non-uniformly for collectibles** — This breaks collision detection math. Adjust the internal shape resource properties instead.
+- **NEVER reuse or omit stable collectible IDs** — Duplicate IDs double-count or overwrite; missing IDs break completion % and saves.
+- **NEVER count the same Area overlap twice** — `body_entered` can re-fire on re-entry; gate with "already collected" / one-shot disable of monitoring.
+- **NEVER persist NodePaths as the identity of collectibles** — Paths break on scene moves; save **IDs** (StringName / int), not `get_path()`.
+- **NEVER soft-lock the last item** — If compass / spawn logic depends on "remaining > 1", the final pickup becomes unfindable.
+- **NEVER store hunt progress only in scene-local nodes** — Level reload wipes progress; keep collected set in [collection_manager.gd](scripts/collection_manager.gd) + save.
+- **NEVER `queue_free()` collectibles with zero juice and no ID commit** — Commit ID first (signal), then VFX, then free.
+- **NEVER scale collectible collision shapes non-uniformly** — Breaks overlap math; edit shape resources.
+- **NEVER hardcode spawn positions in code** — Use Marker3D / designer points with [hidden_item_spawner.gd](scripts/hidden_item_spawner.gd).
+- **NEVER drive collection truth from UI silhouettes** — Archive UI mirrors manager state; manager is authoritative.
 
 ---
 
-## Available Scripts
+## Golden Path (MANDATORY)
 
-> **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
+1. [collectible_item.gd](scripts/collectible_item.gd) — `item_id` (unique) + `collection_id` (hunt), one-shot Area pickup
+2. [collection_manager.gd](scripts/collection_manager.gd) — authoritative collected-ID set via `register_item()` + `get_remaining_ids()`
+3. [collection_compass.gd](scripts/collection_compass.gd) — nearest node whose `item_id` is still in manager remainders
+4. Persist collected IDs via [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md)
 
-### [collection_loop_patterns.gd](scripts/collection_loop_patterns.gd)
-Collection of 10 expert patterns: Custom MainLoop extensions, deferred scene switching, threaded loading, and frame throttling.
+Optional: [hidden_item_spawner.gd](scripts/hidden_item_spawner.gd) for randomized hunts; [collection_loop_patterns.gd](scripts/collection_loop_patterns.gd) for advanced loop/MainLoop helpers.
 
-### [collection_manager.gd](scripts/collection_manager.gd)
-The central brain of the hunt. Tracks progress and manages completion signals.
+## Available Scripts (full set)
 
-### [collection_compass.gd](scripts/collection_compass.gd)
-Spatial radar for pointing towards the nearest collectible using vector math.
-
----
+- [collectible_item.gd](scripts/collectible_item.gd) — **MANDATORY** pickup actor; export stable `item_id` per instance and hunt `collection_id`
+- [collection_manager.gd](scripts/collection_manager.gd) — **MANDATORY** progress brain; `start_collection(id, item_ids)` then `register_item(id, item_id)`
+- [collection_compass.gd](scripts/collection_compass.gd) — **MANDATORY** when guiding players; wire `collection_manager` and query `get_remaining_ids()`
+- [hidden_item_spawner.gd](scripts/hidden_item_spawner.gd) — designer markers / chance spawns (Do NOT Load for fixed placed-only hunts)
+- [collection_loop_patterns.gd](scripts/collection_loop_patterns.gd) — advanced loop patterns (Do NOT Load for simple ID hunts)
 
 ## Expert Collection Patterns
 
 ### 1. Persistent Collection (Save/Load)
-To ensure progress survives restarts, use `FileAccess` to store data in `user://`.
-
-```gdscript
-func save_progress(data: Dictionary):
-    var file = FileAccess.open("user://save.dat", FileAccess.WRITE)
-    file.store_var(data) # Binary serialization for performance
-
-func load_progress() -> Dictionary:
-    if not FileAccess.file_exists("user://save.dat"): return {}
-    var file = FileAccess.open("user://save.dat", FileAccess.READ)
-    return file.get_var()
-```
+Serialize the manager’s collected `item_id` set per `collection_id` (`PackedStringArray` via `get_collected_ids()` / `restore_collected_ids()`), not node paths. Reload: manager restores set → collectibles self-disable if `item_id` already owned.
 
 ### 2. Collection Archive UI (Silhouettes)
-Display uncollected items as silhouettes without extra textures by using `modulate`.
-
-- **Technique**: Use an `ItemList` or `TextureRect` grid.
-- **Silhouette**: Set `modulate = Color(0, 0, 0, 0.5)` for locked items.
-- **Reveal**: Set `modulate = Color(1, 1, 1, 1)` once collected.
+Grid of icons: uncollected `modulate` silhouette; reveal when manager signals that ID. UI never invents collected state.
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
+
+### Official Documentation
+- [Area3D](https://docs.godotengine.org/en/stable/classes/class_area3d.html) — `body_entered` pickup volumes for 3D collectibles and layer/mask setup so only the player triggers collection.
+- [Using Area2D](https://docs.godotengine.org/en/stable/tutorials/physics/using_area_2d.html) — 2D overlap patterns when adapting the same collectible loop to Area2D/Sprite2D radar UIs.
+- [Groups](https://docs.godotengine.org/en/stable/tutorials/scripting/groups.html) — register collectibles and broadcast resets via `get_nodes_in_group` / `call_group` without hard-coded node paths.
+- [Idle and physics processing](https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html) — keep collision-driven progress in `_physics_process` / physics frames; throttle compass/UI work in `_process`.
+- [SceneTree](https://docs.godotengine.org/en/stable/classes/class_scenetree.html) — pause flags, groups, `physics_frame`, and `current_scene` ownership used by collection state transitions.
+- [Change scenes manually](https://docs.godotengine.org/en/stable/tutorials/scripting/change_scenes_manually.html) — deferred free + instantiate handoff when finishing a hunt and loading the next level.
+- [Background loading](https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html) — `ResourceLoader.load_threaded_request` / status polling so large collectible levels do not hitch the main thread.
+- [Saving games](https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html) — persist collected IDs and progress dictionaries with `FileAccess` under `user://`.
+- [Vector math](https://docs.godotengine.org/en/stable/tutorials/math/vector_math.html) — `direction_to` / `get_angle_to` for nearest-collectible compass pointing.
+- [Marker3D](https://docs.godotengine.org/en/stable/classes/class_marker3d.html) — designer-placed spawn anchors for hidden-item hunts instead of hard-coded coordinates.
+- [Using signals](https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html) — typed `item_collected` / `collection_updated` wiring from pickups into the manager and UI.
+- [MainLoop](https://docs.godotengine.org/en/stable/classes/class_mainloop.html) — custom loop extension surface referenced by advanced collection_loop_patterns (rarely needed over SceneTree).
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, `@onready`, and resource basics before wiring managers, markers, and collectible scenes.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed signals, `match`, `await`, and deferred calls used throughout collection managers and loop patterns.
+- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — Area3D/CollisionShape3D layers and non-uniform scale pitfalls that break pickup detection.
+
+#### Complements
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — safe dynamic connections and event-bus patterns when many collectibles notify one manager.
+- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — threaded scene swaps and ownership rules for end-of-hunt level transitions.
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — durable save schemas for which items remain collected across sessions.
+- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — silhouette archive grids and progress HUD layouts driven by `collection_updated`.
+- [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — spawn juice VFX before `queue_free` so pickups feel responsive.
+- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — one-shot pickup SFX and bus routing tied to collect events.
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — tune spawn_chance, target counts, and hunt length against completion-time distributions.
+
+#### Downstream / consumers
+- [godot-quest-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-quest-system/SKILL.md) — wraps collection progress as quest objectives with rewards and branching.
+- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — turns collected pickups into inventory grants when items are kept rather than consumed.
+- [godot-theme-easter](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-theme-easter/SKILL.md) — seasonal egg-hunt presentation layered on the same collection loop.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.

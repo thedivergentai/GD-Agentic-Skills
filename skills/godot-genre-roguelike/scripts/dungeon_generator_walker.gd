@@ -19,3 +19,13 @@ static func generate_map(start_pos: Vector2i, steps: int, rng: RandomNumberGener
 		current_pos += dir
 		
 	return map_data
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_randomnumbergenerator.html
+# - https://docs.godotengine.org/en/stable/tutorials/2d/using_tilemaps.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md — Drunkard's Walk cave/room carving
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md — Vector2i floor sets → TileMapLayer cells
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md
+# =============================================================================

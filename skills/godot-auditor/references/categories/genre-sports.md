@@ -15,3 +15,14 @@
 - NEVER skip **vector normalization** on joystick input; strictly normalize to prevent diagonal movement from being 1.4x faster.
 - NEVER handle contextual buttons with `is_action_pressed()`; strictly use a **ContextManager** to determine if Button A means "Pass", "Tackle", or "Switch".
 - NEVER evaluate an `Area3D` goal trigger immediately; strictly `await get_tree().physics_frame` to allow the Physics Server to sync.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-sports/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — simulate balance impact of structural fixes
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

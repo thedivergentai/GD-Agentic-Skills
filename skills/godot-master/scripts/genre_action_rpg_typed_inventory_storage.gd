@@ -20,3 +20,13 @@ func equip_resource(slot: StringName, item: Resource) -> void:
 func _on_item_equipped(slot: StringName, item: Resource) -> void:
     # Trigger visual updates or stat recalculations.
     pass
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html — equipment slot Resources
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html — Dictionary[StringName, Resource]
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md — equip/unequip + rarity
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md — recalc on gear change
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md
+# =============================================================================

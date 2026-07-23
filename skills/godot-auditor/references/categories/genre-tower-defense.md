@@ -16,3 +16,14 @@
 - NEVER scale Tower `CollisionShape` non-uniformly; strictly adjust the radius property of the Shape resource to preserve collision math.
 - NEVER delete enemies immediately on death; strictly use **set_deferred("disabled", true)** and wait one frame to prevent physics server crashes.
 - NEVER hardcode waves in huge switch statements; strictly use **Custom Resources (.tres)** for clean balancing and sequence editing.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-tower-defense/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — simulate balance impact of structural fixes
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

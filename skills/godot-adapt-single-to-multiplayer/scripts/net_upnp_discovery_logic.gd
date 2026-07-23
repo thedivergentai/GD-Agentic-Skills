@@ -16,3 +16,14 @@ func setup_upnp(port: int) -> void:
 		printerr("UPNP: Discovery failed with error %d" % error)
 
 ## Tip: Local discovery can be handled via 'PacketPeerUDP' broadcasting on the local subnet.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_upnp.html
+# - https://docs.godotengine.org/en/stable/tutorials/networking/index.html
+# - https://docs.godotengine.org/en/stable/classes/class_enetmultiplayerpeer.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md — LAN discovery alternatives
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md — firewall/export notes for listen servers
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md
+# =============================================================================

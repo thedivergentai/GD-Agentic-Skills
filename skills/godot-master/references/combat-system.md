@@ -11,359 +11,112 @@ description: "Expert patterns for combat systems including hitbox/hurtbox archit
 
 # Combat System
 
-Expert guidance for building flexible, component-based combat systems.
+Component combat pipeline — DamageData → Hitbox/Hurtbox → HealthComponent — not inline Hitbox/Combo/Ability novels.
 
 ## NEVER Do
 
-- **NEVER use direct damage references (`target.health -= 10`)** — This bypasses armor, resistances, and invincibility logic. Always use a `DamageData` + `HealthComponent` pattern for consistent results.
-- **NEVER forget invincibility frames (i-frames)** — Without them, multi-hit attacks deal damage every single frame. Always apply a brief invincibility period (0.1–0.5s) after taking a hit.
-- **NEVER keep hitboxes active permanently** — This causes unintended "ghost" damage. Enable and disable hitboxes precisely using `AnimationPlayer` tracks or code-timed triggers.
-- **NEVER use groups for physics-based hit filtering** — Collision layers are evaluated in C++ and are significantly faster. Groups don't restrict physics intersections adequately for high-performance combat.
-- **NEVER emit damage signals without a DamageData object** — A raw number loses critical context like damage type, source, and knockback direction.
-- **NEVER use try/catch blocks with validate targets** — GDScript does not support exceptions. Use `has_method(&"take_damage")` or the `is` operator for safe type checking.
-- **NEVER hardcode hitstun pauses using OS.delay_msec()** — This blocks the entire OS thread and freezes the game. Use `create_tween()` or `Engine.time_scale` for visual hit-stop effects.
-- **NEVER apply massive impulses to a RigidBody inside _process()** — Physics-altering impulses must happen in `_physics_process()` or `_integrate_forces()` to remain deterministic and stable.
-- **NEVER couple UI lifebars directly inside the Player script** — Use a `health_changed` signal. This keeps your combat logic clean and independent of UI implementation details.
-- **NEVER leave CollisionShapes active on dead entities** — Corpses will block players and towers. Disable them immediately using `set_deferred("disabled", true)`.
-- **NEVER scale CollisionShapes non-uniformly** — Non-uniform scaling breaks the physics engine's collision math. Always scale the internal resource (e.g., `CircleShape2D.radius`) instead.
-- **NEVER use instanced Nodes for base stat data** — Nodes carry unnecessary overhead. Use Godot's `Resource` class for lightweight, efficient, and inspectable stat containers.
-- **NEVER use raw strings for elemental damage types** — Strings are slow and error-prone. Use `enum` flags (optionally with `@export_flags`) to manage multi-type damage efficiently.
-- **NEVER use standard strings for state names in high-frequency loops** — Use `StringName` (&"attacking", &"stunned") to drastically improve dictionary lookups and hash comparison speeds.
-- **NEVER forget to duplicate() a shared Resource stats block** — If you don't call `duplicate()` when instancing a mob, all enemies of that type will share the same health pool.
+- **NEVER use direct damage references (`target.health -= 10`)** — Bypass armor, resistances, and i-frames. Always `DamageData` + `HealthComponent.take_damage`.
+- **NEVER forget invincibility frames (i-frames)** — Multi-hit shapes otherwise tick every physics frame. Apply a short invuln window after a successful hit.
+- **NEVER keep hitboxes active permanently** — Enable/disable with AnimationPlayer tracks or timed code; permanent monitoring causes ghost hits.
+- **NEVER use groups for physics-based hit filtering** — Prefer collision layers/masks (C++ filter). Groups are secondary logic, not the physics gate.
+- **NEVER emit damage signals without a DamageData object** — Raw numbers lose type, source, knockback, and crit context.
+- **NEVER use raw strings for elemental damage types** — Use `enum` / `@export_flags` bitfields. String `"physical"` violates this skill’s own contract.
+- **NEVER use try/catch to validate targets** — GDScript has no exceptions. Use `has_method(&"take_damage")` / `is` checks.
+- **NEVER hardcode hitstun with `OS.delay_msec()`** — Blocks the OS thread. Use tweens / `Engine.time_scale` + `ignore_time_scale` timers.
+- **NEVER apply RigidBody impulses in `_process()`** — Use `_physics_process` / `_integrate_forces`.
+- **NEVER couple UI lifebars inside the Player script** — Emit `health_changed`; HUD listens.
+- **NEVER leave CollisionShapes active on dead entities** — `set_deferred("disabled", true)` on death.
+- **NEVER scale CollisionShapes non-uniformly** — Scale the shape resource (`radius`, `size`), not the node transform unevenly.
+- **NEVER use instanced Nodes for base combat stats** — Prefer `Resource` / `RefCounted` containers; `duplicate()` per instance.
+- **NEVER use standard strings for high-frequency state names** — Prefer `StringName` (`&"attacking"`).
+- **NEVER forget `duplicate()` on shared Resource stats** — Shared templates = shared health pools.
 
 ---
+
+## Golden Path (MANDATORY)
+
+1. **[damage_data.gd](../scripts/combat_system_damage_data.gd)** — typed `DamageData` Resource with `enum` / flags for damage types (no String elements).
+2. **[health_component.gd](../scripts/combat_system_health_component.gd)** — `take_damage` + i-frame gate + `health_changed` / `died` signals.
+3. **[hitbox_hurtbox.gd](../scripts/combat_system_hitbox_hurtbox.gd)** / **[hitbox_component.gd](../scripts/combat_system_hitbox_component.gd)** — Area hit delivery into hurtboxes.
+4. **[combat_system_patterns.gd](../scripts/combat_system_combat_system_patterns.gd)** — duck-typing, hit-stop, nodeless AoE, frame sync.
+
+**Do NOT** re-inline Hitbox/Health/Combo/Ability tutorials in scenes. Route abilities to [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md); compose components per [godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md); FSMs via [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md).
+
+## Decision Tree
+
+| Task | Load | Do NOT Load |
+|------|------|-------------|
+| Define damage payload | damage_data.gd | String `damage_type` fields |
+| HP + i-frames | health_component.gd | Direct `health -= n` |
+| Melee/projectile volumes | hitbox_hurtbox.gd / hitbox_component.gd | Permanent monitoring Areas |
+| AoE / hit-stop / duck-type | combat_system_patterns.gd | Spawn temp Areas every tick |
+| Ability cooldowns / skill bar | godot-ability-system | Inline AbilityManager novels here |
+| Combo buffers | godot-input-handling + state machine | Embedding hit logic in `_input` |
+
+## Damage Type Contract (aligned with NEVER)
+
+```gdscript
+# From damage_data.gd — prefer this shape everywhere
+enum DamageType { PHYSICAL = 1, FIRE = 2, ICE = 4, LIGHTNING = 8, POISON = 16 }
+
+@export_flags("Physical", "Fire", "Ice", "Lightning", "Poison")
+var damage_types: int = DamageType.PHYSICAL
+```
+
+Hitboxes must pass `DamageData` (or equivalent AttackData built from the same flags), never `"Physical"` strings.
 
 ## Available Scripts
 
-> **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
-
-### [combat_system_patterns.gd](../scripts/combat_system_combat_system_patterns.gd)
-10 Expert patterns: Safe duck-typing, hitstun tweens, nodeless AoE shape casting, and frame-perfect sync.
-
-### [hitbox_hurtbox.gd](../scripts/combat_system_hitbox_hurtbox.gd)
-Component-based hitbox with hit-stop and knockback logic.
-
----
-
-## Damage System
-
-```gdscript
-# damage_data.gd
-class_name DamageData
-extends RefCounted
-
-var amount: float
-var source: Node
-var damage_type: String = "physical"
-var knockback: Vector2 = Vector2.ZERO
-var is_critical: bool = false
-
-func _init(dmg: float, src: Node = null) -> void:
-    amount = dmg
-    source = src
-```
-
-## Hurtbox/Hitbox Pattern
-
-```gdscript
-# hurtbox.gd
-extends Area2D
-class_name Hurtbox
-
-signal damage_received(data: DamageData)
-
-@export var health_component: Node
-
-func _ready() -> void:
-    area_entered.connect(_on_area_entered)
-
-func _on_area_entered(area: Area2D) -> void:
-    if area is Hitbox:
-        var damage := area.get_damage()
-        damage_received.emit(damage)
-        
-        if health_component:
-            health_component.take_damage(damage)
-```
-
-```gdscript
-# hitbox.gd
-extends Area2D
-class_name Hitbox
-
-@export var damage: float = 10.0
-@export var damage_type: String = "physical"
-@export var knockback_force: float = 100.0
-@export var owner_node: Node
-
-func get_damage() -> DamageData:
-    var data := DamageData.new(damage, owner_node)
-    data.damage_type = damage_type
-    
-    # Calculate knockback direction
-    if owner_node:
-        var direction := (global_position - owner_node.global_position).normalized()
-        data.knockback = direction * knockback_force
-    
-    return data
-```
-
-## Health Component
-
-```gdscript
-# health_component.gd
-extends Node
-class_name HealthComponent
-
-signal health_changed(old_health: float, new_health: float)
-signal died
-signal healed(amount: float)
-
-@export var max_health: float = 100.0
-@export var current_health: float = 100.0
-@export var invincible: bool = false
-
-func take_damage(data: DamageData) -> void:
-    if invincible:
-        return
-    
-    var old_health := current_health
-    current_health -= data.amount
-    current_health = clampf(current_health, 0, max_health)
-    
-    health_changed.emit(old_health, current_health)
-    
-    if current_health <= 0:
-        died.emit()
-
-func heal(amount: float) -> void:
-    var old_health := current_health
-    current_health += amount
-    current_health = minf(current_health, max_health)
-    
-    healed.emit(amount)
-    health_changed.emit(old_health, current_health)
-
-func is_dead() -> bool:
-    return current_health <= 0
-```
-
-## Combat State Machine
-
-```gdscript
-# combat_state.gd
-extends Node
-class_name CombatState
-
-enum State { IDLE, ATTACKING, BLOCKING, DODGING, STUNNED }
-
-var current_state: State = State.IDLE
-var can_act: bool = true
-
-func enter_attack_state() -> bool:
-    if not can_act:
-        return false
-    
-    current_state = State.ATTACKING
-    can_act = false
-    return true
-
-func enter_block_state() -> void:
-    current_state = State.BLOCKING
-
-func enter_dodge_state() -> bool:
-    if not can_act:
-        return false
-    
-    current_state = State.DODGING
-    can_act = false
-    return true
-
-func exit_state() -> void:
-    current_state = State.IDLE
-    can_act = true
-```
-
-## Combo System
-
-```gdscript
-# combo_system.gd
-extends Node
-class_name ComboSystem
-
-signal combo_executed(combo_name: String)
-
-@export var combo_window: float = 0.5
-var combo_buffer: Array[String] = []
-var last_input_time: float = 0.0
-
-func register_input(action: String) -> void:
-    var current_time := Time.get_ticks_msec() / 1000.0
-    
-    if current_time - last_input_time > combo_window:
-        combo_buffer.clear()
-    
-    combo_buffer.append(action)
-    last_input_time = current_time
-    
-    check_combos()
-
-func check_combos() -> void:
-    # Light → Light → Heavy = Special Attack
-    if combo_buffer.size() >= 3:
-        var last_three := combo_buffer.slice(-3)
-        if last_three == ["light", "light", "heavy"]:
-            execute_combo("special_attack")
-            combo_buffer.clear()
-
-func execute_combo(combo_name: String) -> void:
-    combo_executed.emit(combo_name)
-```
-
-## Ability System
-
-```gdscript
-# ability.gd
-class_name Ability
-extends Resource
-
-@export var ability_name: String
-@export var cooldown: float = 1.0
-@export var damage: float = 25.0
-@export var range: float = 100.0
-@export var animation: String
-
-var is_on_cooldown: bool = false
-
-func can_use() -> bool:
-    return not is_on_cooldown
-
-func use(caster: Node) -> void:
-    if not can_use():
-        return
-    
-    is_on_cooldown = true
-    
-    # Execute ability logic
-    _execute(caster)
-    
-    # Start cooldown
-    await caster.get_tree().create_timer(cooldown).timeout
-    is_on_cooldown = false
-
-func _execute(caster: Node) -> void:
-    # Override in derived abilities
-    pass
-```
-
-## Damage Popups
-
-```gdscript
-# damage_popup.gd
-extends Label
-
-func show_damage(amount: float, is_crit: bool = false) -> void:
-    text = str(int(amount))
-    
-    if is_crit:
-        modulate = Color.RED
-        scale = Vector2(1.5, 1.5)
-    
-    var tween := create_tween()
-    tween.set_parallel(true)
-    tween.tween_property(self, "position:y", position.y - 50, 1.0)
-    tween.tween_property(self, "modulate:a", 0.0, 1.0)
-    tween.finished.connect(queue_free)
-```
-
-## Critical Hits
-
-```gdscript
-func calculate_damage(base_damage: float, crit_chance: float = 0.1) -> DamageData:
-    var data := DamageData.new(base_damage)
-    
-    if randf() < crit_chance:
-        data.is_critical = true
-        data.amount *= 2.0
-    
-    return data
-```
-
-## Best Practices
-
-1. **Separate Concerns** - Health ≠ Combat ≠ Movement
-2. **Use Signals** - Decouple systems
-3. **Area2D for Hitboxes** - Built-in collision detection
-4. **Invincibility Frames** - Prevent spam damage
-
----
-
-## Elite Godot 4.x Patterns
-
-### 1. Combat Logging & Telemetry
-Use `FileAccess` and `JSON` to record combat events to the `user://` directory for balancing analytics.
-
-```gdscript
-# combat_logger.gd
-class_name CombatLogger extends Node
-
-const LOG_FILE := "user://combat_log.json"
-var _session_log: Array[Dictionary] = []
-
-func log_damage_event(source: String, target: String, amount: int) -> void:
-    var event := { "source": source, "target": target, "damage": amount }
-    _session_log.append(event)
-    # Optimization: Batch flushes instead of writing on every event
-    if _session_log.size() >= 10: _flush_to_disk()
-
-func _flush_to_disk() -> void:
-    var file := FileAccess.open(LOG_FILE, FileAccess.WRITE)
-    if file:
-        file.store_string(JSON.stringify(_session_log))
-        file.close()
-```
-
-### 2. Authoritative Networked Damage
-Clients should never dictate damage. Instead, they request a hit validation from the server via RPC, providing the target's node path and intended damage.
-
-```gdscript
-# networked_damage_manager.gd
-class_name NetworkedDamageManager extends Node
-
-func request_damage(target: Node, amount: int) -> void:
-    if multiplayer.has_multiplayer_peer():
-        rpc_id(1, "server_validate_hit", target.get_path(), amount)
-
-@rpc("any_peer", "call_remote", "reliable")
-func server_validate_hit(target_path: NodePath, amount: int) -> void:
-    var sender_id := multiplayer.get_remote_sender_id()
-    var target_node := get_node_or_null(target_path)
-    
-    if is_instance_valid(target_node) and target_node.has_method("take_damage"):
-        # Elite: Insert manual lag-compensation / distance checks here
-        target_node.take_damage(amount)
-        rpc_id(sender_id, "client_confirm_hit", target_path, amount)
-
-@rpc("authority", "call_remote", "reliable")
-func client_confirm_hit(target_path: NodePath, amount: int) -> void:
-    print_rich("[color=green]Hit confirmed by server.[/color]")
-```
-
-### 3. Hitbox Visualizer (In-Game Debugging)
-Toggle global collision visibility during live gameplay using `SceneTree.debug_collisions_hint`.
-
-```gdscript
-# hitbox_visualizer.gd
-class_name HitboxVisualizer extends Node
-
-func toggle_debug_hitboxes() -> void:
-    get_tree().debug_collisions_hint = not get_tree().debug_collisions_hint
-
-## Set specific debug colors for different combat volumes
-static func set_hitbox_color(shape: CollisionShape3D, is_attack: bool) -> void:
-    shape.debug_color = Color.RED if is_attack else Color.GREEN
-```
+- [damage_data.gd](../scripts/combat_system_damage_data.gd) — **MANDATORY** DamageData Resource + type flags.
+- [health_component.gd](../scripts/combat_system_health_component.gd) — **MANDATORY** Health + i-frames golden path.
+- [hitbox_hurtbox.gd](../scripts/combat_system_hitbox_hurtbox.gd) — **MANDATORY** before Area combat wiring.
+- [hitbox_component.gd](../scripts/combat_system_hitbox_component.gd) — 3D Area hitbox companion (flags-aligned).
+- [combat_system_patterns.gd](../scripts/combat_system_combat_system_patterns.gd) — **MANDATORY** for AoE / hit-stop / duck-typing.
+
+## Elite Deltas (keep short)
+
+- **Combat telemetry:** batch JSON flushes of DamageData events to `user://` for balance (source, target, flags, amount).
+- **Authoritative damage:** clients request; server validates distance/team then applies `take_damage` ([godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md)).
+- **Hitbox debug:** `SceneTree.debug_collisions_hint` + distinct debug colors for attack vs hurt volumes.
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
-- Related: After DamageData/Resources exist, prove difficulty bands with [godot-monte-carlo-balancer](../SKILL.md) before shipping curves.
+
+> **Progressive disclosure:** Skim Official Documentation only for the APIs you are implementing (Areas, layers/masks, Resources, signals, timers, animation hit windows). Open Related Skills when wiring adjacent systems—do not preload the whole lattice.
+
+### Official Documentation
+- [Using Area2D](https://docs.godotengine.org/en/stable/tutorials/physics/using_area_2d.html) — Hitbox/hurtbox combat is Area overlap detection (`area_entered` / monitoring), not CharacterBody movement queries.
+- [Physics introduction](https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html) — Prefer collision layers/masks for hit filtering; groups are slower and do not replace physics masks for high-frequency combat.
+- [Area2D](https://docs.godotengine.org/en/stable/classes/class_area2d.html) — 2D hit volumes: `monitoring`/`monitorable`, `area_entered`, and layer/mask bits for team/faction filtering.
+- [Area3D](https://docs.godotengine.org/en/stable/classes/class_area3d.html) — 3D `HitboxComponent` / hurtbox volumes use the same Area overlap model with 3D layers and shapes.
+- [CollisionShape2D](https://docs.godotengine.org/en/stable/classes/class_collisionshape2d.html) — Enable/disable attack shapes with `set_deferred("disabled", …)` so the physics server is not mutated mid-step; never non-uniform-scale the node.
+- [PhysicsShapeQueryParameters3D](https://docs.godotengine.org/en/stable/classes/class_physicsshapequeryparameters3d.html) — Nodeless AoE/explosions via `intersect_shape` on `PhysicsDirectSpaceState3D` without spawning temporary Area nodes.
+- [AnimationPlayer](https://docs.godotengine.org/en/stable/classes/class_animationplayer.html) — Drive hitbox active windows from animation tracks (or method calls) so attacks are not permanently monitoring.
+- [Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html) — Keep `DamageData` / combat stats as data (`Resource` / `RefCounted`), and `duplicate()` shared templates per instance so enemies do not share one health pool.
+- [Using signals](https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html) — Emit `health_changed` / `died` / damage events so HUD and VFX subscribe without coupling lifebars into the player script.
+- [SceneTreeTimer](https://docs.godotengine.org/en/stable/classes/class_scenetreetimer.html) — Hit-stop after `Engine.time_scale = 0` must use `create_timer(..., ignore_time_scale=true)` or the thaw timer freezes with the world.
+- [Tween](https://docs.godotengine.org/en/stable/classes/class_tween.html) — Interruptible hitstun/flash VFX: kill and recreate tweens on consecutive hits instead of stacking parallel flash animations.
+- [High-level multiplayer](https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html) — Authoritative damage: clients request hits; the server validates and confirms via `@rpc` before applying `take_damage`.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — Area layers/masks, `CollisionShape2D` deferred disable, and space queries are the physics substrate under hitbox/hurtbox filtering.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Damage, health, and death signals need clear ownership so combat components stay decoupled from UI and AI listeners.
+- [godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md) — Prefer `HealthComponent` / `HitboxComponent` children over baking combat into a monolithic Character script.
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — `DamageData`, elemental flags, and combat stats belong in Resource/`RefCounted` data with safe `duplicate()` on spawn.
+
+#### Complements
+- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — Abilities resolve into this skill’s damage/targeting pipeline; keep ability metadata separate from `DamageData`.
+- [godot-rpg-stats](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md) — Armor, resistances, crit chance, and modifier stacks feed `take_damage` before health is written.
+- [godot-animation-player](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md) — Attack animations own hitbox enable windows, cancel frames, and recovery locks for combos.
+- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — IDLE/ATTACKING/BLOCKING/STUNNED combat states belong in a character FSM that gates `can_act`, not ad-hoc bool soup.
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Combo buffers and attack actions should call into combat/combo systems from the action map rather than embedding hit logic in input callbacks.
+
+#### Downstream / consumers
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — After DamageData, i-frames, cooldowns, and crit curves are tunable, Monte Carlo sims prove DPS/TTK bands before shipping difficulty.
+- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — Predicted hits, lag compensation, and authority checks build on the DamageData + server-validate RPC split.
+- [godot-genre-action-rpg](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md) — Action-RPG combat loops assemble hitboxes, abilities, stats, and progression genre glue on top of this skill.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.
+

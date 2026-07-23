@@ -52,3 +52,13 @@ func _get_monitor_value(type: MonitorType) -> float:
 
 ## EXPERT USAGE:
 ## CustomPerformanceMonitor.update_monitor(CustomPerformanceMonitor.MonitorType.ENEMY_COUNT, enemies.size())
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_performance.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/general_optimization.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md — pathfinding_ms custom monitor consumers
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md — chunk_load_ms while streaming scenes
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md
+# =============================================================================

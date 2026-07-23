@@ -18,3 +18,14 @@ func _physics_process(_delta: float) -> void:
 		pass
 
 ## Rule: Avoid syncing 'Rotation' every frame. Sync 'Rotation Angle' as a single half-float (16-bit).
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_multiplayersynchronizer.html
+# - https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html
+# - https://docs.godotengine.org/en/stable/classes/class_multiplayerpeer.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md — quantization / bit-pack companions
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — bandwidth budgets for property sync
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md
+# =============================================================================

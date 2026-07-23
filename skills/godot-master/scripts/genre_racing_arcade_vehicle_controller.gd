@@ -25,3 +25,13 @@ func _physics_process(delta: float) -> void:
     velocity *= 0.98
     
     move_and_slide()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_characterbody3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — CharacterBody3D arcade kart motion
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — analog steer without VehicleBody
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-racing/SKILL.md
+# =============================================================================

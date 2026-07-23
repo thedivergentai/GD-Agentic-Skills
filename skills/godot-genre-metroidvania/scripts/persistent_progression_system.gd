@@ -20,3 +20,13 @@ func unlock_ability(ability: StringName) -> void:
 func has_ability(ability: StringName) -> bool:
     # Safe retrieval with fallback.
     return _unlocked_abilities.get(ability, false)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — StringName ability flag dictionaries
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — round-trip unlocked abilities
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-metroidvania/SKILL.md
+# =============================================================================

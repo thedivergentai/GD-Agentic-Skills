@@ -65,3 +65,18 @@ func get_entities_in_radius(pos: Transform3D, shape_rid: RID) -> Array:
 func setup_ai_avoidance(agent_rid: RID) -> void:
     NavigationServer3D.agent_set_avoidance_enabled(agent_rid, true)
     NavigationServer3D.agent_set_avoidance_mask(agent_rid, 1)
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_physicsdirectspacestate3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/audio/audio_buses.html
+# - https://docs.godotengine.org/en/stable/classes/class_navigationserver3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_visibleonscreennotifier3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/groups.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md — nodeless intersect_ray / intersect_shape recipes
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md — investigation paths and avoidance masks
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md — AI_Audible bus routing for hearing
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-stealth/SKILL.md
+# =============================================================================

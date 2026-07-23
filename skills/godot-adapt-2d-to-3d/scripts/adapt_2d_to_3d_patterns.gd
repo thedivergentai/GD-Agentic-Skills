@@ -77,3 +77,16 @@ func _input(event: InputEvent) -> void:
     if get_viewport().gui_get_focus_owner():
         return # UI is handling this
     # 3D interaction logic...
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html
+# - https://docs.godotengine.org/en/stable/tutorials/2d/canvas_layers.html
+# - https://docs.godotengine.org/en/stable/tutorials/rendering/viewports.html
+# - https://docs.godotengine.org/en/stable/classes/class_sprite3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md — mouse→3D PhysicsRayQueryParameters3D picks
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — SubViewport / mixed-resolution presentation
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md — shaded Sprite3D receiving DirectionalLight3D
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-2d-to-3d/SKILL.md
+# =============================================================================

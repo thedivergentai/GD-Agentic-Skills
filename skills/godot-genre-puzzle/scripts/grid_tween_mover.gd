@@ -32,3 +32,13 @@ func _execute_move(target: Vector2i) -> void:
 
 ## [SKILL NOTICE]: Resolve logical state (Vector2i) IMMEDIATELY upon 
 ## valid input. Use Tweens ONLY for visual representation to avoid race conditions.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_tween.html
+# - https://docs.godotengine.org/en/stable/classes/class_tilemaplayer.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md — TRANS/EASE presets for grid slides
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md — map_to_local for visual targets
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-puzzle/SKILL.md
+# =============================================================================

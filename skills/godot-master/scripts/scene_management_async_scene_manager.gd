@@ -67,3 +67,14 @@ func _finalize_load() -> void:
 ## or 'Dialogue' UI to mask the transition entirely.
 ## NEVER hardcode scene paths; use a 'Registry' resource that 
 ## maps 'LEVEL_1' to the actual '.tscn' path.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html
+# - https://docs.godotengine.org/en/stable/classes/class_resourceloader.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/change_scenes_manually.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — loading-bar UI driven by loading_progress
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — payload/registry Resources instead of hardcoded paths
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md
+# =============================================================================

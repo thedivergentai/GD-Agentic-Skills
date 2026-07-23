@@ -102,3 +102,14 @@ func _report_coupling(dep_map: Dictionary) -> void:
 ## NEVER structure scenes as: Player -> Weapon -> Player
 ## FIX: Use Resources for shared data, signals for communication.
 ## Run this auditor monthly on projects >50 scenes.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/nodes_and_scene_instances.html
+# - https://docs.godotengine.org/en/stable/classes/class_packedscene.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — escalate circular deps into editor diagnostics
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md — scene graphs must stay acyclic across swaps
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md
+# =============================================================================

@@ -21,3 +21,14 @@ void fragment() {
 	float peak_mask = step(0.8, v_height);
 	ALBEDO = mix(vec3(0.2, 0.5, 0.2), vec3(0.9, 0.9, 1.0), peak_mask);
 }
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/spatial_shader.html
+# - https://docs.godotengine.org/en/stable/tutorials/shaders/your_first_shader/your_first_3d_shader.html
+# - https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/shading_language.html
+# Related skills:
+# - ../godot-procedural-generation/SKILL.md — noise-driven terrain/mesh generation
+# - ../godot-3d-world-building/SKILL.md — placing displaced landscape meshes
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md
+# =============================================================================

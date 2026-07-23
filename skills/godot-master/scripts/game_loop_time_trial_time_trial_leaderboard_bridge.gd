@@ -26,3 +26,14 @@ func start_session() -> void:
 func get_elapsed_formatted() -> String:
 	var current = Engine.get_physics_frames()
 	return format_frames(current - start_tick)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_engine.html
+# - https://docs.godotengine.org/en/stable/classes/class_time.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — store integer msec records instead of float display strings
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — HUD labels consuming format_msec / format_frames
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-game-loop-time-trial/SKILL.md
+# =============================================================================

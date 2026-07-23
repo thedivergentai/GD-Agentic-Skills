@@ -22,3 +22,13 @@ The atmosphere's soul. This rubric measures how the vision uses light and shadow
 
 ## 🌟 Visionary's Final Decree
 Lighting is the ink with which we write the vision. To achieve **Elite** status, implement 'Dynamic Light Culling' based on distance and camera visibility. If your scenes feel lit by a single cohesive vision without overheating the processor, you have reached the **Visionary Tier**.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/performance/gpu_optimization.html
+- https://docs.godotengine.org/en/stable/classes/class_performance.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

@@ -18,3 +18,13 @@ func update_ui_position(world_point: Vector3) -> void:
         ui_element.show()
     else:
         ui_element.hide()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_camera3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/rendering/viewports.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — unproject / behind-camera culling for world-space UI
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — place overlay controls without fighting anchors
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-puzzle/SKILL.md
+# =============================================================================

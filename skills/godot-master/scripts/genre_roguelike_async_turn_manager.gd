@@ -22,3 +22,12 @@ func run_turn_loop() -> void:
 
 ## [SKILL NOTICE]: Use 'await' inside the turn loop to cleanly handle 
 ## asynchronous actions like movement Tweens and attack animations.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — await turn loops vs signal-driven schedulers
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — sync attack/move animations inside turns
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md
+# =============================================================================

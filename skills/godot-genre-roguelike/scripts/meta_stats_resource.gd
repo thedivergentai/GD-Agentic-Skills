@@ -26,3 +26,13 @@ func load_stats() -> void:
 
 ## [SKILL NOTICE]: Always save meta-progression to 'user://' using 
 ## 'save_encrypted_pass()' to protect the game's economy from easy cheats.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_fileaccess.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — encrypted_pass meta stats protection
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — subtle +5–15% meta buffs vs grind-to-win
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md
+# =============================================================================

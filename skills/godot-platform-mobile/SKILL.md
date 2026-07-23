@@ -33,8 +33,17 @@ Touch-first input, safe area handling, and battery optimization define mobile de
 
 ## Available Scripts
 
-> **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
+> **MANDATORY**: Pick the golden-path branch, then load only the matching scripts.
 
+### Golden path
+1. Run the **decision tree** below (control × orientation × renderer).
+2. Touch / stick → `mobile_gesture_recognizer.gd` (+ input skill for action maps). Built-in virtual joystick when sufficient.
+3. Layout / notches → `adaptive_safe_area_inset.gd` + `orientation_layout_adaptor.gd`.
+4. Lifecycle / thermal → `thermal_throttle_monitor.gd` (pause FPS + heat).
+5. Permissions / share / IAP → `android_runtime_permissions.gd`, `native_share_invoker.gd`, `mobile_iap_flow_boilerplate.gd` as needed.
+6. VRAM / compression → `mobile_vram_optimizer.gd`.
+
+### Script index
 ### [mobile_gesture_recognizer.gd](scripts/mobile_gesture_recognizer.gd)
 Expert multi-touch logic for pinch-to-zoom and two-finger rotation.
 
@@ -65,93 +74,24 @@ VRAM monitoring and texture compression enforcement rules.
 ### [native_share_invoker.gd](scripts/native_share_invoker.gd)
 OS-level native share sheet integration for social features.
 
+### [platform_mobile_patterns.gd](scripts/platform_mobile_patterns.gd) / [mobile_safe_area_handler.gd](scripts/mobile_safe_area_handler.gd)
+Additional patterns / legacy safe-area helper — load only if golden-path scripts insufficient.
+
 ---
 
-```gdscript
-# Replace mouse/keyboard with touch
-func _input(event: InputEvent) -> void:
-    if event is InputEventScreenTouch:
-        if event.pressed:
-            on_touch_start(event.position)
-        else:
-            on_touch_end(event.position)
-    
-    elif event is InputEventScreenDrag:
-        on_touch_drag(event.position, event.relative)
-```
+## Decision tree (before implementation)
 
-## Virtual Joystick
+| Axis | Choose | Implies |
+|------|--------|---------|
+| **Control scheme** | Tap/gesture vs virtual stick vs tilt | Gestures → `mobile_gesture_recognizer.gd`; stick → built-in joystick / Control stick; tilt → `mobile_sensor_fusion.gd` |
+| **Orientation** | Locked landscape / portrait / adaptive | Adaptive → **MANDATORY** `orientation_layout_adaptor.gd` + `size_changed` |
+| **Renderer** | **Mobile** vs **Compatibility** | Never Forward+ on phone GPUs; ETC2/ASTC on; precompile shaders on load screens |
 
-```gdscript
-# virtual_joystick.gd
-extends Control
+Touch input uses `InputEventScreenTouch` / `InputEventScreenDrag` — not mouse emulation.
 
-signal joystick_moved(direction: Vector2)
-
-var is_pressed := false
-var center: Vector2
-var touch_index := -1
-
-func _gui_input(event: InputEvent) -> void:
-    if event is InputEventScreenTouch:
-        if event.pressed:
-            is_pressed = true
-            center = event.position
-            touch_index = event.index
-        elif event.index == touch_index:
-            is_pressed = false
-            joystick_moved.emit(Vector2.ZERO)
-    
-    elif event is InputEventScreenDrag and event.index == touch_index:
-        var direction := (event.position - center).normalized()
-        joystick_moved.emit(direction)
-```
-
-## Responsive UI
-
-```gdscript
-# Adapt to screen size
-func _ready() -> void:
-    get_viewport().size_changed.connect(_on_viewport_resized)
-    _on_viewport_resized()
-
-func _on_viewport_resized() -> void:
-    var viewport_size := get_viewport().get_visible_rect().size
-    var aspect := viewport_size.x / viewport_size.y
-    
-    if aspect < 1.5:  # Tall screen
-        $UI.layout_mode = VBoxContainer.LAYOUT_MODE_VERTICAL
-    else:  # Wide screen
-        $UI.layout_mode = HBoxContainer.LAYOUT_MODE_HORIZONTAL
-```
-
-## Battery Optimization
-
-```gdscript
-# Lower frame rate when inactive
-func _notification(what: int) -> void:
-    match what:
-        NOTIFICATION_APPLICATION_FOCUS_OUT:
-            Engine.max_fps = 30
-        NOTIFICATION_APPLICATION_FOCUS_IN:
-            Engine.max_fps = 60
-```
-
-## Safe Areas (Notches)
-
-```gdscript
-func apply_safe_area() -> void:
-    var safe_area := DisplayServer.get_display_safe_area()
-    
-    # Adjust UI margins
-    $UI.offset_top = safe_area.position.y
-    $UI.offset_left = safe_area.position.x
-```
-
-## Performance Settings
+## Project settings (mobile)
 
 ```ini
-# project.godot mobile settings
 [rendering]
 renderer/rendering_method="mobile"
 textures/vram_compression/import_etc2_astc=true
@@ -162,83 +102,60 @@ window/handheld/orientation="landscape"
 
 ## App Store Metadata
 
-- Icons: 512x512 (Android), 1024x1024 (iOS)
-- Screenshots: Multiple resolutions
-- Privacy policy required
-- Age rating
+- Icons: 512×512 (Android), 1024×1024 (iOS); multi-res screenshots; privacy policy; age rating.
 
-## Best Practices
+## Ship-gate checks (WHY)
 
-1. **Touch-First** - Design for fingers, not mouse
-2. **Performance** - Target 60 FPS on mid-range
-3. **Battery** - Reduce FPS when backgrounded
-4. **Permissions** - Request only what you need
-### 1. Android-Back-Button Handler (Navigation-Stack Popping)
-Intercept the Android hardware Back button to pop a UI navigation stack. Disable `SceneTree.quit_on_go_back` and listen for `NOTIFICATION_WM_GO_BACK_REQUEST` in a global manager.
+1. **ANR I/O** — Large saves/loads on the main thread trip Android ANR. WHY: OS kills unresponsive apps. Gate: background threads / `WorkerThreadPool` for disk I/O.
+2. **Pause FPS** — Backgrounded apps left at 60 FPS drain battery and heat the SoC. WHY: `NOTIFICATION_APPLICATION_PAUSED` must drop `Engine.max_fps` (see `thermal_throttle_monitor.gd`).
+3. **Permission timing** — Request Android permissions at the feature moment (mic, photos), not on cold boot. WHY: Play policy + user trust; verify with `OS.get_granted_permissions()` via `android_runtime_permissions.gd`.
 
-```gdscript
-class_name MobileNavigationManager extends Node
-## Autoload: Intercepts the Android Back button to pop UI screens.
+## Expert notes (script-first)
 
-var _ui_stack: Array[Control] = []
-
-func _ready() -> void:
-    # Stop the app from quitting immediately
-    get_tree().set_quit_on_go_back(false)
-
-func _notification(what: int) -> void:
-    if what == NOTIFICATION_WM_GO_BACK_REQUEST:
-        if _ui_stack.size() > 0:
-            var screen := _ui_stack.pop_back()
-            screen.hide()
-        else:
-            get_tree().quit()
-```
-
-### 2. Vibration-Intensity Haptic Profiles
-Create nuanced haptic profiles by defining specific amplitudes and durations. For Android, ensure the `VIBRATE` permission is enabled in the export preset.
-
-```gdscript
-class_name MobileHaptics extends Node
-## Executes predefined haptic feedback profiles.
-
-func play_light_haptic() -> void:
-    # 30ms duration, 20% strength
-    Input.vibrate_handheld(30, 0.2)
-
-func play_heavy_haptic() -> void:
-    # 400ms duration, 100% strength
-    Input.vibrate_handheld(400, 1.0)
-```
-
-### 3. Mobile-Shader-Precompiler (Prevent Frame-Hitches)
-To avoid shader compilation stutter, force the GPU to compile pipelines during a loading screen. For Forward+/Mobile renderers, instance hidden effects. For Compatibility, force-draw them in the camera frustum for one frame.
-
-```gdscript
-class_name MobileShaderPrecompiler extends Node3D
-## Forces RenderingServer to compile pipelines during loading.
-
-@export var effects_to_precompile: Array[PackedScene] = []
-
-func _ready() -> void:
-    for scene in effects_to_precompile:
-        var instance := scene.instantiate() as Node3D
-        add_child(instance)
-        # Hidden nodes trigger compilation in Forward+/Mobile
-        instance.hide() 
-        
-    # Compatibility renderer needs one visible frame in frustum
-    if ProjectSettings.get_setting("rendering/renderer/rendering_method") == "gl_compatibility":
-        for child in get_children():
-            child.show()
-            child.position = Vector3(0, 0, -2) # In front of camera
-        await get_tree().process_frame
-        for child in get_children(): child.queue_free()
-```
+- Android Back: disable `quit_on_go_back`, handle `NOTIFICATION_WM_GO_BACK_REQUEST` in a thin Autoload stack popper.
+- Haptics: `haptic_pattern_generator.gd` + export `VIBRATE` permission.
+- Shader hitch: pre-instance hidden effects on Mobile/Forward+; one visible Compatibility frame — prefer `godot-shaders-basics` for deep precompile recipes.
 
 ## Reference
-- Related: `godot-export-builds`, `godot-ui-containers`
 
+> Progressive disclosure: open Official Documentation links only when researching a specific API;
+> load Related Skills when routing work to a peer domain — do not preload the whole lattice.
 
-### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+### Official Documentation
+- [Using InputEvent](https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html) — Event pipeline that makes `InputEventScreenTouch` / `InputEventScreenDrag` the correct mobile path instead of mouse-button emulation.
+- [Input examples](https://docs.godotengine.org/en/stable/tutorials/inputs/input_examples.html) — Multi-touch, drag, and gesture patterns behind virtual joysticks, pinch/rotate, and swipe HUDs.
+- [Handling quit requests](https://docs.godotengine.org/en/stable/tutorials/inputs/handling_quit_requests.html) — `NOTIFICATION_APPLICATION_PAUSED` / resume and Android back (`WM_GO_BACK_REQUEST`) lifecycle that replaces desktop quit assumptions.
+- [DisplayServer](https://docs.godotengine.org/en/stable/classes/class_displayserver.html) — `get_display_safe_area()`, orientation, and virtual keyboard APIs for notches, foldables, and OSK occlusion.
+- [OS](https://docs.godotengine.org/en/stable/classes/class_os.html) — `request_permission()` / `get_granted_permissions()`, feature tags, and memory queries used by Android runtime gates and VRAM watchdogs.
+- [Input](https://docs.godotengine.org/en/stable/classes/class_input.html) — `vibrate_handheld()`, accelerometer/gravity/gyroscope fusion, and touch↔mouse emulation toggles.
+- [Exporting for Android](https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_android.html) — Permissions (including `VIBRATE`), APK/AAB, and store packaging constraints after platform code is ready.
+- [Exporting for iOS](https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_ios.html) — Xcode export, capabilities, and App Store gates that catch missing privacy/plugin setup late.
+- [Android in-app purchases](https://docs.godotengine.org/en/stable/tutorials/platform/android/android_in_app_purchases.html) — Official Play Billing flow that the IAP boilerplate script abstracts with iOS store plugins.
+- [Introduction to the 3 rendering methods](https://docs.godotengine.org/en/stable/tutorials/rendering/renderers.html) — Why mobile builds should prefer **Mobile** or **Compatibility** over Forward+ for fill-rate and feature set.
+- [Multiple resolutions](https://docs.godotengine.org/en/stable/tutorials/rendering/multiple_resolutions.html) — Stretch modes, content scale, and orientation-safe layouts for phone/tablet aspect changes.
+- [Feature tags](https://docs.godotengine.org/en/stable/tutorials/export/feature_tags.html) — `mobile` / `android` / `ios` branching for permissions, share sheets, and platform-only singletons.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Shared InputEvent buffering, multi-touch indices, and deadzones before shipping gesture recognizers or virtual sticks.
+- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Anchors, Margin/Box containers, and minimum sizes so safe-area insets and 44–48px touch targets stay layout-correct.
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Feature tags, display stretch, and renderer defaults every Android/iOS export branch depends on.
+
+#### Complements
+- [godot-adapt-desktop-to-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md) — Desktop→touch control remap, joystick spawners, and UI scaling that pair with this skill's deeper OS/permission APIs.
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Profiling and CPU/GPU cuts when thermal FPS caps and ETC2/ASTC alone still miss mid-range budgets.
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Durable save ownership hooked to pause/resume instead of desktop-only quit notifications.
+- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Singleton homes for permissions, haptics, thermal monitors, and always-on pause handlers.
+- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — Bus mute/duck on `APPLICATION_PAUSED` so background audio does not keep the device warm.
+- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — Cheaper CanvasItem/Spatial shader paths and precompile strategies that avoid mobile hitch spikes.
+- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Smooth UI lifts when the OS virtual keyboard covers LineEdits during mobile text entry.
+- [godot-platform-desktop](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-desktop/SKILL.md) — Keep mouse/keyboard paths correct when the same project remains dual-input beside mobile feature tags.
+
+#### Downstream / consumers
+- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — Signing, CI presets, and store packaging after touch/safe-area/permission gates pass on devices.
+- [godot-genre-puzzle](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-puzzle/SKILL.md) — Tap/swipe/pinch control schemes that consume mobile gesture and safe-area HUD patterns.
+- [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md) — Soft/hard currency and receipt-validated IAP products once Play Billing / App Store plugins are wired.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for discovering this platform skill beside sibling domains.

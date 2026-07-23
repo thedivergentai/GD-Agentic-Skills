@@ -13,3 +13,13 @@ func apply_drift_physics(active: bool):
 			wheel.wheel_friction_slip = 0.5 if active else 1.0
 			# Aggressive steering response
 			wheel.steering = Input.get_axis("right", "left") * 0.4
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_vehiclebody3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/using_jolt_physics.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-racing/SKILL.md — drift/suspension feel built on VehicleWheel3D knobs
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — speed-linked camera FOV for racing
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md
+# =============================================================================

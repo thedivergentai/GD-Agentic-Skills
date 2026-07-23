@@ -23,3 +23,17 @@ func _ready() -> void:
 	# Ensure audio listeners are balanced
 	get_child(0).get_node("SubViewport").audio_listener_enable_2d = true
 	get_child(1).get_node("SubViewport").audio_listener_enable_2d = false
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/rendering/viewports.html
+# - https://docs.godotengine.org/en/stable/classes/class_subviewport.html
+# - https://docs.godotengine.org/en/stable/classes/class_subviewportcontainer.html
+# - https://docs.godotengine.org/en/stable/classes/class_hsplitcontainer.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md — local coop camera ownership
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — stretch ratios for asymmetric splits
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — dual SubViewport cost budgets
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md — which viewport owns the 2D audio listener
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md
+# =============================================================================

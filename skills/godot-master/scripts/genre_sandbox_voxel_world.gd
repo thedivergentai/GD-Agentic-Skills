@@ -54,3 +54,15 @@ func _world_to_chunk(pos: Vector3) -> Vector3i:
 
 ## EXPERT USAGE:
 ## extend this script to integrate actual mesh generation.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/large_world_coordinates.html
+# - https://docs.godotengine.org/en/stable/classes/class_resourceloader.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md — chunk node load/unload lifecycle
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md — streaming radii and origin shift pairing
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-sandbox/SKILL.md
+# =============================================================================

@@ -19,3 +19,14 @@ func _ready():
 
 func get_item(id: String) -> InventoryItem:
 	return items.get(id)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_resourceloader.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/runtime_file_loading_and_saving.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — id → Resource registry pattern
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — global ItemDatabase autoload ownership
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md
+# =============================================================================

@@ -18,3 +18,15 @@ func _update_canvas_size() -> void:
 	""")
 
 ## Tip: Set 'Stretch Mode' to 'canvas_items' and 'Aspect' to 'expand' in Project Settings.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/rendering/multiple_resolutions.html
+# - https://docs.godotengine.org/en/stable/tutorials/platform/web/customizing_html5_shell.html
+# - https://docs.godotengine.org/en/stable/classes/class_viewport.html
+# - https://docs.godotengine.org/en/stable/classes/class_javascriptbridge.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — Control layout under canvas resize
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — stretch mode + content scale
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-web/SKILL.md
+# =============================================================================

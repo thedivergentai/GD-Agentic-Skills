@@ -22,3 +22,14 @@ The blueprint of the soul. This rubric assesses the project's foundational logic
 
 ## 🌟 Visionary's Final Decree
 To reach **Elite** status, stats must be 'Atomic'. They should exist independently of the 'Player'. A vision where 'Strength' is just an integer is **Functional** at best. A visionary uses the **Strategy Pattern** to ensure that any object can have a 'Soul' of stats without bloat.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_styleguide.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

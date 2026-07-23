@@ -17,3 +17,14 @@ func find_path_in_region(start: Vector3, end: Vector3, allowed_regions: Array[RI
     var result := NavigationPathQueryResult3D.new()
     NavigationServer3D.query_path(params, result)
     return result.path
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationpathqueryobjects.html
+# - https://docs.godotengine.org/en/stable/classes/class_navigationpathqueryparameters3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_introduction_3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md — included_regions limits for active chunks
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — avoid global A* across the whole map
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md
+# =============================================================================

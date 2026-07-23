@@ -76,3 +76,15 @@ func _on_tray_clicked(btn: int) -> void:
 # EXPERT NOTE: Launch a separate headless instance for heavy data tasks or dedicated servers.
 func fork_background_process() -> int:
     return OS.create_process(OS.get_executable_path(), ["--headless", "--no-window"])
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_displayserver.html
+# - https://docs.godotengine.org/en/stable/classes/class_window.html
+# - https://docs.godotengine.org/en/stable/classes/class_os.html
+# - https://docs.godotengine.org/en/stable/tutorials/ui/creating_applications.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition-apps/SKILL.md — app chrome + multi-window patterns
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-mobile-to-desktop/SKILL.md — promote mobile ports to desktop UX
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-desktop/SKILL.md
+# =============================================================================

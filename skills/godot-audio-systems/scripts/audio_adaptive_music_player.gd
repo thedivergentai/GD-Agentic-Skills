@@ -21,3 +21,15 @@ func transition_to(new_stream: AudioStream) -> void:
 	pass
 
 ## Rule: Always sync transitions to bar boundaries for professional musicality.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/audio/sync_with_audio.html
+# - https://docs.godotengine.org/en/stable/classes/class_audiostreamplayer.html
+# - https://docs.godotengine.org/en/stable/tutorials/audio/audio_streams.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rhythm/SKILL.md — bar/beat boundary consumers
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md — crossfade after bar wait
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md — explore/combat music states
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md
+# =============================================================================

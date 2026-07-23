@@ -29,133 +29,29 @@ Expert-level guidance for frame-based and skeletal 2D animation in Godot.
 
 ## Available Scripts
 
-> **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
+> **MANDATORY**: Read the script for the pattern you are implementing. Inline recipes that duplicated these scripts were removed — the script is the source of truth.
 
-### [animation_sync.gd](scripts/animation_sync.gd)
-Method track triggers for frame-perfect logic (SFX/VFX hitboxes), signal-driven async gameplay orchestration, and AnimationTree blend space management. Use when syncing gameplay events to animation frames.
+### Do NOT Load (by scenario)
+| Scenario | Load | Do NOT Load |
+|----------|------|-------------|
+| Single character / player | `one_frame_sync_fix.gd`, `animation_state_sync.gd`, optional `animation_tree_step.gd` / `tween_lifecycle_manager.gd` | `multimesh_swarm_anim.gd`, `gpu_mesh_optimizer.gd` (unless fill-rate profiling demands it) |
+| Frame events / hitboxes / SFX sync | `animation_sync.gd` (+ AnimationPlayer method tracks) | Swarm/MultiMesh scripts |
+| Squash/stretch game-feel | **MANDATORY** `procedural_squash_stretch.gd` | Inline landing-condition snippets in this skill |
+| Cutout / IK limbs | `skeleton_2d_rig_helper.gd` | MultiMesh swarm scripts |
+| Shader flash / dissolve on anim | `shader_hook.gd` | — |
+| Thousands of bats/fish/props | `multimesh_swarm_anim.gd` (+ docs fish tutorial) | Per-entity AnimatedSprite2D / Tween managers |
 
-### [animation_state_sync.gd](scripts/animation_state_sync.gd)
-Frame-perfect state-driven animation with transition queueing - essential for responsive character animation.
-
-### [shader_hook.gd](scripts/shader_hook.gd)
-Animating ShaderMaterial uniforms via AnimationPlayer property tracks. Covers hit flash, dissolve effects, and instance uniforms for batched sprites. Use for visual feedback tied to animation states.
-
-### [procedural_squash_stretch.gd](scripts/procedural_squash_stretch.gd)
-Dynamic physics-driven deformation. Provides `lerp` logic for smoothing out sudden impact squashes and directional stretches based on high-velocity movement.
-
-### [skeleton_2d_rig_helper.gd](scripts/skeleton_2d_rig_helper.gd)
-Programmatic rig management. Tuning FABRIK/CCDIK modification stacks and updating bone rest poses at runtime for procedural limb goal-reaching.
-
-### [animation_tree_step.gd](scripts/animation_tree_step.gd)
-Expert state machine control. Utilizes `AnimationNodeStateMachinePlayback.travel()` to leverage the engine's internal A* pathfinding for multi-state transitions.
-
-### [one_frame_sync_fix.gd](scripts/one_frame_sync_fix.gd)
-Eliminates the "One-Frame Glitch" by using `advance(0)` to force the engine to apply animation poses immediately alongside property changes like `flip_h`.
-
-### [gpu_mesh_optimizer.gd](scripts/gpu_mesh_optimizer.gd)
-Architectural pattern for bypassing GPU fill-rate bottlenecks. Demonstrates when to convert large sprites into specialized 2D meshes to avoid transparent pixel overhead.
-
-### [multimesh_swarm_anim.gd](scripts/multimesh_swarm_anim.gd)
-Optimization for thousands of entities. Offloads animation logic (sine waves, flight patterns) to the GPU vertex shader to eliminate CPU node processing.
-
-### [tween_lifecycle_manager.gd](scripts/tween_lifecycle_manager.gd)
-Safe and memory-efficient `Tween` orchestration. Handles interruption cleanup and property-fight prevention in fast-paced gameplay loops.
-
----
-
-## AnimatedSprite2D Signals (Expert Usage)
-
-### animation_looped vs animation_finished
-
-```gdscript
-extends CharacterBody2D
-
-@onready var anim: AnimatedSprite2D = $AnimatedSprite2D
-
-func _ready() -> void:
-    # ✅ Correct: Use animation_looped for repeating animations
-    anim.animation_looped.connect(_on_loop)
-    
-    # ✅ Correct: Use animation_finished ONLY for one-shots
-    anim.animation_finished.connect(_on_finished)
-    
-    anim.play("run")  # Looping animation
-
-func _on_loop() -> void:
-    # Fires every loop iteration
-    emit_particle_effect("dust")
-
-func _on_finished() -> void:
-    # Only fires for non-looping animations
-    anim.play("idle")
-```
-
-### frame_changed for Event Triggering
-
-```gdscript
-# Frame-perfect event system (attacks, footsteps, etc.)
-extends AnimatedSprite2D
-
-signal attack_hit
-signal footstep
-
-# Define event frames per animation
-const EVENT_FRAMES := {
-    "attack": {3: "attack_hit", 7: "attack_hit"},
-    "run": {2: "footstep", 5: "footstep"}
-}
-
-func _ready() -> void:
-    frame_changed.connect(_on_frame_changed)
-
-func _on_frame_changed() -> void:
-    var events := EVENT_FRAMES.get(animation, {})
-    if frame in events:
-        emit_signal(events[frame])
-```
-
----
-
-## Advanced Pattern: Animation State Sync
-
-### Problem: play() Timing Glitch
-
-When updating both animation and sprite properties (e.g., `flip_h` + animation change), `play()` doesn't apply until next frame, causing a 1-frame visual glitch.
-
-```gdscript
-# ❌ BAD: Glitches for 1 frame
-func change_direction(dir: int) -> void:
-    anim.flip_h = (dir < 0)
-    anim.play("run")  # Applied NEXT frame
-    # Result: 1 frame of wrong animation with correct flip
-
-# ✅ GOOD: Force immediate sync
-func change_direction(dir: int) -> void:
-    anim.flip_h = (dir < 0)
-    anim.play("run")
-    anim.advance(0)  # Force immediate update
-```
-
----
-
-## set_frame_and_progress() for Smooth Transitions
-
-Use when changing animations mid-animation without visual stutter:
-
-```gdscript
-# Example: Skin swapping without animation reset
-func swap_skin(new_skin: String) -> void:
-    var current_frame := anim.frame
-    var current_progress := anim.frame_progress
-    
-    # Load new SpriteFrames resource
-    anim.sprite_frames = load("res://skins/%s.tres" % new_skin)
-    
-    # ✅ Preserve exact animation state
-    anim.play(anim.animation)  # Re-apply animation
-    anim.set_frame_and_progress(current_frame, current_progress)
-    # Result: Seamless skin swap mid-animation
-```
+### Script index
+- [one_frame_sync_fix.gd](scripts/one_frame_sync_fix.gd) — **Golden sync path**: `play()` + `advance(0)` with `flip_h` / property changes.
+- [animation_state_sync.gd](scripts/animation_state_sync.gd) — State-driven animation + transition queue.
+- [animation_sync.gd](scripts/animation_sync.gd) — Method tracks, signal orchestration, blend-space hooks.
+- [animation_tree_step.gd](scripts/animation_tree_step.gd) — `AnimationNodeStateMachinePlayback.travel()`.
+- [procedural_squash_stretch.gd](scripts/procedural_squash_stretch.gd) — **Sole source** for physics-driven squash/stretch (do not re-implement landing checks here).
+- [tween_lifecycle_manager.gd](scripts/tween_lifecycle_manager.gd) — Kill/reuse Tweens; property-fight prevention.
+- [skeleton_2d_rig_helper.gd](scripts/skeleton_2d_rig_helper.gd) — FABRIK/CCDIK stacks, rest poses.
+- [shader_hook.gd](scripts/shader_hook.gd) — AnimationPlayer → ShaderMaterial uniforms.
+- [gpu_mesh_optimizer.gd](scripts/gpu_mesh_optimizer.gd) — Sprite → tight 2D mesh for fill-rate.
+- [multimesh_swarm_anim.gd](scripts/multimesh_swarm_anim.gd) — GPU swarm motion only.
 
 ---
 
@@ -163,293 +59,85 @@ func swap_skin(new_skin: String) -> void:
 
 | Scenario | Recommended Node | Expert Insight |
 |----------|------------------|----------------|
-| Isolated, pure frame-by-frame spritesheets | **AnimatedSprite2D** | Simple and effective, but cannot animate non-visual properties, manipulate transforms, or trigger external methods. |
-| Cutout animations, non-visual sync, audio/particles | **AnimationPlayer** | Required when manipulating transforms of many child sprites, driving 2D mesh deformations, or syncing methods/particles to visual frames. |
-| Complex state machines, blending, locomotion | **AnimationTree** | Essential for blending movement directions. Does not hold animations itself; it's a logic graph driving an underlying AnimationPlayer. |
-| Procedural, dynamic, fire-and-forget UI/fx | **Tween** | Target values calculated at runtime. Far more lightweight than AnimationPlayer; designed to be created and discarded via script. |
-| Swarms of thousands of entities (bats, fish) | **MultiMeshInstance2D + Shader** | Bypasses the node system entirely. Calculate sine waves/movement on the GPU vertex shader to avoid massive CPU bottlenecks. |
+| Isolated, pure frame-by-frame spritesheets | **AnimatedSprite2D** | Cannot animate non-visual properties or method tracks — escalate to AnimationPlayer when you need those. |
+| Cutout animations, non-visual sync, audio/particles | **AnimationPlayer** | Owns transforms, mesh deformation, method/value tracks. |
+| Complex state machines, blending, locomotion | **AnimationTree** | Logic graph over an AnimationPlayer; use `travel()` via `animation_tree_step.gd`. |
+| Procedural, dynamic, fire-and-forget UI/fx | **Tween** | Runtime targets; always go through `tween_lifecycle_manager.gd`. |
+| Swarms of thousands of entities | **MultiMeshInstance2D + Shader** | Load `multimesh_swarm_anim.gd` only; skip character sync scripts. |
 
 ---
 
-## Expert Pattern: Procedural Squash & Stretch
+## Golden Path: One-Frame Sync (`play` + `advance(0)`)
+
+When changing animation **and** sprite properties in the same frame, `play()` alone applies next process tick — one-frame glitch.
+
+**MANDATORY**: Read [one_frame_sync_fix.gd](scripts/one_frame_sync_fix.gd). Minimal contract:
 
 ```gdscript
-# Physics-driven squash/stretch for game feel
-extends CharacterBody2D
-
-@onready var sprite: Sprite2D = $Sprite2D
-var _base_scale := Vector2.ONE
-
-func _physics_process(delta: float) -> void:
-    var prev_velocity := velocity
-    move_and_slide()
-    
-    # Squash on landing
-    if not is_on_floor() and is_on_floor():
-        var impact_strength := clamp(abs(prev_velocity.y) / 800.0, 0.0, 1.0)
-        _squash_and_stretch(Vector2(1.0 + impact_strength * 0.3, 1.0 - impact_strength * 0.3))
-    
-    # Stretch during jump
-    elif velocity.y < -200:
-        sprite.scale = _base_scale.lerp(Vector2(0.9, 1.1), delta * 5.0)
-    else:
-        sprite.scale = sprite.scale.lerp(_base_scale, delta * 10.0)
-
-func _squash_and_stretch(target_scale: Vector2) -> void:
-    var tween := create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-    tween.tween_property(sprite, "scale", target_scale, 0.08)
-    tween.tween_property(sprite, "scale", _base_scale, 0.12)
+# After any play() that must match flip/modulate/etc. this frame:
+anim.flip_h = dir < 0
+anim.play(&"run")
+anim.advance(0)  # force pose now
 ```
+
+Related: `animation_looped` (loops) vs `animation_finished` (one-shots); use `set_frame_and_progress` when swapping skins mid-clip (see AnimatedSprite2D class docs).
 
 ---
 
-## Cutout Animation (Bone2D Skeleton)
+## Procedural Squash & Stretch
 
-For complex skeletal animation, use Bone2D instead of manual Sprite2D parenting:
+**Do NOT** paste landing snippets into agents. A prior body used an impossible condition (`not is_on_floor() and is_on_floor()`).
 
-### Skeleton Setup
-
-```
-Player (Node2D)
-  └─ Skeleton2D
-      ├─ Bone2D (Root - Torso)
-      │   ├─ Sprite2D (Body)
-      │   └─ Bone2D (Head)
-      │       └─ Sprite2D (Head)
-      ├─ Bone2D (ArmLeft)
-      │   └─ Sprite2D (Arm)
-      └─ Bone2D (ArmRight)
-          └─ Sprite2D (Arm)
-```
-
-### AnimationPlayer Tracks
-
-```gdscript
-# Key bone rotations in AnimationPlayer
-# Tracks:
-# - "Skeleton2D/Bone2D:rotation"
-# - "Skeleton2D/Bone2D/Bone2D2:rotation" (head)
-# - "Skeleton2D/Bone2D3:rotation" (arm left)
-```
-
-**Why Bone2D over manual parenting?**
-- Forward Kinematics (FK) and Inverse Kinematics (IK) support
-- Easier to rig and weight paint
-- Better integration with animation retargeting
+**MANDATORY sole source**: [procedural_squash_stretch.gd](scripts/procedural_squash_stretch.gd) — impact squash, velocity stretch, lerp recovery. Pair with `godot-characterbody-2d` / `godot-2d-physics` for floor/velocity authority.
 
 ---
 
-## Performance: SpriteFrames Optimization
+## Quick routing (scripts own the recipes)
 
-```gdscript
-# ✅ GOOD: Share SpriteFrames resource across instances
-const SHARED_FRAMES := preload("res://characters/player_frames.tres")
-
-func _ready() -> void:
-    anim_sprite.sprite_frames = SHARED_FRAMES
-    # All player instances share same resource in memory
-
-# ❌ BAD: Each instance loads separately
-func _ready() -> void:
-    anim_sprite.sprite_frames = load("res://characters/player_frames.tres")
-    # Duplicates resource in memory per instance
-```
-
----
-
-## Edge Case: Pixel Art Centering
-
-```gdscript
-# Pixel art textures can appear blurry when centered between pixels
-# Solution 1: Disable centering
-anim_sprite.centered = false
-anim_sprite.offset = Vector2.ZERO
-
-# Solution 2: Enable global pixel snapping (Project Settings)
-# rendering/2d/snap/snap_2d_vertices_to_pixel = true
-# rendering/2d/snap/snap_2d_transforms_to_pixel = true
-```
-
-### SpriteFrames Texture Filtering
-
-```gdscript
-# Problem: SpriteFrames uses bilinear filtering (blurry for pixel art)
-# Solution: In Import tab for each texture:
-# - Filter: Nearest (for pixel art)
-# - Mipmaps: Off (prevents blending at distance)
-
-# Or set globally in Project Settings:
-# rendering/textures/canvas_textures/default_texture_filter = Nearest
-```
-
-
-
----
-
-## Expert Techniques & Optimizations
-
-### 1. Hybrid Cutout and Cel Animation
-Do not limit yourself to just one style. Use `AnimationPlayer` to rig a 2D skeleton and animate the bones (Cutout animation), while simultaneously keyframing the `texture` or `frame` properties of specific child sprites. This allows highly efficient transform-based animation for the body, while selectively swapping hand shapes or facial expressions using traditional hand-drawn cel animation.
-
-### 2. Optimizing GPU Fill Rate with 2D Meshes
-Sprites with large transparent areas (like tree leaves) waste GPU fill rate. Convert a `Sprite2D` into a `MeshInstance2D` in Godot. This generates a 2D polygon that tightly hugs the opaque pixels, bypassing transparent areas. While this slightly increases vertex processing time, it massively improves GPU fill rate on complex 2D scenes.
-
-### 3. Safe Tween Interruption and Looping
-Game states change rapidly. Ensure Tweens are properly cleaned up before starting new ones to avoid memory leaks and conflicting animations.
-
-```gdscript
-extends Node2D
-
-var _tween: Tween
-
-func animate_damage_flash() -> void:
-    # Anti-pattern prevention: Always kill the existing tween before overwriting it.
-    if _tween:
-        _tween.kill()
-        
-    _tween = create_tween()
-    
-    # Chain tweeners and use loops for rapid, predictable animation
-    _tween.set_loops(3)
-    _tween.tween_property($Sprite2D, "modulate", Color.RED, 0.1).set_trans(Tween.TRANS_SINE)
-    _tween.tween_property($Sprite2D, "modulate", Color.WHITE, 0.1).set_trans(Tween.TRANS_SINE)
-```
-
-### 4. Advanced State Machine Travel via AnimationTree
-When using an `AnimationNodeStateMachine` within an `AnimationTree`, you do not directly "play" animations. You command the state machine to compute the shortest path (using A*) to a new state.
-
-```gdscript
-extends CharacterBody2D
-
-@onready var animation_tree: AnimationTree = $AnimationTree
-# Retrieve the playback object from the AnimationTree properties
-@onready var state_machine: AnimationNodeStateMachinePlayback = animation_tree.get("parameters/playback")
-
-func _ready() -> void:
-    # The state machine must be started before traveling
-    state_machine.start("idle")
-
-func _physics_process(delta: float) -> void:
-    if velocity.length() > 0:
-        # Travel to the run state. Internal A* will seamlessly play intermediate transitions.
-        state_machine.travel("run")
-    else:
-        state_machine.travel("idle")
-```
-
----
-
-## Expert Pattern: Animation-Frame-Data-Extractor
-
-To extract custom per-frame metadata (e.g., spawn offsets, hitbox sizes), use an `AnimationPlayer` in conjunction with `AnimatedSprite2D`. `SpriteFrames` is strictly a visual container; `AnimationPlayer` allows you to decouple visual data from logical metadata using **Value Tracks** or **Call Method Tracks**.
-
-```gdscript
-class_name AnimationDataExtractor extends CharacterBody2D
-
-# 1. Define the metadata property (Value Track target)
-@export var current_spawn_offset: Vector2 = Vector2.ZERO:
-    set(value):
-        current_spawn_offset = value
-        _update_spawn_point()
-
-@onready var anim_player: AnimationPlayer = $AnimationPlayer
-@onready var spawn_marker: Marker2D = $SpawnMarker
-
-func _ready() -> void:
-    # Playing via AnimationPlayer updates 'current_spawn_offset' on keyed frames
-    anim_player.play("attack_shoot")
-
-func _update_spawn_point() -> void:
-    spawn_marker.position = current_spawn_offset
-
-# 2. Call Method Track Implementation
-# Use this to pass complex arguments directly to a function on a specific frame
-func spawn_projectile(damage: int, specific_offset: Vector2) -> void:
-    var projectile = PROJECTILE_SCENE.instantiate()
-    projectile.damage = damage
-    projectile.position = global_position + specific_offset
-    get_parent().add_child(projectile)
-```
-
----
-
-## Expert Pattern: Skeletal-IK-2D (Procedural Foot Placement)
-
-For procedural limb positioning (e.g., planting feet on slopes), use Godot's built-in 2D skeletal modification system. The `SkeletonModification2DTwoBoneIK` is the elite choice for limbs as it is more lightweight than full FABRIK solvers.
-
-### Setup
-1. Add a `SkeletonModificationStack2D` to your `Skeleton2D`.
-2. Add a `SkeletonModification2DTwoBoneIK` to the stack.
-3. Assign the target bones (e.g., UpperLeg and LowerLeg).
-4. Point the `target_nodepath` to a `Marker2D` (IK Target).
-
-```gdscript
-class_name ProceduralWalker2D extends Node2D
-
-@onready var skeleton: Skeleton2D = $Skeleton2D
-@onready var ik_target_left_foot: Marker2D = $IKTargets/LeftFootTarget
-@onready var floor_raycast: RayCast2D = $RayCasts/LeftFootRay
-
-func _ready() -> void:
-    # Ensure modification stack is enabled
-    var mod_stack: SkeletonModificationStack2D = skeleton.get_modification_stack()
-    if mod_stack:
-        mod_stack.enabled = true
-        mod_stack.enable_all_modifications(true)
-
-func _physics_process(_delta: float) -> void:
-    floor_raycast.force_raycast_update()
-    
-    if floor_raycast.is_colliding():
-        # Move IK target to the exact collision point
-        ik_target_left_foot.global_position = floor_raycast.get_collision_point()
-    else:
-        # Fallback to resting position
-        ik_target_left_foot.position = Vector2(0, 50)
-```
-
----
-
-## Expert Pattern: Sprite-Sheet-Memory-Manager
-
-Dynamically load and unload high-resolution textures to optimize VRAM usage. Leverage `ResourceLoader` for asynchronous loading and `RefCounted` for automatic memory purging.
-
-```gdscript
-class_name SpriteSheetMemoryManager extends Node
-
-@onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
-var _pending_path: String = ""
-var _target_anim: StringName = &"heavy_attack"
-
-func load_high_res_anim(path: String) -> void:
-    _pending_path = path
-    # 1. Start background loading to prevent frame stutter
-    ResourceLoader.load_threaded_request(_pending_path)
-    set_process(true)
-
-func _process(_delta: float) -> void:
-    # 2. Check loading status
-    var status = ResourceLoader.load_threaded_get_status(_pending_path)
-    if status == ResourceLoader.THREAD_LOAD_LOADED:
-        var tex: Texture2D = ResourceLoader.load_threaded_get(_pending_path)
-        _apply_to_frames(tex)
-        set_process(false)
-
-func _apply_to_frames(tex: Texture2D) -> void:
-    var frames: SpriteFrames = animated_sprite.sprite_frames
-    if not frames.has_animation(_target_anim):
-        frames.add_animation(_target_anim)
-    
-    # 3. Inject frame dynamically
-    frames.add_frame(_target_anim, tex)
-    animated_sprite.play(_target_anim)
-
-func unload_high_res_anim() -> void:
-    var frames: SpriteFrames = animated_sprite.sprite_frames
-    if frames.has_animation(_target_anim):
-        # 4. Breaking the reference to the Texture2D frees it from RAM
-        frames.clear(_target_anim)
-```
+- **Tween interrupt / flash loops** → `tween_lifecycle_manager.gd` (never race two Tweens on one property).
+- **AnimationTree travel** → `animation_tree_step.gd` (`start` then `travel`).
+- **IK foot plant** → `skeleton_2d_rig_helper.gd` + SkeletonModification2DTwoBoneIK docs.
+- **Fill-rate / swarms** → `gpu_mesh_optimizer.gd` / `multimesh_swarm_anim.gd` per Do-NOT-Load table.
+- **Pixel filter / shared SpriteFrames** → Official Documentation (2D sprite animation, SpriteFrames); keep resources shared via preload.
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+
+> Progressive disclosure: open Official Documentation links only when researching a specific API;
+> load Related Skills when routing work to a peer domain — do not preload the whole lattice.
+
+### Official Documentation
+- [2D sprite animation](https://docs.godotengine.org/en/stable/tutorials/2d/2d_sprite_animation.html) — Canonical AnimatedSprite2D + SpriteFrames workflow for frame-based sheets and signal timing.
+- [Introduction to the animation features](https://docs.godotengine.org/en/stable/tutorials/animation/introduction.html) — When to graduate from spritesheets to AnimationPlayer for tracks, methods, and non-visual properties.
+- [Cutout animation](https://docs.godotengine.org/en/stable/tutorials/animation/cutout_animation.html) — Paper-doll hierarchies and hybrid cutout/cel setups before full skeletal IK.
+- [2D skeletons](https://docs.godotengine.org/en/stable/tutorials/animation/2d_skeletons.html) — Skeleton2D / Bone2D rigging, rest poses, and deformation expectations for cutout meshes.
+- [Using AnimationTree](https://docs.godotengine.org/en/stable/tutorials/animation/animation_tree.html) — Blend spaces and state-machine graphs that drive an underlying AnimationPlayer.
+- [Animation track types](https://docs.godotengine.org/en/stable/tutorials/animation/animation_track_types.html) — Method/value/property tracks for frame-perfect SFX, hitboxes, and shader uniform hooks.
+- [AnimatedSprite2D](https://docs.godotengine.org/en/stable/classes/class_animatedsprite2d.html) — `play()`, `advance()`, `set_frame_and_progress()`, and `animation_looped` vs `animation_finished` contracts.
+- [SpriteFrames](https://docs.godotengine.org/en/stable/classes/class_spriteframes.html) — Shared frame resources, loop flags, and per-animation timing used by AnimatedSprite2D.
+- [Tween](https://docs.godotengine.org/en/stable/classes/class_tween.html) — Runtime squash/stretch and interruptible one-shot motion without baking AnimationPlayer clips.
+- [Animating thousands of fish](https://docs.godotengine.org/en/stable/tutorials/performance/vertex_animation/animating_thousands_of_fish.html) — GPU vertex / MultiMesh patterns for swarm motion that must leave the node tree.
+- [SkeletonModification2DTwoBoneIK](https://docs.godotengine.org/en/stable/classes/class_skeletonmodification2dtwoboneik.html) — Lightweight two-bone IK for procedural foot/hand planting on Skeleton2D stacks.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-animation-player](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md) — AnimationPlayer ownership, callback modes, and track authoring that this skill’s hybrid/cutout patterns assume.
+- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — Physics-tick movement so animated CharacterBody2D motion stays on the fixed timestep.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Safe wiring for `animation_finished` / `animation_looped` / `frame_changed` without lifecycle leaks.
+
+#### Complements
+- [godot-animation-tree-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-tree-mastery/SKILL.md) — Deepen blend trees, OneShot layers, and `travel()` pathfinding beyond the 2D locomotion basics here.
+- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Broader Tween composition when squash/stretch or UI pops outgrow inline `create_tween()` snippets.
+- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — CanvasItem shader uniforms driven by AnimationPlayer tracks or MultiMesh swarm materials.
+- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — Impact velocity, raycasts for IK targets, and interpolation rules that feed procedural deformation.
+- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — Gameplay FSMs that should own intent while AnimationTree/AnimatedSprite2D own presentation.
+- [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — Dust, hit sparks, and trails spawned from method tracks or frame events.
+- [godot-adapt-3d-to-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-3d-to-2d/SKILL.md) — Directional sheets, billboards, and fake-depth sorting that still use 2D animation nodes.
+
+#### Downstream / consumers
+- [godot-genre-platformer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md) — Jump/land/run presentation stacks consume sync, squash/stretch, and state-machine travel patterns.
+- [godot-genre-fighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-fighting/SKILL.md) — Frame-perfect hitboxes and method tracks depend on AnimationPlayer + AnimatedSprite2D discipline here.
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Shared `.tres` SpriteFrames and skin packs for memory-safe multi-instance characters.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for cross-skill discovery.

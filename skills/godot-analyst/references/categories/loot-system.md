@@ -22,3 +22,14 @@ The reward of the vision. This rubric assesses the project's logic for random di
 
 ## 🌟 Visionary's Final Decree
 To reach **Elite** status, separate the 'Chance' from the 'Manifestation'. Use a **LootTable** resource that anyone can edit. If an enemy has to decide its own drop, you have polluted its logic with greed. Let the **Manager** decide fate, and the **Table** define the loot.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_styleguide.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

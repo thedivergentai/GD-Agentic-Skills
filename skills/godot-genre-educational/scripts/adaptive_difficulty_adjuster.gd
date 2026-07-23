@@ -56,3 +56,14 @@ func _provide_contextual_hint() -> void:
 ## EXPERT NOTE:
 ## Store '_current_difficulty_level' in a 'StudentProfile' Resource 
 ## to maintain a tailored experience across sessions.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+# - https://docs.godotengine.org/en/stable/classes/class_performance.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — validate ~70% flow success bands
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — difficulty_changed / hint_suggested wiring
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — rolling window + threshold logic
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-educational/SKILL.md
+# =============================================================================

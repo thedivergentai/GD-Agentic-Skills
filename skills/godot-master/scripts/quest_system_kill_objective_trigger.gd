@@ -17,3 +17,14 @@ func _ready():
 func _on_enemy_defeated(enemy_id: String, _points: int):
 	if enemy_id == target_enemy_id:
 		QuestManager.update_objective(quest_id)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/instancing_with_signals.html
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — EventBus enemy_defeated without hardcoding quests in enemies
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — death/defeat payloads that feed kill objectives
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-quest-system/SKILL.md
+# =============================================================================

@@ -14,3 +14,14 @@ func safe_teleport(new_pos: Vector3) -> void:
 	# restart() clears the trail instantly for a clean teleport [38].
 	restart() 
 	emitting = true
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/particles/properties.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/particles/trails.html
+# - https://docs.godotengine.org/en/stable/classes/class_gpuparticles3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md — projectile smoke trails in global space
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md — aura FX that must follow the caster (local_coords)
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md
+# =============================================================================

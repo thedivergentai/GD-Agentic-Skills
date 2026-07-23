@@ -14,3 +14,14 @@ func juice_impact():
 		.set_custom_interpolator(func(v): return bounce_curve.sample(v))
 	
 	tween.chain().tween_property(self, "scale", Vector2.ONE, 0.2)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_propertytweener.html
+# - https://docs.godotengine.org/en/stable/classes/class_curve.html
+# - https://docs.godotengine.org/en/stable/tutorials/math/beziers_and_curves.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — export Curve juice profiles as Resources
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md — when Curve juice beats authored clips
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md
+# =============================================================================

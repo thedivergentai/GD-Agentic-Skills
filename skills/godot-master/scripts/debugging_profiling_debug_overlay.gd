@@ -61,3 +61,13 @@ func remove_metric(key: String) -> void:
 ## DebugOverlay.add_metric("Player Health", player.health)
 ##
 ## Press F12 to toggle: DebugOverlay.visible = !DebugOverlay.visible
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_performance.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/debug/the_profiler.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — interpret overlay FPS/mem
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — CanvasLayer overlay layout
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md
+# =============================================================================

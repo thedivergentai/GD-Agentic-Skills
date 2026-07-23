@@ -78,3 +78,15 @@ func request_hit_validation(client_tick: int, ray_origin: Vector3, ray_normal: V
 			# Example damage application
 			hit_collider.apply_damage(10)
 			# Notify the client of a confirmed hit if needed
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_physicsserver3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html
+# - https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — bodies/shapes rewound for hit tests
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md — server ray queries after rewind
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-server-architecture/SKILL.md — RID PhysicsServer patterns
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md
+# =============================================================================

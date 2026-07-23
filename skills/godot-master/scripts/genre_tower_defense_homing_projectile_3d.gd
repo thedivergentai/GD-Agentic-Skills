@@ -26,3 +26,15 @@ func _physics_process(delta: float) -> void:
 
 ## [SKILL NOTICE]: Use 'is_instance_valid(target)' to check if the enemy 
 ## was freed/killed before impact to prevent null pointer crashes.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_quaternion.html
+# - https://docs.godotengine.org/en/stable/classes/class_basis.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/using_transforms.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — projectile lifetime and target-lost handling
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — Area3D hit detection on impact
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — pool homing missiles under wave spikes
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-tower-defense/SKILL.md
+# =============================================================================

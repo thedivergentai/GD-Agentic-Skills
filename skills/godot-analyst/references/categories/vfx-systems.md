@@ -22,3 +22,14 @@ The exclamation point at the end of every logic sequence. This rubric measures t
 
 ## 🌟 Visionary's Final Decree
 To reach **Elite** status, your effects must be 'Contextual'. They should react to the environment (e.g., sparks bouncing off walls or smoke moving with wind). Chaos should be visual, never structural. A visionary effect is the final touch of a perfect vision.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_styleguide.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

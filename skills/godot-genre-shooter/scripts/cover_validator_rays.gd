@@ -24,3 +24,13 @@ func can_peek_side() -> int:
 
 ## [SKILL NOTICE]: Cluster multiple RayCast3D nodes to detect 
 ## environmental context (like cover height) in a single physics frame.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_raycast3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md — multi-ray cover height / peek clusters
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-stealth/SKILL.md — cover state used beside detection loops
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md
+# =============================================================================

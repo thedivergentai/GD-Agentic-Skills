@@ -57,3 +57,13 @@ func to_string_formatted() -> String:
 ## EXPERT USAGE:
 ## var cost = BigNumber.new(1.5, 12) # 1.5 Trillion
 ## var new_cost = cost.multiply(1.15)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_refcounted.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — mantissa/exponent arithmetic patterns
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — balance careers over BigNumber curves
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-idle-clicker/SKILL.md
+# =============================================================================

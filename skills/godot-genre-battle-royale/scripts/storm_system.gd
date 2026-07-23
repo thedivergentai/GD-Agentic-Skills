@@ -48,3 +48,13 @@ func _apply_storm_damage(player: Node) -> void:
 ## EXPERT NOTE:
 ## Use a Global Shader to visualize the storm boundary. 
 ## Pass 'current_center' and 'current_radius' as Uniforms for perfect sync.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html
+# - https://docs.godotengine.org/en/stable/classes/class_multiplayersynchronizer.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — zone phase DPS / shrink pacing bands
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md — authoritative storm state replication
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-battle-royale/SKILL.md
+# =============================================================================

@@ -41,14 +41,23 @@ Expert blueprint for Metroidvanias balancing exploration, progression, and backt
 
 ## 🛠 Expert Components (scripts/)
 
+### Golden-path order (MANDATORY reads)
+1. Persistence / flags — [metroid_game_state.gd](../scripts/genre_metroidvania_metroid_game_state.gd) + [persistent_progression_system.gd](../scripts/genre_metroidvania_persistent_progression_system.gd)
+2. Ability definitions / gates — [ability_unlock_resource.gd](../scripts/genre_metroidvania_ability_unlock_resource.gd) + [progression_gate_manager.gd](../scripts/genre_metroidvania_progression_gate_manager.gd)
+3. Room stream / switch — [background_room_streamer.gd](../scripts/genre_metroidvania_background_room_streamer.gd) + [safe_scene_switcher.gd](../scripts/genre_metroidvania_safe_scene_switcher.gd)
+4. Map fog — [minimap_fog_manager.gd](../scripts/genre_metroidvania_minimap_fog_manager.gd) (orchestrator) with [minimap_fog.gd](../scripts/genre_metroidvania_minimap_fog.gd) / [minimap_fog_revealer.gd](../scripts/genre_metroidvania_minimap_fog_revealer.gd)
+
 ### Original Expert Patterns
 - [minimap_fog.gd](../scripts/genre_metroidvania_minimap_fog.gd) - Grid-based fog of war that tracks visited rooms and persists via global save data.
 - [progression_gate_manager.gd](../scripts/genre_metroidvania_progression_gate_manager.gd) - Central manager for ability-gated progression (Locks/Keys) and world persistence.
+- [metroid_game_state.gd](../scripts/genre_metroidvania_metroid_game_state.gd) - **MANDATORY** Autoload-shaped world/ability/collectible state (do not paste a local game_state tutorial).
+- [ability_unlock_resource.gd](../scripts/genre_metroidvania_ability_unlock_resource.gd) - **MANDATORY** Resource definitions for unlockable abilities queried by gates.
+- [minimap_fog_manager.gd](../scripts/genre_metroidvania_minimap_fog_manager.gd) - **MANDATORY** Vector2i fog orchestration synced to progression/save.
 
 ### Modular Components
 - [platformer_jump_buffer.gd](../scripts/genre_metroidvania_platformer_jump_buffer.gd) - Modular coyote time and jump buffering for high-fidelity movement.
 - [background_room_streamer.gd](../scripts/genre_metroidvania_background_room_streamer.gd) - Thread-safe background room preloading using `ResourceLoader`.
-- [safe_scene_switcher.gd](../scripts/autoload_architecture_safe_scene_switcher.gd) - Deferred scene transition pattern for stable cross-room world-state switching.
+- [safe_scene_switcher.gd](../scripts/genre_metroidvania_safe_scene_switcher.gd) - Deferred scene transition pattern for stable cross-room world-state switching.
 - [minimap_fog_revealer.gd](../scripts/genre_metroidvania_minimap_fog_revealer.gd) - Vector2i-based fog-of-war clearing logic synced to player position.
 - [persistent_progression_system.gd](../scripts/genre_metroidvania_persistent_progression_system.gd) - Autoload pattern for tracking global ability/collectible flags.
 - [ability_state_machine.gd](../scripts/genre_metroidvania_ability_state_machine.gd) - Optimized `StringName` pattern matching for traversal/combat states.
@@ -60,187 +69,127 @@ Expert blueprint for Metroidvanias balancing exploration, progression, and backt
 ---
 
 ## Core Loop
-1.  **Exploration**: Player explores available rooms until blocked by a "lock" (obstacle).
-2.  **Discovery**: Player finds a "key" (ability/item) or boss.
-3.  **Acquisition**: Player gains new traversal or combat ability.
-4.  **Backtracking**: Player returns to previous locks with new ability.
-5.  **Progression**: New areas open up, cycle repeats.
+1. **Exploration** → blocked by a lock
+2. **Discovery** → key ability / boss
+3. **Acquisition** → new traversal/combat tool
+4. **Backtracking** → shortcuts + dual-use abilities
+5. **Progression** → new biome opens
 
 ## Skill Chain
 
 | Phase | Skills | Purpose |
 |-------|--------|---------|
-| 1. Character | `godot-characterbody-2d`, `state-machines` | Tight, responsive movement (Coyote time, buffers) |
-| 2. World | `godot-tilemap-mastery`, `level-design` | Interconnected map, biomes, landmarks |
-| 3. Systems | `godot-save-load-systems`, `godot-scene-management` | Persistent world state, room transitions |
-| 4. UI | `ui-system`, `godot-inventory-system` | Map system, inventory, HUD |
-| 5. Polish | `juiciness` | Effects, atmosphere, environmental storytelling |
+| 1. Character | `godot-characterbody-2d`, `godot-state-machine-advanced` | Tight movement + ability states |
+| 2. World | `godot-tilemap-mastery`, `godot-scene-management` | Rooms, biomes, threaded transitions |
+| 3. Systems | `godot-save-load-systems`, `godot-ability-system` | Persist gates/collectibles; unlock keys |
+| 4. UI | `godot-ui-containers`, `godot-inventory-system` | Map / inventory / HUD |
+| 5. Balance | `godot-monte-carlo-balancer` | Soft-lock risk, backtrack length |
 
-## Architecture Overview
+---
+
+## Architecture (script-first — no inline recipes)
 
 ### 1. Game State & Persistence
-Metroidvanias require tracking the state of every collectible and boss across the entire world.
+**MANDATORY**: [metroid_game_state.gd](../scripts/genre_metroidvania_metroid_game_state.gd) + [persistent_progression_system.gd](../scripts/genre_metroidvania_persistent_progression_system.gd). Rooms never own global ability flags. Room metadata uses `resource_local_to_scene` so instanced rooms do not share collectible state.
 
-```gdscript
-# game_state.gd (AutoLoad)
-extends Node
+### 2. Room Transitions & Fast Travel
+**MANDATORY**: [background_room_streamer.gd](../scripts/genre_metroidvania_background_room_streamer.gd) + [safe_scene_switcher.gd](../scripts/genre_metroidvania_safe_scene_switcher.gd).
 
-var collected_items: Dictionary = {} # "room_id_item_id": true
-var unlocked_abilities: Array[String] = []
-var map_visited_rooms: Array[String] = []
-
-func register_collectible(id: String) -> void:
-    collected_items[id] = true
-    save_game()
-
-func has_ability(ability_name: String) -> bool:
-    return ability_name in unlocked_abilities
-```
-
-### 2. Room Transitions
-Seamless transitions are key. Use a `SceneManager` to handle instancing new rooms and positioning the player.
-
-```gdscript
-# door.gd
-extends Area2D
-
-@export_file("*.tscn") var target_scene_path: String
-@export var target_door_id: String
-
-func _on_body_entered(body: Node2D) -> void:
-    if body.is_in_group("player"):
-        SceneManager.change_room(target_scene_path, target_door_id)
-```
-
-### 3. Ability System (State Machine Integration)
-Abilities should be integrated into the player's State Machine.
-
-```gdscript
-# player_state_machine.gd
-func _physics_process(delta):
-    if Input.is_action_just_pressed("jump") and is_on_floor():
-        transition_to("Jump")
-    elif Input.is_action_just_pressed("jump") and not is_on_floor() and GameState.has_ability("double_jump"):
-        transition_to("DoubleJump")
-    elif Input.is_action_just_pressed("dash") and GameState.has_ability("dash"):
-        transition_to("Dash")
-```
-
-## Key Mechanics Implementation
-
-### Map System
-A grid-based or node-based map is essential for navigation.
-*   **Grid Map**: Auto-fill cells based on player position.
-*   **Room State**: Track "visited" status to reveal map chunks.
-
-```gdscript
-# map_system.gd
-func update_map(player_pos: Vector2) -> void:
-    var grid_pos = local_to_map(player_pos)
-    if not grid_map_data.has(grid_pos):
-        grid_map_data[grid_pos] = VISITED
-        ui_map.reveal_cell(grid_pos)
-```
-
-### Ability Gating (The "Lock")
-Obstacles that check for specific abilities.
-
-```gdscript
-# breakable_wall.gd
-extends StaticBody2D
-
-@export var required_ability: String = "super_missile"
-
-func take_damage(amount: int, ability_type: String) -> void:
-    if ability_type == required_ability:
-        destroy()
-    else:
-        play_deflect_sound()
-```
-
-## Common Pitfalls
-
-1.  **Softlocks**: Ensure the player cannot get stuck in an area without the ability to leave. Design "valves" (one-way drops) carefully.
-2.  **Backtracking Tedium**: Make backtracking interesting by changing enemies, opening shortcuts, or making traversal faster with new abilities.
-3.  **Empty Rewards**: Every dead end should have a reward (health upgrade, lore, currency).
-4.  **Lost Players**: Use visual landmarks and environmental storytelling to guide players without explicit markers (e.g., "The Statue Room").
-
-## Godot-Specific Tips
-
-*   **Camera2D**: Use `limit_left`, `limit_top`, etc., to confine the camera to the current room bounds. Update these limits on room transition.
-*   **Resource Preloading**: Preload adjacent rooms for seamless open-world feel if not using hard transitions.
-*   **RemoteTransform2D**: Use this to have the camera follow the player but stay detached from the player's rotation/scale.
-*   **TileMap Layers**: Use separate layers for background (parallax), gameplay (collisions), and foreground (visual depth).
-
-## Design Principles (from Dreamnoid)
-
-*   **Ability Versatility**: Abilities should serve both traversal and combat (e.g., a dash that dodges attacks and crosses gaps).
-*   **Practice Rooms**: Introduce a mechanic in a safe environment before testing the player in a dangerous one.
-*   **Landmarks**: Distinct visual features help players build a mental map.
-*   **Item Descriptions**: Use them for "micro-stories" to build lore without interrupting gameplay.
-
-
-## Advanced Exploration Systems
-
-Professional implementation of world persistence, sequence-breaking prevention, and seamless navigation.
-
-### 1. Room-Metadata Resource (Persistence)
-To persist room states efficiently, create a custom `Resource` that holds exported variables like `is_cleared` or `items_found`. Setting the `resource_local_to_scene` property to true ensures that the resource is uniquely duplicated upon scene instantiation, allowing each room to maintain its own state while being serializable via `ResourceSaver`.
-
-```gdscript
-class_name RoomMetadata extends Resource
-
-@export var is_cleared: bool = false
-@export var collected_item_ids: Array[StringName] = []
-@export var enemy_positions: Array[Vector3] = []
-
-func save_room_state(node: Node) -> void:
-    # Logic to populate resource from current room state
-    ResourceSaver.save(self, node.scene_file_path + ".tres")
-```
-
-### 2. Sequence-Breaking Protection (Ability Checks)
-Prevent unintended progression by using a Singleton (Autoload) to track global player progression. Interactable objects and gates should perform safe checks against this central authority to verify prerequisites before allowing passage.
-
-```gdscript
-# progression_manager.gd (Autoload)
-class_name ProgressionManager extends Node
-
-var unlocked_abilities: Dictionary = {
-    "double_jump": false,
-    "dash": false,
-    "wall_slide": false
-}
-
-func check_gate(ability_name: String) -> bool:
-    return unlocked_abilities.get(ability_name, false)
-
-func unlock_ability(id: String) -> void:
-    if unlocked_abilities.has(id):
-        unlocked_abilities[id] = true
-```
-
-### 3. Fast-Travel Logic
-Implement fast-travel by utilizing `ResourceLoader` to asynchronously load target room scenes. This avoids main-thread hitches and allows for smooth transitions between distant points in the interconnected world.
+Fast travel must match NEVER (threaded load + deferred swap) — never `ResourceLoader.load()` / sync `change_scene`:
 
 ```gdscript
 class_name FastTravelSystem extends Node
 
-func travel_to_node(scene_path: String, spawn_id: StringName) -> void:
-    # Load the packed scene resource
-    var room_scene := ResourceLoader.load(scene_path) as PackedScene
-    if room_scene:
-        # Cache the spawn ID for the next scene's _ready() call
-        GlobalState.target_spawn_id = spawn_id
-        get_tree().change_scene_to_packed(room_scene)
+var _pending_path: String = ""
+var _spawn_id: StringName = &""
+
+func travel_to_room(scene_path: String, spawn_id: StringName) -> void:
+    _pending_path = scene_path
+    _spawn_id = spawn_id
+    var err := ResourceLoader.load_threaded_request(scene_path)
+    if err != OK:
+        push_error("Fast travel request failed: %s" % scene_path)
+        return
+    set_process(true)
+
+func _process(_delta: float) -> void:
+    var status := ResourceLoader.load_threaded_get_status(_pending_path)
+    if status == ResourceLoader.THREAD_LOAD_IN_PROGRESS:
+        return
+    set_process(false)
+    if status != ResourceLoader.THREAD_LOAD_LOADED:
+        push_error("Fast travel load failed: %s" % _pending_path)
+        return
+    var packed := ResourceLoader.load_threaded_get(_pending_path) as PackedScene
+    # SceneTree work must be deferred — never from a worker thread
+    call_deferred("_swap_room", packed, _spawn_id)
+
+func _swap_room(packed: PackedScene, spawn_id: StringName) -> void:
+    GlobalState.target_spawn_id = spawn_id
+    get_tree().change_scene_to_packed(packed)
 ```
 
-**Architectural Tip**: For "Rooms", use the `resource_local_to_scene` flag on your metadata resource to ensure that instanced rooms don't share data accidentally, which is critical for unique item pickups.
+### 3. Ability Gating
+**MANDATORY**: [ability_unlock_resource.gd](../scripts/genre_metroidvania_ability_unlock_resource.gd) + [progression_gate_manager.gd](../scripts/genre_metroidvania_progression_gate_manager.gd) + [ability_state_machine.gd](../scripts/genre_metroidvania_ability_state_machine.gd). Gates query StringName abilities from the Autoload — do not hardcode ability strings in room scripts.
 
+### 4. Map / Fog
+**MANDATORY**: [minimap_fog_manager.gd](../scripts/genre_metroidvania_minimap_fog_manager.gd). Use `Vector2i` cells only.
+
+---
+
+## Design Principles (from Dreamnoid)
+
+- **Ability Versatility** — traversal + combat dual use
+- **Practice Rooms** — teach before punish
+- **Landmarks** — mental map without explicit markers
+- **Item micro-stories** — lore without cutscene walls
+
+## Common Pitfalls
+
+1. Softlocks on one-way valves — always design an escape with current abilities
+2. Backtracking tedium — shortcuts + faster movement after unlocks
+3. Empty dead ends — every remote path needs a reward
+4. Sync room loads — violates NEVER; use threaded request + deferred swap
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
 
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
 
-## Reference
-- Master Skill: [godot-master](../SKILL.md)
+### Official Documentation
+- [Using CharacterBody2D](https://docs.godotengine.org/en/stable/tutorials/physics/using_character_body_2d.html) — `move_and_slide`, floor detection, and velocity rules for coyote/buffer jumps and dash traversal.
+- [Idle and Physics Processing](https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html) — keep jump arcs, dashes, and wall slides in `_physics_process`; capture buffers in input callbacks.
+- [InputEvent](https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html) — `_unhandled_input` jump/ability buffering so presses are not lost between physics ticks.
+- [Background loading](https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html) — `ResourceLoader.load_threaded_request` for adjacent-room preload without hitch spikes.
+- [Change scenes manually](https://docs.godotengine.org/en/stable/tutorials/scripting/change_scenes_manually.html) — deferred room swaps, spawn door IDs, and safe `queue_free` of the outgoing room.
+- [Saving games](https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html) — persist abilities, opened gates, collectibles, and visited map cells across sessions.
+- [Singletons (Autoload)](https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html) — global progression/game-state ownership so rooms never keep conflicting ability flags.
+- [Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html) — ability unlock definitions and room metadata as `.tres` data with safe duplication.
+- [Using Tilemaps](https://docs.godotengine.org/en/stable/tutorials/2d/using_tilemaps.html) — `TileMapLayer` + `Vector2i` cells for minimap fog revelation and grid room tracking.
+- [Camera2D](https://docs.godotengine.org/en/stable/classes/class_camera2d.html) — room `limit_*` bounds and tweened limit handoffs for seamless camera room transitions.
+- [Using Area2D](https://docs.godotengine.org/en/stable/tutorials/physics/using_area_2d.html) — doors, save stations, and hazard triggers via body_entered without hard scene coupling.
+- [Groups](https://docs.godotengine.org/en/stable/tutorials/scripting/groups.html) — `call_group` for save-station heal/respawn broadcasts instead of walking the whole tree.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — autoloads, scene layout, and project settings before stacking room streaming and global progression.
+- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — tight platformer locomotion is the substrate under ability-gated traversal (dash, wall slide, double jump).
+- [godot-tilemap-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md) — layered TileMap/TileMapLayer authorship for gameplay collision, landmarks, and minimap fog grids.
+- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — singleton ownership patterns for ability flags and world persistence that rooms must not duplicate.
+
+#### Complements
+- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — threaded load queues and deferred room switches that keep interconnected maps hitch-free.
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — durable schemas for collectibles, boss flags, and visited cells across long exploration sessions.
+- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — room limits, RemoteTransform follow, and transition polish beyond basic Camera2D bounds.
+- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — unlockable traversal/combat abilities that gates and state machines query as the “keys.”
+- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — hierarchical player states for dash/wall-slide/double-jump without nested `if/elif` sprawl.
+- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — layers, Area2D doors/hazards, and direct space queries for wall detection and soft-lock-safe valves.
+- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — collectible/key item tracking that feeds map rewards and ability acquisition UI.
+
+#### Downstream / consumers
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — simulate ability unlock order, backtrack length, and soft-lock risk once gates and reward density are tunable.
+- [godot-genre-platformer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md) — pure movement-feel patterns that Metroidvania traversal builds on when stripping ability gating.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — ability_unlocked / gate_opened / map_revealed buses so HUD and rooms observe progression without owning it.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.

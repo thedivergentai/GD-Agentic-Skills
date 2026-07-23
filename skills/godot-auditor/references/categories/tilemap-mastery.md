@@ -6,3 +6,13 @@
 - **NEVER skip terrain set configuration** — Manual tile assignment for organic shapes? 100+ tiles for grass patch. Use `set_cells_terrain_connect()` with terrain sets for autotiling.
 - **NEVER use TileMap for dynamic entities** — Enemies/pickups as tiles? No signals, physics, scripts. Use Node2D/CharacterBody2D, reserve TileMap for static/destructible geometry.
 - **NEVER query get_cell_tile_data() in _physics_process** — Every frame tile data lookup? Performance tank. Cache tile data in dictionary: `tile_cache[pos] = get_cell_tile_data(pos)`.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

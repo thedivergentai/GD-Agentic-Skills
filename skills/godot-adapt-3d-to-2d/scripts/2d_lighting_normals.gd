@@ -30,3 +30,14 @@ func _ready() -> void:
     
     # Apply to the Sprite2D node
     texture = canvas_texture
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/2d/2d_lights_and_shadows.html
+# - https://docs.godotengine.org/en/stable/classes/class_canvastexture.html
+# - https://docs.godotengine.org/en/stable/classes/class_pointlight2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md — bake normals before 2D port
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md — CanvasTexture on Sprite2D
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-3d-to-2d/SKILL.md
+# =============================================================================

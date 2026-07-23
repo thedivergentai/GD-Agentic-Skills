@@ -17,6 +17,46 @@ I want this library to be the "Long-Term Memory" your agents need to build your 
 
 ---
 
+## 🚀 Major Release: v0.0.9 — The Reference Lattice Update
+**July 22, 2026**
+
+<div align="center">
+  <img src="assets/banner_0_0_9.webp" alt="The Reference Lattice Update - v0.0.9" width="100%" />
+</div>
+
+<div align="center">
+  <img src="assets/feed_lattice_rail.webp" alt="Docs Lattice · Stable Permalinks · Research Footers" width="100%" />
+</div>
+
+Agents shouldn't have to *guess* which doc page or peer skill owns the landmine. This release turns every Domain Skill into a **lattice node**: curated stable Godot docs on one side, progressive Related Skills on the other — plus research-link footers so scripts and phase refs stay one hop from the truth.
+
+- **Reference Lattice**: Official Documentation (`/en/stable/` only — never versioned `/en/4.x/` rot) + Related Skills tiers (Prerequisites / Complements / Downstream / Master) on all Domain Skills. Peer links use GitHub blob URLs so single-skill installs still resolve.
+- **Research footers**: Idempotent `GDSkills research links (agents)` blocks on `scripts/**` and `references/**` — non-executing, file-specific, safe to leave in the tree.
+
+### Featured skill — Monte Carlo Balancer
+
+<div align="center">
+  <img src="assets/feed_featured_monte_carlo.webp" alt="Featured skill: Monte Carlo Balancer — special mention @DedInc PR #5" width="100%" />
+</div>
+
+Load [godot-monte-carlo-balancer](skills/godot-monte-carlo-balancer/SKILL.md) when you need source-driven balance labs: Resource-first extract, playstyle CI win-rate bands, economy careers, and headless Godot calibration (Rust + rayon under the hood).
+
+**SPECIAL MENTION — [@DedInc](https://github.com/DedInc)** (PR #5): first external Domain Skill contribution to GDSkills. Thank you for shipping a real balance lab instead of another vibes spreadsheet.
+
+### Squad desk
+
+<div align="center">
+  <img src="assets/feed_squad_desk.webp" alt="Squad Desk — Anara, Aurelius, Builder" width="100%" />
+</div>
+
+> "The lattice is progressive disclosure done right — start at the skill, fan out only when the agent actually needs the next node." — *Anara (Analyst)*
+
+> "`/en/stable/` only. Versioned doc URLs are how libraries quietly rot while nobody is looking." — *Aurelius (Auditor)*
+
+> "Footers are research without executing the script. Read the links; don't treat the file as a side quest." — *Builder*
+
+---
+
 ## 🚀 Major Release: v0.0.8 — The Director's Cut Update
 **July 7, 2026**
 
@@ -24,14 +64,23 @@ I want this library to be the "Long-Term Memory" your agents need to build your 
   <img src="assets/banner_0_0_8.webp" alt="The Director's Cut Update - v0.0.8" width="100%" />
 </div>
 
-Godot 4.7 dropped and we didn't just bump a version string — we gave the **entire library** a Director's Cut pass. 🎬 Every Domain Skill, every persona script, every mirror in `godot-master` now speaks **4.7+** fluently. Your agents get the migration notes *before* they write the slop.
+Godot 4.7 dropped and we didn't just bump a version string — we gave the **entire library** a Director's Cut pass. 🎬 Every Domain Skill and persona script now speaks **4.7+** fluently. Your agents get the migration notes *before* they write the slop.
 
-- **Godot 4.7 Upgrade**: All 92 Domain Skills updated with a committed migration digest, targeted API deltas, and a full version string sweep across the stack.
-- **godot-master Sync**: Full mirror refresh of domain skill references and bundled scripts for 4.7.
+- **Godot 4.7 Upgrade**: All Domain Skills updated with a committed migration digest, targeted API deltas, and a full version string sweep across the stack.
 - **Domain Skills Rename**: "Micro-Skills" are now **Domain Skills** — same modular expertise, clearer branding on the feed.
 - **Persona Squad 4.7**: Anara scores 4.7 modernity signals, Aurelius opened **Sector IX** (the 4.7 never-list), and Builder respects `GODOT_PATH` so your CLI isn't married to one install folder.
 
-> "Anara gave my horror prototype +10 for AreaLight3D and Aurelius vetoed my `width_in_percent` RichTextLabel in the same session. I feel seen." — *Beta Tester*
+### Squad desk
+
+<div align="center">
+  <img src="assets/feed_squad_desk.webp" alt="Squad Desk — Anara, Aurelius, Builder" width="100%" />
+</div>
+
+> "AreaLight3D is a modernity signal, not a flex. If your horror lighting still fakes rectangles with emissive quads, the scoreboard notices." — *Anara (Analyst)*
+
+> "Sector IX is open. `width_in_percent` on RichTextLabel is not a style choice — it is a never." — *Aurelius (Auditor)*
+
+> "`GODOT_PATH` means headless CI can find the binary. Stop hardcoding your laptop's install folder into the pipeline." — *Builder*
 
 ---
 
@@ -49,6 +98,10 @@ We said in v0.0.7 that MCP Setup/Builder were gone. A few references were still 
 
 ## 🎬 Director's Cut: Godot 4.7 Tidbits
 **July 7, 2026**
+
+<div align="center">
+  <img src="assets/feed_director_tidbits.webp" alt="Director's Cut Tidbits — Godot 4.7" width="100%" />
+</div>
 
 *Quick hits from the engine release your agents now know by heart.*
 
@@ -114,10 +167,23 @@ Sector IX of the never-list is live. Highlights your agents must not sleep on:
   <img src="assets/banner_0_0_7.webp" alt="The Analyze, Audit, Build! Update - v0.0.7" width="100%" />
 </div>
 
-- **Three Persona-Based Skills**: Introduced specialized skills for `@godot-analyst` (Anara), `@godot-auditor` (Aurelius), and `@godot-builder` to unify development and optimization.
-- **MCP Streamlining**: Retired the defunct `MCP Builder` and `MCP Setup` skills in favor of direct construction and compilation using the Godot CLI.
-- **Full Repository Audit**: Executed a comprehensive audit across all microskills to elevate the knowledge depth and execution reliability to the highest agentic standard.
-- **Godot Master Synchronization**: Fully synchronized these advancements with `godot-master`, making the lead architect orchestrator more robust than ever.
+The squad walked on stage. Analyze, audit, build — three voices, one library, zero MCP busywork.
+
+- **Three Persona Skills**: `@godot-analyst` (Anara), `@godot-auditor` (Aurelius), and `@godot-builder` — specialized lanes for scale scoring, anti-slop vetoes, and headless ship work.
+- **MCP Streamlining**: Retired defunct `MCP Builder` / `MCP Setup` in favor of direct construction and compilation via the Godot CLI.
+- **Full Repository Audit**: Raised Domain Skill depth and execution reliability to the agentic standard the personas enforce.
+
+### Squad desk
+
+<div align="center">
+  <img src="assets/feed_squad_desk.webp" alt="Squad Desk — Anara, Aurelius, Builder" width="100%" />
+</div>
+
+> "I don't score lines of code — I score whether the architecture can still breathe at the next order of magnitude." — *Anara (Analyst)*
+
+> "If it is on the never-list, it does not ship. Charm is not a substitute for discipline." — *Aurelius (Auditor)*
+
+> "CLI + headless first. If you can't run it without a mouse, you can't CI it." — *Builder*
 
 ---
 **"Why inherit when you can compose?"**
@@ -133,6 +199,10 @@ Is your Player script 2,000 lines long? Are you afraid to touch the `Enemy.gd` b
 
 ## 🛡️ Meet the Squad: Aurelius & Anara
 **March 20, 2026**
+
+<div align="center">
+  <img src="assets/feed_meet_squad.webp" alt="Meet the Squad — Aurelius and Anara" width="100%" />
+</div>
 
 The library just got a major IQ boost. 🧠 Say hello to our new **Expert-Grade Diagnostics Duo**.
 

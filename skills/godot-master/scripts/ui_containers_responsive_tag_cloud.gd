@@ -14,3 +14,13 @@ func populate_tags(tags: Array[String]) -> void:
 		var lbl = Label.new()
 		lbl.text = "#" + tag_text
 		add_child(lbl)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_hflowcontainer.html
+# - https://docs.godotengine.org/en/stable/classes/class_flowcontainer.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md — Label/chip theme for tags
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md — rich tags vs plain Label chips
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md
+# =============================================================================

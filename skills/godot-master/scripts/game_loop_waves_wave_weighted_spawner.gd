@@ -33,3 +33,14 @@ func _get_random_pos() -> Vector3:
 	var angle = randf() * TAU
 	var distance = randf() * spawn_radius
 	return global_position + Vector3(cos(angle) * distance, 0, sin(angle) * distance)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_randomnumbergenerator.html
+# - https://docs.godotengine.org/en/stable/tutorials/math/random_number_generation.html
+# - https://docs.godotengine.org/en/stable/classes/class_marker3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — weight tables vs difficulty feel
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md — variety without hard-coded spawn scripts
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-game-loop-waves/SKILL.md
+# =============================================================================

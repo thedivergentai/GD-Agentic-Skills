@@ -11,3 +11,14 @@
 - **NEVER forget to disconnect local lambda signals** — Anonymous lambdas connected to global signals can cause memory leaks if the capturing object is freed.
 - **NEVER use large textures without compression** — VRAM is limited. Use VRAM Compressed (S3TC/BPTC) for fast lookup and reduced memory footprint.
 - **NEVER perform tree modifications during physics steps** — Adding/removing nodes during `_inter_ray` or `_physics_process` can lock the physics server. Use `call_deferred`.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/performance/cpu_optimization.html
+- https://docs.godotengine.org/en/stable/tutorials/performance/general_optimization.html
+- https://docs.godotengine.org/en/stable/tutorials/performance/using_multiple_threads.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

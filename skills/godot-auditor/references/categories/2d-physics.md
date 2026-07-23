@@ -15,3 +15,12 @@
 - **NEVER leave Continuous CD (CCD) enabled for slow objects** — It adds significant CPU overhead. Reserve it for high-speed projectiles to prevent tunneling.
 - **NEVER use a single collision layer for all tiles/entities** — Separate layers (Ground, Walls, Enemies) to allow selective filtering via masks.
 - **NEVER forget to free `PhysicsServer2D` RIDs manually** — They are not garbage collected and will leak memory permanently.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

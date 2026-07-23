@@ -23,3 +23,15 @@ func _process(delta: float) -> void:
 	
 	# Smoothly interpolate to the framed goal
 	global_position = global_position.lerp(goal_pos, 5.0 * delta)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_camera2d.html
+# - https://docs.godotengine.org/en/stable/tutorials/math/interpolation.html
+# - https://docs.godotengine.org/en/stable/classes/class_pathfollow2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md — lead room from target.velocity
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md — cutscene framing blends
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md — framing fairness when multiple actors share a view
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md
+# =============================================================================

@@ -127,3 +127,14 @@ TODO: How to integrate this feature
 ## Customize TEMPLATES dict for your project's patterns.
 ## Advanced: Generate test scenes automatically with GUT framework.
 ## Pro tip: Bind this to EditorPlugin tool button for one-click scaffolding.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/nodes_and_scene_instances.html
+# - https://docs.godotengine.org/en/stable/classes/class_editorscript.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md — scaffolded entity/ui folders become composed scenes
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — generated scripts follow style-guide naming
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md
+# =============================================================================

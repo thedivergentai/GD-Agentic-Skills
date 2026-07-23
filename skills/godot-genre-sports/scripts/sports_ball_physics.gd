@@ -38,3 +38,15 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 ## EXPERT USAGE:
 ## Attach to a RigidBody3D. Set Linear/Angular Damp to 0 in inspector 
 ## (since we apply custom drag). Shoot ball with 'apply_impulse'.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/rigid_body.html
+# - https://docs.godotengine.org/en/stable/classes/class_rigidbody3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_physicsdirectbodystate3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — RigidBody continuous CD and custom integrators
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — ballistic curve/stat bands when tuning shots
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-sports/SKILL.md
+# =============================================================================

@@ -10,19 +10,19 @@ Settings flexibility, window management, and kb/mouse precision define desktop g
 ## NEVER Do (Expert Desktop Rules)
 
 ### Window & Display
-- **NEVER hardcode resolution or fullscreen modes** — A 1920x1080 fullscreen on a 4K monitor is blurry. Always provide a settings menu with a resolution dropdown and a mode toggle.
-- **NEVER ignore DPI scale factors** — Manually centering windows without `DisplayServer.screen_get_scale()` results in incorrect positioning on HiDPI displays.
-- **NEVER skip a borderless window option** — Exclusive fullscreen can break multi-monitor focus. Offer `WINDOW_MODE_FULLSCREEN` (borderless).
+- **NEVER hardcode resolution or fullscreen modes** — Always provide a settings menu with resolution + mode toggle.
+- **NEVER ignore DPI scale factors** — Use `DisplayServer.screen_get_scale()` / usable rects.
+- **NEVER skip a borderless window option** — Offer `WINDOW_MODE_FULLSCREEN` (borderless) for multi-monitor focus.
 
 ### Input & Persistence
-- **NEVER use `keycode` for movement rebinds** — Use `physical_keycode` to ensure WASD works correctly across international keyboard layouts (AZERTY/Dvorak).
-- **NEVER save settings or user data to `res://`** — Filesystem is read-only in exported releases. Always use `user://`.
-- **NEVER skip `NOTIFICATION_WM_CLOSE_REQUEST`** — Failing to handle quit signals causes data loss. Intercept and flush and ConfigFile data before `get_tree().quit()`.
+- **NEVER use `keycode` for movement rebinds** — Use `physical_keycode` for AZERTY/Dvorak.
+- **NEVER save settings or user data to `res://`** — Always `user://`.
+- **NEVER skip `NOTIFICATION_WM_CLOSE_REQUEST`** — Flush ConfigFile before `get_tree().quit()`.
 
 ### Performance & Integration
-- **NEVER run utility tools at max framerate** — Enable `OS.low_processor_usage_mode` to prevent high GPU heat in static desktop apps.
-- **NEVER call proprietary SDKs (Steam/Epic) directly** — Always wrap in `Engine.has_singleton()` to prevent crashes in non-store builds.
-- **NEVER block the main thread with massive I/O** — Deserializing 100MB+ configs stalls the engine. Offload to `WorkerThreadPool`.
+- **NEVER run utility tools at max framerate** — Enable `OS.low_processor_usage_mode` for static tools.
+- **NEVER call proprietary SDKs (Steam/Epic) directly** — Wrap with `Engine.has_singleton()` guards.
+- **NEVER block the main thread with massive I/O** — Offload to `WorkerThreadPool`.
 
 ---
 
@@ -32,7 +32,7 @@ Settings flexibility, window management, and kb/mouse precision define desktop g
 
 ## Available Scripts
 
-> **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
+> **MANDATORY**: Read the appropriate script before implementing the corresponding pattern. Do not paste inline settings/rebind/Steam tutorials — the scripts are the golden path.
 
 ### [desktop_window_manager.gd](scripts/desktop_window_manager.gd)
 Expert DPI-aware multi-monitor window positioning using `DisplayServer`.
@@ -66,138 +66,72 @@ Expert native shell command execution and output capture.
 
 ---
 
-```gdscript
-# settings.gd
-extends Control
+## Desktop Golden Path (MANDATORY scripts)
 
-func _ready() -> void:
-    load_settings()
-    apply_settings()
+0. **Resolution / stretch** — use the mini-tree below, then **MANDATORY** [desktop_window_manager.gd](scripts/desktop_window_manager.gd).
+1. **Window / DPI** — **MANDATORY** [desktop_window_manager.gd](scripts/desktop_window_manager.gd): multi-monitor position, scale, mode restore.
+2. **ConfigFile settings** — **MANDATORY** [desktop_settings_persistent.gd](scripts/desktop_settings_persistent.gd): graphics/audio/window under `user://`.
+3. **Physical rebinds** — **MANDATORY** [physical_input_rebinder.gd](scripts/physical_input_rebinder.gd): `physical_keycode` only.
+4. **Close flush** — **MANDATORY** [graceful_shutdown_handler.gd](scripts/graceful_shutdown_handler.gd): `NOTIFICATION_WM_CLOSE_REQUEST` → save → quit.
+5. **Store SDK** — **MANDATORY** [platform_sdk_wrapper.gd](scripts/platform_sdk_wrapper.gd) before any store call: `if Engine.has_singleton("Steam")` → Steam API; `elif Engine.has_singleton("EOS")` → Epic; else no-op stub. Gate features with export feature tags (`steam` / `epic`).
 
-func load_settings() -> void:
-    var config := ConfigFile.new()
-    config.load("user://settings.cfg")
-    
-    $Graphics/ResolutionDropdown.selected = config.get_value("graphics", "resolution", 0)
-    $Graphics/FullscreenCheck.button_pressed = config.get_value("graphics", "fullscreen", false)
-    $Audio/MasterSlider.value = config.get_value("audio", "master_volume", 1.0)
+### Resolution / stretch mini-tree
 
-func save_settings() -> void:
-    var config := ConfigFile.new()
-    config.set_value("graphics", "resolution", $Graphics/ResolutionDropdown.selected)
-    config.set_value("graphics", "fullscreen", $Graphics/FullscreenCheck.button_pressed)
-    config.set_value("audio", "master_volume", $Audio/MasterSlider.value)
-    config.save("user://settings.cfg")
+| Player need | Window mode | Script hook |
+| :--- | :--- | :--- |
+| Fullscreen game, alt-tab friendly | `WINDOW_MODE_FULLSCREEN` (borderless) | [desktop_window_manager.gd](scripts/desktop_window_manager.gd) |
+| Exclusive fullscreen (lowest latency) | `WINDOW_MODE_EXCLUSIVE_FULLSCREEN` | Same — persist choice in ConfigFile |
+| Windowed / multi-monitor drag | `WINDOW_MODE_WINDOWED` + usable rect / DPI scale | Same + [desktop_settings_persistent.gd](scripts/desktop_settings_persistent.gd) |
 
-func apply_settings() -> void:
-    # Resolution
-    var resolutions := [Vector2i(1920, 1080), Vector2i(2560, 1440), Vector2i(3840, 2160)]
-    var resolution := resolutions[$Graphics/ResolutionDropdown.selected]
-    get_window().size = resolution
-    
-    # Fullscreen
-    if $Graphics/FullscreenCheck.button_pressed:
-        DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
-    else:
-        DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-    
-    # Audio
-    AudioServer.set_bus_volume_db(0, linear_to_db($Audio/MasterSlider.value))
-```
+**CI smoke:** headless `--path . --quit-after 1` with settings round-trip write/read under `user://` before merge (pairs with [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md)).
 
-## Keyboard Remapping
+## Expert Callouts (keep short — not full tutorials)
 
-```gdscript
-# Allow players to rebind keys
-func rebind_action(action: String, new_key: Key) -> void:
-    # Remove existing
-    InputMap.action_erase_events(action)
-    
-    # Add new
-    var event := InputEventKey.new()
-    event.keycode = new_key
-    InputMap.action_add_event(action, event)
-    
-    # Save
-    save_input_map()
-```
+### 1. Alt-Tab stuck-input guard
+On `NOTIFICATION_APPLICATION_FOCUS_OUT`, pause and `Input.action_release` held movement actions so OS-swallowed key-ups do not strand velocity.
 
-## Window Management
-
-```gdscript
-# Toggle fullscreen
-func toggle_fullscreen() -> void:
-    if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN:
-        DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-    else:
-        DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
-```
-
-## Steam Integration (if using)
-
-```gdscript
-# Using GodotSteam plugin
-var steam_id: int
-
-func _ready() -> void:
-    if Steam.isSteamRunning():
-        steam_id = Steam.getSteamID()
-        Steam.achievement_progress.connect(_on_achievement_progress)
-
-func unlock_achievement(name: String) -> void:
-    Steam.setAchievement(name)
-    Steam.storeStats()
-```
-
-## Best Practices
-
-1. **Settings** - Extensive graphics/audio options
-2. **Keybinds** - Allow remapping
-3. **Alt+F4** - Support quit shortcuts
-4. **Save Location** - Use `user://` directory
-## Expert Techniques & Optimizations
-
-### 1. Alt-Tab-Pause (Stuck Input Guard)
-When a game loses focus, the OS may intercept "key up" events, leaving Godot's `Input` state stuck. Use `NOTIFICATION_APPLICATION_FOCUS_OUT` to pause the game and reset input logic.
-
-```gdscript
-func _notification(what: int) -> void:
-    match what:
-        NOTIFICATION_APPLICATION_FOCUS_OUT:
-            get_tree().paused = true
-            # Optional: Manually release critical actions
-            Input.action_release("move_forward")
-        NOTIFICATION_APPLICATION_FOCUS_IN:
-            get_tree().paused = false
-```
-
-### 2. Social Integrations (GDExtension)
-For Discord-RPC or Vapor network pipes, use GDExtension to bind native shared libraries (.dll, .so, .dylib) to Godot at runtime. This keeps the engine core small while enabling expert-level social features.
-
-```gdscript
-# Logic assuming a 'SocialIntegration' GDExtension is loaded
-func _init_social() -> void:
-    if ClassDB.class_exists("SocialIntegration"):
-        var social = ClassDB.instantiate("SocialIntegration")
-        social.set_activity("In Menu", "Level 1")
-```
-
-### 3. Desktop-Launcher Template
-Use a dedicated Godot project as a lightweight launcher. It reads/writes `user://settings.cfg` and spawns the main game using `OS.create_process()`.
-
-```gdscript
-func _on_play_pressed() -> void:
-    var exe_path := OS.get_executable_path()
-    var args := PackedStringArray(["--main-pack", "game_data.pck"])
-    var pid := OS.create_process(exe_path, args)
-    
-    if pid > 0:
-        get_tree().quit()
-```
+### 2. Desktop launcher note
+Lightweight launcher projects may `OS.create_process` the main pack after writing `user://settings.cfg`; pair with [low_processor_eco_mode.gd](scripts/low_processor_eco_mode.gd) while idle in menus.
 
 ## Reference
-- Related: `godot-export-builds`, `godot-save-load-systems`
 
+> Progressive disclosure: open Official Documentation links only when researching a specific API;
+> load Related Skills when routing work to a peer domain — do not preload the whole lattice.
 
-### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+### Official Documentation
+- [DisplayServer](https://docs.godotengine.org/en/stable/classes/class_displayserver.html) — Window modes, `screen_get_scale` / usable rects, and native file-dialog features behind multi-monitor and HiDPI desktop settings.
+- [Multiple resolutions](https://docs.godotengine.org/en/stable/tutorials/rendering/multiple_resolutions.html) — Stretch modes, aspect, and content scale so resolution dropdowns stay sharp across 1080p–4K displays.
+- [Handling quit requests](https://docs.godotengine.org/en/stable/tutorials/inputs/handling_quit_requests.html) — `NOTIFICATION_WM_CLOSE_REQUEST` / `set_auto_accept_quit(false)` so Alt+F4 and window-close flush ConfigFile before exit.
+- [ConfigFile](https://docs.godotengine.org/en/stable/classes/class_configfile.html) — INI-style persistence for graphics, audio, and window state under `user://`.
+- [File paths in Godot projects](https://docs.godotengine.org/en/stable/tutorials/io/data_paths.html) — Why settings and saves must use `user://` (exported `res://` is read-only).
+- [InputEventKey](https://docs.godotengine.org/en/stable/classes/class_inputeventkey.html) — `physical_keycode` vs `keycode` so WASD rebinds survive AZERTY/Dvorak layouts.
+- [InputMap](https://docs.godotengine.org/en/stable/classes/class_inputmap.html) — Runtime `action_erase_events` / `action_add_event` for desktop rebind UIs.
+- [Using InputEvent](https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html) — Focus-loss stuck-key pitfalls (`NOTIFICATION_APPLICATION_FOCUS_OUT`) when Alt-Tabbing on PC.
+- [Window](https://docs.godotengine.org/en/stable/classes/class_window.html) — Secondary/tool windows and mode/size/position restore for true multi-window desktop apps.
+- [OS](https://docs.godotengine.org/en/stable/classes/class_os.html) — `low_processor_usage_mode`, `create_process` / `execute`, and `alert` for launchers and native shell hooks.
+- [Creating applications](https://docs.godotengine.org/en/stable/tutorials/ui/creating_applications.html) — Desktop-style app chrome, dialogs, and quit UX beyond game-only loops.
+- [Engine](https://docs.godotengine.org/en/stable/classes/class_engine.html) — `has_singleton` / `get_singleton` guards so Steam/Epic GDExtensions never crash standalone builds.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Display stretch, feature tags (`windows`/`linux`/`macos`), and project defaults every desktop settings menu depends on.
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — InputEvent buffering and action design before wiring `physical_keycode` rebind UIs.
+- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Settings screens, dropdowns, and remapper rows that stay layout-correct across resolutions.
+
+#### Complements
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Game-save ownership that pairs with ConfigFile settings and graceful close-request flushes.
+- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Singleton homes for window managers, SDK wrappers, and shutdown handlers.
+- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — Bus volume persistence that desktop graphics/audio options menus usually expose together.
+- [godot-adapt-desktop-to-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md) — Touch/safe-area remaps when the same project keeps desktop kb/mouse paths after a mobile port.
+- [godot-adapt-mobile-to-desktop](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-mobile-to-desktop/SKILL.md) — Bringing touch-first titles up to window modes, keybinds, and multi-monitor expectations.
+- [godot-composition-apps](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition-apps/SKILL.md) — Tooling/launcher composition patterns that lean on eco mode, native dialogs, and secondary windows.
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Profiling and quality presets after OS-level hardware detection suggests Ultra vs Balanced.
+
+#### Downstream / consumers
+- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — Windows/Linux/macOS export presets, icons, and store packaging once desktop settings and SDK wrappers are stable.
+- [godot-platform-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md) — Sibling platform skill for dual-target projects that must not assume desktop quit/window APIs on phones.
+- [godot-platform-web](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-web/SKILL.md) — Browser constraints (no multi-window / limited shell) when shipping the same settings stack to HTML5.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for discovering this platform skill beside sibling domains.

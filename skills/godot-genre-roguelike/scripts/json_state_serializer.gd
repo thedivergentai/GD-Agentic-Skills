@@ -31,3 +31,14 @@ func load_run_state() -> Array:
 	if error == OK:
 		return test_json_conv.get_data()
 	return []
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_json.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html
+# - https://docs.godotengine.org/en/stable/classes/class_fileaccess.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — JSON run state without PackedScene bloat
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — serializable Dictionaries vs Resources
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md
+# =============================================================================

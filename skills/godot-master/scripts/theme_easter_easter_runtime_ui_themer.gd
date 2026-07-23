@@ -27,3 +27,13 @@ func _theme_button(btn: Button) -> void:
 	btn.add_theme_stylebox_override("normal", style)
 
 ## Rule: Always 'duplicate()' or create 'new()' StyleBoxes to avoid global leakage.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/ui/gui_skinning.html
+# - https://docs.godotengine.org/en/stable/classes/class_tween.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md — base Theme architecture
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md — confetti/shimmer VFX
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-theme-easter/SKILL.md
+# =============================================================================

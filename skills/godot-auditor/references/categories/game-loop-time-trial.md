@@ -15,3 +15,13 @@
 - **NEVER neglect checkpoint sequencing** — Don't just check if the player hit the finish line. Verify they passed every intermediate checkpoint in the correct order.
 - **NEVER use Area3D without monitoring optimization** — Checkpoints should only look for the `Player` physics layer to minimize the number of physics overlap calculations.
 - **NEVER use standard lerp for ghost rotation** — Use `slerp()` or `Quaternion.slerp()` to avoid gimbal lock and ensure smooth rotation interpolation.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-game-loop-time-trial/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

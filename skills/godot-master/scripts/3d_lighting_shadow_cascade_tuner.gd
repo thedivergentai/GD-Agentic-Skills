@@ -18,3 +18,15 @@ func _process(_delta: float) -> void:
     
     # Blend splits to remove visible borders
     directional_shadow_blend_splits = true
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/lights_and_shadows.html
+# - https://docs.godotengine.org/en/stable/classes/class_directionallight3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/optimizing_3d_performance.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — cascade splits track camera tilt
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — atlas size vs split count
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — validate cascade cost
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md
+# =============================================================================

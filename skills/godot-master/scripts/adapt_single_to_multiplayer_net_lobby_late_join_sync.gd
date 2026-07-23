@@ -23,3 +23,14 @@ func receive_full_state(state: Dictionary) -> void:
 	pass
 
 ## Rule: Reliable RPCs are mandatory for initial state syncing. Use Unreliable for physics thereafter.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_multiplayerspawner.html
+# - https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html
+# - https://docs.godotengine.org/en/stable/classes/class_scenemultiplayer.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md — world-state payload assembly on join
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md — lobby peer_connected flows
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md
+# =============================================================================

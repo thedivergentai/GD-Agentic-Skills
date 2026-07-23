@@ -22,3 +22,14 @@ func configure_collision_for_mesh(node: MeshInstance3D, type: String = "box") ->
 ## For characters, always use a simple CapsuleShape3D.
 ## For level geometry, use 'create_multiple_convex_collisions' on import 
 ## to balance performance and accurate physics.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/collision_shapes_3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_meshinstance3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — StaticBody3D / shape selection for world meshes
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md — materials on imported meshes before collision gen
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md
+# =============================================================================

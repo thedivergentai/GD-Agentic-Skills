@@ -42,3 +42,14 @@ func connect_heavy_listener(target: Object, method: String) -> void:
 ## and 'Object is freed' errors.
 ## NEVER allow UI nodes to modify Game State directly; they 
 ## should emit a signal, and a Controller should handle the logic.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/autoloads_versus_regular_nodes.html
+# - https://docs.godotengine.org/en/stable/classes/class_signal.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — namespaced Autoload bus groups
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — UI signals stay in bus UI namespace
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md
+# =============================================================================

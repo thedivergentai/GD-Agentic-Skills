@@ -27,3 +27,13 @@ func _check_consequences() -> void:
 		var difficulty_level = int(death_count / difficulty_increase_threshold)
 		difficulty_changed.emit(difficulty_level)
 		print("World Tendency Shifted: Custom Difficulty Level " + str(difficulty_level))
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html — difficulty_changed on death thresholds
+# - https://docs.godotengine.org/en/stable/classes/class_node.html — accumulate death/revive counters
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — simulate death-penalty curves
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md — meta consequences after run death
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-mechanic-revival/SKILL.md
+# =============================================================================

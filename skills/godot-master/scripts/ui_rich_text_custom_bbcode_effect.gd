@@ -50,3 +50,14 @@ func _on_meta_clicked(meta: Variant) -> void:
 ## and iconography to ensure responsive layouts.
 ## Use 'bbcode_enabled = true' and 'install_effect()' to register 
 ## your custom effects at runtime.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_richtexteffect.html
+# - https://docs.godotengine.org/en/stable/classes/class_charfxtransform.html
+# - https://docs.godotengine.org/en/stable/classes/class_richtextlabel.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md — theme-driven color lookup instead of hardcoded hex
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — keep layout in containers, effects on body text
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md
+# =============================================================================

@@ -16,3 +16,14 @@
 - NEVER use standard strings for high-frequency ability checks; strictly use `StringName` (&"dashing") for pointer-speed comparisons.
 - NEVER iterate through every node to broadcast updates; strictly use `SceneTree.call_group()` for efficient mass communication.
 - NEVER delete active room/player nodes via `free()`; strictly use `queue_free()` to avoid segmentation faults.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-metroidvania/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — simulate balance impact of structural fixes
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

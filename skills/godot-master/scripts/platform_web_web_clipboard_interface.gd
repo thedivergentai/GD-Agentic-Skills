@@ -22,3 +22,14 @@ func paste_text_async(callback_obj: Object, callback_method: String) -> void:
 	window.pasteToGodot(js_callback)
 
 ## Rule: 'navigator.clipboard' requires a secure (HTTPS) context.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/platform/web/javascript_bridge.html
+# - https://docs.godotengine.org/en/stable/classes/class_javascriptbridge.html
+# - https://docs.godotengine.org/en/stable/classes/class_displayserver.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — clipboard helper singleton
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — HTTPS-gated copy/paste UI affordances
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-web/SKILL.md
+# =============================================================================

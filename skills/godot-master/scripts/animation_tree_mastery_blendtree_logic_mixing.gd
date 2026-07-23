@@ -18,3 +18,14 @@ func set_combat_mix(weight: float) -> void:
 		set("parameters/CombatSpeed/scale", 1.2)
 	else:
 		set("parameters/CombatSpeed/scale", 1.0)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_animationnodeblendtree.html
+# - https://docs.godotengine.org/en/stable/classes/class_animationnodeblend2.html
+# - https://docs.godotengine.org/en/stable/classes/class_animationnodetimescale.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — aim/combat mix weights
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md — layered aim while moving
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-tree-mastery/SKILL.md
+# =============================================================================

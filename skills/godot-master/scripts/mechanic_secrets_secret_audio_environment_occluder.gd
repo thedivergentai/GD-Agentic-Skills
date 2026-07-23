@@ -16,3 +16,15 @@ func _on_body_exited(body: Node) -> void:
 		AudioServer.set_bus_effect_enabled(AudioServer.get_bus_index(target_bus), effect_index, false)
 
 ## Rule: Secret rooms should sound 'different' (e.g. vacuum-sealed or echoey) to enhance discovery.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/audio/audio_buses.html
+# - https://docs.godotengine.org/en/stable/tutorials/audio/audio_effects.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md — bus effect enable/disable patterns
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — area enter/exit discovery cues
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-mechanic-secrets/SKILL.md
+# =============================================================================

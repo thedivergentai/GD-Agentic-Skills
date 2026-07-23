@@ -22,3 +22,14 @@ The construction of the vision's world. This rubric measures the project's maste
 
 ## 🌟 Visionary's Final Decree
 The TileMap is the skeleton of the world. To reach **Elite** status, your world must be 'Semantic'. A tile shouldn't just be 'Grass8'; it should be 'Walkable-Surface-Green'. Use **TileMapLayers** as independent data-tracks. A visionary builder knows every cell's purpose before it is ever drawn.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_styleguide.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

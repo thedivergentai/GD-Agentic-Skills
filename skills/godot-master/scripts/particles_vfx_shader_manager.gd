@@ -37,3 +37,14 @@ func toggle_optimization(is_visible: bool) -> void:
 ## Shader to move 1,000,000 particles with ZERO CPU cost.
 ## NEVER use CPUParticles for systems with >500 particles unless 
 ## targeting low-end mobile/web without Vulkan support.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/particle_shader.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/particles/creating_a_3d_particle_system.html
+# - https://docs.godotengine.org/en/stable/classes/class_gpuparticles3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md — ShaderMaterial assignment on GPUParticles process_material
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — visibility-driven emitting/process culling
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md
+# =============================================================================

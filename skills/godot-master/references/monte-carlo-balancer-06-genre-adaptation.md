@@ -48,3 +48,14 @@ Root marker: `project.godot` / `.uproject` / `Assets/` / `package.json` + `BALAN
 ## What never changes
 
 Source extraction + `inspect`; behavioral `PlayStyle`; seeded determinism; CI-aware bands; careers; band-scored bruteforce; Phase 7 calibration for Godot projects.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+- https://docs.godotengine.org/en/stable/classes/class_json.html
+- https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — Resource-first extract
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-testing-patterns/SKILL.md — Phase 7 headless calibration
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md
+-->

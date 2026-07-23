@@ -10,3 +10,13 @@
 - **NEVER ignore `is_instance_valid()` when accessing item icons** — If a slot's item is null, trying to access `.icon` will crash the UI.
 - **NEVER use complex Array logic in the UI** — The UI should only "reflect" the data. All sorting, stacking, and filtering logic belongs in the `InventoryData` resource.
 - **NEVER create new `Resource` instances inside a `_process()` loop** — Pre-instantiate your inventory slots or reuse existing ones to prevent allocation spikes.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

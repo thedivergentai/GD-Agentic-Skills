@@ -51,3 +51,13 @@ func is_on_floor() -> bool:
 
 ## EXPERT USAGE:
 ## Attach to VehicleBody3D. Map 'drift', 'forward', 'back', 'left', 'right' actions.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_vehiclebody3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_vehiclewheel3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — VehicleBody3D gravity/force discipline
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — drift/steer action mapping
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-racing/SKILL.md
+# =============================================================================

@@ -27,3 +27,13 @@ func _process(_delta: float) -> void:
     var zoom_f := minf(screen_size.x / target_size.x, screen_size.y / target_size.y)
     
     zoom = Vector2.ONE * clampf(zoom_f, min_zoom, max_zoom)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_camera2d.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/groups.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — bounds zoom/pan for shared screen
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — optional shake/impact observers
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-party/SKILL.md
+# =============================================================================

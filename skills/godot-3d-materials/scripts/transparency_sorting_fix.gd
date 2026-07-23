@@ -19,3 +19,14 @@ func enforce_depth_prepass() -> void:
 	var mat = material_override as StandardMaterial3D
 	# Resolves overlapping alpha-blended sorting issues
 	mat.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_ALWAYS
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_basematerial3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/standard_material_3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/gpu_optimization.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — transparency overdraw cost
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md — alpha pipelines for soft FX
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md
+# =============================================================================

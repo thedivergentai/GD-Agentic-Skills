@@ -24,3 +24,15 @@ func _init() -> void:
 
 ## [SKILL NOTICE]: Always run with --headless to prevent CI crashes 
 ## on servers without display drivers/GPUs.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/export/exporting_projects.html
+# - https://docs.godotengine.org/en/stable/classes/class_configfile.html
+# - https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md — which preset.N.options keys are safe to mutate
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — keep export_presets.cfg VCS policy clear
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-builder/SKILL.md
+# =============================================================================

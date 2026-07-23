@@ -1,354 +1,136 @@
 ---
 name: godot-project-templates
-description: "Expert blueprint for genre-specific project boilerplates (2D platformer, top-down RPG, 3D FPS) including directory structures, AutoLoad patterns, and core systems. Use when bootstrapping new projects or migrating architecture. Keywords project templates, boilerplate, 2D platformer, RPG, FPS, AutoLoad, scene structure."
+description: "Navigation skill for genre project scaffolds: pick platformer/RPG/FPS (or other genre) then load matching template scripts and route gameplay fill to godot-genre-* skills. Use when bootstrapping architecture, bootstrap order, pause modes, PCK DLC, or feature tags — not for pasting FPS/inventory recipes. Keywords: project templates, bootstrap, Subsystem Locator, PCK, feature tags, PROCESS_MODE_ALWAYS, genre scaffold."
 ---
 
-# Project Templates
+# Project Templates (Navigation)
 
-Genre-specific scaffolding, AutoLoad patterns, and modular architecture define rapid prototyping.
-
-## Available Scripts
-
-### [base_game_manager.gd](scripts/base_game_manager.gd)
-Expert AutoLoad template for game state management.
-
-### [base_level.gd](scripts/base_level.gd)
-Abstract base class for all loaded levels with structured lifecycle hooks.
-
-### [base_actor.gd](scripts/base_actor.gd)
-Expert foundation for all gameplay agents (Player, NPC, Enemies).
-
-### [base_menu.gd](scripts/base_menu.gd)
-UI foundation for focus persistence, animations, and input blocking.
-
-### [subsystem_locator.gd](scripts/subsystem_locator.gd)
-Decoupled alternative to monolithic managers for modular registration.
-
-### [multi_platform_input.gd](scripts/multi_platform_input.gd)
-Template-driven Input Mapping for hardware-aware profile overrides.
-
-### [platform_feature_config.gd](scripts/platform_feature_config.gd)
-Conditional platform logic using Godot Feature Tags.
-
-### [scene_state_machine.gd](scripts/scene_state_machine.gd)
-Node-based State Machine boilerplate for visual state logic.
-
-### [state_machine_node.gd](scripts/state_machine_node.gd)
-Abstract state node foundation for specialized state components.
-
-### [accessibility_tts_manager.gd](scripts/accessibility_tts_manager.gd)
-Accessibility & Localization foundation using native TTS API.
-
-### [level_steamer_manager.gd](scripts/level_steamer_manager.gd)
-Background level-loading template using `load_threaded_request`.
+Scaffold architecture, then **adapt** — never dump genre tutorials into the project verbatim.
 
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Directory & Scaffolding
-- **NEVER hardcode scene paths** — `get_tree().change_scene_to_file("res://levels/level_1.tscn")` in 20 places? Nightmare refactoring. Use AutoLoad + constants OR scene registry.
-- **NEVER skip .gdignore for asset folders** — Designer internal project files should never be imported into res:// directly.
+- **NEVER hardcode scene paths** in dozens of call sites — AutoLoad constants or a scene registry.
+- **NEVER skip `.gdignore` for designer asset drops** outside import pipelines.
+- **NEVER copy-paste templates as-is** — Understand structure, then adapt (see checklist below).
 
 ### Architecture & Lifecycle
-- **NEVER use `get_tree().paused` without groups** — Pausing entire tree = pause menu freezes. Use process mode `PROCESS_MODE_ALWAYS` on UI.
-- **NEVER skip virtual lifecycle hooks** — In base classes, always provide `_initialize_X()` hooks instead of just `_ready()` to allow child overrides without breaking parents.
-- **NEVER rely on monolithic "God" singletons** — Decouple systems using a **Signal Bus** or **Subsystem Locator**.
+- **NEVER use `get_tree().paused` without process-mode groups** — Pause menus need `PROCESS_MODE_ALWAYS`. **Why:** pausing the tree freezes `_process` on menu nodes too, so buttons never receive input; set gameplay to `INHERIT` (paused) and menu/HUD to `ALWAYS` via [base_menu.gd](scripts/base_menu.gd) or explicit `process_mode` on the pause root.
+- **NEVER skip virtual lifecycle hooks** on base classes — Prefer `_initialize_*()` over brittle `_ready()` overrides.
+- **NEVER rely on monolithic God singletons** — Signal Bus or **Subsystem Locator**.
 
 ### Platform & UI
-- **NEVER skip Input.MOUSE_MODE_CAPTURED in FPS** — Set in player `_ready()` to ensure focus.
-- **NEVER use floating point constants for UI layout** — Leads to drift. Use anchors and containers.
-- **NEVER ignore i18n Translation Context** — "Lead" (Metal) vs "Lead" (Action). Strictly use contexts in `translate()`.
+- **NEVER skip `Input.MOUSE_MODE_CAPTURED` in FPS scaffolds** — Set when the FPS genre path is chosen.
+- **NEVER use floating-point constants for UI layout** — Anchors/containers.
+- **NEVER ignore i18n translation context** — Disambiguate strings in `tr()` / contexts.
 
 ### Performance
-- **NEVER load massive levels synchronously** — Causes frame freezes. Strictly use `ResourceLoader.load_threaded_request()`.
-- **NEVER copy-paste templates as-is** — Using platformer template for RPG? Leads to debt. UNDERSTAND the structure, then adapt.
+- **NEVER load massive levels synchronously** — `ResourceLoader.load_threaded_request()`.
 
 ---
 
-### Directory Structure
+## Golden Path
 
-```
-my_platformer/
-├── project.godot
-├── autoloads/
-│   ├── game_manager.gd
-│   ├── audio_manager.gd
-│   └── scene_transitioner.gd
-├── scenes/
-│   ├── main_menu.tscn
-│   ├── game.tscn
-│   └── pause_menu.tscn
-├── entities/
-│   ├── player/
-│   │   ├── player.tscn
-│   │   ├── player.gd
-│   │   └── player_states/
-│   └── enemies/
-│       ├── base_enemy.gd
-│       └── goblin/
-├── levels/
-│   ├── level_1.tscn
-│   └── tilesets/
-├── ui/
-│   ├── hud.tscn
-│   └── themes/
-├── audio/
-│   ├── music/
-│   └── sfx/
-└── resources/
-    └── data/
-```
+0. **Bootstrap** — **MANDATORY** [bootstrap_config.gd](scripts/bootstrap_config.gd): config/network before audio/UI (do not rely on accidental Autoload order).
+1. Pick a genre row below → load listed scripts only.
+2. Rename project, register locator/bootstrap, configure Input Map.
+3. Open the consumer `godot-genre-*` skill for gameplay systems.
 
-### Core Scripts
+**Platformer end-to-end:** row 1 scripts → [godot-genre-platformer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md) (`advanced_platformer_controller.gd` for movement; template `base_level` + state machine for scene flow). **Do NOT** paste FPS/inventory recipes from this skill.
 
-**game_manager.gd:**
-```gdscript
-extends Node
+## Genre Router → Scripts
 
-signal game_started
-signal game_paused(paused: bool)
-signal level_completed
+> **MANDATORY**: Choose a genre row, load the listed scripts, then open the consumer `godot-genre-*` skill for gameplay systems. **Do NOT** paste inline FPS controllers or inventory managers from memory.
 
-var current_level: int = 1
-var score: int = 0
-var is_paused: bool = false
+| Genre intent | Load these template scripts (MANDATORY) | Fill gameplay via |
+| :--- | :--- | :--- |
+| 2D platformer | [base_game_manager.gd](scripts/base_game_manager.gd), [base_level.gd](scripts/base_level.gd), [base_actor.gd](scripts/base_actor.gd), [scene_state_machine.gd](scripts/scene_state_machine.gd), [state_machine_node.gd](scripts/state_machine_node.gd) | [godot-genre-platformer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md) |
+| Top-down / action RPG | Same bases + [subsystem_locator.gd](scripts/subsystem_locator.gd), [base_menu.gd](scripts/base_menu.gd) | [godot-genre-action-rpg](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md) |
+| 3D FPS / shooter | Bases + [multi_platform_input.gd](scripts/multi_platform_input.gd), [platform_feature_config.gd](scripts/platform_feature_config.gd) | [godot-genre-shooter-fps](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md) |
+| Any genre + DLC packs | [modular_dlc_loader.gd](scripts/modular_dlc_loader.gd) | Genre skill + [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) |
+| Cross-platform input/features | [multi_platform_input.gd](scripts/multi_platform_input.gd), [platform_feature_config.gd](scripts/platform_feature_config.gd) | [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) |
+| Threaded level streaming | [level_steamer_manager.gd](scripts/level_steamer_manager.gd) | [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) |
+| Accessibility TTS | [accessibility_tts_manager.gd](scripts/accessibility_tts_manager.gd) | Project foundations / UI skills |
 
-func start_game() -> void:
-    score = 0
-    current_level = 1
-    SceneTransitioner.change_scene("res://levels/level_1.tscn")
-    game_started.emit()
-
-func pause_game(paused: bool) -> void:
-    is_paused = paused
-    get_tree().paused = paused
-    game_paused.emit(paused)
-
-func complete_level() -> void:
-    current_level += 1
-    level_completed.emit()
-```
+Folder-by-feature skeleton (all genres): `entities/<name>/`, `levels/` or `maps/`, `ui/`, `autoloads/` or locator-registered systems, `resources/`. Details belong in the genre consumer skill — not duplicated here.
 
 ---
 
-## Godot 4.7: New Project Defaults
+## Architecture Deltas (keep in this skill)
 
-- Default stretch **mode**: `canvas_items` (was `disabled`).
-- Default stretch **aspect**: `expand` (was `keep`).
-- Templates should document these defaults; override in Project Settings if legacy behavior needed.
+### Godot 4.7 project defaults
+- Stretch **mode**: `canvas_items` (was `disabled`); **aspect**: `expand` (was `keep`). Document overrides if legacy behavior is required.
 
-## Top-Down RPG Template
+### Subsystem Locator vs God Autoload
+Prefer [subsystem_locator.gd](scripts/subsystem_locator.gd) for modular registration; keep a thin bootstrap Autoload only.
 
-### Directory Structure
+### Bootstrap order
+**MANDATORY** [bootstrap_config.gd](scripts/bootstrap_config.gd) (or equivalent): critical systems (config/network) before audio/UI. Do not rely on accidental Project Settings Autoload order alone.
 
-```
-my_rpg/
-├── autoloads/
-│   ├── game_data.gd
-│   ├── dialogue_manager.gd
-│   └── inventory_manager.gd
-├── entities/
-│   ├── player/
-│   ├── npcs/
-│   └── interactables/
-├── maps/
-│   ├── overworld/
-│   ├── dungeons/
-│   └── interiors/
-├── systems/
-│   ├── combat/
-│   ├── dialogue/
-│   ├── quests/
-│   └── inventory/
-├── ui/
-│   ├── inventory_ui.tscn
-│   ├── dialogue_box.tscn
-│   └── quest_log.tscn
-└── resources/
-    ├── items/
-    ├── quests/
-    └── dialogues/
-```
+### Pause modes
+Gameplay tree pauses; UI/pause menu nodes use `PROCESS_MODE_ALWAYS`. Wire via [base_menu.gd](scripts/base_menu.gd).
 
-### Core Systems
+### PCK / DLC
+**MANDATORY** [modular_dlc_loader.gd](scripts/modular_dlc_loader.gd) for `ProjectSettings.load_resource_pack()` mounts — never hand-roll path hacks in gameplay code.
 
-**inventory_manager.gd:**
-```gdscript
-extends Node
-
-signal item_added(item: Resource)
-signal item_removed(item: Resource)
-
-var inventory: Array[Resource] = []
-
-func add_item(item: Resource) -> void:
-    inventory.append(item)
-    item_added.emit(item)
-
-func remove_item(item: Resource) -> bool:
-    if item in inventory:
-        inventory.erase(item)
-        item_removed.emit(item)
-        return true
-    return false
-
-func has_item(item_id: String) -> bool:
-    for item in inventory:
-        if item.id == item_id:
-            return true
-    return false
-```
+### Feature tags
+**MANDATORY** [platform_feature_config.gd](scripts/platform_feature_config.gd) for `OS.has_feature()` / export-tag forks (mobile, low_end, dedicated_server).
 
 ---
 
-## 3D FPS Template
+## Adapt-Not-Copy Checklist
 
-### Directory Structure
+Map each template piece to a consumer skill before writing gameplay code:
 
-```
-my_fps/
-├── autoloads/
-│   ├── game_manager.gd
-│   └── weapon_manager.gd
-├── player/
-│   ├── player.tscn
-│   ├── player.gd
-│   ├── camera_controller.gd
-│   └── weapons/
-│       ├── weapon_base.gd
-│       ├── pistol/
-│       └── rifle/
-├── enemies/
-│   ├── ai_controller.gd
-│   └── soldier/
-├── levels/
-│   ├── level_1/
-│   └── level_2/
-├── ui/
-│   ├── hud.tscn
-│   └── crosshair.tscn
-└── resources/
-    ├── weapons/
-    └── pickups/
-```
+| Template piece | Adapt into |
+| :--- | :--- |
+| `base_actor` / state machine nodes | Genre movement/combat skill (`godot-genre-*`) + [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) |
+| `base_game_manager` signals | [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) / [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) |
+| Level streamer | [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) |
+| Input / feature config | [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) + platform skills |
+| Menus / HUD shells | [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) |
+| Export / CI / PCK | [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) |
 
-### Player Controller
-
-**player.gd:**
-```gdscript
-extends CharacterBody3D
-
-@export var speed := 5.0
-@export var jump_velocity := 4.5
-
-var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
-
-@onready var camera: Camera3D = $Camera3D
-@onready var weapon_holder: Node3D = $Camera3D/WeaponHolder
-
-func _ready() -> void:
-    Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-
-func _physics_process(delta: float) -> void:
-    if not is_on_floor():
-        velocity.y -= gravity * delta
-    
-    if Input.is_action_just_pressed("jump") and is_on_floor():
-        velocity.y = jump_velocity
-    
-    var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
-    var direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
-    
-    if direction:
-        velocity.x = direction.x * speed
-        velocity.z = direction.z * speed
-    else:
-        velocity.x = move_toward(velocity.x, 0, speed)
-        velocity.z = move_toward(velocity.z, 0, speed)
-    
-    move_and_slide()
-```
-
----
-
-## Input Map Template
-
-```ini
-# All templates should include these actions:
-
-[input]
-move_left=Keys: A, Left, Gamepad Left
-move_right=Keys: D, Right, Gamepad Right
-move_up=Keys: W, Up, Gamepad Up
-move_down=Keys: S, Down, Gamepad Down
-jump=Keys: Space, Gamepad A
-interact=Keys: E, Gamepad X
-pause=Keys: Escape, Gamepad Start
-ui_accept=Keys: Enter, Gamepad A
-ui_cancel=Keys: Escape, Gamepad B
-```
-
-## Usage
-
-1. Copy template structure
-2. Rename project in `project.godot`
-3. Register AutoLoads
-4. Configure Input Map
-5. Begin development
-
-## Expert Template Patterns
-
-### 1. Folder-by-Feature (Entity-Centric)
-The professional standard for scalable Godot project organization.
-- **The Rule**: Keep all resources related to a game entity (scripts, scenes, textures, local resources) in the same directory (e.g., `res://entities/player/`).
-- **Benefit**: Simplifies refactoring, enables easier asset migration between projects, and prevents the "monolithic scripts folder" bottleneck.
-
-### 2. Standard-Export-Presets (Platform Stability)
-Optimized configurations for high-fidelity exports.
-- **VRAM Compression**: Ensure `textures/vram_compression/import_etc2_astc` is enabled for Android/mobile compatibility.
-- **Architecture**: Target `x86_64` for Windows/Linux desktop and `arm64-v8a` for modern Android devices.
-- **Feature Tags**: Use custom feature tags (e.g., `mobile`, `low_end`) to conditionally load lower-resolution assets or simplified shaders at runtime.
-
-- **Versioning**: Add `.import` files to version control; they contain the vital metadata that tells Godot how to process your raw assets.
-
-### 4. CI/CD-Ready Pipeline (GitHub Actions)
-Automate builds headlessly using CLI flags. This ensures consistent binaries and early detection of export errors [3, 16, 17].
-
-```yaml
-# .github/workflows/export.yml
-jobs:
-  export:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Export Windows
-        run: godot --headless --export-release "Windows Desktop" build/game.exe
-```
-
-### 5. Modular-DLC Structure (PCK Mounting)
-Deliver content updates or patches without exposing source code. Use `ProjectSettings.load_resource_pack()` to mount external assets into `res://` [4, 6].
-
-```gdscript
-func load_dlc(path: String):
-    if ProjectSettings.load_resource_pack(path):
-        # Assets in PCK override existing res:// paths
-        var new_scene = load("res://dlc_level.tscn")
-```
-
-### 6. System-Bootstrap-Priority
-Control AutoLoad initialization order using a central `BootstrapManager`. This replaces the linear Project Settings list with a prioritized script [19, 20].
-
-```gdscript
-# BootstrapManager.gd (The only Autoload)
-func _ready():
-    # 1. Start Critical Systems (Network, Config)
-    _add_system(NetworkManager.new())
-    # 2. Start Secondary Systems (Audio, UI)
-    _add_system(AudioManager.new())
-```
+**Usage:** pick genre row → load scripts → rename project → register locator/bootstrap → configure Input Map → open genre skill for systems — do not paste stock FPS/inventory recipes from this skill.
 
 ## Reference
-- [GDSkills godot-project-foundations](../godot-project-foundations/SKILL.md)
 
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
 
-### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+### Official Documentation
+- [Project organization](https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html) — Feature-folder layouts, `.gdignore`, and VCS hygiene that genre boilerplates should bake in from day one.
+- [Scene organization](https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html) — Ownership boundaries for `entities/`, `levels/`, and UI scenes so templates stay refactor-safe.
+- [Singletons (Autoload)](https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html) — Registering lean GameManager / Audio / SceneTransitioner services that survive scene changes.
+- [Autoloads versus regular nodes](https://docs.godotengine.org/en/stable/tutorials/best_practices/autoloads_versus_regular_nodes.html) — When a Subsystem Locator or scene-local node beats a monolithic God singleton.
+- [Background loading](https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html) — `ResourceLoader.load_threaded_*` patterns used by level streamer templates.
+- [Pausing games](https://docs.godotengine.org/en/stable/tutorials/scripting/pausing_games.html) — Process modes so pause menus stay alive while gameplay freezes.
+- [Multiple resolutions](https://docs.godotengine.org/en/stable/tutorials/rendering/multiple_resolutions.html) — Stretch mode/aspect defaults (`canvas_items` / `expand`) every new project template should document.
+- [Feature tags](https://docs.godotengine.org/en/stable/tutorials/export/feature_tags.html) — `OS.has_feature()` profiles for mobile/PC/server overrides in platform config templates.
+- [Exporting packs (PCK)](https://docs.godotengine.org/en/stable/tutorials/export/exporting_pcks.html) — Modular DLC / patch mounts via `ProjectSettings.load_resource_pack()`.
+- [Using controllers and gamepads](https://docs.godotengine.org/en/stable/tutorials/inputs/controllers_gamepads_joysticks.html) — Default Input Map actions and deadzone tuning for multi-platform templates.
+- [Text-to-speech](https://docs.godotengine.org/en/stable/tutorials/audio/text_to_speech.html) — DisplayServer TTS hooks for accessibility manager scaffolding.
+- [Internationalizing games](https://docs.godotengine.org/en/stable/tutorials/i18n/internationalizing_games.html) — Translation contexts so UI strings in menus/HUD avoid ambiguous keys.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Folder hygiene, naming, and import basics before copying a genre skeleton into a real repo.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed base classes, virtual hooks, and signal style used by every template script here.
+
+#### Complements
+- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Boot order and ownership rules once BootstrapConfig / GameManager Autoloads leave the template stage.
+- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — Production scene swaps and load queues that deepen the level streamer boilerplate.
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Full action maps, device routing, and remapping beyond MultiPlatformInput scaffolding.
+- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — Hierarchical / visual FSM patterns that extend SceneStateMachine and StateMachineNode.
+- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — Export presets, VRAM compression, and CI headless flags assumed by Standard-Export-Presets templates.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Typed EventBus patterns when templates grow past direct GameManager signals.
+- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Anchor/container layouts for BaseMenu and HUD scenes instead of floating-point pixel drift.
+- [godot-adapt-desktop-to-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md) — Touch, safe-area, and mobile feature-tag profiles that PlatformFeatureConfig only stubs.
+
+#### Downstream / consumers
+- [godot-genre-platformer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md) — Fills the 2D platformer directory skeleton with movement, coyote time, and level flow.
+- [godot-genre-action-rpg](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md) — Combat, inventory, and quest systems that plug into the top-down RPG template folders.
+- [godot-genre-shooter-fps](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md) — Weapons, hit detection, and camera feel layered on the 3D FPS player scaffold.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for cross-skill discovery.

@@ -20,33 +20,33 @@ A Master implementation treats waves as **Data-Driven Transitions**. Instead of 
 
 ### Core Responsibilities
 - **Manager**: Orchestrates the timeline. Handles delays between waves and tracks "Victory" conditions (all enemies dead).
-- **Spawner**: Decoupled nodes that provide spatial context for where enemies appear.
+- **Spawner**: Decoupled nodes that provide spatial context for where enemies appear (`wave_spawner.gd` / `wave_weighted_spawner.gd`).
 - **Resource**: Immutable data containers that allow designers to rebalance the game without touching code.
+
+## Density Decision Tree (pick scale before coding)
+
+| Live density | Approach | MANDATORY loads |
+| :--- | :--- | :--- |
+| **Under ~80 SceneTree enemies** | Node manager + Marker spawners | [wave_manager.gd](scripts/wave_manager.gd), [wave_spawner.gd](scripts/wave_spawner.gd), [wave_resource.gd](scripts/wave_resource.gd) |
+| **Swarm visuals / hundreds** | MultiMesh + weighted composition | [wave_loop_patterns.gd](scripts/wave_loop_patterns.gd) (MultiMesh / async path), [wave_weighted_spawner.gd](scripts/wave_weighted_spawner.gd) |
+| **~10k bodies** | PhysicsServer / NavigationServer RIDs (no per-mob Node) | [wave_loop_patterns.gd](scripts/wave_loop_patterns.gd) server-RID patterns; do **not** scale `wave_manager` node spawns |
+
+`wave_manager.gd` is the SceneTree golden path (deferred `add_child`, group/signal clear counts, optional pool). Treat it as **prototype→mid-scale** — for RID swarms, follow `wave_loop_patterns.gd` instead of instantiating thousands of nodes.
+
+## Composition Golden Path
+
+1. Author a [wave_resource.gd](scripts/wave_resource.gd) composition table.
+2. Place [wave_spawner.gd](scripts/wave_spawner.gd) Markers (or [wave_weighted_spawner.gd](scripts/wave_weighted_spawner.gd) when variety weights matter).
+3. Point [wave_manager.gd](scripts/wave_manager.gd) `spawner` at that Marker; manager defers spawn and clears via `&"enemies"` group + signals.
+4. When weights replace fixed counts, call `WaveWeightedSpawner.spawn_enemy()` from the composition loop (or set manager `spawner` to the weighted node).
 
 ## Expert Code Patterns
 
 ### 1. The Async Wave Trigger
-Use `await` and timers to handle pacing without cluttering the `_process` loop.
-
-```gdscript
-# wave_manager.gd snippet
-func start_next_wave():
-    # Delay for juice/prep
-    await get_tree().create_timer(pre_delay).timeout 
-    wave_started.emit()
-    _spawn_logic()
-```
+Use `await` timers in [wave_manager.gd](scripts/wave_manager.gd) — **MANDATORY read** before writing a custom timeline. Spawns use `call_deferred(&"add_child", …)`; clear via signals/groups (not `get_children()` scans).
 
 ### 2. Composition-Based Spawning
-Manage enemy variety using a Dictionary-based composition strategy in your `WaveResource`.
-
-```gdscript
-# wave_resource.gd
-@export var compositions: Dictionary = {
-    "Res://Enemies/Goblin.tscn": 10,
-    "Res://Enemies/Orc.tscn": 2
-}
-```
+Define variety in [wave_resource.gd](scripts/wave_resource.gd); place units with [wave_spawner.gd](scripts/wave_spawner.gd) / [wave_weighted_spawner.gd](scripts/wave_weighted_spawner.gd). Do not hardcode scene paths in the manager.
 
 ## Master Decision Matrix: Progression
 
@@ -84,13 +84,16 @@ Manage enemy variety using a Dictionary-based composition strategy in your `Wave
 10 Expert patterns: MultiMesh swarms, async pathfinding, background preloading, and server-side physics mobs.
 
 ### [wave_manager.gd](scripts/wave_manager.gd)
-Orchestrates the timeline, delays between waves, and tracks "Victory" conditions.
+Orchestrates the timeline, delays between waves, and tracks clear via group counts + signals. Uses `call_deferred` add_child; optional pool via `use_pool` / `recycle_enemy`.
 
 ### [wave_resource.gd](scripts/wave_resource.gd)
 Data containers for wave compositions and difficulty settings.
 
+### [wave_spawner.gd](scripts/wave_spawner.gd)
+`Marker3D` spatial portal — `get_spawn_position()` with optional radius jitter. Wire as `WaveManager.spawner`.
+
 ### [wave_weighted_spawner.gd](scripts/wave_weighted_spawner.gd)
-Spatial spawner using weighted random selection for enemy variety.
+Weighted random enemy selection at a Marker. Use when composition variety is probability-driven rather than fixed counts.
 
 ---
 
@@ -107,5 +110,42 @@ Decouple your wave data from the UI using a `CanvasLayer` and signals.
 - **Health Bars**: Use a `TextureProgressBar` on a `CanvasLayer` for bosses, or `Sprite3D` with a viewport texture for individual enemy health bars.
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
-- Related: Rebalance wave curves with a style matrix via [godot-monte-carlo-balancer](../godot-monte-carlo-balancer/SKILL.md).
+
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
+
+### Official Documentation
+- [Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html) — `WaveResource` compositions and delays stay designer-editable without hardcoding spawn tables in managers.
+- [Nodes and scene instances](https://docs.godotengine.org/en/stable/tutorials/scripting/nodes_and_scene_instances.html) — `PackedScene.instantiate()` plus `add_child` / `call_deferred` is the safe spawn path for wave enemies.
+- [Groups](https://docs.godotengine.org/en/stable/tutorials/scripting/groups.html) — track live mobs with `StringName` groups and `get_node_count_in_group` instead of scanning children every frame.
+- [Idle and Physics Processing](https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html) — keep pacing on timers/`await`; never instantiate mid-physics callback without deferring.
+- [SceneTreeTimer](https://docs.godotengine.org/en/stable/classes/class_scenetreetimer.html) — pre-wave delays and spawn-rate gaps via `create_timer` without a forever `_process` countdown.
+- [Using signals](https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html) — `wave_started` / `wave_cleared` / `all_waves_complete` decouple UI, audio, and combat from the manager timeline.
+- [Background loading](https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html) — `ResourceLoader.load_threaded_request` bosses/heavy waves so first spawn does not hitch.
+- [Random number generation](https://docs.godotengine.org/en/stable/tutorials/math/random_number_generation.html) — weighted composition and spawn jitter with `RandomNumberGenerator.rand_weighted`.
+- [Using MultiMesh](https://docs.godotengine.org/en/stable/tutorials/performance/using_multimesh.html) — batch swarm visuals when hundreds of minions would explode draw calls.
+- [Occlusion culling](https://docs.godotengine.org/en/stable/tutorials/3d/occlusion_culling.html) — hide off-camera arena mobs so dense waves stay GPU-affordable.
+- [Navigation introduction (3D)](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_introduction_3d.html) — async agent paths and separate maps for flying vs walking wave units.
+- [Using Servers](https://docs.godotengine.org/en/stable/tutorials/performance/using_servers.html) — PhysicsServer3D/NavigationServer3D RID swarms when SceneTree nodes cannot scale.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, exports, and groups before wiring a WaveManager into an arena.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed `await`, signals, and `call_deferred` patterns the async wave trigger depends on.
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — `Resource`/`@export` composition and `duplicate_deep` so spawned mobs do not share stats.
+
+#### Complements
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — ownership of wave/UI/combat signals so countdown and clear events stay leak-free.
+- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — hitboxes, death, and damage that decrement active-enemy counters when a wave unit dies.
+- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — NavigationServer queries, avoidance masks, and maps for pathing hundreds of wave agents.
+- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — pools, threaded loads, and safe add/remove when waves churn PackedScenes.
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — MultiMesh, occlusion, and server-side bodies for swarm density budgets.
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — style-matrix sampling of spawn counts, rates, and difficulty curves before shipping endless modes.
+
+#### Downstream / consumers
+- [godot-genre-tower-defense](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-tower-defense/SKILL.md) — lane/portal waves driven by WaveResource sequences and clear-win conditions.
+- [godot-genre-shooter](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md) — arena/horde spawn pacing and enemy variety for wave shooters.
+- [godot-genre-survival](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-survival/SKILL.md) — endless multiplier waves and pressure ramps built on the same manager loop.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.

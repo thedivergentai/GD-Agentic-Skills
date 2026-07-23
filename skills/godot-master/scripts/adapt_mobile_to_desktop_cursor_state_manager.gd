@@ -26,4 +26,14 @@ func set_combat_mode(active: bool) -> void:
 func _notification(what: int) -> void:
     # Hide cursor if the game window loses focus, to not confuse the user's OS usage
     if what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:
-        pass # Optional: Reset to OS default 
+        pass # Optional: Reset to OS default
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/custom_mouse_cursor.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/mouse_and_input_coordinates.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md — hover/menu cursor affordances
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — capture vs free cursor states
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-mobile-to-desktop/SKILL.md
+# =============================================================================

@@ -24,3 +24,14 @@ func _on_meta_clicked(meta_data: Variant) -> void:
 		"quest": quest_clicked.emit(payload)
 		"npc": npc_clicked.emit(payload)
 		_: push_warning("Unknown meta type: " + type)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_richtextlabel.html
+# - https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — emit typed commands from meta prefixes
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-visual-novel/SKILL.md — item/quest/NPC link routing in VN copy
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md
+# =============================================================================

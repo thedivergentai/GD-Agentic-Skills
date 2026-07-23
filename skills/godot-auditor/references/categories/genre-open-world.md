@@ -18,3 +18,14 @@
 - NEVER perform global A* searches across the entire massive world; strictly use `NavigationPathQueryParameters3D` to limit pathfinding to localized active regions.
 - NEVER use `find_child()` or deep tree iteration for global state (e.g., Time of Day); strictly use **Scene Groups** (`call_group()`) for optimized broadcasting.
 - NEVER synchronize complex Resource types over the network; strictly serialize world changes into primitive Dictionaries or PackedByteArrays.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — simulate balance impact of structural fixes
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

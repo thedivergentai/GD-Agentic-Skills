@@ -27,3 +27,14 @@ func _process(_delta: float) -> void:
 
 ## [SKILL NOTICE]: Use 'signed_angle_to' with Vector3.UP to accurately map 
 ## character orientation relative to the camera for 2.5D directional sprites.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_sprite3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_camera3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/using_transforms.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md — 8-way sheet ordering
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — camera-relative facing
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-3d-to-2d/SKILL.md
+# =============================================================================

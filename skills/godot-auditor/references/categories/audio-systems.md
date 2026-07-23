@@ -9,3 +9,13 @@
 - **NEVER spam same-frame sounds** — Playing 50 explosions at once causes constructive interference (clipping/distortion). Use a `Limiter` (`audio_voice_limiter_manager.gd`).
 - **NEVER instantiate nodes for one-shots** — Creating a node, playing a 0.5s clap, and `queue_free()`ing causes frame-time spikes. Use a Pool.
 - **NEVER skip Crossfades/Transitions** — Abrupt music cuts break immersion. Always use a 0.5s-1.0s `Tween` to bridge tracks.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

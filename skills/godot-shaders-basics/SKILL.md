@@ -1,49 +1,18 @@
 ---
 name: godot-shaders-basics
-description: "Expert blueprint for shader programming (visual effects, post-processing, material customization) using Godot's GLSL-like shader language. Covers canvas_item (2D), spatial (3D), uniforms, built-in variables, and performance. Use when implementing custom effects OR stylized rendering. Keywords shader, GLSL, fragment, vertex, canvas_item, spatial, uniform, UV, COLOR, ALBEDO, post-processing."
+description: "Expert Godot shader patterns for batch-safe hitflash, alpha-scissor foliage/dissolve, screenspace postFX, depth reconstruction, triplanar, and instance uniforms — not first-shader tutorials. Trigger on draw-call batching breaks, discard vs depth-prepass, foliage shadows, post-process quads, or world-position FX. Keywords: instance uniform, ALPHA_SCISSOR, hint_screen_texture, hint_depth_texture, global uniform, sampler2DArray, canvas_item, spatial, post-processing."
 ---
+## Godot 4.7 Baseline
 
-# Shader Basics
+- Expert patterns target **Godot 4.7+** (stable, 2026-06-18).
+- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading from 4.6.
+- `LinearToSRGB` visual-shader node no longer clamps to `[0,1]` on Mobile/Forward+.
+- Drawable Texture API for custom render targets; `get_format()` lives on **Texture2D** base for `ImageTexture` / `PortableCompressedTexture2D`.
+- **NEVER** assume 4.6 defaults without checking 4.7 migration notes.
 
-Fragment/vertex shaders, uniforms, and built-in variables define custom visual effects.
+# Shader Expert Patterns
 
-## Available Scripts
-
-### [vfx_port_shader.gdshader](scripts/vfx_port_shader.gdshader)
-Expert shader template with parameter validation and common effect patterns.
-
-### [shader_parameter_animator.gd](scripts/shader_parameter_animator.gd)
-Runtime shader uniform animation without AnimationPlayer - for dynamic effects.
-
-### [dissolve_scissor_expert.gdshader](scripts/dissolve_scissor_expert.gdshader)
-High-performance mask-based dissolve. Uses `ALPHA_SCISSOR` to enable depth-prepass optimization and shadow casting.
-
-### [instance_uniform_hitflash.gdshader](scripts/instance_uniform_hitflash.gdshader)
-Batch-friendly hit effects. Uses `instance uniform` to allow thousands of unique flashes in one draw call.
-
-### [screenspace_hex_pixelate.gdshader](scripts/screenspace_hex_pixelate.gdshader)
-Post-processing logic for stylizing screen output. Uses `hint_screen_texture` and optimized coordinate quantization.
-
-### [noise_terrain_displacement.gdshader](scripts/noise_terrain_displacement.gdshader)
-Procedural geometry displacement using `NoiseTexture2D` in the `vertex()` function for rolling terrain.
-
-### [foliage_wind_sway_expert.gdshader](scripts/foliage_wind_sway_expert.gdshader)
-GPU-driven wind animation using `world_vertex_coords` for uniform sway across the environment.
-
-### [global_grass_flatten.gdshader](scripts/global_grass_flatten.gdshader)
-World-interaction pattern using `global uniform`. Synchronizes player position to push grass down project-wide.
-
-### [depth_world_reconstruction.gdshader](scripts/depth_world_reconstruction.gdshader)
-Expert depth-buffer logic. Reconstructs world-space coordinates from `hint_depth_texture` for water/fog effects.
-
-### [triplanar_world_mapping.gdshader](scripts/triplanar_world_mapping.gdshader)
-UV-less texturing architecture. Seamlessly projects textures along world axes for procedural cliffs and rocks.
-
-### [instance_texture_array.gdshader](scripts/instance_texture_array.gdshader)
-Bypassing batching limits. Combines `sampler2DArray` with `instance uniform` to give unique textures to thousands of batched objects.
-
-### [screenspace_full_quad.gdshader](scripts/screenspace_full_quad.gdshader)
-Godot 4.3 specific full-rect shader. Handles Reversed-Z coordinate reconstruction to prevent clipping at the near plane.
+Batching-safe materials, scissor/dissolve, screenspace FX, and depth reconstruction — Official Docs cover first shaders and built-in glossaries.
 
 ## NEVER Do in Shaders
 
@@ -60,364 +29,110 @@ Godot 4.3 specific full-rect shader. Handles Reversed-Z coordinate reconstructio
 - **NEVER forget to normalize vectors** — Using `reflect(dir, normal)` on unnormalized vectors causes severe rendering artifacts and incorrect lighting math.
 - **NEVER modify UV without bounds checking or `fract()`** — Shifting UVs beyond 0.0-1.0 without `repeat` wrapping or clamping will sample edge pixels or return black, breaking texture consistency.
 
----
-
-```gdsl
-shader_type canvas_item;
-
-void fragment() {
-    // Get texture color
-    vec4 tex_color = texture(TEXTURE, UV);
-    
-    // Tint red
-    COLOR = tex_color * vec4(1.0, 0.5, 0.5, 1.0);
-}
-```
-
-**Apply to Sprite:**
-1. Select Sprite2D node
-2. Material → New ShaderMaterial
-3. Shader → New Shader
-4. Paste code
-
-## Godot 4.7: Shaders
-
-- `LinearToSRGB` visual shader node no longer clamps to `[0,1]` on Mobile/Forward+.
-- **Drawable Texture API** for custom render targets.
-- `get_format()` on `ImageTexture` / `PortableCompressedTexture2D` moved to **Texture2D** base.
-
-## Common 2D Effects
-
-### Dissolve Effect
-
-```glsl
-shader_type canvas_item;
-
-uniform float dissolve_amount : hint_range(0.0, 1.0) = 0.0;
-uniform sampler2D noise_texture;
-
-void fragment() {
-    vec4 tex_color = texture(TEXTURE, UV);
-    float noise = texture(noise_texture, UV).r;
-    
-    if (noise < dissolve_amount) {
-        discard;  // Make pixel transparent
-    }
-    
-    COLOR = tex_color;
-}
-```
-
-### Wave Distortion
-
-```glsl
-shader_type canvas_item;
-
-uniform float wave_speed = 2.0;
-uniform float wave_amount = 0.05;
-
-void fragment() {
-    vec2 uv = UV;
-    uv.x += sin(uv.y * 10.0 + TIME * wave_speed) * wave_amount;
-    
-    COLOR = texture(TEXTURE, uv);
-}
-```
-
-### Outline
-
-```glsl
-shader_type canvas_item;
-
-uniform vec4 outline_color : source_color = vec4(0.0, 0.0, 0.0, 1.0);
-uniform float outline_width = 2.0;
-
-void fragment() {
-    vec4 col = texture(TEXTURE, UV);
-    vec2 pixel_size = TEXTURE_PIXEL_SIZE * outline_width;
-    
-    float alpha = col.a;
-    alpha = max(alpha, texture(TEXTURE, UV + vec2(pixel_size.x, 0.0)).a);
-    alpha = max(alpha, texture(TEXTURE, UV + vec2(-pixel_size.x, 0.0)).a);
-    alpha = max(alpha, texture(TEXTURE, UV + vec2(0.0, pixel_size.y)).a);
-    alpha = max(alpha, texture(TEXTURE, UV + vec2(0.0, -pixel_size.y)).a);
-    
-    COLOR = mix(outline_color, col, col.a);
-    COLOR.a = alpha;
-}
-```
-
-## 3D Shaders
-
-### Basic 3D Shader
-
-```glsl
-shader_type spatial;
-
-void fragment() {
-    ALBEDO = vec3(1.0, 0.0, 0.0);  // Red material
-}
-```
-
-### Toon Shading (Cel-Shading)
-
-```glsl
-shader_type spatial;
 
-uniform vec3 base_color : source_color = vec3(1.0);
-uniform int color_steps = 3;
+## Scenario → Script Triggers
 
-void light() {
-    float NdotL = dot(NORMAL, LIGHT);
-    float stepped = floor(NdotL * float(color_steps)) / float(color_steps);
-    
-    DIFFUSE_LIGHT = base_color * stepped;
-}
-```
+> **MANDATORY** for the matching effect. **Do NOT Load** beginner canvas_item tint recipes or built-in variable glossaries here.
 
-## Screen-Space Effects
+| Goal | Script |
+|------|--------|
+| Per-enemy hitflash without breaking batches | **MANDATORY** [instance_uniform_hitflash.gdshader](scripts/instance_uniform_hitflash.gdshader) |
+| Foliage wind + shadows | **MANDATORY** [foliage_wind_sway_expert.gdshader](scripts/foliage_wind_sway_expert.gdshader) (alpha scissor/hash — not unconditional `discard`) |
+| Dissolve that keeps depth-prepass | **MANDATORY** [dissolve_scissor_expert.gdshader](scripts/dissolve_scissor_expert.gdshader) |
+| PostFX pixelate / stylize | **MANDATORY** [screenspace_hex_pixelate.gdshader](scripts/screenspace_hex_pixelate.gdshader) |
+| Full-screen quad (Reversed-Z) | **MANDATORY** [screenspace_full_quad.gdshader](scripts/screenspace_full_quad.gdshader) |
+| Depth → world for water/fog | **MANDATORY** [depth_world_reconstruction.gdshader](scripts/depth_world_reconstruction.gdshader) |
+| Grass flatten from player | [global_grass_flatten.gdshader](scripts/global_grass_flatten.gdshader) |
+| UV-less cliffs/rocks | [triplanar_world_mapping.gdshader](scripts/triplanar_world_mapping.gdshader) |
+| Unique textures on instanced meshes | [instance_texture_array.gdshader](scripts/instance_texture_array.gdshader) |
+| Vertex displacement terrain | [noise_terrain_displacement.gdshader](scripts/noise_terrain_displacement.gdshader) |
+| Animate uniforms at runtime | [shader_parameter_animator.gd](scripts/shader_parameter_animator.gd) |
+| VFX port template | [vfx_port_shader.gdshader](scripts/vfx_port_shader.gdshader) |
 
-### Vignette
+**Golden path for cutouts/dissolve:** `ALPHA_SCISSOR` / alpha hash (see dissolve + foliage scripts) — not `discard` for optimization. NEVER list explains why.
 
-```glsl
-shader_type canvas_item;
+## Available Scripts
 
-uniform float vignette_strength = 0.5;
+### [instance_uniform_hitflash.gdshader](scripts/instance_uniform_hitflash.gdshader)
+Instance-uniform flashes; one material, many unique intensities.
 
-void fragment() {
-    vec4 color = texture(TEXTURE, UV);
-    
-    // Distance from center
-    vec2 center = vec2(0.5, 0.5);
-    float dist = distance(UV, center);
-    
-    float vignette = 1.0 - dist * vignette_strength;
-    
-    COLOR = color * vignette;
-}
-```
+### [dissolve_scissor_expert.gdshader](scripts/dissolve_scissor_expert.gdshader)
+Mask dissolve with `ALPHA_SCISSOR` for depth-prepass + shadows.
 
-## Uniforms (Parameters)
+### [foliage_wind_sway_expert.gdshader](scripts/foliage_wind_sway_expert.gdshader)
+World-space wind sway for foliage batches.
 
-```glsl
-// Float slider
-uniform float intensity : hint_range(0.0, 1.0) = 0.5;
+### [global_grass_flatten.gdshader](scripts/global_grass_flatten.gdshader)
+`global uniform` player interaction flattening grass.
 
-// Color picker
-uniform vec4 tint_color : source_color = vec4(1.0);
+### [screenspace_hex_pixelate.gdshader](scripts/screenspace_hex_pixelate.gdshader)
+`hint_screen_texture` stylized postFX.
 
-// Texture
-uniform sampler2D noise_texture;
+### [screenspace_full_quad.gdshader](scripts/screenspace_full_quad.gdshader)
+Reversed-Z-safe full-rect post pass.
 
-// Access in code:
-material.set_shader_parameter("intensity", 0.8)
-```
+### [depth_world_reconstruction.gdshader](scripts/depth_world_reconstruction.gdshader)
+`hint_depth_texture` → world position.
 
-## Built-in Variables
-
-**2D (canvas_item):**
-- `UV` - Texture coordinates (0-1)
-- `COLOR` - Output color
-- `TEXTURE` - Current texture
-- `TIME` - Time since start
-- `SCREEN_UV` - Screen coordinates
-
-**3D (spatial):**
-- `ALBEDO` - Base color
-- `NORMAL` - Surface normal
-- `ROUGHNESS` - Surface roughness
-- `METALLIC` - Metallic value
-
-## Best Practices
-
-### 1. Use Uniforms for Tweaking
-
-```glsl
-// ✅ Good - adjustable
-uniform float speed = 1.0;
-
-void fragment() {
-    COLOR.r = sin(TIME * speed);
-}
-
-// ❌ Bad - hardcoded
-void fragment() {
-    COLOR.r = sin(TIME * 2.5);
-}
-```
-
-### 2. Optimize Performance
-
-```glsl
-// Avoid expensive operations in fragment shader
-// Pre-calculate values when possible
-// Use textures for complex patterns
-```
-
-### 3. Comment Shaders
-
-```glsl
-// Water wave effect
-// Creates horizontal distortion based on sine wave
-uniform float wave_amplitude = 0.02;
-```
-
----
-
----
-
-## Expert Pattern: Deferred-Fog-Volume
-
-Create localized volumetric effects (caves, toxic clouds) using custom fog shaders that react to real-time lighting.
-
-```glsl
-// Custom Localized Fog Shader
-shader_type fog;
-
-uniform float base_density : hint_range(0.0, 10.0) = 1.0;
-uniform vec3 edge_color : source_color = vec3(0.1, 0.5, 0.8);
-
-void fog() {
-    // 1. SDF built-in contains distance to FogVolume surface
-    float distance_factor = clamp(-SDF, 0.0, 1.0);
-    
-    // 2. Smooth density falloff at volume edges
-    float edge_fade = pow(distance_factor, 2.0);
-    
-    // 3. Output to volumetric froxel buffer
-    DENSITY = base_density * edge_fade;
-    ALBEDO = edge_color;
-}
-```
-
----
-
-## Expert Pattern: Compute-Shader-Particles
-
-Simulate massive, high-performance particle systems (boids, fluids) using the `RenderingDevice` API for raw GPGPU processing.
-
-```gdscript
-class_name ComputeParticleSim extends Node
-
-var _rd: RenderingDevice
-var _pipeline: RID
-var _buffer: RID
-
-func _ready() -> void:
-    # 1. Initialize RenderingDevice and load GLSL
-    _rd = RenderingServer.create_local_rendering_device()
-    var shader_file := load("res://particle_sim.glsl") as RDShaderFile
-    var shader_rid := _rd.shader_create_from_spirv(shader_file.get_spirv())
-    
-    # 2. Setup Storage Buffer for particle data
-    var data := PackedFloat32Array()
-    data.resize(6400) # 6400 particles
-    _buffer = _rd.storage_buffer_create(data.size() * 4, data.to_byte_array())
-    
-    # 3. Create Compute Pipeline and Uniform Set
-    var uniform := RDUniform.new()
-    uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
-    uniform.binding = 0
-    uniform.add_id(_buffer)
-    
-    var uniform_set := _rd.uniform_set_create([uniform], shader_rid, 0)
-    _pipeline = _rd.compute_pipeline_create(shader_rid)
-    
-    # 4. Dispatch (simplified for logic overview)
-    var compute_list := _rd.compute_list_begin()
-    _rd.compute_list_bind_compute_pipeline(compute_list, _pipeline)
-    _rd.compute_list_bind_uniform_set(compute_list, uniform_set, 0)
-    _rd.compute_list_dispatch(compute_list, 100, 1, 1) # 100 workgroups * 64
-    _rd.compute_list_end()
-```
-
----
-
-## Expert Pattern: Shader-Debug-Visualizer
-
-Diagnostic tool to inspect Depth, Normals, and UVs using a full-screen post-processing quad.
-
-```glsl
-shader_type spatial;
-render_mode unshaded, fog_disabled;
-
-uniform sampler2D depth_tex : hint_depth_texture;
-uniform sampler2D norm_tex : hint_normal_roughness_texture;
-uniform int mode : hint_range(0, 2) = 0; // 0: Depth, 1: Normals, 2: UVs
-
-void vertex() {
-    POSITION = vec4(VERTEX.xy, 1.0, 1.0); // Full-screen quad
-}
-
-void fragment() {
-    if (mode == 0) {
-        float raw_depth = texture(depth_tex, SCREEN_UV).x;
-        // Convert to linear view-space depth
-        vec3 ndc = vec3(SCREEN_UV * 2.0 - 1.0, raw_depth);
-        vec4 view = INV_PROJECTION_MATRIX * vec4(ndc, 1.0);
-        view.xyz /= view.w;
-        ALBEDO = vec3(clamp(-view.z / 100.0, 0.0, 1.0));
-    } else if (mode == 1) {
-        vec3 norm = texture(norm_tex, SCREEN_UV).xyz * 2.0 - 1.0;
-        ALBEDO = (norm * 0.5) + 0.5;
-    } else {
-        ALBEDO = vec3(SCREEN_UV, 0.0);
-    }
-}
-```
-
----
-
-## Expert Pattern: Visual-Shader-Extensibility
-
-Extend the Visual Shader editor by creating custom `VisualShaderNodeCustom` classes in GDScript to expose complex math or global functions as reusable nodes.
-
-```gdscript
-@tool
-class_name VisualShaderNodeCustomMath extends VisualShaderNodeCustom
-
-func _get_name() -> String: return "CustomPhysicsMath"
-func _get_category() -> String: return "Custom"
-func _get_return_icon_type() -> PortType: return PORT_TYPE_SCALAR
-
-func _get_input_port_count() -> int: return 2
-func _get_input_port_name(port: int) -> String: return "in_" + str(port)
-func _get_input_port_type(_port: int) -> PortType: return PORT_TYPE_SCALAR
-
-func _get_output_port_count() -> int: return 1
-func _get_output_port_name(_port: int) -> String: return "out"
-func _get_output_port_type(_port: int) -> PortType: return PORT_TYPE_SCALAR
-
-func _get_code(input_vars: Array[String], output_vars: Array[String], _mode: Shader.Mode, _type: VisualShader.Type) -> String:
-    return "%s = %s * (1.0 - %s);" % [output_vars[0], input_vars[0], input_vars[1]]
-```
-
----
-
-## Expert Pattern: Shader-Precompilation-Warmup
-
-Prevent mid-game "shader stutter" by forcing the engine to compile and cache pipelines during a loading screen.
-
-```gdscript
-func warmup_shaders(scenes: Array[PackedScene]):
-    for scene in scenes:
-        var inst = scene.instantiate()
-        add_child(inst)
-        # Place in front of camera
-        inst.position = Vector3(0, 0, -5) 
-    
-    # Force a single-frame render to populate the pipeline cache
-    await RenderingServer.frame_post_draw
-    
-    # Cleanup
-    for child in get_children():
-        child.queue_free()
-```
+### [triplanar_world_mapping.gdshader](scripts/triplanar_world_mapping.gdshader)
+World-axis projection without UVs.
+
+### [instance_texture_array.gdshader](scripts/instance_texture_array.gdshader)
+`sampler2DArray` + instance uniform for unique batched textures.
+
+### [noise_terrain_displacement.gdshader](scripts/noise_terrain_displacement.gdshader)
+Vertex noise displacement.
+
+### [vfx_port_shader.gdshader](scripts/vfx_port_shader.gdshader)
+Validated VFX shader template.
+
+### [shader_parameter_animator.gd](scripts/shader_parameter_animator.gd)
+Tween/runtime uniform animation without AnimationPlayer.
+
+## Expert Pointers
+
+- Move invariant math to `vertex()`; pass via `varying`.
+- Color uniforms need `hint_source_color`.
+- Prefer Official Docs for shading-language builtins; this skill owns batching, scissor, screenspace, and depth routing.
 
 ## Reference
-- [Godot Docs: Shading Language](https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/shading_language.html)
-- [Godot Docs: Your First Shader](https://docs.godotengine.org/en/stable/tutorials/shaders/your_first_shader/your_first_2d_shader.html)
 
+> Progressive disclosure: open Official Documentation links only when researching a specific API;
+> load Related Skills when routing work to a peer domain — do not preload the whole lattice.
 
-### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+### Official Documentation
+- [Introduction to shaders](https://docs.godotengine.org/en/stable/tutorials/shaders/introduction_to_shaders.html) — Entry map of shader types, render modes, and when to use ShaderMaterial vs StandardMaterial3D.
+- [Shading language](https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/shading_language.html) — Core GLSL-like syntax: uniforms, hints, varyings, built-ins, and preprocessor rules used throughout this skill.
+- [CanvasItem shaders](https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/canvas_item_shader.html) — 2D `canvas_item` built-ins (`UV`, `COLOR`, `TEXTURE`, `SCREEN_UV`) for sprites, UI, and 2D post FX.
+- [Spatial shaders](https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/spatial_shader.html) — 3D `spatial` built-ins (`ALBEDO`, `NORMAL`, `instance uniform`, depth/screen textures) for materials and full-screen quads.
+- [Your first 2D shader](https://docs.godotengine.org/en/stable/tutorials/shaders/your_first_shader/your_first_2d_shader.html) — Minimal canvas_item workflow from ShaderMaterial attach through fragment tinting.
+- [Your first 3D shader](https://docs.godotengine.org/en/stable/tutorials/shaders/your_first_shader/your_first_3d_shader.html) — Minimal spatial workflow and conversion path from StandardMaterial3D into writable shaders.
+- [ShaderMaterial](https://docs.godotengine.org/en/stable/classes/class_shadermaterial.html) — Runtime `set_shader_parameter` / instance parameter API used by animators and hit-flash batching.
+- [Custom post-processing](https://docs.godotengine.org/en/stable/tutorials/shaders/custom_postprocessing.html) — Screen-reading shaders, `hint_screen_texture`, and compositing patterns for pixelate/vignette-style FX.
+- [Advanced post-processing](https://docs.godotengine.org/en/stable/tutorials/shaders/advanced_postprocessing.html) — Depth buffer, reversed-Z, and world reconstruction needed for water/fog/debug visualizers.
+- [Compute shaders](https://docs.godotengine.org/en/stable/tutorials/shaders/compute_shaders.html) — RenderingDevice GPGPU path for particle sims and other non-fragment workloads.
+- [Using VisualShaders](https://docs.godotengine.org/en/stable/tutorials/shaders/visual_shaders.html) — Graph editor + `VisualShaderNodeCustom` extensibility covered in the expert patterns.
+- [GPU optimization](https://docs.godotengine.org/en/stable/tutorials/performance/gpu_optimization.html) — Overdraw, transparency, and batching guidance that motivates alpha scissor, instance uniforms, and vertex-vs-fragment cost.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Nodes, Resources, and project layout required before attaching ShaderMaterials and shipping `.gdshader` assets.
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Sharing vs duplicating ShaderMaterial/Shader Resources so uniforms and instance parameters stay batch-friendly.
+
+#### Complements
+- [godot-3d-materials](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md) — StandardMaterial3D/ORM first; graduate to spatial shaders for triplanar, dissolve, and instance-uniform effects.
+- [godot-3d-lighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md) — How custom `ALBEDO`/`EMISSION`/`light()` output interacts with Forward+, GI, and fog volumes.
+- [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — Particle process/draw materials and alpha pipelines that must match scissor/hash vs blend choices from this skill.
+- [godot-2d-animation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md) — CanvasItem shader hooks for stylized 2D motion, outline, and dissolve on animated sprites.
+- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — Camera near/far and view/projection matrices that screen-space and depth-reconstruction shaders depend on.
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Draw-call batching, MultiMesh, and GPU budgets that justify `instance uniform` and avoiding unique materials.
+- [godot-debugging-profiling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md) — GPU/overdraw profilers and debug views to validate shader cost and depth/normal visualizers.
+
+#### Downstream / consumers
+- [godot-procedural-generation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md) — Procedural meshes/terrain consume noise displacement, triplanar, and UV-less spatial patterns from this skill.
+- [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md) — Large environment props apply foliage wind, grass flatten, and world-projection shaders at level scale.
+- [godot-genre-open-world](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md) — Open-world foliage interaction, distance FX, and shared-material batching consume these shader templates.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for cross-skill discovery.

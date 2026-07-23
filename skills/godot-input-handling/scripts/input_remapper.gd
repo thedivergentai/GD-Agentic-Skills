@@ -78,3 +78,14 @@ func _deserialize_events(data: Array) -> Array:
 ## InputRemapper.load_bindings()  # In autoload _ready()
 ## InputRemapper.rebind_action("jump", event)
 ## InputRemapper.save_bindings()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_inputmap.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/controllers_gamepads_joysticks.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/input_examples.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — ConfigFile binding store
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — default Input Map seed
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md
+# =============================================================================

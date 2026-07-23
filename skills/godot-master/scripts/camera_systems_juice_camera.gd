@@ -50,3 +50,15 @@ func _apply_shake() -> void:
 ## EXPERT NOTE:
 ## Noise shake is superior to Random shake because it produces 'smooth' jitter 
 ## that replicates handheld camera weight.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_camera2d.html
+# - https://docs.godotengine.org/en/stable/classes/class_fastnoiselite.html
+# - https://docs.godotengine.org/en/stable/tutorials/math/interpolation.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — trauma pulses from hits/explosions
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md — lead-room velocity source
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — juice vs competitive clarity
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md
+# =============================================================================

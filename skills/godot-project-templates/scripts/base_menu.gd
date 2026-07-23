@@ -31,3 +31,14 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(&"ui_cancel") and is_visible_in_tree():
 		close_menu()
 		get_viewport().set_input_as_handled()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/ui/gui_navigation.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/pausing_games.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — focus-safe container layouts for pause/main menus
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — ui_cancel / accept routing for menu close
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-templates/SKILL.md
+# =============================================================================

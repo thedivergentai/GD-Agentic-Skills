@@ -23,3 +23,14 @@ func _calc_minion_path(idx: int) -> void:
 
 ## [SKILL NOTICE]: Disable 'avoidance_enabled' (RVO) for minions 
 ## to prevent jitter. Use 'WorkerThreadPool' for massive waves.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationagents.html
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_optimizing_performance.html
+# - https://docs.godotengine.org/en/stable/classes/class_workerthreadpool.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md — time-sliced agent updates
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — wave-scale path budgets
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-moba/SKILL.md
+# =============================================================================

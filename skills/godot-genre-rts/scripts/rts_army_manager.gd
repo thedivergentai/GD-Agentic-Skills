@@ -26,3 +26,13 @@ func register_unit(unit: Node) -> void:
 
 func unregister_unit(unit: Node) -> void:
     _units.erase(unit)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/performance/using_multiple_threads.html
+# - https://docs.godotengine.org/en/stable/classes/class_workerthreadpool.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — batch AI off main thread
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — central army manager ownership
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rts/SKILL.md
+# =============================================================================

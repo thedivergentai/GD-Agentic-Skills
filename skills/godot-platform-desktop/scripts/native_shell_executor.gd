@@ -12,3 +12,13 @@ func run_shell_command(command: String, args: PackedStringArray) -> String:
 	return "Error: " + str(err)
 
 ## Warning: Use caution with shell execution to avoid security vulnerabilities.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_os.html
+# - https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_windows.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition-apps/SKILL.md — editor/tool shell integrations
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md — platform path/security constraints
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-desktop/SKILL.md
+# =============================================================================

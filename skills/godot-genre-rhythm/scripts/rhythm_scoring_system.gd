@@ -18,3 +18,14 @@ func evaluate_hit(conductor_time: float, target_time: float) -> String:
 
 ## [SKILL NOTICE]: Use absolute time difference for scoring. 
 ## Millisecond accuracy is the industry standard for rhythm games.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/audio/sync_with_audio.html
+# - https://docs.godotengine.org/en/stable/classes/class_audioserver.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — score/miss economy vs clear rate
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — judgment → score event wiring
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — typed judgment enums and offsets
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rhythm/SKILL.md
+# =============================================================================

@@ -61,3 +61,13 @@ func _get_node_track_offset(node: Node3D) -> float:
 
 ## EXPERT USAGE:
 ## Assign a Path3D (the racing line). Adjust look_ahead for smoother turns.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_path3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_vehiclebody3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ai-navigation/SKILL.md — when opponents leave the racing line
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — rubber-band speed knobs
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-racing/SKILL.md
+# =============================================================================

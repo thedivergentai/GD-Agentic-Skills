@@ -22,3 +22,14 @@ func setup_actor_collision(node: CollisionObject2D, faction: Faction) -> void:
         Faction.PROJECTILE:
             node.set_collision_mask_value(Faction.ENEMY, true)
             node.set_collision_mask_value(Faction.PLAYER, true)
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html
+# - https://docs.godotengine.org/en/stable/classes/class_collisionobject2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — enum/bitshift readability for masks
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — faction layer conventions for hitboxes
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md
+# =============================================================================

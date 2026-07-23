@@ -17,3 +17,14 @@ func set_unsaved_changes(has_changes: bool) -> void:
 		JavaScriptBridge.eval("window.onbeforeunload = null;")
 
 ## Rule: Only enable this during active gameplay or editing sessions.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/handling_quit_requests.html
+# - https://docs.godotengine.org/en/stable/tutorials/platform/web/javascript_bridge.html
+# - https://docs.godotengine.org/en/stable/classes/class_javascriptbridge.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — flush saves before unload
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — toggle beforeunload from game state
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-web/SKILL.md
+# =============================================================================

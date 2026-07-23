@@ -10,3 +10,13 @@
 - **NEVER perform save/load operations inside a dialogue node** — Conversation nodes should be pure data. Delegate persistence to a dedicated `SaveSystem`.
 - **NEVER block the main thread for text reveal timing** — Never use `OS.delay_msec()`. Use `create_timer()` or `Tween` to maintain smooth 60fps performance.
 - **NEVER hardcode portrait paths** — Assign textures directly to the `DialogueNode` resource in the inspector or use a central `PortraitDatabase`.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-dialogue-system/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

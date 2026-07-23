@@ -40,3 +40,14 @@ func _apply_soft_lock(target: Node3D, delta: float) -> void:
 
 ## [SKILL NOTICE]: Use 'dot product' to filter proximity to screen center, 
 ## and 'slerp' for smooth aim-assist pull. Avoid hard-snapping rotation.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/controllers_gamepads_joysticks.html
+# - https://docs.godotengine.org/en/stable/classes/class_camera3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/using_transforms.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — stick look curves before soft-lock slerp
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — assist rotates camera basis toward target
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md
+# =============================================================================

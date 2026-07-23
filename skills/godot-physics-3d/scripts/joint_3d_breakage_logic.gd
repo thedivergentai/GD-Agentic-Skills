@@ -15,3 +15,13 @@ func _physics_process(_delta: float) -> void:
 		var stress = (body_a.linear_velocity - body_b.linear_velocity).length()
 		if stress > break_force:
 			queue_free() # Snap the joint
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/using_jolt_physics.html
+# - https://docs.godotengine.org/en/stable/classes/class_generic6dofjoint3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — destructible props driven by joint snaps
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — break-force thresholds as balance knobs
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md
+# =============================================================================

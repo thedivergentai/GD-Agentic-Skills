@@ -28,3 +28,13 @@ func _on_obstacle_destroyed() -> void:
 ## custom animations.
 ## NEVER update the NavMesh every frame. Use a 'Dirty Flag' system to 
 ## batch multiple updates into a single 'bake' call at the end of the frame.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationregions.html
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationmeshes.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md — source geometry for region rebakes
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md — dirty-flag rebake after layout changes
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md
+# =============================================================================

@@ -24,3 +24,15 @@ func _physics_process(_delta: float) -> void:
 ## By following a 'Phantom' node instead of the Player, you can perform 
 ## cinematic offsets, lock the camera to an Area2D bounds, or shift focus 
 ## to an explosion without detaching the player's controls from their node.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_camera2d.html
+# - https://docs.godotengine.org/en/stable/tutorials/math/interpolation.html
+# - https://docs.godotengine.org/en/stable/classes/class_remotetransform2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — interest-point weights via events
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md — cinematic offset blends on the phantom
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md — lock phantom during cutscenes
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md
+# =============================================================================

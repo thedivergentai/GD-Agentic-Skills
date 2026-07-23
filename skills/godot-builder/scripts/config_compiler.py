@@ -17,3 +17,14 @@ def main():
     os.remove(script)
 
 if __name__ == "__main__": main()
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_configfile.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/data_paths.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — data Resources vs ConfigFile tradeoffs
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — runtime config vs designer .cfg tables
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-builder/SKILL.md
+# =============================================================================

@@ -91,3 +91,15 @@ func _request_navigation_bake() -> void:
 ## for i in 100:
 ##     builder.place_cell(Vector3i(i, 0, 0), 0)
 ## builder.end_batch()
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/using_gridmaps.html
+# - https://docs.godotengine.org/en/stable/classes/class_gridmap.html
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_introduction_3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md — rebake NavigationRegion3D after cell batches
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md — generators driving set_cell_item at runtime
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md
+# =============================================================================

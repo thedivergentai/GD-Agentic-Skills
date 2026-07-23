@@ -70,3 +70,14 @@ class QuestState:
 ## EXPERT USAGE:
 ## QuestManager.start_quest(load("res://quests/main_quest.tres"))
 ## QuestManager.complete_objective("main_quest", "kill_rats")
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+# - https://docs.godotengine.org/en/stable/classes/class_stringname.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — graph nodes as Resource data
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — quest_started / objective_completed emits
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-quest-system/SKILL.md
+# =============================================================================

@@ -13,3 +13,14 @@ void fragment() {
 	// Perform post-processing logic here...
 	ALBEDO = vec3(SCREEN_UV, 0.5);
 }
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/shaders/advanced_postprocessing.html
+# - https://docs.godotengine.org/en/stable/tutorials/shaders/custom_postprocessing.html
+# - https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/spatial_shader.html
+# Related skills:
+# - ../godot-camera-systems/SKILL.md — full-screen pass camera/compositor setup
+# - ../godot-debugging-profiling/SKILL.md — debug visualizer quads for depth/normals
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md
+# =============================================================================

@@ -19,3 +19,13 @@ func apply_bobbing(delta: float, is_moving: bool) -> void:
     else:
         # Smoothly return to center when idle.
         transform.origin = transform.origin.lerp(Vector3.ZERO, delta * 5.0)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/using_transforms.html
+# - https://docs.godotengine.org/en/stable/classes/class_camera3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md - sway/bob layered with look and recoil
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md - optional tween assists for viewmodel settle
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md
+# =============================================================================

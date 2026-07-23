@@ -20,3 +20,14 @@ void fragment() {
 	
 	COLOR = textureLod(screen_texture, center_uv, 0.0);
 }
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/shaders/custom_postprocessing.html
+# - https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/canvas_item_shader.html
+# - https://docs.godotengine.org/en/stable/tutorials/shaders/using_viewport_as_texture.html
+# Related skills:
+# - ../godot-camera-systems/SKILL.md — viewport/camera setup feeding screen textures
+# - ../godot-2d-animation/SKILL.md — stylized 2D presentation layers
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md
+# =============================================================================

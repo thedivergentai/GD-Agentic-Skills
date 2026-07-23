@@ -19,3 +19,13 @@ func get_api_endpoint() -> String:
 	return "https://api.game.com"
 
 ## Rule: Never hardcode 'is_debug' flags. Rely on Godot's built-in feature flags.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/export/feature_tags.html
+# - https://docs.godotengine.org/en/stable/classes/class_os.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md — mobile feature tag branches
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — strip debug-only tools via release tag
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md
+# =============================================================================

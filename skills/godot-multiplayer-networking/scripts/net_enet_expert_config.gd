@@ -26,3 +26,14 @@ func setup_enet_peer(is_server: bool, port: int, max_clients: int = 32) -> ENetM
 	return peer
 
 ## Rule: Use tailored Channels (Reliable vs Unreliable) to avoid Head-of-Line blocking.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_enetmultiplayerpeer.html
+# - https://docs.godotengine.org/en/stable/classes/class_multiplayerpeer.html
+# - https://docs.godotengine.org/en/stable/classes/class_enetconnection.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — channel/bandwidth budgets under load
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure before retuning ENet knobs
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md
+# =============================================================================

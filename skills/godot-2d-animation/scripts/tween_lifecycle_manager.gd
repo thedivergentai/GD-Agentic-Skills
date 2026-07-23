@@ -23,3 +23,13 @@ func play_safe_ui_pop(target_node: Control) -> void:
 func interrupt_all_tweens() -> void:
 	if _active_tween:
 		_active_tween.kill()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_tween.html
+# - https://docs.godotengine.org/en/stable/tutorials/animation/introduction.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md — kill/recreate and parallel composition
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — finished cleanup without dangling refs
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md
+# =============================================================================

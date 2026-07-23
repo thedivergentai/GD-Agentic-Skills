@@ -21,3 +21,15 @@ func _setup_viewport() -> void:
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 
 ## Rule: Always check 'xr_interface.initialize()' before setting 'use_xr = true'.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/xr/setting_up_xr.html
+# - https://docs.godotengine.org/en/stable/tutorials/xr/a_better_xr_start_script.html
+# - https://docs.godotengine.org/en/stable/classes/class_xrserver.html
+# - https://docs.godotengine.org/en/stable/classes/class_xrinterface.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — viewport/project setup before use_xr
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — disable VSync; headset paces frames
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-vr/SKILL.md
+# =============================================================================

@@ -19,3 +19,15 @@ func transition_to_state(state_name: String) -> void:
 
 ## Expert Tip: Use 'switch_mode' (Beat, Bar, Transition) to ensure 
 ## musical continuity when changing states.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_audiostreaminteractive.html
+# - https://docs.godotengine.org/en/stable/classes/class_audiostreamplaybackinteractive.html
+# - https://docs.godotengine.org/en/stable/tutorials/audio/audio_streams.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md — clip graph mirrors game FSM
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — trigger explore→combat switches
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rhythm/SKILL.md — Beat/Bar switch_mode alignment
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md
+# =============================================================================

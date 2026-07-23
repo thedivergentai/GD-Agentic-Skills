@@ -41,3 +41,13 @@ func deactivate_ragdoll() -> void:
 
 ## EXPERT USAGE:
 ## Call upon death. Pass 'hit_normal * -1' as impulse_dir.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/ragdoll_system.html
+# - https://docs.godotengine.org/en/stable/classes/class_physicalbonesimulator3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-tree-mastery/SKILL.md — animation↔physics handoff on death
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-mechanic-revival/SKILL.md — get-up / revival after ragdoll stop
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md
+# =============================================================================

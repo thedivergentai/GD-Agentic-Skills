@@ -41,195 +41,111 @@ Expert blueprint for party games balancing accessibility, variety, and social fu
 
 ## 🛠 Expert Components (scripts/)
 
+> **MANDATORY reads** before implementing the matching system:
+> 1. [party_input_router.gd](../scripts/genre_party_party_input_router.gd) — lobby join + device→player routing (golden path)
+> 2. [minigame_orchestrator.gd](../scripts/genre_party_minigame_orchestrator.gd) — hub ↔ minigame scene cycle
+> 3. [connection_monitor.gd](../scripts/genre_party_connection_monitor.gd) — joy disconnect pause / reconnect
+
 ### Original Expert Patterns
-- [party_input_router.gd](../scripts/genre_party_party_input_router.gd) - Professional local multiplayer solution mapping `device_id` to `player_id`.
+- [party_input_router.gd](../scripts/genre_party_party_input_router.gd) - Device-ID join + `pN_*` InputMap routing (complete, not a stub).
 
 ### Modular Components
-- [player_join_manager.gd](../scripts/genre_party_player_join_manager.gd) - Slot mapping logic using raw JoypadButton event parsing.
-- [split_screen_manager.gd](../scripts/genre_party_split_screen_manager.gd) - SubViewport synchronization for shared physics worlds.
-- [tournament_state.gd](../scripts/genre_party_tournament_state.gd) - Persistent Autoload singleton for cross-scene state.
+- [minigame_orchestrator.gd](../scripts/genre_party_minigame_orchestrator.gd) - Autoload-style minigame sequencing.
+- [minigame_async_loader.gd](../scripts/genre_party_minigame_async_loader.gd) - Threaded PackedScene load during instruction screens.
+- [split_screen_setup.gd](../scripts/genre_party_split_screen_setup.gd) - 2–4 SubViewportContainer grid.
+- [split_screen_manager.gd](../scripts/genre_party_split_screen_manager.gd) - Viewport sync / shared world helpers.
+- [local_input_manager.gd](../scripts/genre_party_local_input_manager.gd) - Runtime InputMap remaps for 4+ pads.
+- [connection_monitor.gd](../scripts/genre_party_connection_monitor.gd) - `joy_connection_changed` pause + reconnect UI group.
+- [player_join_manager.gd](../scripts/genre_party_player_join_manager.gd) - Slot mapping from raw JoypadButton events.
+- [deferred_scene_switcher.gd](../scripts/genre_party_deferred_scene_switcher.gd) - Safe deferred free/instantiate.
+- [tournament_state.gd](../scripts/genre_party_tournament_state.gd) - Persistent scores / roster Autoload.
+- [character_select_grid.gd](../scripts/genre_party_character_select_grid.gd) - Focus-safe character select.
+- [minigame_player_controller.gd](../scripts/genre_party_minigame_player_controller.gd) - Per-player pawn bound to routed actions.
+- [player_haptic_feedback.gd](../scripts/genre_party_player_haptic_feedback.gd) - Per-device rumble.
+- [shared_party_camera.gd](../scripts/genre_party_shared_party_camera.gd) - Shared-camera minigames (non-split).
 
 ---
 
 ## Core Loop
-1.  **Lobby**: Players join and select characters/colors.
-2.  **Meta**: Players move on a board or vote for the next game.
-3.  **Play**: Short, intense minigame (30s - 2m).
-4.  **Score**: Winners get points/coins.
-5.  **Repeat**: Cycle continues until a turn limit or score limit.
+1. **Lobby join** → 2. **Meta/board** → 3. **Minigame** → 4. **Score** → 5. **Repeat**
+
+## Decision Trees
+
+### Input & dropout
+| Need | Action |
+|------|--------|
+| Lobby join + route | **MANDATORY** [party_input_router.gd](../scripts/genre_party_party_input_router.gd) |
+| Runtime `pN_*` remaps | [local_input_manager.gd](../scripts/genre_party_local_input_manager.gd) |
+| Pad battery death mid-game | **MANDATORY** [connection_monitor.gd](../scripts/genre_party_connection_monitor.gd) — pause tree + reconnect overlay |
+
+### Scenes & viewports
+| Need | Action |
+|------|--------|
+| Cycle minigames | **MANDATORY** [minigame_orchestrator.gd](../scripts/genre_party_minigame_orchestrator.gd) (+ [deferred_scene_switcher.gd](../scripts/genre_party_deferred_scene_switcher.gd)) |
+| Prefetch during how-to | [minigame_async_loader.gd](../scripts/genre_party_minigame_async_loader.gd) |
+| 2–4 split | [split_screen_setup.gd](../scripts/genre_party_split_screen_setup.gd) — per-viewport CanvasLayer; `mouse_filter` on containers |
+| Shared camera party | [shared_party_camera.gd](../scripts/genre_party_shared_party_camera.gd) |
 
 ## Skill Chain
 
 | Phase | Skills | Purpose |
 |-------|--------|---------|
-| 1. Input | `input-mapping` | Handling 2-4 local controllers dynamically |
-| 2. Scene | `godot-scene-management` | Loading/Unloading minigames cleanly |
-| 3. Data | `godot-resource-data-patterns` | Defining minigames via Resource files |
-| 4. UI | `godot-ui-containers` | Scoreboards, instructions screens |
-| 5. Logic | `godot-turn-system` | Managing the "Board Game" phase |
-| 6. Balance | `godot-monte-carlo-balancer` | Asymmetric 1v3 / role power offsets |
-
-## Architecture Overview
-
-### 1. Minigame Definition
-Using Resources to define what a minigame is.
-
-```gdscript
-# minigame_data.gd
-class_name MinigameData extends Resource
-
-@export var title: String
-@export var scene_path: String
-@export var instructions: String
-@export var is_1v3: bool = false
-@export var thumbnail: Texture2D
-```
-
-### 2. The Party Manager
-Singleton that persists between minigames.
-
-```gdscript
-# party_manager.gd
-extends Node
-
-var players: Array[PlayerData] = [] # Tracks score, input_device_id, color
-var current_round: int = 1
-var max_rounds: int = 10
-
-func start_minigame(minigame: MinigameData) -> void:
-    # 1. Show instructions scene
-    await show_instructions(minigame)
-    # 2. Transition to actual game
-    get_tree().change_scene_to_file(minigame.scene_path)
-    # 3. Pass player data to the new scene
-    # (The minigame scene must look up PartyManager in _ready)
-```
-
-### 3. Minigame Base Class
-Every minigame inherits from this to ensure compatibility.
-
-```gdscript
-# minigame_base.gd
-class_name Minigame extends Node
-
-signal game_ended(results: Dictionary)
-
-func _ready() -> void:
-    setup_players(PartyManager.players)
-    start_countdown()
-
-func end_game() -> void:
-    # Calculate winner
-    game_ended.emit(results)
-    PartyManager.handle_minigame_end(results)
-```
-
-## Key Mechanics Implementation
-
-### Local Multiplayer Input
-Handling dynamic device assignment.
-
-```gdscript
-# player_controller.gd
-@export var player_id: int = 0 # 0, 1, 2, 3
-
-func _physics_process(delta: float) -> void:
-    var device = PartyManager.players[player_id].device_id
-    # Use the specific device ID for input
-    var direction = Input.get_vector("p%s_left" % player_id, ...) 
-    # Better approach: Remap InputMap actions at runtime explicitly
-```
-
-### Asymmetric Gameplay (1v3)
-Balancing the "One" vs the "Many".
-*   **The One**: Powerful, high HP, unique abilities (e.g., Bowser suit).
-*   **The Many**: Weak individually, must cooperate to survive/win.
-
-## Godot-Specific Tips
-
-*   **SubViewport**: Powerful for 4-player split-screen. Each player gets a camera, all rendering the same world (or different worlds!).
-*   **InputEventJoypadButton**: Use `Input.get_connected_joypads()` to auto-detect controllers on the Lobby screen.
-*   **Remapping**: Godot's `InputMap` system can be modified at runtime using `InputMap.action_add_event()`. Creating "p1_jump", "p2_jump" dynamically is a common pattern.
+| 1. Input | `godot-input-handling` | 2–4 local controllers |
+| 2. Scene | `godot-scene-management` | Load/unload minigames |
+| 3. Data | `godot-resource-data-patterns` | Minigame `.tres` defs |
+| 4. UI | `godot-ui-containers` | Lobby / score / reconnect |
+| 5. Balance | `godot-monte-carlo-balancer` | Asymmetric 1v3 power |
 
 ## Common Pitfalls
 
-1.  **Long Tutorials**: Players just want to play. **Fix**: 3-second looping GIF + 1 sentence instruction overlay before the game starts.
-2.  **Downtime**: Loading times between 10-second minigames. **Fix**: Keep minigame assets light. Use a "Board" scene that stays loaded in the background if possible, or use creating `Thread` loading.
-3.  **Confusing Controls**: Minigame A uses "A" to jump, Minigame B uses "B". **Fix**: Standardize. "A" is always Accept/Action. "B" is always Back/Cancel.
+| Pitfall | Solution |
+|---------|----------|
+| Shared `jump` action | Device-bound `pN_*` via router / local_input_manager |
+| Global CanvasLayer in split | Per-SubViewport UI layers |
+| Generic screen-shake Elite | Prefer split + reconnect procedures above |
 
+## Split-screen + reconnect procedure
+1. Build viewports with [split_screen_setup.gd](../scripts/genre_party_split_screen_setup.gd).
+2. Bind devices through [party_input_router.gd](../scripts/genre_party_party_input_router.gd) before the minigame starts.
+3. Keep [connection_monitor.gd](../scripts/genre_party_connection_monitor.gd) alive as Autoload; on disconnect pause and `call_group("ui_overlays", "show_reconnect", device)`.
+4. On reconnect, re-bind the same `player_id` → new `device_id` then unpause — do not remap other players.
 
----
+## Reference
 
-## 🚀 Elite Technical Implementations (Batch 09)
+> Progressive disclosure: open Official Documentation links only when researching a specific API;
+> load Related Skills when routing work to a peer domain — do not preload the whole lattice.
 
-### 1. Local-Input-Remapping Pattern (4+ Controllers)
-To support dynamic local multiplayer, generate player-specific input actions at runtime using the `InputMap` singleton. This avoids hardcoding "p1_jump" and allows any connected joypad to be assigned to any player slot.
+### Official Documentation
+- [Controllers, gamepads, and joysticks](https://docs.godotengine.org/en/stable/tutorials/inputs/controllers_gamepads_joysticks.html) — Joypad connect/disconnect, device IDs, and multi-pad mapping for lobby join and local isolation.
+- [Using InputEvent](https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html) — Event order and `_unhandled_input` so join presses and per-device routing run after UI focus.
+- [Controller vibration and features](https://docs.godotengine.org/en/stable/tutorials/inputs/controller_features.html) — Per-device rumble APIs used for localized hit/eliminate feedback.
+- [Using Viewports](https://docs.godotengine.org/en/stable/tutorials/rendering/viewports.html) — SubViewport worlds, cameras, and UI layers required for 2–4 player split-screen.
+- [Background loading](https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html) — `ResourceLoader` threaded load while the instructions screen stays interactive.
+- [Change scenes manually](https://docs.godotengine.org/en/stable/tutorials/scripting/change_scenes_manually.html) — Deferred free/instantiate patterns for hub ↔ minigame swaps without mid-frame crashes.
+- [Singletons (Autoload)](https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html) — Persistent tournament scores, device maps, and party roster across scene changes.
+- [GUI navigation](https://docs.godotengine.org/en/stable/tutorials/ui/gui_navigation.html) — Focus neighbors and gamepad menu traversal for character select and lobby UI.
+- [Pausing games](https://docs.godotengine.org/en/stable/tutorials/scripting/pausing_games.html) — Tree pause + reconnect overlays when a joypad drops mid-minigame.
+- [Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html) — `.tres` minigame definitions (title, scene path, 1v3 flags) without hardcoding catalogs.
+- [InputMap](https://docs.godotengine.org/en/stable/classes/class_inputmap.html) — Runtime `action_add_event` for per-player device-bound actions (`pN_*`).
 
-```gdscript
-class_name PartyInputManager extends Node
+### Related Skills
 
-## Dynamically registers input actions for a specific player and device.
-func register_player_device(player_index: int, device_id: int) -> void:
-    var base_actions: Array[String] = ["jump", "dash", "interact"]
-    
-    for action in base_actions:
-        var player_action: StringName = StringName("p%d_%s" % [player_index, action])
-        
-        if not InputMap.has_action(player_action):
-            InputMap.add_action(player_action)
-            
-        InputMap.action_erase_events(player_action)
-        
-        var joy_event := InputEventJoypadButton.new()
-        joy_event.device = device_id
-        joy_event.button_index = JOY_BUTTON_A # Map based on action...
-        
-        InputMap.action_add_event(player_action, joy_event)
-```
+#### Prerequisites
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Device IDs, `InputMap` remaps, deadzones, and `_unhandled_input` ownership before party routing.
+- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — Clean load/unload and deferred scene swaps between hub, instructions, and minigames.
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Typed `Resource` / `.tres` catalogs that define each minigame's scene and metadata.
+- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Singleton placement for tournament state that must outlive every minigame scene.
 
-### 2. Minigame-Orchestrator Pattern (Scene Switching)
-Party games rapidly cycle between minigames. Use an Autoload to securely `free()` the current scene and load the next `PackedScene` using `call_deferred` to prevent crashes during physics/logic execution.
+#### Complements
+- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Scoreboards, instruction overlays, and `GridContainer` split-screen / character-select layouts with focus.
+- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — Shared-room framing and per-viewport cameras that zoom/pan to keep all players on screen.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — `player_joined`, `game_ended`, and reconnect prompts without hard refs across lobby and minigames.
+- [godot-turn-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-turn-system/SKILL.md) — Board / meta round phases between short competitive minigames.
+- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — Short stingers, countdown cues, and per-player SFX buses that survive rapid scene cycling.
 
-```gdscript
-class_name MinigameOrchestrator extends Node
+#### Downstream / consumers
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Simulate asymmetric 1v3 / handicap power offsets so party roles stay socially fair across rounds.
+- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — Typical consumer of per-device move vectors inside shared-screen 2D party arenas.
 
-var _current_scene: Node
-
-func _ready() -> void:
-    _current_scene = get_tree().root.get_child(-1)
-
-func transition_to_minigame(scene_path: String) -> void:
-    call_deferred("_deferred_transition", scene_path)
-
-func _deferred_transition(scene_path: String) -> void:
-    _current_scene.free()
-    var next_scene := ResourceLoader.load(scene_path) as PackedScene
-    _current_scene = next_scene.instantiate()
-    get_tree().root.add_child(_current_scene)
-    get_tree().current_scene = _current_scene
-```
-
-### 3. Screen-Shake-Global Pattern (Impact Observer)
-Decouple camera effects from gameplay logic using the Observer pattern. Gameplay nodes broadcast impact intensity via a global signal, and the camera script listens to apply decaying noise to its `h_offset` and `v_offset`.
-
-```gdscript
-class_name ImpactCamera3D extends Camera3D
-
-@export var decay_rate: float = 5.0
-var _current_shake_strength: float = 0.0
-
-func _process(delta: float) -> void:
-    if _current_shake_strength > 0.01:
-        _current_shake_strength = lerpf(_current_shake_strength, 0.0, decay_rate * delta)
-        h_offset = randf_range(-_current_shake_strength, _current_shake_strength)
-        v_offset = randf_range(-_current_shake_strength, _current_shake_strength)
-    else:
-        h_offset = 0.0
-        v_offset = 0.0
-
-func _on_shake_requested(intensity: float) -> void:
-    _current_shake_strength = max(_current_shake_strength, intensity)
-```
-
-
-- Master Skill: [godot-master](../SKILL.md)
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns input, scenes, or UI pieces of a party stack.

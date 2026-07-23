@@ -21,3 +21,14 @@ func set_condition_guarded(condition_path: String, value: bool) -> void:
 	var current = get(condition_path)
 	if current != value:
 		set(condition_path, value)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_animationtree.html
+# - https://docs.godotengine.org/en/stable/tutorials/animation/animation_tree.html
+# - https://docs.godotengine.org/en/stable/classes/class_animationnodeblendspace2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — blend_position sources need guarded updates
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — avoid per-frame parameter churn
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-tree-mastery/SKILL.md
+# =============================================================================

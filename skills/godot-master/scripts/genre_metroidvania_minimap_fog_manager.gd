@@ -22,3 +22,13 @@ func _reveal_radius(center: Vector2i, radius: int) -> void:
 
 ## [SKILL NOTICE]: Use 'TileMapLayer' (4.3+) for best performance. 
 ## Erasing cells with '-1' ID is faster than changing tile visibility.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/2d/using_tilemaps.html
+# - https://docs.godotengine.org/en/stable/classes/class_tilemaplayer.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md — SubViewport minimap + fog layer setup
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — minimap camera framing vs world Camera2D
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-metroidvania/SKILL.md
+# =============================================================================

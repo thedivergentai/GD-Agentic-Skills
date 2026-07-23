@@ -92,3 +92,14 @@ func _apply_movement(input: Vector2, delta: float) -> void:
 
 func _get_input() -> Vector2:
 	return Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html
+# - https://docs.godotengine.org/en/stable/classes/class_multiplayerapi.html
+# - https://docs.godotengine.org/en/stable/classes/class_node.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md — replayable move_and_slide steps
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — authority-gated input samples for the buffer
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md
+# =============================================================================

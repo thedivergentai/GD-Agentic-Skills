@@ -56,3 +56,14 @@ func rollback_and_resimulate(server_tick: int, current_tick: int, server_state: 
 	# 3. Clean up interpolation to prevent visual snapping
 	if target_node is Node3D or target_node is Node2D:
 		target_node.reset_physics_interpolation()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html
+# - https://docs.godotengine.org/en/stable/classes/class_node.html
+# - https://docs.godotengine.org/en/stable/classes/class_multiplayerapi.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md — rollback/resim migration patterns
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-fighting/SKILL.md — fixed-tick rollback consumers
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md
+# =============================================================================

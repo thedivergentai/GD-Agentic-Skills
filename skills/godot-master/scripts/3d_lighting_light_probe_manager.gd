@@ -26,3 +26,16 @@ func set_gi_quality(high_quality: bool) -> void:
 
 ## EXPERT USAGE:
 ## Connect to Settings Menu.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/global_illumination/introduction_to_global_illumination.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/global_illumination/using_voxel_gi.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/global_illumination/using_sdfgi.html
+# - https://docs.godotengine.org/en/stable/classes/class_voxelgi.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md — sealed rooms for VoxelGI bounds
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md — gi_mode on GeometryInstance3D
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md — drop SDFGI on Mobile
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md
+# =============================================================================

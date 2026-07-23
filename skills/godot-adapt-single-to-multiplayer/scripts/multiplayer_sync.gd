@@ -57,3 +57,14 @@ func _process(delta: float) -> void:
 ## EXPERT USAGE:
 ## Attach to MultiplayerSynchronizer. Set replication config to sync 
 ## `puppet_position` on the parent, not directly `position`, to enable smoothing.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_multiplayersynchronizer.html
+# - https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html
+# - https://docs.godotengine.org/en/stable/classes/class_node.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md — replication config and tick-rate defaults
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md — parent bodies that need puppet-position smoothing
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md
+# =============================================================================

@@ -19,3 +19,14 @@ func request_player_action(action_id: String):
 func _broadcast_result(action_id: String):
 	# Everyone (including server itself) updates their local state
 	pass
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html
+# - https://docs.godotengine.org/en/stable/classes/class_multiplayerapi.html
+# - https://docs.godotengine.org/en/stable/classes/class_node.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — keep local events separate from RPCs
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — typed @rpc annotations and sender checks
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md
+# =============================================================================

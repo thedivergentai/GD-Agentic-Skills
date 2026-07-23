@@ -100,3 +100,13 @@ func _on_navigation_finished() -> void:
 ## 
 ## func go_to(pos: Vector3):
 ##     nav.move_to(pos)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationagents.html
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationobstacles.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md — parent CharacterBody applies safe velocity
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md — unreachable/finished signals drive AI states
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md
+# =============================================================================

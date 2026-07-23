@@ -21,3 +21,14 @@ func _unhandled_input(event: InputEvent) -> void:
                 
                 # Mark as handled to prevent multiple joins from one press.
                 get_viewport().set_input_as_handled()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_inputeventjoypadbutton.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/controllers_gamepads_joysticks.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — raw joypad join vs action polling
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — persist slot→device map
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-party/SKILL.md
+# =============================================================================

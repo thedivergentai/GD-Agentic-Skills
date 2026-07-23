@@ -85,3 +85,14 @@ func _drop_data(_at_position: Vector2, data: Variant) -> void:
 ## 1. Create InventoryGrid scene
 ## 2. Assign InventoryData resource
 ## 3. Connect signals for gameplay logic
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/ui/gui_containers.html
+# - https://docs.godotengine.org/en/stable/classes/class_gridcontainer.html
+# - https://docs.godotengine.org/en/stable/classes/class_control.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — visual grid vs data footprint
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md — occupied/empty cell chrome
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md
+# =============================================================================

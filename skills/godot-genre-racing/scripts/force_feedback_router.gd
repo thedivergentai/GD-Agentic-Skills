@@ -16,3 +16,13 @@ func shake_on_surface(surface_type: StringName) -> void:
             Input.start_joy_vibration(0, 0.1, 0.1, 0.1)
         &"rough":
             Input.start_joy_vibration(0, 0.3, 0.3, 0.1)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/controllers_gamepads_joysticks.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/controller_features.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — rumble/haptic device routing
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — collision/terrain impulse sources
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-racing/SKILL.md
+# =============================================================================

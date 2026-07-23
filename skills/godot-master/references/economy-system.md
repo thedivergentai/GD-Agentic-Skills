@@ -11,251 +11,116 @@ description: "Expert patterns for game economies including currency management (
 
 # Economy System
 
-Expert guidance for designing balanced game economies with currency, shops, and loot.
+Wallet + transaction authority — not beginner "gold int" tutorials.
 
-## Available Scripts
+## Decision Tree: Currency Representation
 
-### [currency_resource.gd](../scripts/economy_system_currency_resource.gd)
-Specialized data container for defining distinct denominations (Gold, Gems, XP) with UI metadata.
+| Economy type | Store as | Why |
+|--------------|----------|-----|
+| Soft currency (gold, scrap) with UI decimals | **`int` cents / smallest unit** | Exact math; display `value / 100.0` |
+| Premium / idle quantities >> 2^31 | **BigInt / multi-limb int** (or carefully scaled `float` only if approx OK) | 32-bit `int` caps ~2.1B |
+| Multiplayer / persistent wallet | **Authoritative `int` (or BigInt) on server** | Client never finalizes spends |
+| Prices with fractional display only | Still **int smallest unit** | Avoid `0.1 + 0.2` float drift |
 
-### [wallet_manager_singleton.gd](../scripts/economy_system_wallet_manager_singleton.gd)
-Centralized AutoLoad orchestrator for managing balances and processing secure transactions.
-
-### [shop_item_data.gd](../scripts/economy_system_shop_item_data.gd)
-Resource-based definition for purchasables, including pricing, currency types, and stock limits.
-
-### [shop_system_logic.gd](../scripts/economy_system_shop_system_logic.gd)
-Decoupled logic for handling buy/sell exchanges between the Wallet and Inventory systems.
-
-### [dynamic_price_modifier.gd](../scripts/economy_system_dynamic_price_modifier.gd)
-Injection pattern for applying temporary discounts or markups based on world state (e.g. Sales).
-
-### [currency_label_sync.gd](../scripts/economy_system_currency_label_sync.gd)
-Reactive UI hook for automatically updating currency displays when balances change.
-
-### [loot_drop_economy_bridge.gd](../scripts/economy_system_loot_drop_economy_bridge.gd)
-Bridge node for capturing loot events and adding funds to the player's wallet.
-
-### [economy_persistence_handler.gd](../scripts/economy_system_economy_persistence_handler.gd)
-Expert logic for serializing financial states into secure, loadable dictionaries.
-
-### [currency_pickup_effect.gd](../scripts/economy_system_currency_pickup_effect.gd)
-Visual feedback controller that triggers particles or animations upon financial gain.
-
-### [trade_contract_resource.gd](../scripts/economy_system_trade_contract_resource.gd)
-Advanced barter system definition for multi-item "Quid Pro Quo" transactions.
+**NEVER** mix "use float for money" and "never use float for money" without this tree — pick one column and stick to it.
 
 ## NEVER Do in Economy Systems
 
-- **NEVER use `int` for large-scale premium economies** — Standard 32-bit integers cap at 2.1 billion. For massive quantities, use `float` or a custom `BigInt` structure [12].
-- **NEVER forget to implement a Buy/Sell price spread** — Allowing players to sell items for the same price they bought them creates infinite money exploits [13].
-- **NEVER skip "Currency Sinks"** — Without mandatory costs (repairs, taxes, consumables), the game economy will suffer from hyper-inflation [14].
-- **NEVER perform currency validation only on the client** — In multiplayer or persistent games, the server MUST be the source of truth for all financial transactions [15].
-- **NEVER hardcode loot drop percentages inside scripts** — Changing drop rates should not require a recompile. Use Resources or outside data files for easy balancing [16].
-- **NEVER allow negative balances via underflow** — Always check `if current >= amount` BEFORE subtracting. Negative gold can break logic and save files.
-- **NEVER modify the wallet balance directly from the UI** — The UI should only request a transaction. The `WalletManager` should decide if it's valid and update the state.
-- **NEVER use floating point math for exact currency counts** — `0.1 + 0.2` might equal `0.30000000000000004`, leading to discrepancies. Use `int` for cents/smallest units.
-- **NEVER ignore "Transaction Logs" in serious RPGs** — If money disappears, you need a history of events to debug whether it was a bug or a legitimate game event.
-- **NEVER give rewards without checking "Max Limit"** — If a player is capped at 999,999 gold, adding 1,000 should result in 999,999, not a wrapped negative number.
+- **NEVER skip buy/sell spread** — Same buy/sell price = infinite money.
+- **NEVER skip currency sinks** — Repairs, taxes, fees, consumables prevent inflation.
+- **NEVER validate spends only on the client** — Server/host is source of truth in multiplayer.
+- **NEVER hardcode loot weights in scripts** — Use Resources ([loot_table_weighted.gd](../scripts/economy_system_loot_table_weighted.gd)).
+- **NEVER subtract before `current >= amount`** — Underflow / negative wallets corrupt saves.
+- **NEVER let UI mutate balances directly** — UI requests; [wallet_manager_singleton.gd](../scripts/economy_system_wallet_manager_singleton.gd) / [transaction_manager.gd](../scripts/economy_system_transaction_manager.gd) decides.
+- **NEVER ignore transaction logs in serious RPGs** — Audit trail for missing currency.
+- **NEVER exceed max caps without clamping** — Cap before wrap / overflow.
 
 ---
 
-## Currency Manager
+## Golden Path (MANDATORY)
 
-```gdscript
-# economy_manager.gd (AutoLoad)
-extends Node
+1. [currency_resource.gd](../scripts/economy_system_currency_resource.gd) — denomination metadata
+2. [wallet_manager_singleton.gd](../scripts/economy_system_wallet_manager_singleton.gd) — balances + signals
+3. [transaction_manager.gd](../scripts/economy_system_transaction_manager.gd) — validated spend/grant pipeline
+4. Shop / loot / UI only after wallet+transactions exist
 
-signal currency_changed(old_amount: int, new_amount: int)
+**Delete** ad-hoc `EconomyManager` gold tutorials — do not re-inline wallet logic in scenes.
 
-var gold: int = 0
+## Decision Points → Scripts
 
-func add_currency(amount: int) -> void:
-    var old := gold
-    gold += amount
-    currency_changed.emit(old, gold)
+| Task | Load | Do NOT Load |
+|------|------|-------------|
+| Balances / Autoload wallet | wallet_manager_singleton.gd | Inline gold ints on Player |
+| Spend/grant validation | transaction_manager.gd | UI calling `gold -= n` |
+| Shop buy/sell + stock | shop_item_data.gd + shop_system_logic.gd | Equal buy/sell prices |
+| Sales / reputation pricing | dynamic_price_modifier.gd | — |
+| Weighted loot | loot_table_weighted.gd | Hardcoded `%` in enemy scripts |
+| Loot → wallet bridge | loot_drop_economy_bridge.gd | — |
+| HUD sync | currency_label_sync.gd | Polling wallet in `_process` without signals |
+| Save wallet | economy_persistence_handler.gd | — |
+| Pickup VFX | currency_pickup_effect.gd | — |
+| Multi-item barter | trade_contract_resource.gd | — |
 
-func spend_currency(amount: int) -> bool:
-    if gold < amount:
-        return false
-    
-    var old := gold
-    gold -= amount
-    currency_changed.emit(old, gold)
-    return true
+## Available Scripts (full catalog)
 
-func has_currency(amount: int) -> bool:
-    return gold >= amount
-```
+- [currency_resource.gd](../scripts/economy_system_currency_resource.gd)
+- [wallet_manager_singleton.gd](../scripts/economy_system_wallet_manager_singleton.gd) — **MANDATORY**
+- [transaction_manager.gd](../scripts/economy_system_transaction_manager.gd) — **MANDATORY**
+- [shop_item_data.gd](../scripts/economy_system_shop_item_data.gd)
+- [shop_system_logic.gd](../scripts/economy_system_shop_system_logic.gd)
+- [dynamic_price_modifier.gd](../scripts/economy_system_dynamic_price_modifier.gd)
+- [currency_label_sync.gd](../scripts/economy_system_currency_label_sync.gd)
+- [loot_table_weighted.gd](../scripts/economy_system_loot_table_weighted.gd) — weights / rarity
+- [loot_drop_economy_bridge.gd](../scripts/economy_system_loot_drop_economy_bridge.gd) — Do NOT Load if loot never grants currency
+- [economy_persistence_handler.gd](../scripts/economy_system_economy_persistence_handler.gd)
+- [currency_pickup_effect.gd](../scripts/economy_system_currency_pickup_effect.gd)
+- [trade_contract_resource.gd](../scripts/economy_system_trade_contract_resource.gd) — Do NOT Load unless barter exists
 
-## Shop System
+## Elite Deltas
 
-```gdscript
-# shop_item.gd
-class_name ShopItem
-extends Resource
-
-@export var item: Item
-@export var buy_price: int
-@export var sell_price: int
-@export var stock: int = -1  # -1 = infinite
-
-func can_buy() -> bool:
-    return stock != 0
-```
-
-```gdscript
-# shop.gd
-class_name Shop
-extends Resource
-
-@export var shop_name: String
-@export var items: Array[ShopItem] = []
-
-func buy_item(shop_item: ShopItem, inventory: Inventory) -> bool:
-    if not shop_item.can_buy():
-        return false
-    
-    if not EconomyManager.has_currency(shop_item.buy_price):
-        return false
-    
-    if not EconomyManager.spend_currency(shop_item.buy_price):
-        return false
-    
-    inventory.add_item(shop_item.item, 1)
-    
-    if shop_item.stock > 0:
-        shop_item.stock -= 1
-    
-    return true
-
-func sell_item(item: Item, inventory: Inventory) -> bool:
-    # Find matching shop item for sell price
-    var shop_item := get_shop_item_for(item)
-    if not shop_item:
-        return false
-    
-    if not inventory.has_item(item, 1):
-        return false
-    
-    inventory.remove_item(item, 1)
-    EconomyManager.add_currency(shop_item.sell_price)
-    return true
-
-func get_shop_item_for(item: Item) -> ShopItem:
-    for shop_item in items:
-        if shop_item.item == item:
-            return shop_item
-    return null
-```
-
-## Pricing Formula
-
-```gdscript
-func calculate_sell_price(buy_price: int, markup: float = 0.5) -> int:
-    # Sell for 50% of buy price
-    return int(buy_price * markup)
-
-func calculate_dynamic_price(base_price: int, demand: float) -> int:
-    # Price increases with demand
-    return int(base_price * (1.0 + demand))
-```
-
-## Loot Tables
-
-```gdscript
-# loot_table.gd
-class_name LootTable
-extends Resource
-
-@export var drops: Array[LootDrop] = []
-
-func roll_loot() -> Array[Item]:
-    var items: Array[Item] = []
-    
-    for drop in drops:
-        if randf() < drop.chance:
-            items.append(drop.item)
-    
-    return items
-```
-
-```gdscript
-# loot_drop.gd
-class_name LootDrop
-extends Resource
-
-@export var item: Item
-@export var chance: float = 0.5
-@export var min_amount: int = 1
-@export var max_amount: int = 1
-```
-
-## Best Practices
-
-1. **Balance** - Test economy carefully
-2. **Sinks** - Provide money sinks (repairs, etc.)
-3. **Inflation** - Control money generation
-
----
-
-## Elite Godot 4.x Patterns
-
-### 1. Multi-Item Barter System
-Use `Resource` arrays to define complex trade offers. This allows designers to visually configure "Quid Pro Quo" transactions without script modifications.
-
-```gdscript
-# trade_offer.gd
-class_name TradeOffer extends Resource
-
-@export var items_required: Array[Item] = []
-@export var items_provided: Array[Item] = []
-
-func can_afford(inventory: Inventory) -> bool:
-    for item in items_required:
-        if not inventory.has_item(item): return false
-    return true
-```
-
-### 2. Economic Analytics (GPM Tracking)
-Implement a custom `Logger` to intercept economy events and calculate metrics like Gold-Per-Minute (GPM) using the `Time` singleton.
-
-```gdscript
-# economy_logger.gd
-class_name EconomyLogger extends Logger
-
-var _gold_earned := 0
-var _start_time := Time.get_ticks_msec()
-
-func _log_message(msg: String, is_error: bool) -> void:
-    if not is_error and msg.begins_with("[ECON]"):
-        _gold_earned += msg.split(":")[1].to_int()
-        _log_gpm()
-
-func _log_gpm() -> void:
-    var mins := (Time.get_ticks_msec() - _start_time) / 60000.0
-    var gpm := _gold_earned / max(mins, 0.01)
-    # Output to analytics dashboard or file
-```
-
-### 3. Dynamic Item Value Estimator
-Encapsulate valuation logic within the `Item` resource. Use `enum` rarity tiers and power level properties to dynamically calculate merchant prices.
-
-```gdscript
-# item_data_economy.gd
-enum Rarity { COMMON, RARE, EPIC, LEGENDARY }
-@export var rarity: Rarity = Rarity.COMMON
-@export var base_value: int = 100
-
-func get_value() -> int:
-    var mult := 1.0
-    match rarity:
-        Rarity.RARE: mult = 2.0
-        Rarity.EPIC: mult = 5.0
-        Rarity.LEGENDARY: mult = 20.0
-    return int(base_value * mult)
-```
+- **Barter contracts:** multi-item quid-pro-quo via trade_contract_resource (not single-currency shops).
+- **GPM analytics:** log grants/sinks per minute for inflation detection.
+- **Value estimator:** derive sell price from rarity + demand modifiers, always below buy.
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
-- Related: After sinks/loot/shops are Resource-driven, validate careers and farm risks with [godot-monte-carlo-balancer](../SKILL.md).
+
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
+
+### Official Documentation
+- [Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html) — Currencies, shop items, loot tables, and trade contracts belong as shareable `Resource` assets so designers can retune prices and drop weights without code changes.
+- [Resource](https://docs.godotengine.org/en/stable/classes/class_resource.html) — Use `duplicate()` when applying runtime price modifiers or per-merchant stock so one shop cannot mutate the shared `.tres` template for every vendor.
+- [GDScript exports](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_exports.html) — `@export` buy/sell spreads, stock caps, currency ids, and loot weights so economy balance stays Inspector-driven.
+- [Singletons (Autoload)](https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html) — A WalletManager Autoload is the engine-supported pattern for balances that must survive scene changes (world ↔ shop ↔ menu).
+- [Autoloads versus regular nodes](https://docs.godotengine.org/en/stable/tutorials/best_practices/autoloads_versus_regular_nodes.html) — Keep global wallet state in Autoload; keep merchant UI and one-off shop logic as scene nodes so tests and multiplayer authority stay composable.
+- [Using signals](https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html) — Emit `balance_changed` / `transaction_failed` so HUD labels and pickup VFX subscribe without writing wallet balances from the UI.
+- [Saving games](https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html) — Persist wallet dictionaries (and stocked shop state) with the rest of progression data; never leave soft currency only in memory.
+- [FileAccess](https://docs.godotengine.org/en/stable/classes/class_fileaccess.html) — Read/write save payloads that include economy blobs; pair with project `user://` paths for player-writable balance files.
+- [JSON](https://docs.godotengine.org/en/stable/classes/class_json.html) — Serialize `currency_id → amount` dictionaries as JSON-compatible structures for transparent save/load and analytics dumps.
+- [Random number generation](https://docs.godotengine.org/en/stable/tutorials/math/random_number_generation.html) — Weighted loot and drop rolls must use Godot RNG APIs (`randf`, seeded RNG) rather than ad-hoc modulo hacks.
+- [RandomNumberGenerator](https://docs.godotengine.org/en/stable/classes/class_randomnumbergenerator.html) — Seedable RNG instances make loot-table Monte Carlo and deterministic balance tests reproducible.
+- [High-level multiplayer](https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html) — Spend/grant validation must be authoritative on the server; clients request transactions and apply confirmed balance RPCs only.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Currency, ShopItem, LootTable, and TradeContract definitions are Resource-first; load this before inventing parallel data formats for prices and drops.
+- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — WalletManager as Autoload needs disciplined ownership, init order, and namespacing so economy state does not become a god-object dump.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Balance and transaction signals must stay “signal up / call down” so UI never mutates the wallet directly.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed Resources, Dictionary wallets, and atomic purchase helpers assume solid GDScript patterns (guards before subtract, no float money).
+
+#### Complements
+- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — Buy/sell and barter are atomic wallet↔inventory exchanges; stock and capacity checks belong with inventory, not only with price math.
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Economy persistence handlers should plug into the project save schema (versioning, migrate, encrypt premium balances if needed).
+- [godot-rpg-stats](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md) — Charisma/reputation discounts and sink costs (repairs) need a consistent modifier layer rather than hardcoding multipliers in the shop UI.
+- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Shop screens and currency HUD layouts should bind to wallet signals; containers own presentation, WalletManager owns truth.
+- [godot-quest-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-quest-system/SKILL.md) — Quest gold rewards and turn-in sinks are major currency sources/sinks; wire rewards through the transaction API, not ad-hoc `gold +=`.
+- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Loot-drop bridges listen to combat/loot events and grant funds without embedding economy rules inside damage pipelines.
+
+#### Downstream / consumers
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — After sinks, loot weights, and shop spreads are Resource-driven, Monte Carlo farm/career sims prove inflation and time-to-afford bands before shipping curves.
+- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — Predicted UI spends and authoritative grant/spend RPCs build on the wallet’s request/validate/apply split.
+- [godot-genre-idle-clicker](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-idle-clicker/SKILL.md) — Idle/prestige currencies and sink loops assemble this skill with long-horizon balance and offline accrual genre glue.
+- [godot-genre-action-rpg](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md) — Action-RPG shops, crafting sinks, and drop economies compose wallet + inventory + loot tables for progression pacing.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.

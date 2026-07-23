@@ -44,3 +44,17 @@ func _is_occluded(light_pos: Vector3) -> bool:
 ## EXPERT USAGE:
 ## Add lights to group "lights". 
 ## Call get_light_level() from Stealth AI.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/lights_and_shadows.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/environment_and_post_processing.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/groups.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md — OmniLight3D energy/range for light-gem sampling
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md — occluded light rays to sample points
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — ambient vs direct exposure balance
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-stealth/SKILL.md
+# =============================================================================

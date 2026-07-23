@@ -1,6 +1,6 @@
 ---
 name: godot-genre-sports
-description: "Expert blueprint for sports games (FIFA, NBA 2K, Rocket League, Tony Hawk) covering physics-based ball interaction, team AI formations, contextual input, and broadcast camera systems. Use when building soccer, basketball, hockey, racing sports, or arcade sports games. Keywords ball physics, magnus effect, formation AI, team tactics, contextual controls, steering behaviors."
+description: "Expert blueprint for sports games (FIFA, NBA 2K, Rocket League, Tony Hawk) covering physics-based ball interaction, team AI formations, contextual input, and match umpire/score authority. Broadcast framing routes to godot-camera-systems. Use when building soccer, basketball, hockey, racing sports, or arcade sports games. Keywords ball physics, magnus effect, formation AI, team tactics, contextual controls, steering behaviors."
 ---
 
 ## Godot 4.7 Baseline
@@ -29,21 +29,44 @@ description: "Expert blueprint for sports games (FIFA, NBA 2K, Rocket League, To
 ### Implementation & Sync
 - NEVER rely on the default physics tick rate (60 TPS) for fast-moving ballistics; strictly increase **physics_ticks_per_second** (e.g., to 120 or 240) to prevent tunneling.
 - NEVER leave **Physics Interpolation** disabled if you want broadcast-quality smoothness; enable it in Project Settings to smooth ball transforms between ticks on high-refresh monitors.
-- NEVER parent the ball directly to a player Transform; strictly keep it a standalone `RigidBody3D` and use `apply_central_impulse()` for **realistic dribble physics**.
 - NEVER skip **vector normalization** on joystick input; strictly normalize to prevent diagonal movement from being 1.4x faster.
 - NEVER handle contextual buttons with `is_action_pressed()`; strictly use a **ContextManager** to determine if Button A means "Pass", "Tackle", or "Switch".
 - NEVER evaluate an `Area3D` goal trigger immediately; strictly `await get_tree().physics_frame` to allow the Physics Server to sync.
+
+## Ball Possession Decision Tree
+
+| Feel | Approach | Rule |
+|------|----------|------|
+| **Arcade / magnetic** | Soft follow or short-range spring toward feet | Still **never** reparent the ball to the player Transform; keep `RigidBody3D` authoritative |
+| **Sim / impulse dribble** | Kick slightly ahead with `apply_central_impulse()` each touch | Prefer **MANDATORY** ball scripts below; enable `continuous_cd` |
+
+Default for this skill: **impulse dribble**. Magnetic stickiness is a last resort for pure arcade genres and must remain a free RigidBody.
 
 ---
 
 ## 🛠 Expert Components (scripts/)
 
-### Original Expert Patterns
-- [sports_ball_physics.gd](../scripts/genre_sports_sports_ball_physics.gd) - High-fidelity Magnus effect and air drag model for ball-centric sports.
-- [team_manager.gd](../scripts/genre_sports_team_manager.gd) - Macro-behavior manager implementing Formation Slots and team strategy switching.
+> **MANDATORY** — read the script that matches the task before coding:
+> - Goals / match phases → [sports_umpire_logic.gd](../scripts/genre_sports_sports_umpire_logic.gd)
+> - Full flight model (drag + Magnus via `_integrate_forces`) → [sports_ball_physics.gd](../scripts/genre_sports_sports_ball_physics.gd)
+> - Lean Magnus-only curve (simpler attach) → [magnus_ball_physics.gd](../scripts/genre_sports_magnus_ball_physics.gd) — choose **one** ball script, not both
+> - Formations / kindergarten-soccer fix → [team_manager.gd](../scripts/genre_sports_team_manager.gd)
+> - Temporary buffs / powerups → [stat_modifier_powerup.gd](../scripts/genre_sports_stat_modifier_powerup.gd)
+> - Shared impulse/score helpers → [sports_patterns.gd](../scripts/genre_sports_sports_patterns.gd)
+>
+> **Broadcast camera**: not implemented in this skill’s `scripts/`. Use peer [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) for broadcast framing / zoom-on-action.
+>
+> **Do NOT Load** every sports script for one task.
 
-### Modular Components
-- [sports_patterns.gd](../scripts/genre_sports_sports_patterns.gd) - Collection of utilities for physics-safe impulses and authoritative scoring.
+### Ball Physics (pick one)
+- [sports_ball_physics.gd](../scripts/genre_sports_sports_ball_physics.gd) - High-fidelity Magnus + air drag via custom integrator (`continuous_cd` ready).
+- [magnus_ball_physics.gd](../scripts/genre_sports_magnus_ball_physics.gd) - Leaner Magnus-only force helper when drag is handled elsewhere.
+
+### Match / Team / Meta
+- [sports_umpire_logic.gd](../scripts/genre_sports_sports_umpire_logic.gd) - Goal Area3D + match state machine (PRE_GAME / ACTIVE / POST_GOAL).
+- [team_manager.gd](../scripts/genre_sports_team_manager.gd) - Formation Slots and team strategy switching.
+- [stat_modifier_powerup.gd](../scripts/genre_sports_stat_modifier_powerup.gd) - Temporary player/stat modifiers for arcade powerups.
+- [sports_patterns.gd](../scripts/genre_sports_sports_patterns.gd) - Physics-safe impulses and authoritative scoring helpers.
 
 ---
 
@@ -51,11 +74,11 @@ description: "Expert blueprint for sports games (FIFA, NBA 2K, Rocket League, To
 
 | Phase | Skills | Purpose |
 |-------|--------|---------|
-| 1. Physics | `physics-bodies`, `vehicle-wheel-3d` | Ball bounce, friction, player collisions |
-| 2. AI | `steering-behaviors`, `godot-state-machine-advanced` | Formations, marking, flocking |
+| 1. Physics | `godot-physics-3d` | Ball bounce, friction, player collisions |
+| 2. AI | `godot-state-machine-advanced`, `godot-navigation-pathfinding` | Formations, marking, avoidance |
 | 3. Anim | `godot-animation-tree-mastery` | Blended running, shooting, tackling |
-| 4. Input | `input-mapping` | Contextual buttons (Pass/Tackle share button) |
-| 5. Camera | `godot-camera-systems` | Dynamic broadcast view, zooming on action |
+| 4. Input | `godot-input-handling` | Contextual buttons (Pass/Tackle share button) |
+| 5. Camera | `godot-camera-systems` | Broadcast view / zoom-on-action (**peer skill**, not local scripts) |
 
 ## Architecture Overview
 
@@ -218,10 +241,45 @@ func _on_ball_entered(ball: RigidBody3D) -> void:
 
 **Expert Tip**: For the "Root Motion" system, ensure the `AnimationTree` property `deterministic` is set to true to ensure consistent displacement across different hardware.
 
-
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
 
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
 
-## Reference
-- Master Skill: [godot-master](../SKILL.md)
+### Official Documentation
+- [Physics introduction](https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html) — Collision layers/masks, continuous CD, and when RigidBody vs CharacterBody fits sports players and balls.
+- [Using RigidBody](https://docs.godotengine.org/en/stable/tutorials/physics/rigid_body.html) — Impulse/force timing, custom integrators, and contact monitoring for kick/dribble without parenting the ball.
+- [RigidBody3D](https://docs.godotengine.org/en/stable/classes/class_rigidbody3d.html) — `continuous_cd`, damp, and `apply_central_impulse` / force APIs for high-speed ballistics.
+- [PhysicsDirectBodyState3D](https://docs.godotengine.org/en/stable/classes/class_physicsdirectbodystate3d.html) — `_integrate_forces` state for Magnus/drag custom forces without fighting the solver.
+- [PhysicsMaterial](https://docs.godotengine.org/en/stable/classes/class_physicsmaterial.html) — Bounce/friction overrides for ball and pitch surfaces.
+- [Collision shapes (3D)](https://docs.godotengine.org/en/stable/tutorials/physics/collision_shapes_3d.html) — Correct sphere/capsule sizing so inertia and layered hitboxes stay physically valid.
+- [Physics interpolation](https://docs.godotengine.org/en/stable/tutorials/physics/interpolation/physics_interpolation_introduction.html) — Broadcast-smooth ball/player transforms between elevated physics ticks.
+- [Idle and physics processing](https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html) — Keep impulses and match rules in `_physics_process` / integrate paths to avoid jitter.
+- [Ray-casting](https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html) — Pass-lane and tackle assist queries via `PhysicsDirectSpaceState3D`.
+- [Using AnimationTree](https://docs.godotengine.org/en/stable/tutorials/animation/animation_tree.html) — BlendSpace locomotion and root-motion extraction for grounded cuts and shots.
+- [Controllers, gamepads, and joysticks](https://docs.godotengine.org/en/stable/tutorials/inputs/controllers_gamepads_joysticks.html) — Normalized stick axes, device IDs, and vibration for contextual Pass/Tackle/Switch.
+- [High-level multiplayer](https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html) — Authoritative goal validation and unreliable movement sync for competitive matches.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Autoloads, physics tick/interpolation project settings, and scene layout before ball/team systems land.
+- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — RigidBody3D, layers/masks, and continuous collision patterns the ball and layered hitboxes depend on.
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Action maps and device routing so one button can mean Pass, Tackle, or Switch by context.
+
+#### Complements
+- [godot-animation-tree-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-tree-mastery/SKILL.md) — Root-motion BlendSpaces and deterministic mixer setup for sprint/shot/tackle without skating.
+- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — Broadcast framing, zoom-on-action, and follow rigs for pitch-scale presentation.
+- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — NavigationAgent/mesh avoidance so formation runners do not stack through teammates.
+- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — Match phases (kickoff/play/goal/end) and per-player chase vs formation states.
+- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — Masked space queries for clear passing lanes and tackle prediction.
+- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — Server-authoritative score RPCs and transfer modes for fast sports snapshots.
+- [godot-adapt-single-to-multiplayer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md) — Authority split and reconciliation when promoting local kickabouts to online matches.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Goal, possession, and UI event buses without coupling umpire logic to every player node.
+- [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md) — Stadium collision, pitch surfaces, and LOD props around the playable field.
+
+#### Downstream / consumers
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Simulate player/attribute asymmetry, keeper reaction error bands, and rubber-band AI so match outcomes stay competitive.
+- [godot-genre-racing](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-racing/SKILL.md) — Adjacent high-speed physics genre patterns when the sport leans vehicle/arcade (e.g. Rocket League-style).
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting sports concern.

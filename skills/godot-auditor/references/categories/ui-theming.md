@@ -11,3 +11,13 @@
 - **NEVER define StyleBoxes as local variables inside `_draw()`** — They will be garbage collected before the RenderingServer can finish drawing them [7]. Store at class level.
 - **NEVER duplicate scenes/themes just to change one color** — Use `theme_type_variation` to create lightweight derived styles (e.g. "DangerButton") within the same Theme [8].
 - **NEVER skip `corner_radius_all` shortcut** — It's a useful shorthand for uniform rounding in `StyleBoxFlat`.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

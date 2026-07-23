@@ -46,23 +46,34 @@ Expert blueprint for action RPGs emphasizing real-time combat, character builds,
 
 ---
 
-## 🛠 Expert Components (scripts/)
+## Expert Components (scripts/)
 
-### Original Expert Patterns
-- [damage_label_manager.gd](scripts/damage_label_manager.gd) - High-performance pooled system for floating damage numbers and critical hits.
-- [telegraphed_enemy.gd](scripts/telegraphed_enemy.gd) - Advanced AI component for Soul-like wind-ups, AOE indicators, and timed attacks.
+> **MANDATORY**: Read the script for the decision below before inventing a CombatController/RPGStats tutorial inline.
+> **Do NOT Load** peer genre skills (platformer, racing, etc.) or full inventory/ability deep-dives unless the Skill Chain row requires them — stay on ARPG combat/loot/progression paths.
 
-### Modular Components
-- [character_stats_resource.gd](scripts/character_stats_resource.gd) - Modular data container for base RPG attributes and scaling logic.
-- [entity_stat_duplicator.gd](scripts/entity_stat_duplicator.gd) - Pattern for ensuring unique death/health state for instanced enemies.
-- [duck_typed_hitbox.gd](scripts/duck_typed_hitbox.gd) - Safe combat interaction system for players, enemies, and props.
-- [combat_log_connector.gd](scripts/combat_log_connector.gd) - Signal-binding logic for decoupled combat event logging.
-- [aoe_physics_query.gd](scripts/aoe_physics_query.gd) - Performance-optimized AoE detection using direct PhysicsServer queries.
-- [hierarchical_state_base.gd](scripts/hierarchical_state_base.gd) - Robust base for managing complex ARPG character behavior.
-- [animation_condition_sync.gd](scripts/animation_condition_sync.gd) - Safe synchronization logic for AnimationTree Advance Conditions.
-- [threaded_inventory_loader.gd](scripts/threaded_inventory_loader.gd) - WorkerThreadPool-driven background parsing for large inventories.
-- [typed_inventory_storage.gd](scripts/typed_inventory_storage.gd) - High-performance strongly-typed dictionary for item storage.
-- [high_speed_aggro_broadcaster.gd](scripts/high_speed_aggro_broadcaster.gd) - Group-based broadcasting pattern for instant localized AI alerts.
+### Combat & Hit Resolve
+- [hitbox_component.gd](scripts/hitbox_component.gd) — **MANDATORY** Area hitbox enable/disable + multi-hit guard.
+- [duck_typed_hitbox.gd](scripts/duck_typed_hitbox.gd) — **MANDATORY** `has_method(&"take_damage")` coupling.
+- [health_component.gd](scripts/health_component.gd) — HP / death signals as a child component.
+- [aoe_physics_query.gd](scripts/aoe_physics_query.gd) — **MANDATORY** PhysicsServer AoE (no Node-per-blast).
+- [aoe_group_broadcaster.gd](scripts/aoe_group_broadcaster.gd) — Group fan-out for faction/AoE.
+- [combat_event_bus.gd](scripts/combat_event_bus.gd) / [signal_combat_decoupler.gd](scripts/signal_combat_decoupler.gd) / [combat_log_connector.gd](scripts/combat_log_connector.gd) — Decoupled combat buses/logs.
+- [damage_label_manager.gd](scripts/damage_label_manager.gd) — **MANDATORY** pooled floating numbers.
+- [stat_reduction_solver.gd](scripts/stat_reduction_solver.gd) — Diminishing armor / resist math.
+
+### Stats & Progression
+- [base_stat_resource.gd](scripts/base_stat_resource.gd) / [character_stats_resource.gd](scripts/character_stats_resource.gd) — Resource-first attributes.
+- [deep_stat_duplicator.gd](scripts/deep_stat_duplicator.gd) / [entity_stat_duplicator.gd](scripts/entity_stat_duplicator.gd) — **MANDATORY** `duplicate(true)` at spawn.
+- [leveling_table.gd](scripts/leveling_table.gd) — XP / level curves.
+- [cooldown_coroutine.gd](scripts/cooldown_coroutine.gd) — Ability cooldown awaits.
+
+### AI / Animation / Inventory Perf
+- [telegraphed_enemy.gd](scripts/telegraphed_enemy.gd) — **MANDATORY** Souls-like wind-ups / AoE tells.
+- [hierarchical_state_base.gd](scripts/hierarchical_state_base.gd) — Boss/player combat FSM base.
+- [animation_condition_sync.gd](scripts/animation_condition_sync.gd) — AnimationTree Advance Conditions without `!`.
+- [high_speed_aggro_broadcaster.gd](scripts/high_speed_aggro_broadcaster.gd) — Localized aggro via groups.
+- [threaded_inventory_loader.gd](scripts/threaded_inventory_loader.gd) — **MANDATORY** WorkerThreadPool inventory parse.
+- [typed_inventory_storage.gd](scripts/typed_inventory_storage.gd) — Typed item dictionary storage.
 
 ---
 
@@ -72,559 +83,82 @@ Expert blueprint for action RPGs emphasizing real-time combat, character builds,
 
 ## Skill Chain
 
-`godot-project-foundations`, `godot-characterbody-2d`, `godot-combat-system`, `godot-rpg-stats`, `godot-inventory-system`, `godot-ability-system`, `godot-quest-system`, `godot-economy-system`, `godot-save-load-systems`, `godot-monte-carlo-balancer`
-
----
-
-## Combat System
-
-### Real-Time Combat with Stats
-
-```gdscript
-class_name CombatController
-extends Node
-
-signal damage_dealt(target: Node, amount: int, type: String)
-signal enemy_killed(enemy: Node, xp_reward: int)
-
-func calculate_damage(attacker: RPGStats, defender: RPGStats, base_damage: int) -> Dictionary:
-    # Physical damage formula
-    var attack_power := attacker.get_stat("strength") * 2 + base_damage
-    var defense := defender.get_stat("armor")
-    
-    # Damage reduction formula (diminishing returns)
-    var reduction := defense / (defense + 100.0)
-    var final_damage := int(attack_power * (1.0 - reduction))
-    
-    # Critical hit check
-    var crit_chance := attacker.get_stat("crit_chance") / 100.0
-    var is_crit := randf() < crit_chance
-    if is_crit:
-        final_damage = int(final_damage * attacker.get_stat("crit_damage") / 100.0)
-    
-    return {
-        "damage": max(1, final_damage),
-        "is_crit": is_crit,
-        "damage_type": "physical"
-    }
-
-func apply_damage(target: Node, damage_result: Dictionary) -> void:
-    if target.has_method("take_damage"):
-        target.take_damage(damage_result["damage"], damage_result["is_crit"])
-        damage_dealt.emit(target, damage_result["damage"], damage_result["damage_type"])
-```
-
-### Hitbox/Hurtbox Combat
-
-```gdscript
-class_name Hitbox
-extends Area2D
-
-@export var damage: int = 10
-@export var knockback_force: float = 200.0
-@export var attack_owner: Node
-
-var has_hit: Array[Node] = []  # Prevent multi-hit per swing
-
-func _ready() -> void:
-    monitoring = false  # Enable only during attack frames
-
-func enable() -> void:
-    has_hit.clear()
-    monitoring = true
-
-func disable() -> void:
-    monitoring = false
-
-func _on_area_entered(area: Area2D) -> void:
-    if area is Hurtbox:
-        var target := area.owner_entity
-        if target != attack_owner and target not in has_hit:
-            has_hit.append(target)
-            var result := CombatController.calculate_damage(
-                attack_owner.stats, target.stats, damage
-            )
-            CombatController.apply_damage(target, result)
-            apply_knockback(target)
-
-func apply_knockback(target: Node) -> void:
-    var direction := (target.global_position - attack_owner.global_position).normalized()
-    if target.has_method("apply_knockback"):
-        target.apply_knockback(direction * knockback_force)
-```
-
----
-
-## RPG Stats System
-
-### Attribute-Based Stats
-
-```gdscript
-class_name RPGStats
-extends Resource
-
-signal stat_changed(stat_name: String, new_value: float)
-signal level_up(new_level: int)
-
-# Base attributes (increased on level up)
-@export var strength: int = 10
-@export var dexterity: int = 10
-@export var intelligence: int = 10
-@export var vitality: int = 10
-
-# Derived stats (calculated from attributes)
-var derived_stats: Dictionary = {}
-
-# Modifiers from equipment, buffs, etc.
-var flat_modifiers: Dictionary = {}    # +50 health
-var percent_modifiers: Dictionary = {} # +10% damage
-
-var level: int = 1
-var experience: int = 0
-var skill_points: int = 0
-
-func _init() -> void:
-    recalculate_stats()
-
-func recalculate_stats() -> void:
-    derived_stats = {
-        # Health: Vitality-based
-        "max_health": vitality * 10 + 100,
-        "health_regen": vitality * 0.5,
-        
-        # Mana: Intelligence-based
-        "max_mana": intelligence * 8 + 50,
-        "mana_regen": intelligence * 0.3,
-        
-        # Physical: Strength + Dexterity
-        "physical_damage": strength * 2,
-        "armor": strength + vitality,
-        
-        # Critical: Dexterity-based
-        "crit_chance": 5.0 + dexterity * 0.2,
-        "crit_damage": 150.0 + dexterity * 0.5,
-        
-        # Speed: Dexterity-based
-        "attack_speed": 1.0 + dexterity * 0.01,
-        "move_speed": 100.0 + dexterity * 2
-    }
-    
-    # Apply modifiers
-    for stat_name in derived_stats:
-        var base := derived_stats[stat_name]
-        var flat := flat_modifiers.get(stat_name, 0.0)
-        var percent := percent_modifiers.get(stat_name, 0.0)
-        derived_stats[stat_name] = (base + flat) * (1.0 + percent / 100.0)
-
-func get_stat(stat_name: String) -> float:
-    if stat_name in derived_stats:
-        return derived_stats[stat_name]
-    return get(stat_name)
-
-func add_experience(amount: int) -> void:
-    experience += amount
-    while experience >= get_xp_for_next_level():
-        experience -= get_xp_for_next_level()
-        level += 1
-        skill_points += 5
-        level_up.emit(level)
-
-func get_xp_for_next_level() -> int:
-    # Exponential scaling
-    return int(100 * pow(1.5, level - 1))
-```
-
----
-
-## Loot System
-
-### Item Generation
-
-```gdscript
-class_name LootGenerator
-extends Node
-
-enum Rarity { COMMON, UNCOMMON, RARE, EPIC, LEGENDARY }
-
-const RARITY_WEIGHTS := {
-    Rarity.COMMON: 60,
-    Rarity.UNCOMMON: 25,
-    Rarity.RARE: 10,
-    Rarity.EPIC: 4,
-    Rarity.LEGENDARY: 1
-}
-
-const RARITY_AFFIX_COUNT := {
-    Rarity.COMMON: 0,
-    Rarity.UNCOMMON: 1,
-    Rarity.RARE: 2,
-    Rarity.EPIC: 3,
-    Rarity.LEGENDARY: 4
-}
-
-@export var affix_pool: Array[ItemAffix]
-@export var base_items: Array[ItemBase]
-
-func generate_item(item_level: int, magic_find: float = 0.0) -> Item:
-    var rarity := roll_rarity(magic_find)
-    var base := base_items.pick_random()
-    
-    var item := Item.new()
-    item.base = base
-    item.rarity = rarity
-    item.item_level = item_level
-    
-    # Roll affixes based on rarity
-    var affix_count := RARITY_AFFIX_COUNT[rarity]
-    var available_affixes := affix_pool.duplicate()
-    
-    for i in affix_count:
-        if available_affixes.is_empty():
-            break
-        var affix := available_affixes.pick_random()
-        available_affixes.erase(affix)
-        item.affixes.append(generate_affix_roll(affix, item_level))
-    
-    return item
-
-func roll_rarity(magic_find: float) -> Rarity:
-    var weights := RARITY_WEIGHTS.duplicate()
-    # Magic find increases rare+ drops
-    weights[Rarity.RARE] *= (1.0 + magic_find / 100.0)
-    weights[Rarity.EPIC] *= (1.0 + magic_find / 100.0)
-    weights[Rarity.LEGENDARY] *= (1.0 + magic_find / 100.0)
-    
-    var total := 0.0
-    for w in weights.values():
-        total += w
-    
-    var roll := randf() * total
-    for rarity in weights:
-        roll -= weights[rarity]
-        if roll <= 0:
-            return rarity
-    return Rarity.COMMON
-
-func generate_affix_roll(affix: ItemAffix, item_level: int) -> Dictionary:
-    # Scale affix values with item level
-    var min_roll := affix.min_value * (1.0 + item_level * 0.1)
-    var max_roll := affix.max_value * (1.0 + item_level * 0.1)
-    return {
-        "affix": affix,
-        "value": randf_range(min_roll, max_roll)
-    }
-```
-
-### Equipment System
-
-```gdscript
-class_name Equipment
-extends Node
-
-signal equipment_changed(slot: String, item: Item)
-
-enum Slot { HEAD, CHEST, HANDS, LEGS, FEET, WEAPON, OFFHAND, RING1, RING2, AMULET }
-
-var equipped: Dictionary = {}  # Slot -> Item
-
-func equip(item: Item) -> Item:
-    var slot: Slot = item.base.slot
-    var previous: Item = equipped.get(slot)
-    
-    # Unequip old item
-    if previous:
-        remove_item_stats(previous)
-    
-    # Equip new item
-    equipped[slot] = item
-    apply_item_stats(item)
-    equipment_changed.emit(Slot.keys()[slot], item)
-    
-    return previous  # Return to inventory
-
-func apply_item_stats(item: Item) -> void:
-    var stats := owner.stats as RPGStats
-    
-    # Base stats
-    for stat_name in item.base.base_stats:
-        stats.flat_modifiers[stat_name] = stats.flat_modifiers.get(stat_name, 0) + item.base.base_stats[stat_name]
-    
-    # Affix stats
-    for affix_data in item.affixes:
-        var affix := affix_data["affix"] as ItemAffix
-        var value := affix_data["value"]
-        if affix.is_percent:
-            stats.percent_modifiers[affix.stat] = stats.percent_modifiers.get(affix.stat, 0) + value
-        else:
-            stats.flat_modifiers[affix.stat] = stats.flat_modifiers.get(affix.stat, 0) + value
-    
-    stats.recalculate_stats()
-```
-
----
-
-## Ability System
-
-### Skill Trees and Unlocks
-
-```gdscript
-class_name SkillTree
-extends Resource
-
-@export var skills: Array[Skill]
-@export var connections: Dictionary  # skill_id -> Array[prerequisite_ids]
-
-func can_unlock(skill_id: String, unlocked_skills: Array[String]) -> bool:
-    if skill_id in unlocked_skills:
-        return false  # Already unlocked
-    
-    var prereqs: Array = connections.get(skill_id, [])
-    for prereq in prereqs:
-        if prereq not in unlocked_skills:
-            return false
-    return true
-
-func unlock_skill(skill_id: String, player: Node) -> bool:
-    var skill := get_skill(skill_id)
-    if not skill or player.stats.skill_points < skill.cost:
-        return false
-    
-    player.stats.skill_points -= skill.cost
-    player.unlocked_skills.append(skill_id)
-    player.ability_manager.add_ability(skill.ability)
-    return true
-```
-
-### Active Abilities
-
-```gdscript
-class_name ActiveAbility
-extends Resource
-
-@export var name: String
-@export var cooldown: float = 5.0
-@export var mana_cost: int = 20
-@export var damage_multiplier: float = 2.0
-@export var aoe_radius: float = 0.0
-@export var effect_scene: PackedScene
-
-var current_cooldown: float = 0.0
-
-func can_use(caster: Node) -> bool:
-    return current_cooldown <= 0 and caster.stats.current_mana >= mana_cost
-
-func use(caster: Node, target_position: Vector2) -> void:
-    if not can_use(caster):
-        return
-    
-    caster.stats.current_mana -= mana_cost
-    current_cooldown = cooldown
-    
-    var effect := effect_scene.instantiate()
-    effect.global_position = target_position
-    effect.damage = int(caster.stats.get_stat("physical_damage") * damage_multiplier)
-    effect.caster = caster
-    caster.get_tree().current_scene.add_child(effect)
-
-func update_cooldown(delta: float) -> void:
-    current_cooldown = max(0, current_cooldown - delta)
-```
-
----
-
-## Enemy Design
-
-### Scaling Difficulty
-
-```gdscript
-class_name EnemySpawner
-extends Node
-
-@export var base_enemy_scene: PackedScene
-@export var area_level: int = 1
-
-func spawn_enemy(position: Vector2) -> Node:
-    var enemy := base_enemy_scene.instantiate()
-    enemy.global_position = position
-    
-    # Scale stats with area level
-    var stats := enemy.stats as RPGStats
-    var level_mult := 1.0 + (area_level - 1) * 0.15
-    
-    stats.vitality = int(stats.vitality * level_mult)
-    stats.strength = int(stats.strength * level_mult)
-    stats.recalculate_stats()
-    
-    # Scale rewards
-    enemy.xp_reward = int(enemy.xp_reward * level_mult)
-    enemy.loot_table.item_level = area_level
-    
-    add_child(enemy)
-    return enemy
-```
-
----
-
-## Common Pitfalls
-
-| Pitfall | Solution |
-|---------|----------|
-| Stats feel meaningless | Ensure each point noticeably affects gameplay |
-| Loot feels same | Dramatic visual and mechanical differences between rarities |
-| Combat too simple | Combo systems, positioning matters, enemy variety |
-| Progression walls | Multiple viable paths, catch-up mechanics |
-| Inventory management tedium | Auto-sort, quick-sell, stash tabs |
-
----
-
-## Architecture Overview
-
-```
-AutoLoads:
-├── PlayerStats (godot-rpg-stats)
-├── InventoryManager (godot-inventory-system)
-├── QuestManager (godot-quest-system)
-├── LootGenerator (godot-economy-system)
-└── GameManager (godot-scene-management)
-
-Player:
-├── CharacterBody2D/3D
-├── RPGStats
-├── Equipment
-├── AbilityManager
-├── Hitbox/Hurtbox
-└── InputHandler
-
-Enemies:
-├── AI Controller (state machine)
-├── RPGStats (scaled)
-├── HealthComponent
-├── LootTable
-└── Hitbox/Hurtbox
-```
-
----
-
-## Godot-Specific Tips
-
-1. **Resources for items**: Use `Resource` for items - easily serializable for save/load
-2. **Object pooling**: Pool damage numbers, projectiles, item pickups
-3. **Animation callbacks**: Use AnimationPlayer method tracks to enable/disable hitboxes
-4. **Stat recalculation**: Only recalculate on equip/level, not every frame
-
----
-
-## Example Games for Reference
-
-- **Diablo / Path of Exile** - Loot-focused ARPG
-- **Elden Ring / Dark Souls** - Combat-focused action RPG
-- **Hades** - Roguelike ARPG hybrid
-- **Grim Dawn** - Deep character builds
-
+`godot-project-foundations` → `godot-characterbody-2d` → `godot-combat-system` → `godot-rpg-stats` → `godot-inventory-system` → `godot-ability-system` → `godot-quest-system` → `godot-economy-system` → `godot-save-load-systems` → `godot-monte-carlo-balancer`
+
+## Decision Trees (no class dumps)
+
+| Problem | Decision | Script / peer |
+|---------|----------|---------------|
+| Melee / projectile contact | Area hitbox frames in `_physics_process` | hitbox_component + duck_typed_hitbox |
+| Armor stacking feels broken | Diminishing returns, not linear % | stat_reduction_solver |
+| Damage numbers hitch | Pool labels | damage_label_manager |
+| Shared goblin HP mutates all | Deep duplicate Resources at instance | deep/entity_stat_duplicator |
+| Boss nested if/elif | Hierarchical FSM + telegraphs | hierarchical_state_base + telegraphed_enemy |
+| AoE costs too much | PhysicsServer queries / groups | aoe_physics_query / aoe_group_broadcaster |
+| Late-game bag parse hitch | WorkerThreadPool | threaded_inventory_loader |
+| AnimationTree flip flops | Explicit bool Advance Conditions | animation_condition_sync |
+| Full loot affix / bag UI | Do NOT re-teach here | godot-inventory-system |
+| Hotbar abilities / mana | Do NOT re-teach here | godot-ability-system |
+| Modifier stacks / curves | Do NOT re-teach here | godot-rpg-stats |
+
+### Architecture Overview (composition)
+Prefer Health/Hitbox child components (godot-composition) over `BaseEnemy` inheritance. UI observes signals; inventory Resources are truth — never the HUD tree.
+
+### Common Pitfalls (short)
+- Floaty combat → add hit recovery/stagger.
+- Identical loot → rarity beams + SFX (RenderingServer per-instance params OK).
+- Frame-rate combat → `_physics_process` only for hit resolve.
 
 ## Advanced ARPG Meta-Systems
 
-Expert implementation of high-end ARPG systems for endgame progression and visual polish.
+### 1. Paragon / Infinite Scaling Resource
+Keep post-cap power in a duplicated Resource; emit `emit_changed()` on level; never mutate the cached template.
 
-### 1. Paragon/Ascension System (Resource-Based Progression)
-For post-level-cap progression, utilize a custom `Resource`. This allows for encapsulated methods, signals for UI updates, and efficient serialization.
+### 2. Shader-Based Loot Beams
+Pass rarity color via `RenderingServer.instance_geometry_set_shader_parameter` on a shared shader — avoid material `duplicate()` storms.
 
-```gdscript
-class_name ParagonStats extends Resource
-
-@export var paragon_level: int = 0
-@export var bonus_strength: float = 0.0
-@export var bonus_vitality: float = 0.0
-
-const XP_REQUIREMENT_BASE: int = 10000
-var current_xp: int = 0
-
-func add_paragon_experience(amount: int) -> void:
-    current_xp += amount
-    var leveled_up: bool = false
-    
-    while current_xp >= _get_xp_requirement():
-        current_xp -= _get_xp_requirement()
-        paragon_level += 1
-        bonus_strength += 2.5
-        bonus_vitality += 1.5
-        leveled_up = true
-        
-    if leveled_up:
-        emit_changed() # Notify UI and combat systems
-
-func _get_xp_requirement() -> int:
-    return XP_REQUIREMENT_BASE * (paragon_level + 1)
-```
-
-**Architectural Tip**: When assigning a paragon template to a character, always use `duplicate(true)` to avoid modifying the globally cached resource instance.
-
-### 2. Shader-Based Loot Beams (Visual Cues)
-To handle massive loot drops without performance degradation, use the `RenderingServer` to pass rarity parameters to a shared shader without duplicating materials.
-
-*loot_beam.gdshader*
-```glsl
-shader_type spatial;
-render_mode unshaded, cull_disabled;
-
-uniform vec3 rarity_color = vec3(1.0, 1.0, 1.0);
-
-void fragment() {
-    ALBEDO = rarity_color;
-    EMISSION = rarity_color * 3.0; # High emission for glowing effect
-}
-```
-
-*loot_drop_manager.gd*
-```gdscript
-class_name LootDropManager extends Node
-
-# Update visual rarity without material duplication overhead
-func apply_rarity_visuals(mesh_instance: MeshInstance3D, color: Color) -> void:
-    if mesh_instance:
-        # Use low-level RenderingServer for high-performance per-instance parameters
-        RenderingServer.instance_geometry_set_shader_parameter(
-            mesh_instance.get_instance_id(), 
-            "rarity_color", 
-            color
-        )
-```
-
-### 3. Stat-Snapshot System (Combat Logging)
-Combat logs should capture isolated state snapshots in a `Dictionary` and be flushed to disk periodically to avoid I/O bottlenecks.
-
-```gdscript
-class_name CombatLogger extends Node
-
-const LOG_FILE_PATH: String = "user://combat_log.json"
-var _session_buffer: Array[Dictionary] = []
-
-func record_event(source: String, target: String, damage: int, is_crit: bool) -> void:
-    var snapshot: Dictionary = {
-        "timestamp": Time.get_unix_time_from_system(),
-        "source": source,
-        "target": target,
-        "damage": damage,
-        "is_crit": is_crit
-    }
-    _session_buffer.append(snapshot)
-    
-    # Periodic flush (e.g., every 100 entries) to prevent memory bloat
-    if _session_buffer.size() >= 100:
-        flush_to_disk()
-
-func flush_to_disk() -> void:
-    if _session_buffer.is_empty(): return
-    
-    var file := FileAccess.open(LOG_FILE_PATH, FileAccess.WRITE)
-    if file:
-        file.store_string(JSON.stringify(_session_buffer, "\t"))
-        file.close()
-        # Note: In a real scenario, you'd append to existing logs or rotate files
-```
-
-**Anti-Pattern**: NEVER write to `res://` at runtime. Always use `user://` for persistent logs, as `res://` is typically read-only in exported builds.
-
+### 3. Stat-Snapshot Combat Logging
+Buffer Dictionary snapshots; flush periodically to `user://` (never `res://`).
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+
+> **Progressive disclosure:** Skim Official Documentation only for the APIs you are implementing (Resources, Area/physics queries, signals/groups, AnimationTree, WorkerThreadPool, save). Open Related Skills when wiring combat, stats, inventory, abilities, or balance—do not preload the whole lattice.
+
+### Official Documentation
+- [Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html) — ARPG stats, loot affixes, leveling tables, and equipment templates belong in `Resource` assets so designers can author `.tres` data without rewriting combat code.
+- [Resource](https://docs.godotengine.org/en/stable/classes/class_resource.html) — Always `duplicate(true)` shared stat/loot templates at spawn so one goblin’s HP or inventory mutation cannot rewrite every instance’s `.tres`.
+- [GDScript exports](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_exports.html) — `@export` / typed Dictionaries drive Inspector-tuned damage, resistances, XP curves, and gear slots that balance without recompiling scripts.
+- [Using Area2D](https://docs.godotengine.org/en/stable/tutorials/physics/using_area_2d.html) — Hitbox/hurtbox overlap signals are the engine baseline for real-time melee and projectile contact detection.
+- [Ray-casting](https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html) — Direct space-state shape/ray queries power high-entity-count AoE and line checks without spawning a Node per blast.
+- [Idle and Physics Processing](https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html) — Resolve hitboxes, knockback, telegraphs, and chase ticks in `_physics_process` for fixed-delta combat determinism.
+- [Using signals](https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html) — Combat logs, XP grants, boss phases, and HUD damage floats should subscribe to signals instead of hard-referencing fighters.
+- [Groups](https://docs.godotengine.org/en/stable/tutorials/scripting/groups.html) — Faction aggro and AoE damage should `call_group` / `call_group_flags` rather than walking the SceneTree every frame.
+- [Scene organization](https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html) — Keep “signals up, calls down”: parents/UI observe combat; managers call into hitboxes and state nodes—never treat the HUD as inventory truth.
+- [Using AnimationTree](https://docs.godotengine.org/en/stable/tutorials/animation/animation_tree.html) — Sync attack/move Advance Conditions with explicit booleans (no `!` in expressions) so combo and stagger states stay reliable.
+- [WorkerThreadPool](https://docs.godotengine.org/en/stable/classes/class_workerthreadpool.html) — Parse large late-game inventories, loot rolls, and save blobs off the main thread so combat stays at 60 FPS.
+- [Saving games](https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html) — Persist level, gear, skill ranks, and cooldown end timestamps with the rest of progression—never write runtime logs to `res://`.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Autoloads, folder layout, and input/project settings must be solid before stacking combat, inventory, and save systems for an ARPG.
+- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — Player/enemy locomotion and `move_and_slide` are the movement substrate under hit recovery, chase, and attack wind-ups.
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Stats, affixes, and leveling curves are Resource-first; load this before inventing Node-heavy character sheets.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Combat buses, health_changed, and loot pickup events need clear signal ownership so UI/logs never own combat truth.
+
+#### Complements
+- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Damage pipelines, hit reactions, and targeting consume hitbox/hurtbox events this genre skill wires into builds and loot.
+- [godot-rpg-stats](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md) — Exponential damage curves, diminishing armor, and modifier stacks need a dedicated stats/modifier layer.
+- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — Equipment slots, rarity tiers, and affix rolls live in inventory data separate from the SceneTree HUD.
+- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — Cooldowns, mana costs, and skill-tree grants compose with combat hit resolve for hotbar ARPGs.
+- [godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md) — Prefer HealthComponent / HitboxComponent children over deep `BaseEnemy` inheritance for modular RPG units.
+- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — Boss telegraphs, stagger, and cast/channel states belong in hierarchical FSMs, not nested `if/elif` AI.
+
+#### Downstream / consumers
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — After damage curves, loot rarities, and ability costs are tunable, Monte Carlo loadout sims prove DPS/TTK bands before shipping.
+- [godot-quest-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-quest-system/SKILL.md) — Kill/collect/boss-phase objectives consume the same combat and inventory events this genre loop emits.
+- [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md) — Vendor pricing and sink/source loops sit on top of loot rarity and crafting once drops are stable.
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Character builds, gear, and skill ranks must round-trip through a durable save schema for long ARPG sessions.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.

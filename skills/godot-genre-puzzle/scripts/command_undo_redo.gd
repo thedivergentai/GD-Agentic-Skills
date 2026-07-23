@@ -54,3 +54,13 @@ func _emit_state() -> void:
 ## EXPERT USAGE:
 ## Define subclasses of Command (e.g. MoveCommand).
 ## Instantiate and pass to commit_command().
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_undoredo.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — emit can_undo/can_redo without UI owning history
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md — gate input while a command is replaying
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-puzzle/SKILL.md
+# =============================================================================

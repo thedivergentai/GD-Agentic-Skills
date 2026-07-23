@@ -27,3 +27,12 @@ func _exit_tree() -> void:
 		NavigationServer3D.free_rid(region_rid)
 	if map_rid.is_valid():
 		NavigationServer3D.free_rid(map_rid)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationservers.html
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationregions.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — RID maps bypass node overhead
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md
+# =============================================================================

@@ -70,3 +70,13 @@ func set_transition_frame(frame: int) -> void:
 ##     anim_sync.transition_to("idle" if velocity.x == 0 else "run")
 ## else:
 ##     anim_sync.transition_to("jump" if velocity.y < 0 else "fall")
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_animatedsprite2d.html
+# - https://docs.godotengine.org/en/stable/tutorials/2d/2d_sprite_animation.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md — gameplay intent vs presentation queue
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — finished/frame_changed wiring
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md
+# =============================================================================

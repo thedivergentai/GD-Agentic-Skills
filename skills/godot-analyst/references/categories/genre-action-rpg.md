@@ -22,3 +22,14 @@ The adrenaline of the vision. This rubric assesses the project's implementation 
 
 ## 🌟 Visionary's Final Decree
 An Action RPG is a dance of data and reaction. To reach **Elite** status, the combat must be 'Visceral'. Use **Method Tracks** in your animations to trigger damage at the exact frame of impact. If a player feels the lag between the button and the blow, you have **Slop** in the vision's soul.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_styleguide.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

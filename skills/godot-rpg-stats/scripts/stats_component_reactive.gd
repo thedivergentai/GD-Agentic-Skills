@@ -44,3 +44,14 @@ func apply_modifier(mod: StatusEffectData):
 func remove_modifier(mod: StatusEffectData):
 	modifiers.erase(mod)
 	stats_recalculated.emit()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+# - https://docs.godotengine.org/en/stable/classes/class_scenetree.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — stats_recalculated / hp_changed ownership
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — consumers of get_attribute at hit time
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md
+# =============================================================================

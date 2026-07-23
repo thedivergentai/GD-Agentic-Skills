@@ -64,3 +64,17 @@ func get_android_sdk_int() -> int:
 func setup_mobile_resolution_policy() -> void:
     get_tree().root.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
     get_tree().root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_EXPAND
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/handling_quit_requests.html
+# - https://docs.godotengine.org/en/stable/classes/class_displayserver.html
+# - https://docs.godotengine.org/en/stable/classes/class_input.html
+# - https://docs.godotengine.org/en/stable/tutorials/platform/android/javaclasswrapper_and_androidruntimeplugin.html
+# - https://docs.godotengine.org/en/stable/tutorials/rendering/multiple_resolutions.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — pause-lifecycle save ownership
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — touch emulation + sensor reads
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md — Android JNI / permission export gates
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md
+# =============================================================================

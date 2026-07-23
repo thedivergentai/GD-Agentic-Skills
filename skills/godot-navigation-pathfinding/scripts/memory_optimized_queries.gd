@@ -15,3 +15,12 @@ func get_path_optimized(start: Vector3, target: Vector3, map: RID) -> PackedVect
 	# Execute the query reusing the same result object.
 	NavigationServer3D.query_path(query_params, query_result)
 	return query_result.get_path()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationpathqueryobjects.html
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_optimizing_performance.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — reuse query objects under crowd load
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md
+# =============================================================================

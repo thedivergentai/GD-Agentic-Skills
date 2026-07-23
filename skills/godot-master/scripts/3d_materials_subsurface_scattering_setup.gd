@@ -19,3 +19,14 @@ func configure_organic_sss() -> void:
     mat.subsurf_scatter_transmittance_depth = 0.1
     
     material_override = mat
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_basematerial3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_standardmaterial3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/standard_material_3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md — Forward+ and light transmittance context
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md — custom SSS when BaseMaterial3D limits hit
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md
+# =============================================================================

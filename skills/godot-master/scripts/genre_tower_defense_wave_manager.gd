@@ -86,3 +86,15 @@ func _setup_debug_waves() -> void:
 ## EXPERT USAGE:
 ## Populate 'waves' with WaveGroup resources. Link 'spawn_points'.
 ## Connect to 'wave_completed' to show UI or grant gold.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+# - https://docs.godotengine.org/en/stable/classes/class_packedscene.html
+# - https://docs.godotengine.org/en/stable/classes/class_timer.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-game-loop-waves/SKILL.md — prepare/defend/reward around wave_started
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — WaveGroup data as Resources
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — wave_completed / all_waves_complete buses
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-tower-defense/SKILL.md
+# =============================================================================

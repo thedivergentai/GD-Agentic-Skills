@@ -19,3 +19,13 @@ func _is_at_bottom() -> bool:
 	var bar := get_v_scroll_bar()
 	# Check if the current scroll is near the bottom (max - page)
 	return scroll_vertical >= (bar.max_value - bar.page - 10)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_scrollcontainer.html
+# - https://docs.godotengine.org/en/stable/classes/class_scrollbar.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md — log/chat lines that grow scroll max
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — debug consoles using autoscroll
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md
+# =============================================================================

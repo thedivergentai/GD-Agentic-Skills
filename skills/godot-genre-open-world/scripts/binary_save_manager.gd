@@ -19,3 +19,14 @@ func load_world_state(path: String) -> Dictionary:
     var data = file.get_var(false)
     file.close()
     return data if data is Dictionary else {}
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/io/binary_serialization_api.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html
+# - https://docs.godotengine.org/en/stable/classes/class_fileaccess.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — delta world-state schemas and versioning
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-quest-system/SKILL.md — persist chunk-scoped quest/entity flags
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md
+# =============================================================================

@@ -33,3 +33,14 @@ func purchase() -> void:
 ## EXPERT USAGE:
 ## Create .tres files for each generator.
 ## Use get_cost() to check affordability, purchase() to increment.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_exports.html
+# - https://docs.godotengine.org/en/stable/classes/class_resource.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — generator .tres templates
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md — cost/revenue as economy Resources
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-idle-clicker/SKILL.md
+# =============================================================================

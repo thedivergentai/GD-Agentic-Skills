@@ -24,3 +24,14 @@ func spend_funds(currency_id: String, amount: int) -> bool:
 	
 	transaction_failed.emit("Insufficient funds")
 	return false
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/autoloads_versus_regular_nodes.html
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — Wallet Autoload ownership
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — balance_changed signal discipline
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md
+# =============================================================================

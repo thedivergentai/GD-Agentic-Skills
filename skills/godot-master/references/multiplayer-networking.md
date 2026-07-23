@@ -1,8 +1,7 @@
 ---
 name: godot-multiplayer-networking
-description: "Expert blueprint for multiplayer networking (Among Us, Brawlhalla, Terraria) using Godot's high-level API covering RPCs, state synchronization, authoritative servers, client prediction, and lobby systems. Use when building online multiplayer, LAN co-op, or networked games. Keywords multiplayer, RPC, ENetMultiplayerPeer, MultiplayerSynchronizer, authority, client prediction, rollback."
+description: "Expert multiplayer for desync, rollback, dedicated --headless servers, interest culling, and bandwidth spikes: ENet/WebRTC choice, authority, secure RPCs, client prediction/reconcile, and adaptive sync. Trigger on rubber-banding, cheat-able clients, peer floods, late join, or profiler Network spikes — not only greenfield online games. Keywords: multiplayer, RPC, ENetMultiplayerPeer, MultiplayerSynchronizer, authority, client prediction, rollback, interest management, headless, desync."
 ---
-
 ## Godot 4.7 Baseline
 
 - Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
@@ -11,40 +10,7 @@ description: "Expert blueprint for multiplayer networking (Among Us, Brawlhalla,
 
 # Multiplayer Networking
 
-Authoritative servers, client prediction, and state synchronization define robust multiplayer.
-
-### [net_enet_expert_config.gd](../scripts/multiplayer_networking_net_enet_expert_config.gd)
-Expert logic for tuning ENet channels, compression, and bandwidth thresholds.
-
-### [net_packet_bit_packer.gd](../scripts/multiplayer_networking_net_packet_bit_packer.gd)
-Professional manual serialization tools for bit-packing data into PackedByteArray.
-
-### [net_headless_server_auto_start.gd](../scripts/multiplayer_networking_net_headless_server_auto_start.gd)
-Logic for detecting dedicated server mode and parsing CLI arguments for headless launch.
-
-### [net_heartbeat_monitor.gd](../scripts/multiplayer_networking_net_heartbeat_monitor.gd)
-RTT (Round Trip Time) and Jitter monitoring system for high-fidelity lag tracking.
-
-### [net_lan_discovery.gd](../scripts/multiplayer_networking_net_lan_discovery.gd)
-UDP broadcasting system for local server discovery without master servers.
-
-### [net_adaptive_sync_throttle.gd](../scripts/multiplayer_networking_net_adaptive_sync_throttle.gd)
-Dynamic synchronization manager that adapts sync-rates to peer connection quality.
-
-### [net_anti_desync_reconciler.gd](../scripts/multiplayer_networking_net_anti_desync_reconciler.gd)
-Server-authoritative state validation and forced-correction logic.
-
-### [net_visibility_grid_culling.gd](../scripts/multiplayer_networking_net_visibility_grid_culling.gd)
-Interest Management system for optimizing bandwidth in large-scale worlds.
-
-### [net_packet_rate_limiter.gd](../scripts/multiplayer_networking_net_packet_rate_limiter.gd)
-Essential flood-protection and anti-spam manager for RPC security.
-
-### [net_custom_id_mapper.gd](../scripts/multiplayer_networking_net_custom_id_mapper.gd)
-Mapping utility for linking permanent UserIDs to volatile Network PeerIDs.
-
-### [net_rollback_helper.gd](../scripts/multiplayer_networking_net_rollback_helper.gd)
-Expert logic for state snapshots and re-simulation (GGR-style rollback).
+Server authority, prediction/reconcile, secure RPCs, and interest culling — not a high-level multiplayer tutorial.
 
 ## NEVER Do (Expert Networking Rules)
 
@@ -63,272 +29,101 @@ Expert logic for state snapshots and re-simulation (GGR-style rollback).
 - **NEVER expose PeerIDs to the end-user** — PeerIDs are internal. Always map them to persistent `UserIDs` (`net_custom_id_mapper.gd`) from a database.
 - **NEVER run a dedicated server with a GUI enabled** — Use `--headless` (`net_headless_server_auto_start.gd`) to save resources and ensure stability.
 
----
+## Decision Tree (transport / authority / sync Hz)
 
-**Authoritative Server Model:**
-- Server validates all game state
-- Clients send inputs, receive state
-- Prevents cheating
+| Question | Prefer | Script |
+|----------|--------|--------|
+| Desktop/console LAN or dedicated UDP | ENet | **MANDATORY** [net_enet_expert_config.gd](../scripts/multiplayer_networking_net_enet_expert_config.gd) |
+| Browser / NAT-hostile peers | WebRTC (or WebSocket fallback) | Official Docs + peer wrappers; still use secure RPC scripts |
+| Who owns gameplay truth? | Server-authoritative | **MANDATORY** [server_authoritative_controller.gd](../scripts/multiplayer_networking_server_authoritative_controller.gd) |
+| Dedicated host without GUI | `--headless` | **MANDATORY** [net_headless_server_auto_start.gd](../scripts/multiplayer_networking_net_headless_server_auto_start.gd) / [server_dedicated_host.gd](../scripts/multiplayer_networking_server_dedicated_host.gd) |
+| Position @ 10–20 Hz, not every frame | Adaptive throttle | **MANDATORY** [net_adaptive_sync_throttle.gd](../scripts/multiplayer_networking_net_adaptive_sync_throttle.gd) |
 
-**Peer-to-Peer:**
-- Direct player connections
-- Good for small player counts
-- No dedicated server needed
+> **Do NOT Load** lobby/RPC beginner recipes from memory — use the golden path below and open only matching scripts.
 
-## Basic Setup
+## Golden Path
 
-### Create Multiplayer Peer
+1. **Host / dedicated** → [server_dedicated_host.gd](../scripts/multiplayer_networking_server_dedicated_host.gd) + [net_headless_server_auto_start.gd](../scripts/multiplayer_networking_net_headless_server_auto_start.gd); clients → [client_network_setup.gd](../scripts/multiplayer_networking_client_network_setup.gd).
+2. **Secure RPC** → [secured_rpc_pattern.gd](../scripts/multiplayer_networking_secured_rpc_pattern.gd) + [net_packet_rate_limiter.gd](../scripts/multiplayer_networking_net_packet_rate_limiter.gd) + [secure_variable_synchronizer.gd](../scripts/multiplayer_networking_secure_variable_synchronizer.gd).
+3. **Prediction / reconcile** → [client_prediction_synchronizer.gd](../scripts/multiplayer_networking_client_prediction_synchronizer.gd) + [net_anti_desync_reconciler.gd](../scripts/multiplayer_networking_net_anti_desync_reconciler.gd); fighting/rollback → [net_rollback_helper.gd](../scripts/multiplayer_networking_net_rollback_helper.gd).
+4. **Interest culling** → [net_visibility_grid_culling.gd](../scripts/multiplayer_networking_net_visibility_grid_culling.gd) before broadcasting positions.
 
-```gdscript
-extends Node
+## Available Scripts
 
-var peer := ENetMultiplayerPeer.new()
+### Transport & host
+- [net_enet_expert_config.gd](../scripts/multiplayer_networking_net_enet_expert_config.gd) — channels, compression, bandwidth.
+- [net_headless_server_auto_start.gd](../scripts/multiplayer_networking_net_headless_server_auto_start.gd) — CLI/`--headless` detect.
+- [server_dedicated_host.gd](../scripts/multiplayer_networking_server_dedicated_host.gd) — dedicated host bootstrap.
+- [client_network_setup.gd](../scripts/multiplayer_networking_client_network_setup.gd) — client peer join.
+- [net_lan_discovery.gd](../scripts/multiplayer_networking_net_lan_discovery.gd) — UDP LAN discovery.
+- [network_error_handler.gd](../scripts/multiplayer_networking_network_error_handler.gd) — disconnect/error routing.
+- [packet_peer_latency_test.gd](../scripts/multiplayer_networking_packet_peer_latency_test.gd) — latency probes.
+- [net_heartbeat_monitor.gd](../scripts/multiplayer_networking_net_heartbeat_monitor.gd) — RTT/jitter.
 
-func host_game(port: int = 7777) -> void:
-    peer.create_server(port, 4)  # Max 4 players
-    multiplayer.multiplayer_peer = peer
-    print("Server started on port ", port)
+### Authority, RPC, sync
+- [server_authoritative_controller.gd](../scripts/multiplayer_networking_server_authoritative_controller.gd) — server validates actions.
+- [secured_rpc_pattern.gd](../scripts/multiplayer_networking_secured_rpc_pattern.gd) — safe RPC annotations/patterns.
+- [secure_variable_synchronizer.gd](../scripts/multiplayer_networking_secure_variable_synchronizer.gd) — server-owned vars.
+- [net_packet_rate_limiter.gd](../scripts/multiplayer_networking_net_packet_rate_limiter.gd) — flood protection.
+- [net_packet_bit_packer.gd](../scripts/multiplayer_networking_net_packet_bit_packer.gd) — compact payloads (no JSON on hot path).
+- [net_adaptive_sync_throttle.gd](../scripts/multiplayer_networking_net_adaptive_sync_throttle.gd) — Hz / change-threshold sync.
+- [game_state_sync_manager.gd](../scripts/multiplayer_networking_game_state_sync_manager.gd) — snapshot/state sync.
+- [multiplayer_spawner_manager.gd](../scripts/multiplayer_networking_multiplayer_spawner_manager.gd) — spawn authority.
+- [network_input_synchronizer.gd](../scripts/multiplayer_networking_network_input_synchronizer.gd) — input frames to server.
+- [networked_interpolator.gd](../scripts/multiplayer_networking_networked_interpolator.gd) — remote entity smoothing.
+- [net_custom_id_mapper.gd](../scripts/multiplayer_networking_net_custom_id_mapper.gd) — UserID ↔ PeerID.
 
-func join_game(ip: String, port: int = 7777) -> void:
-    peer.create_client(ip, port)
-    multiplayer.multiplayer_peer = peer
-    print("Connecting to ", ip)
-```
+### Desync / rollback / interest
+- [client_prediction_synchronizer.gd](../scripts/multiplayer_networking_client_prediction_synchronizer.gd) — predict + correct.
+- [net_anti_desync_reconciler.gd](../scripts/multiplayer_networking_net_anti_desync_reconciler.gd) — forced correction.
+- [net_rollback_helper.gd](../scripts/multiplayer_networking_net_rollback_helper.gd) — snapshot re-sim helper.
+- [net_visibility_grid_culling.gd](../scripts/multiplayer_networking_net_visibility_grid_culling.gd) — interest management.
 
-### Connection Signals
+## Expert Pointers
 
-```gdscript
-func _ready() -> void:
-    multiplayer.peer_connected.connect(_on_peer_connected)
-    multiplayer.peer_disconnected.connect(_on_peer_disconnected)
-    multiplayer.connected_to_server.connect(_on_connected)
-    multiplayer.connection_failed.connect(_on_connection_failed)
-
-func _on_peer_connected(id: int) -> void:
-    print("Player connected: ", id)
-
-func _on_peer_disconnected(id: int) -> void:
-    print("Player disconnected: ", id)
-
-func _on_connected() -> void:
-    print("Connected to server!")
-
-func _on_connection_failed() -> void:
-    print("Connection failed")
-```
-
-## Remote Procedure Calls (RPCs)
-
-### Basic RPC
-
-```gdscript
-extends CharacterBody2D
-
-# Called on all peers
-@rpc("any_peer", "call_local")
-func take_damage(amount: int) -> void:
-    health -= amount
-    if health <= 0:
-        die()
-
-# Usage: Call on specific peer
-take_damage.rpc_id(1, 50)  # Call on server (ID 1)
-take_damage.rpc(50)  # Call on all peers
-```
-
-### RPC Modes
-
-```gdscript
-# Only server can call, runs on all clients
-@rpc("authority", "call_remote")
-func server_spawn_enemy(pos: Vector2) -> void:
-    pass
-
-# Any peer can call, runs locally too
-@rpc("any_peer", "call_local")
-func player_chat(message: String) -> void:
-    pass
-
-# Reliable (TCP-like) vs Unreliable (UDP-like)
-@rpc("any_peer", "call_local", "reliable")
-func important_event() -> void:
-    pass
-
-@rpc("any_peer", "call_local", "unreliable")
-func position_update(pos: Vector2) -> void:
-    pass
-```
-
-## MultiplayerSpawner
-
-```gdscript
-# Add MultiplayerSpawner node
-# Set spawn path and scenes
-
-extends Node
-
-@onready var spawner := $MultiplayerSpawner
-
-func _ready() -> void:
-    spawner.spawn_function = spawn_player
-
-func spawn_player(data: Variant) -> Node:
-    var player := preload("res://player.tscn").instantiate()
-    player.name = str(data)  # Use peer ID as name
-    return player
-```
-
-## MultiplayerSynchronizer
-
-```gdscript
-# Add to synchronized node
-# Set properties to sync
-
-# Scene structure:
-# Player (CharacterBody2D)
-#   ├─ MultiplayerSynchronizer
-#   │    └─ Replication config:
-#   │         - position (sync)
-#   │         - velocity (sync)
-#   │         - health (sync)
-#   └─ Sprite2D
-```
-
-## Lobby System
-
-```gdscript
-# lobby_manager.gd (AutoLoad)
-extends Node
-
-signal player_joined(id: int, info: Dictionary)
-signal player_left(id: int)
-
-var players: Dictionary = {}
-
-func _ready() -> void:
-    multiplayer.peer_connected.connect(_on_peer_connected)
-    multiplayer.peer_disconnected.connect(_on_peer_disconnected)
-
-func _on_peer_connected(id: int) -> void:
-    # Request player info
-    request_player_info.rpc_id(id)
-
-func _on_peer_disconnected(id: int) -> void:
-    players.erase(id)
-    player_left.emit(id)
-
-@rpc("any_peer", "reliable")
-func request_player_info() -> void:
-    var sender_id := multiplayer.get_remote_sender_id()
-    receive_player_info.rpc_id(sender_id, {
-        "name": PlayerSettings.player_name,
-        "color": PlayerSettings.player_color
-    })
-
-@rpc("any_peer", "reliable")
-func receive_player_info(info: Dictionary) -> void:
-    var sender_id := multiplayer.get_remote_sender_id()
-    players[sender_id] = info
-    player_joined.emit(sender_id, info)
-```
-
-## State Synchronization
-
-```gdscript
-extends CharacterBody2D
-
-var puppet_position: Vector2
-var puppet_velocity: Vector2
-
-func _physics_process(delta: float) -> void:
-    if is_multiplayer_authority():
-        # Local player: process input
-        _handle_input(delta)
-        move_and_slide()
-        
-        # Send position to others
-        sync_position.rpc(global_position, velocity)
-    else:
-        # Remote player: interpolate
-        global_position = global_position.lerp(puppet_position, 10.0 * delta)
-
-@rpc("any_peer", "unreliable")
-func sync_position(pos: Vector2, vel: Vector2) -> void:
-    puppet_position = pos
-    puppet_velocity = vel
-```
-
-## Authority
-
-```gdscript
-# Check who owns this node
-func _ready() -> void:
-    # Set authority to owner peer
-    set_multiplayer_authority(peer_id)
-
-func _process(delta: float) -> void:
-    if not is_multiplayer_authority():
-        return  # Skip if not owner
-    
-    # Only authority processes this
-```
-
-## Best Practices
-
-### 1. Validate on Server
-
-```gdscript
-@rpc("any_peer", "call_local")
-func player_action(action: String) -> void:
-    if not multiplayer.is_server():
-        return  # Only server validates
-    
-    var sender := multiplayer.get_remote_sender_id()
-    if not _is_valid_action(sender, action):
-        return
-    
-    _apply_action.rpc(sender, action)
-```
-
-### 2. Use Unreliable for Frequent Updates
-
-```gdscript
-# Position: unreliable (frequent)
-@rpc("any_peer", "unreliable")
-func sync_position(pos: Vector2) -> void:
-    pass
-
-# Damage: reliable (important)
-@rpc("authority", "reliable")
-func apply_damage(amount: int) -> void:
-    pass
-```
-
-### 3. Interpolation for Smooth Movement
-
-```gdscript
-var target_position: Vector2
-
-func _process(delta: float) -> void:
-    if not is_multiplayer_authority():
-        position = position.lerp(target_position, 15.0 * delta)
-
-## Expert Networking Patterns
-
-### 1. Multiplayer Delta-Compression
-To minimize bandwidth, only send data that has changed.
-- **Native**: Use `MultiplayerSynchronizer` with `REPLICATION_MODE_ON_CHANGE`.
-- **Manual**: Store the `last_sent_state` and only broadcast an RPC if the current state differs by a significant threshold.
-
-### 2. Network Simulator UI
-Test your game's resilience by artificially degrading the network.
-- **Latency**: Buffer outgoing/incoming RPCs in an array and delay execution.
-- **Jitter**: Randomize the delay for each packet.
-- **Packet Loss**: Use `randf() < loss_rate` to discard packets before they are processed.
+- Position/movement: `UnreliableOrdered` + throttle — never reliable every frame.
+- Clients suggest; server validates and broadcasts results.
+- Large worlds: cull with visibility grid before adding more sync Hz.
 
 ## Reference
-- [Godot Docs: High-level Multiplayer](https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html)
 
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
 
-### Related
-- Master Skill: [godot-master](../SKILL.md)
+### Official Documentation
+- [High-level multiplayer](https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html) — RPC modes, authority, and peer lifecycle for host/join lobbies and server-validated actions.
+- [Networking](https://docs.godotengine.org/en/stable/tutorials/networking/index.html) — Transport map (ENet / WebSocket / WebRTC / HTTP) so peer choice matches platform and NAT constraints.
+- [MultiplayerAPI](https://docs.godotengine.org/en/stable/classes/class_multiplayerapi.html) — `multiplayer` singleton: peer IDs, connection signals, and `rpc` / `rpc_id` entry points.
+- [MultiplayerPeer](https://docs.godotengine.org/en/stable/classes/class_multiplayerpeer.html) — Transfer modes (reliable / unreliable / unordered) and connection status shared by every backend.
+- [ENetMultiplayerPeer](https://docs.godotengine.org/en/stable/classes/class_enetmultiplayerpeer.html) — UDP host/client peer used for LAN, dedicated servers, and most action games.
+- [SceneMultiplayer](https://docs.godotengine.org/en/stable/classes/class_scenemultiplayer.html) — Default MultiplayerAPI: root path, auth callbacks, and scene-tree RPC routing.
+- [MultiplayerSpawner](https://docs.godotengine.org/en/stable/classes/class_multiplayerspawner.html) — Spawn/despawn replication so late joiners share the same networked scene graph.
+- [MultiplayerSynchronizer](https://docs.godotengine.org/en/stable/classes/class_multiplayersynchronizer.html) — Property replication, on-change deltas, and visibility filters that replace ad-hoc position RPCs.
+- [Node](https://docs.godotengine.org/en/stable/classes/class_node.html) — `set_multiplayer_authority` / `is_multiplayer_authority` ownership rules for input vs shared state.
+- [PacketPeerUDP](https://docs.godotengine.org/en/stable/classes/class_packetpeerudp.html) — Raw UDP send/receive for LAN discovery broadcasts outside the high-level multiplayer peer.
+- [WebRTC](https://docs.godotengine.org/en/stable/tutorials/networking/webrtc.html) — Browser-friendly P2P path when ENet UDP cannot punch through firewalls alone.
+- [Command line tutorial](https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html) — `--headless` and CLI flags for dedicated-server launches and multi-instance tests.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Project layout, Autoloads, and export/feature flags that host/join and dedicated-server builds depend on.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed `@rpc` annotations, Callables, and PackedByteArray patterns used by secure RPCs and bit-packers.
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Split InputMap reads from simulation so clients send intents and the authority owns outcomes.
+
+#### Complements
+- [godot-adapt-single-to-multiplayer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md) — Migration shape (authority split, prediction shells) before applying this skill’s lobby/RPC/ENet toolkit.
+- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Session/lobby Autoloads that outlive scene changes during host/join and reconnect flows.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Local peer-connected / lobby events that stay decoupled from transport RPCs.
+- [godot-server-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-server-architecture/SKILL.md) — Headless host scaffolding and PhysicsServer/RID patterns used by authoritative simulation.
+- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — Dedicated-server export presets and CLI packaging for real multi-instance tests.
+- [godot-debugging-profiling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md) — RTT/jitter overlays and remote debug habits that catch sync bugs localhost never shows.
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Persist UserIDs, lobby prefs, and reconnect tokens without treating PeerIDs as durable identity.
+
+#### Downstream / consumers
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Cap replication Hz and interest culling when bandwidth/CPU budgets break under peer load.
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Retune economy/TTK after netcode changes alter effective weapon timings or ability windows.
+- [godot-genre-battle-royale](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-battle-royale/SKILL.md) — Large-peer interest management and late-join snapshots at BR scale.
+- [godot-genre-moba](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-moba/SKILL.md) — Fixed-tick authority, ability RPCs, and spectator-safe state sync for multiplayer arenas.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting networking concern.

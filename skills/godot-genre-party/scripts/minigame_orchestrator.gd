@@ -20,3 +20,13 @@ func end_game(winner_id: int) -> void:
 
 ## [SKILL NOTICE]: Use 'get_tree().change_scene_to_file()' to 
 ## ensure clean memory teardown between unrelated minigames.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/change_scenes_manually.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md — phase INTRO/PLAY/RESULTS transitions
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-turn-system/SKILL.md — return to board/meta after results
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-party/SKILL.md
+# =============================================================================

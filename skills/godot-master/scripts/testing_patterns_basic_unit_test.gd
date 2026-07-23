@@ -14,3 +14,13 @@ func test_player_damage():
 	player.take_damage(20)
 	assert_that(player.health).is_equal(80)
 	player.free()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/logic_preferences.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — typed asserts and pure-logic unit tests
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — where test scripts live in project layout
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-testing-patterns/SKILL.md
+# =============================================================================

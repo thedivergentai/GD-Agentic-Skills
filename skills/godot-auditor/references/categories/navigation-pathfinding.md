@@ -10,3 +10,13 @@
 - **NEVER call `get_path()` every frame** — Use `query_path()` with reused `NavigationPathQueryResult` objects to prevent massive heap allocation and GC pressure.
 - **NEVER leave 'enter_cost' at 0 for high-penalty areas** — Use costs to make AI prefer logical paths (roads over water) instead of just shortest geometric distance.
 - **NEVER ignore `agent_set_avoidance_callback`** — Always use the callback for safe velocity computation to avoid synchronization issues and "jittery" movement.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/performance/cpu_optimization.html
+- https://docs.godotengine.org/en/stable/tutorials/performance/using_multiple_threads.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

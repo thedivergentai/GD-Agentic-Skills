@@ -16,3 +16,13 @@ func get_best_target(targets: Array[Node3D]) -> Node3D:
 func is_room_clear(entities: Array[Node]) -> bool:
 	# 'all' returns true if the condition matches every element
 	return entities.all(func(e): return e.is_in_group("friendly"))
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_advanced.html
+# - https://docs.godotengine.org/en/stable/classes/class_array.html
+# - https://docs.godotengine.org/en/stable/classes/class_callable.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ai-navigation/SKILL.md — reduce/closest-target patterns in AI queries
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md
+# =============================================================================

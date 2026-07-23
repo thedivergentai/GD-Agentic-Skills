@@ -62,3 +62,13 @@ func _on_velocity_computed(safe_velocity: Vector2) -> void:
 ## EXPERT USAGE:
 ## Attach NavigationAgent2D CHILD. Assign it to 'nav_agent'.
 ## Connect 'velocity_computed' signal in inspector or _ready (done above).
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationagents.html
+# - https://docs.godotengine.org/en/stable/classes/class_navigationagent2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md — RVO agent movement contract
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md — Idle/Move/Attack unit states
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rts/SKILL.md
+# =============================================================================

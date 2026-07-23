@@ -32,3 +32,15 @@ func _execute_shake() -> void:
 	rotation = max_roll * shake * noise.get_noise_2d(noise.seed, noise_y)
 	offset.x = max_offset.x * shake * noise.get_noise_2d(noise.seed * 2, noise_y)
 	offset.y = max_offset.y * shake * noise.get_noise_2d(noise.seed * 3, noise_y)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_camera2d.html
+# - https://docs.godotengine.org/en/stable/classes/class_fastnoiselite.html
+# - https://docs.godotengine.org/en/stable/tutorials/math/interpolation.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — layer shake over follow via signals
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — trauma decay vs perceived impact
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — keep noise cheap vs per-frame rand spam
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md
+# =============================================================================

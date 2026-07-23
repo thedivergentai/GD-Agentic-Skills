@@ -22,3 +22,13 @@ func _on_area_entered(area: Area3D) -> void:
 func _apply_draft_boost(car: Node3D) -> void:
     if "velocity" in car:
         car.velocity *= boost_multiplier
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_area3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/using_transforms.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — draft volume Area3D masks
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — slipstream boost balance
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-racing/SKILL.md
+# =============================================================================

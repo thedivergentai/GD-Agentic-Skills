@@ -12,4 +12,15 @@ func process_offline_sim(total_ticks: int) -> void:
 
 func _simulate_single_tick(_tick_index: int) -> void:
     # Logic for individual tick simulation (e.g., compounding interest).
-    pass 
+    pass
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_workerthreadpool.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/using_multiple_threads.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/thread_safe_apis.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — background offline tick sims
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — publish results after wait_for_group_task
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-idle-clicker/SKILL.md
+# =============================================================================

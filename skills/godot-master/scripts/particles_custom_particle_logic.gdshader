@@ -24,3 +24,14 @@ void process() {
 	float wind = USERDATA1.x;
 	VELOCITY.x += wind * DELTA;
 }
+// =============================================================================
+// GDSkills research links (agents) — does not affect runtime
+// Official docs:
+// - https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/particle_shader.html
+// - https://docs.godotengine.org/en/stable/tutorials/3d/particles/process_material_properties.html
+// - https://docs.godotengine.org/en/stable/classes/class_gpuparticles3d.html
+// Related skills:
+// - ../godot-shaders-basics/SKILL.md — CUSTOM/USERDATA particle process shaders
+// - ../godot-performance-optimization/SKILL.md — GPU orbit/wind without per-particle CPU
+// Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md
+// =============================================================================

@@ -22,3 +22,14 @@ The macro-scale application framework. This rubric measures how the project orga
 
 ## 🌟 Visionary's Final Decree
 To reach **Elite** status, implement a 'System Registry' where components register themselves to the core upon ready. No system should 'hard-reference' another. You must aim for 'Averaging the Complexity'—no single file should bear the weight of the entire vision.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/autoloads_versus_regular_nodes.html
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition-apps/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

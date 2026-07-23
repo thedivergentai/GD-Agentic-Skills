@@ -45,3 +45,15 @@ func recover(amount: float) -> void:
 ## EXPERT USAGE:
 ## Add AudioEffectLowPassFilter to Master bus slot 0.
 ## Adjust decay logic based on light/proximity to monsters.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/audio/audio_buses.html
+# - https://docs.godotengine.org/en/stable/classes/class_audioserver.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/environment_and_post_processing.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md — LowPass/drive on Master under stress
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — shake intensity from sanity
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md — env/fog couples to fear level
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-horror/SKILL.md
+# =============================================================================

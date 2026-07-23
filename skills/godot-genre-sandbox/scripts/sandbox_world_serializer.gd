@@ -36,3 +36,15 @@ func load_world() -> void:
 
 ## [SKILL NOTICE]: Use 'scene_file_path' and 'str_to_var()' to cleanly 
 ## serialize complex 3D world states into lightweight JSON files.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html
+# - https://docs.godotengine.org/en/stable/classes/class_json.html
+# - https://docs.godotengine.org/en/stable/classes/class_fileaccess.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — schema/versioned world saves
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — Resource vs JSON tradeoffs for chunks
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-sandbox/SKILL.md
+# =============================================================================

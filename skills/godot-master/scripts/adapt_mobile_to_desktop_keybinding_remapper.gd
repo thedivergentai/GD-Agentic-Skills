@@ -42,3 +42,13 @@ func _load_keybindings() -> void:
             
             InputMap.action_erase_events(action)
             InputMap.action_add_event(action, event)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_inputmap.html
+# - https://docs.godotengine.org/en/stable/classes/class_configfile.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — action map foundations
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — persisting remaps with settings
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-mobile-to-desktop/SKILL.md
+# =============================================================================

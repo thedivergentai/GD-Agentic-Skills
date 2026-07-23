@@ -69,3 +69,16 @@ func start_wave_sequence(count: int, delay: float) -> void:
     for i in count:
         # spawn_enemy()
         await get_tree().create_timer(delay).timeout
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/performance/using_servers.html
+# - https://docs.godotengine.org/en/stable/classes/class_physicsserver3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_physicsshapequeryparameters3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_astargrid2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — PhysicsServer bullets and deferred corpse disable
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md — authoritative purchase RPC and unreliable sync
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md — grid/path validation before placement
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-tower-defense/SKILL.md
+# =============================================================================

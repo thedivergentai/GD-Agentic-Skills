@@ -22,3 +22,14 @@ The endurance of the vision. This rubric measures the project's logic for hunger
 
 ## 🌟 Visionary's Final Decree
 To reach **Elite** status, survival should be 'Systemic', not 'Scripted'. The world should be a hierarchy of threats that the systems manage autonomously. If you have to manually check `if hunger < 0` every frame, you have **Slop**. Visionaries use an **Effect Manager**.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_styleguide.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-survival/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

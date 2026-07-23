@@ -36,3 +36,14 @@ func _strip_expensive_features(mat: StandardMaterial3D) -> void:
     # If the material doesn't need to react to light dynamically, unshade it completely
     if mat.emission_enabled:
         mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/rendering/renderers.html
+# - https://docs.godotengine.org/en/stable/classes/class_standardmaterial3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/gpu_optimization.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md — which StandardMaterial3D flags to strip
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md — cheaper mobile shader substitutes
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md
+# =============================================================================

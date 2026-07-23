@@ -22,3 +22,14 @@ The proof of architectural existence. This rubric measures the project's commitm
 
 ## 🌟 Visionary's Final Decree
 If it is not tested, it does not exist. A project without a proof of logic is merely a prototype. To reach **Elite** status, you must achieve 'Test-Driven Architecture'—where the test is written before the dream is coded. This is the mark of a true Visionary.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/groups.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-testing-patterns/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

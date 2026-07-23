@@ -118,3 +118,14 @@ func _print_issues(issues: Array[Dictionary]) -> void:
 ## Run this before optimizing performance bottlenecks.
 ## CRITICAL: get_node() in _process() = 10-100x slower than cached @onready.
 ## String concatenation in loops = GC pressure, use %s formatting instead.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/performance/cpu_optimization.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/nodes_and_scene_instances.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — escalate analyzer hits to profiler
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — fix confirmed hot-path smells
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md
+# =============================================================================

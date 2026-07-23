@@ -95,3 +95,14 @@ func receive_state(server_pos: Vector2, last_input_id: int) -> void:
 func _get_input() -> Dictionary:
 	var dir = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 	return {"velocity": dir * speed}
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html
+# - https://docs.godotengine.org/en/stable/classes/class_node.html
+# - https://docs.godotengine.org/en/stable/classes/class_multiplayerapi.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — clients send intents, server applies
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-server-architecture/SKILL.md — authoritative simulation host
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md
+# =============================================================================

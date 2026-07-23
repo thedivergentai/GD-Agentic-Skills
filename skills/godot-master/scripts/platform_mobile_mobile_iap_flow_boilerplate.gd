@@ -23,3 +23,15 @@ func purchase_product(product_id: String) -> void:
 		_payment.purchase({"product_id": product_id})
 
 ## Expert: Always perform server-side receipt validation for production games.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/platform/android/android_in_app_purchases.html
+# - https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_android.html
+# - https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_ios.html
+# - https://docs.godotengine.org/en/stable/tutorials/platform/ios/index.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md — product catalogs + receipt validation ownership
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md — store billing plugin / capability wiring
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md
+# =============================================================================

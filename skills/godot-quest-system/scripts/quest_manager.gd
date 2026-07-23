@@ -64,3 +64,15 @@ func _distribute_rewards(rewards: Array) -> void:
 ## Use signals to update UI waypoints dynamically when 'objective_updated' is emitted.
 ## NEVER hardcode quest logic inside enemy scripts. Use the 'Signal Bus' pattern: 
 ## enemy.died.connect(QuestManager._on_enemy_died).
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html
+# - https://docs.godotengine.org/en/stable/classes/class_stringname.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — DAG progress via signals, not actor scripts
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — serialize IDs/progress dicts, not Resource instances
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md — delegate reward.grant to economy/inventory
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-quest-system/SKILL.md
+# =============================================================================

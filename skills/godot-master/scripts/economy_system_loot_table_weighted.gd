@@ -32,3 +32,14 @@ class LootItem extends Resource:
 ## EXPERT NOTE:
 ## Storing loot tables as Resources allows designers to swap tables 
 ## (e.g., 'Normal Chest' vs 'Boss Chest') in the inspector without code changes.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/math/random_number_generation.html
+# - https://docs.godotengine.org/en/stable/classes/class_randomnumbergenerator.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — simulate weighted drop careers
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — loot tables as swappable Resources
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md
+# =============================================================================

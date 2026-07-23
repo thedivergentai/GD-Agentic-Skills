@@ -41,3 +41,13 @@ func place_item(item_id: String, item_size: Vector2i, pos: Vector2i) -> void:
 ## For 'inventory-system', ALWAYS decouple the 'InventoryResource' (Data) 
 ## from the 'InventoryPanel' (UI). The UI should only listen to signals 
 ## (e.g., 'item_placed', 'item_removed') and update its visual grid accordingly.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+# - https://docs.godotengine.org/en/stable/classes/class_resource.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — Dictionary[Vector2i] footprint maps
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — typed Vector2i keys and placement math
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md
+# =============================================================================

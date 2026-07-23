@@ -21,3 +21,13 @@ func can_see_target(target: Node2D) -> bool:
     
     # Visible if the ray hit nothing (clear path) or hit the target directly.
     return result.is_empty() or result.collider == target
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html
+# - https://docs.godotengine.org/en/stable/classes/class_physicsdirectspacestate2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md — nodeless LOS query recipes
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rts/SKILL.md — fog vision patterns
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-moba/SKILL.md
+# =============================================================================

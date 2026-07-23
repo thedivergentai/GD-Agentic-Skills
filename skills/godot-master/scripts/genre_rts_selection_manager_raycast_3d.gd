@@ -19,3 +19,13 @@ func select_unit_at_mouse(camera: Camera3D, mouse_pos: Vector2) -> Object:
     # Pattern: Direct server lookup is faster than Area3D detection for mass units.
     var result := space_state.intersect_ray(query)
     return result.get("collider") if not result.is_empty() else null
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html
+# - https://docs.godotengine.org/en/stable/classes/class_physicsdirectspacestate3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md — PhysicsServer direct picks under load
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — mouse position to camera ray
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rts/SKILL.md
+# =============================================================================

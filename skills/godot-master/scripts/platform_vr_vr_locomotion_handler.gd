@@ -26,4 +26,34 @@ func _show_vignette(visible: bool) -> void:
 	if comfort_vignette:
 		comfort_vignette.visible = visible
 
-## Rule: Always provide 'Snap Turn' as a default for VR comfort.
+## Accessibility teleport: move XROrigin3D to a validated floor hit.
+## Failure modes to handle in callers:
+## - Guardian clip: reject targets outside XRServer play-area bounds (see vr_safety_guardian_warner.gd).
+## - Focus pause: never teleport while get_tree().paused / headset focus lost (see vr_headset_focus_guard.gd).
+func teleport_to(target_global: Vector3) -> bool:
+	if get_tree().paused:
+		return false
+	if player_origin == null:
+		return false
+	var bounds := XRServer.get_reference_frame_bounds_2d()
+	if bounds.size != Vector2.ZERO:
+		var local := player_origin.to_local(target_global)
+		if not bounds.has_point(Vector2(local.x, local.z)):
+			return false
+	_show_vignette(true)
+	player_origin.global_position = target_global
+	await get_tree().create_timer(0.05).timeout
+	_show_vignette(false)
+	return true
+
+## Rule: Always provide 'Snap Turn' + teleport as VR comfort defaults.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/xr/basic_xr_locomotion.html
+# - https://docs.godotengine.org/en/stable/classes/class_xrorigin3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — rotate origin around headset/camera Y
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md — comfort vignette overlays during turns
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-vr/SKILL.md
+# =============================================================================

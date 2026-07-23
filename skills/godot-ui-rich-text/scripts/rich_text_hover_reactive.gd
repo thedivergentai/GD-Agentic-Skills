@@ -22,3 +22,14 @@ func _on_hover_in(_meta: Variant) -> void:
 
 func _on_hover_out(_meta: Variant) -> void:
 	DisplayServer.cursor_set_shape(DisplayServer.CURSOR_ARROW)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_richtextlabel.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/custom_mouse_cursor.html
+# - https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — cursor/SFX on meta hover without focus fights
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — hover started/ended as thin UI signals
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md
+# =============================================================================

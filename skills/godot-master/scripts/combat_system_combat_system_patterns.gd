@@ -5,7 +5,10 @@ extends Node
 # EXPERT NOTE: Safely test if a target can receive damage without needing to know its exact class.
 func _on_hitbox_impact(target: Node) -> void:
     if target.has_method(&"take_damage"):
-        target.call(&"take_damage", 50)
+        var data := DamageData.new()
+        data.amount = 50.0
+        data.damage_types = DamageData.DamageType.PHYSICAL
+        target.call(&"take_damage", data)
 
 # 2. Safe Type Casting
 # EXPERT NOTE: Use the 'as' keyword. If the cast fails, it securely returns null instead of crashing.
@@ -31,7 +34,7 @@ func _log_damage(_src: String, _amt: int) -> void: pass
 
 # 5. Exporting Enum Bit Flags
 # EXPERT NOTE: Allow designers to set multiple elemental damage types seamlessly in the Inspector.
-@export_flags("Fire", "Ice", "Poison", "Electric") var damage_types: int = 0
+@export_flags("Physical", "Fire", "Ice", "Lightning", "Poison") var damage_types: int = 1  # DamageData.DamageType.PHYSICAL
 
 # 6. Interruptible Hitstun Tweens
 # EXPERT NOTE: Cache tweens to allow consecutive hits to safely override and restart animations.
@@ -70,3 +73,16 @@ func disable_hitbox(collider: CollisionShape2D) -> void:
 # EXPERT NOTE: Override process modes for strict combat determinism (syncing with physics).
 func setup_combat_animator(mixer: AnimationMixer) -> void:
     mixer.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_PHYSICS
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_physicsshapequeryparameters3d.html — nodeless AoE intersect_shape
+# - https://docs.godotengine.org/en/stable/classes/class_tween.html — kill/recreate hitstun VFX tweens
+# - https://docs.godotengine.org/en/stable/classes/class_collisionshape2d.html — set_deferred disabled on hitboxes
+# - https://docs.godotengine.org/en/stable/classes/class_animationmixer.html — ANIMATION_CALLBACK_MODE_PROCESS_PHYSICS
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md — space queries + deferred collision toggles
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — bind/unbind combat log Callables
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md — physics-synced attack callbacks
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md
+# =============================================================================

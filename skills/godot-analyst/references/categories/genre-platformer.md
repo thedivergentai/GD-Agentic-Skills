@@ -22,3 +22,14 @@ The geometry of the vision. This rubric measures the project's precision in jump
 
 ## 🌟 Visionary's Final Decree
 To reach **Elite** status, movement must be 'Invisible'. The player shouldn't think about the 'Jump'; they should think about the 'Destination'. Use **Coyote Time** and **Jump Buffering** as the invisible hands that help the player succeed. Complexity should support the feel, never obstruct it.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_styleguide.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

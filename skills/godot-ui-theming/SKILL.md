@@ -45,6 +45,9 @@ Fixing the "disappearing stylebox" bug by caching resources at the class level f
 ### [rtl_theme_mirroring.gd](scripts/rtl_theme_mirroring.gd)
 Bi-directional (RTL/LTR) UI support. Swaps theme variants dynamically based on layout direction.
 
+### [focus_prompt_icon_swapper.gd](scripts/focus_prompt_icon_swapper.gd)
+Controller/keyboard prompt icon bank swap + focus highlight panel. **MANDATORY** for accessibility prompt chrome.
+
 ## NEVER Do in UI Theming
 
 - **NEVER create StyleBox in `_ready()` for many nodes** — Instantiating `StyleBoxFlat.new()` 100 times creates 100 unique objects. Use a Theme resource for shared heritage.
@@ -57,14 +60,7 @@ Bi-directional (RTL/LTR) UI support. Swaps theme variants dynamically based on l
 - **NEVER use `expand_margin_*` to increase clickable area** — It only expands the VISUAL bounds. Use `content_margin_*` on the StyleBox or adjust the Control's size to ensure input works [5].
 - **NEVER define StyleBoxes as local variables inside `_draw()`** — They will be garbage collected before the RenderingServer can finish drawing them [7]. Store at class level.
 - **NEVER duplicate scenes/themes just to change one color** — Use `theme_type_variation` to create lightweight derived styles (e.g. "DangerButton") within the same Theme [8].
-- **NEVER skip `corner_radius_all` shortcut** — It's a useful shorthand for uniform rounding in `StyleBoxFlat`.
-
----
-
-1. Project Settings → **GUI → Theme**
-2. Create new Theme resource
-3. Assign to root Control node
-4. All children inherit theme
+- **NEVER confuse Theme items with Control overrides** — `add_theme_*_override` beats Theme resource items on that node only; a child Control with its own `theme` still blocks parent cascade. Clear with `remove_theme_*_override` when swapping roots — do not leave stale overrides fighting the new Theme.
 
 ## Godot 4.7: UI Theming
 
@@ -72,31 +68,19 @@ Bi-directional (RTL/LTR) UI support. Swaps theme variants dynamically based on l
 - `ResourceImporterDynamicFont.hinting` default changed to **3** — verify font crispness on target DPI.
 - **GradientTexture2D** supports **conic** gradients.
 
-## StyleBox Pattern
+## Decision Tree — Theme Ownership
 
-```gdscript
-# Create StyleBoxFlat for buttons
-var style := StyleBoxFlat.new()
-style.bg_color = Color.DARK_BLUE
-style.corner_radius_top_left = 5
-style.corner_radius_top_right = 5
-style.corner_radius_bottom_left = 5
-style.corner_radius_bottom_right = 5
+| Goal | Choose | Notes / script |
+|------|--------|----------------|
+| App-wide look | Project Settings → **GUI → Theme** | Author in Theme editor — no per-node StyleBox tutorials here |
+| One Control differs | `add_theme_*_override` on that node | Local only; never for global styles |
+| Button/panel subtype | `theme_type_variation` | See [danger_button_assignment.gd](scripts/danger_button_assignment.gd) |
+| Runtime color tweak without mutating shared Theme | `stylebox.duplicate()` then override | See [dynamic_stylebox_color.gd](scripts/dynamic_stylebox_color.gd) |
 
-# Apply to button
-$Button.add_theme_stylebox_override("normal", style)
-```
-
-## Font Loading
-
-```gdscript
-# Load custom font
-var font := load("res://fonts/my_font.ttf")
-$Label.add_theme_font_override("font", font)
-$Label.add_theme_font_size_override("font_size", 24)
-```
+Fonts & StyleBoxes: edit via **Theme editor** / Project Theme. Runtime helpers: [global_theme_manager.gd](scripts/global_theme_manager.gd), [theme_swapper.gd](scripts/theme_swapper.gd), [procedural_theme_safe.gd](scripts/procedural_theme_safe.gd).
 
 ## Expert Theming Patterns
+
 
 ### 1. Shared-Color-Palette (The Static Pattern)
 Maintain a single source of truth for UI colors accessible to both the Theme Editor and GDScript.
@@ -109,33 +93,39 @@ Avoid duplicating button scenes or styleboxes for variants like "Danger" or "Gho
 - **Inheritance**: The variation inherits all properties from the base type. You only override what's different (e.g., set `font_color` to red for `DangerButton`).
 - **Usage**: Assign via code `node.theme_type_variation = &"DangerButton"` or via the Inspector dropdown.
 
-### 3. Runtime-Theme-Swapping (Accessibility)
+> **MANDATORY**: Read [danger_button_assignment.gd](scripts/danger_button_assignment.gd) — do not fork Button scenes for color variants.
+
+### 3. Runtime StyleBox Color (duplicate first)
+When a single Control needs a runtime tint, **duplicate** the StyleBox before mutating — shared Theme StyleBoxes must stay immutable.
+
+> **MANDATORY**: Read [dynamic_stylebox_color.gd](scripts/dynamic_stylebox_color.gd) — never mutate a Theme StyleBox in place.
+
+### 4. Runtime-Theme-Swapping (Accessibility)
 Efficiently switch the visual style of the entire game for Light, Dark, or High-Contrast modes.
 - **Cascading Updates**: Assign a new `Theme` resource to the **root** Control node. Godot propagates this to every descendant.
 - **Accessibility**: Use `NOTIFICATION_THEME_CHANGED` to update elements that don't support automatic theming (like custom `_draw()` logic or RichText effects).
 - **High-Contrast**: Ensure High-Contrast themes use pure black/white and thicker focus outlines for low-vision accessibility.
 
-### 4. Themed-Asset-Loading (Seasonal Variants)
+> **MANDATORY**: Read [theme_swapper.gd](scripts/theme_swapper.gd) — swap at the theme root; do not walk every Control assigning themes.
+
+### 5. RTL / LTR Theme Mirroring
+Bi-directional layouts need mirrored StyleBox / type-variation banks when direction flips — not hand-flipped anchors alone.
+
+> **MANDATORY**: Read [rtl_theme_mirroring.gd](scripts/rtl_theme_mirroring.gd) — swap theme variants from layout direction; do not hardcode LTR margins.
+
+### 6. Themed-Asset-Loading (Seasonal Variants)
 Godot Themes support more than just colors and fonts—they can store textures.
 - **Setup**: Define UI icons as **Icon** items within separate Theme resources (e.g., `halloween.theme`, `christmas.theme`).
 - **Swapping**: Swapping the root theme resource instantly cascades the new icon textures across all buttons and panels without manual logic.
 
-### 5. UI-Focus-Manager (Dynamic Controller Icons)
-Standard focus styles are static. For professional UX, swap controller icons based on the connected device.
-- **Detection**: Use `Input.get_joy_name(device)` to identify the controller (e.g., "PS4 Controller", "Xbox One Controller").
-- **Implementation**:
-    ```gdscript
-    func _on_joy_connection_changed(device: int, connected: bool):
-        if connected:
-            var joy_name = Input.get_joy_name(device).to_lower()
-            if "xbox" in joy_name:
-                _set_prompt_icons("res://ui/icons/xbox/")
-            elif "playstation" in joy_name or "ps" in joy_name:
-                _set_prompt_icons("res://ui/icons/ps/")
-    ```
-- **Interpolation**: When a node gains focus, use a `Tween` to move a dedicated "Highlight Panel" to the node's `get_global_rect()`.
+### 7. UI-Focus-Manager (Dynamic Controller Icons)
+Standard focus styles are static. For accessibility UX, swap prompt icons by device and tween a highlight panel to `get_global_rect()`.
 
-### 6. Asset-Dependency-Audit (Draw-Call Reduction)
+> **MANDATORY**: Read [focus_prompt_icon_swapper.gd](scripts/focus_prompt_icon_swapper.gd) — do not paste joypad icon paths into Control scripts.
+
+Pairs with Runtime-Theme-Swapping (Accessibility) above and [theme_swapper.gd](scripts/theme_swapper.gd) for High-Contrast roots.
+
+### 8. Asset-Dependency-Audit (Draw-Call Reduction)
 Ensuring UI textures are optimized for rendering performance.
 - **Atlas Packing**: Use `AtlasTexture` to crop small UI elements from a singular large sheet. This reduces VRAM state changes and minimizes draw calls [14].
 - **Compression Policy**:
@@ -144,8 +134,45 @@ Ensuring UI textures are optimized for rendering performance.
 - **Audit**: Use `ResourceLoader.get_dependencies(scene_path)` to ensure no uncompressed raw assets (e.g. `.png`) are leaking into the final export [19].
 
 ## Reference
-- [Godot Docs: GUI Theming](https://docs.godotengine.org/en/stable/tutorials/ui/gui_skinning.html)
 
+> Progressive disclosure: open Official Documentation links only when researching a specific API;
+> load Related Skills when routing work to a peer domain — do not preload the whole lattice.
 
-### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+### Official Documentation
+- [GUI skinning](https://docs.godotengine.org/en/stable/tutorials/ui/gui_skinning.html) — Theme resources, StyleBoxes, and cascading skin ownership.
+- [Using the theme editor](https://docs.godotengine.org/en/stable/tutorials/ui/gui_using_theme_editor.html) — Authoring Theme assets without hand-editing every Control override.
+- [Theme type variations](https://docs.godotengine.org/en/stable/tutorials/ui/gui_theme_type_variations.html) — Variants for button/panel subtypes without duplicating whole themes.
+- [Using fonts](https://docs.godotengine.org/en/stable/tutorials/ui/gui_using_fonts.html) — DynamicFont / font size theming for UI readability.
+- [Custom GUI controls](https://docs.godotengine.org/en/stable/tutorials/ui/custom_gui_controls.html) — When themed `_draw()` needs theme item lookups.
+- [Size and anchors](https://docs.godotengine.org/en/stable/tutorials/ui/size_and_anchors.html) — Layout that survives theme scale and DPI changes.
+- [Theme](https://docs.godotengine.org/en/stable/classes/class_theme.html) — Runtime get/set for colors, constants, icons, StyleBoxes.
+- [ThemeDB](https://docs.godotengine.org/en/stable/classes/class_themedb.html) — Project default theme and fallback resolution.
+- [Control](https://docs.godotengine.org/en/stable/classes/class_control.html) — Theme overrides and NOTIFICATION_THEME_CHANGED.
+- [StyleBox](https://docs.godotengine.org/en/stable/classes/class_stylebox.html) — Panel/button chrome used by most Theme skins.
+- [AtlasTexture](https://docs.godotengine.org/en/stable/classes/class_atlastexture.html) — Pack UI icons to cut draw-call churn.
+- [Input](https://docs.godotengine.org/en/stable/classes/class_input.html) — Custom cursors and joypad-driven prompt icon swaps.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Project layout and default Control/Theme placement before skin systems.
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Theme/StyleBox/icon banks as Resources instead of path-string sprawl.
+- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Containers must be correct before theme polish hides layout bugs.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Theme swap and accessibility mode changes should signal up, not poll.
+
+#### Complements
+- [godot-ui-rich-text](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md) — BBCode/fonts that must stay coherent with Theme typefaces.
+- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Focus highlight panels and seasonal theme transitions.
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Controller-aware prompt icons and focus navigation.
+- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Theme managers as Autoloads with clear ownership.
+- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — Atlas/compression policies that affect shipped UI VRAM.
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Draw-call and atlas packing for dense HUD skins.
+
+#### Downstream / consumers
+- [godot-theme-easter](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-theme-easter/SKILL.md) — Seasonal overlays that swap Theme/icon banks on top of this skill.
+- [godot-composition-apps](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition-apps/SKILL.md) — App UIs that live or die on Theme consistency.
+- [godot-genre-visual-novel](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-visual-novel/SKILL.md) — Dialogue chrome heavily Theme-driven.
+- [godot-platform-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md) — Touch-scale and high-contrast theme variants.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for UI theming.

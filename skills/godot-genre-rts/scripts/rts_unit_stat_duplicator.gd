@@ -16,3 +16,11 @@ func _ready() -> void:
 func modify_stat(stat_name: StringName, amount: float) -> void:
     if active_stats and stat_name in active_stats:
         active_stats.set(stat_name, active_stats.get(stat_name) + amount)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — Resource duplicate(true) isolation
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rts/SKILL.md
+# =============================================================================

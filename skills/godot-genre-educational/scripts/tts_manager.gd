@@ -12,3 +12,14 @@ func speak_question(text: String):
 
 func stop_speech():
 	DisplayServer.tts_stop()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/audio/text_to_speech.html
+# - https://docs.godotengine.org/en/stable/classes/class_displayserver.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — consent toggle + accessibility input
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md — speak visible prompt text
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — OS TTS availability assumptions
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-educational/SKILL.md
+# =============================================================================

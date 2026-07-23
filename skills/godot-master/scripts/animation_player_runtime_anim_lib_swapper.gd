@@ -19,3 +19,14 @@ func load_stance_library(lib_path: String, stance_name: String) -> void:
 	# Play from the specific library
 	# Format: "lib_name/anim_name"
 	play(stance_name + "/idle")
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_animationlibrary.html
+# - https://docs.godotengine.org/en/stable/classes/class_animationplayer.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — shared library .tres ownership
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — weapon/stance library swaps mid-fight
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md
+# =============================================================================

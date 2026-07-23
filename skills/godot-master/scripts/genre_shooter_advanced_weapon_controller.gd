@@ -107,3 +107,14 @@ func _fire() -> void:
 ## EXPERT USAGE:
 ## Call trigger_down()/target_up() from Input. 
 ## Bind 'current_recoil' to a CameraGL/SpringArm offset script for visual shake.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html
+# - https://docs.godotengine.org/en/stable/classes/class_physicsrayqueryparameters3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_camera3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — damage pipeline after hitscan/projectile fire
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — recoil kick applied to camera, not model only
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md
+# =============================================================================

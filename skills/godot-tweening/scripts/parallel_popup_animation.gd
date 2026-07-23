@@ -20,3 +20,14 @@ func show_popup():
 
 func _on_show_complete():
 	print("Popup fully visible")
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_tween.html
+# - https://docs.godotengine.org/en/stable/classes/class_callbacktweener.html
+# - https://docs.godotengine.org/en/stable/tutorials/ui/size_and_anchors.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — pivot_offset and layout before scale popups
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md — theme-aligned popup motion
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md
+# =============================================================================

@@ -15,3 +15,13 @@ static func calculate_spread(forward: Vector3, spread_degrees: float) -> Vector3
     spread_basis = spread_basis.rotated(Vector3.RIGHT, dev_y)
     
     return spread_basis * forward
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/using_transforms.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md - bloom vs accuracy win-rate bands
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md - spread direction into damage queries
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md
+# =============================================================================

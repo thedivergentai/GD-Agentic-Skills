@@ -11,387 +11,91 @@ description: "Expert blueprint for inventory systems (Diablo, Resident Evil, Min
 
 # Inventory System
 
-Slot management, stacking logic, and resource-based items define robust inventory systems.
+Resource-first slots, stacking, weight, equipment, and loot — **scripts are source of truth** (no duplicated Inventory/Equipment/Crafting dumps in this body).
 
-## Available Scripts
+## Scenario triggers (which script?)
 
-### [inventory_item_resource.gd](scripts/inventory_item_resource.gd)
-Base Resource for all inventory items, allowing for serialized `.tres` item databases.
+| Scenario | Open |
+|---|---|
+| **Slot bag** (WoW-style stacks) | [inventory_data_resource.gd](scripts/inventory_data_resource.gd) + [item_slot_data.gd](scripts/item_slot_data.gd) + [inventory_ui_controller.gd](scripts/inventory_ui_controller.gd) |
+| **Tetris grid** (Diablo/RE footprint) | [grid_inventory_logic.gd](scripts/grid_inventory_logic.gd) / [inventory_grid.gd](scripts/inventory_grid.gd) |
+| **Equipment** | Item Resources + RPG stats complement; drag via [drag_and_drop_slot.gd](scripts/drag_and_drop_slot.gd) |
+| **Loot table** | [loot_table_resource.gd](scripts/loot_table_resource.gd) + [item_pickup_node.gd](scripts/item_pickup_node.gd) |
+| **Persist** | [inventory_persistence.gd](scripts/inventory_persistence.gd) (ids + amounts, not nested Resources) |
+| **Consumables** | [consumable_item_logic.gd](scripts/consumable_item_logic.gd) |
+| **DB lookup** | [item_database_loader.gd](scripts/item_database_loader.gd) |
 
-### [item_slot_data.gd](scripts/item_slot_data.gd)
-Reactive data structure for a single inventory slot, broadcasting changes to the UI.
+## MANDATORY reads
 
-### [inventory_data_resource.gd](scripts/inventory_data_resource.gd)
-Centralized Resource for managing inventory arrays, stacking logic, and empty slot finding.
-
-### [inventory_ui_controller.gd](scripts/inventory_ui_controller.gd)
-Grid-based UI controller that maps `InventoryData` to visual slots using the "Reactive UI" pattern.
-
-### [drag_and_drop_slot.gd](scripts/drag_and_drop_slot.gd)
-Native Godot drag-and-drop implementation for moving and swapping inventory items.
-
-### [item_database_loader.gd](scripts/item_database_loader.gd)
-Global registry pattern to efficiently load and lookup items by unique ID strings.
-
-### [inventory_persistence.gd](scripts/inventory_persistence.gd)
-Expert logic for serializing and deserializing complex inventory structures to disk.
-
-### [consumable_item_logic.gd](scripts/consumable_item_logic.gd)
-Extension pattern for implementing specific item behaviors (Potions, Food) via inheritance.
-
-### [loot_table_resource.gd](scripts/loot_table_resource.gd)
-Data-driven loot distribution definition for random drops and chest contents.
-
-### [item_pickup_node.gd](scripts/item_pickup_node.gd)
-World-space bridge for converting physical 2D/3D pickups into inventory data.
+1. [inventory_item_resource.gd](scripts/inventory_item_resource.gd) — item blueprint  
+2. [inventory_data_resource.gd](scripts/inventory_data_resource.gd) — two-pass stack + weight validation  
+3. [inventory_ui_controller.gd](scripts/inventory_ui_controller.gd) — reactive UI that **reuses** slot controls  
 
 ## NEVER Do in Inventory Systems
 
-- **NEVER use Nodes for items** — `Item extends Node` leads to massive SceneTree bloat and memory leaks. Always use `Item extends Resource` for lightweight data [20].
-- **NEVER attempt to add items without checking stack limits** — Adding to an inventory without pre-scanning for existing stacks causes item duplication or loss [21].
-- **NEVER allow the UI to modify the Inventory Data directly** — If UI code clears a slot without notifying the data model, you'll get desyncs and ghost items [22].
-- **NEVER use `float` for item quantities** — Floating point errors (e.g. 0.9999 instead of 1) will break your "equal to zero" checks. Stick to `int` for counts [23].
-- **NEVER add items before validating weight or volume capacity** — Moving validation check *after* adding the item makes it impossible to prevent over-encumbrance [24].
-- **NEVER emit signals for every single item inside a batch operation** — Adding 50 items = 50 UI updates. Emit a single `inventory_updated` signal after the loop completes [25].
-- **NEVER hardcode item references in scripts** — Use a String ID and a central `ItemDatabase` to look up resources. This is CRITICAL for save system compatibility.
-- **NEVER ignore `is_instance_valid()` when accessing item icons** — If a slot's item is null, trying to access `.icon` will crash the UI.
-- **NEVER use complex Array logic in the UI** — The UI should only "reflect" the data. All sorting, stacking, and filtering logic belongs in the `InventoryData` resource.
-- **NEVER create new `Resource` instances inside a `_process()` loop** — Pre-instantiate your inventory slots or reuse existing ones to prevent allocation spikes.
+- **NEVER use Nodes for items** — `Item extends Resource`.
+- **NEVER add without stack/weight pre-checks** — validate capacity first.
+- **NEVER let UI mutate inventory arrays silently** — data owns mutations; UI listens.
+- **NEVER use `float` for quantities** — `int` stacks.
+- **NEVER emit per-item signals in a batch** — one `inventory_updated` after the loop.
+- **NEVER hardcode item references** — String/StringName ids + database.
+- **NEVER `queue_free` + recreate all slots every refresh** — reuse slot widgets (see UI controller).
+- **NEVER allocate new Resources inside `_process`**.
 
----
+## Decision trees
 
-## Core Architecture
+### Add item
+1. Weight/volume OK?  
+2. Pass 1: fill partial stacks  
+3. Pass 2: empty slots / grid footprint  
+4. Return overflow count; single UI signal  
 
-```gdscript
-# item.gd (Resource)
-class_name Item
-extends Resource
+### UI
+- Bind once to `inventory_updated`  
+- Update existing slot nodes; create only when slot count grows  
 
-@export var id: String
-@export var display_name: String
-@export var icon: Texture2D
-@export var max_stack: int = 1
-@export var weight: float = 0.0
-@export_multiline var description: String
-```
-
-## Inventory Manager
-
-```gdscript
-# inventory.gd
-class_name Inventory
-extends Resource
-
-signal item_added(item: Item, amount: int)
-signal item_removed(item: Item, amount: int)
-signal inventory_changed
-
-@export var slots: Array[InventorySlot] = []
-@export var max_slots: int = 20
-@export var max_weight: float = 100.0
-
-func _init() -> void:
-    slots.resize(max_slots)
-    for i in max_slots:
-        slots[i] = InventorySlot.new()
-
-func add_item(item: Item, amount: int = 1) -> bool:
-    var remaining := amount
-    
-    # Try stacking first
-    if item.max_stack > 1:
-        for slot in slots:
-            if slot.item == item and slot.amount < item.max_stack:
-                var space := item.max_stack - slot.amount
-                var to_add := mini(space, remaining)
-                slot.amount += to_add
-                remaining -= to_add
-                
-                if remaining <= 0:
-                    item_added.emit(item, amount)
-                    inventory_changed.emit()
-                    return true
-    
-    # Add to empty slots
-    while remaining > 0:
-        var empty_slot := find_empty_slot()
-        if empty_slot == null:
-            return false  # Inventory full
-        
-        var to_add := mini(item.max_stack, remaining)
-        empty_slot.item = item
-        empty_slot.amount = to_add
-        remaining -= to_add
-    
-    item_added.emit(item, amount)
-    inventory_changed.emit()
-    return true
-
-func remove_item(item: Item, amount: int = 1) -> bool:
-    var remaining := amount
-    
-    for slot in slots:
-        if slot.item == item:
-            var to_remove := mini(slot.amount, remaining)
-            slot.amount -= to_remove
-            remaining -= to_remove
-            
-            if slot.amount <= 0:
-                slot.clear()
-            
-            if remaining <= 0:
-                item_removed.emit(item, amount)
-                inventory_changed.emit()
-                return true
-    
-    return false  # Not enough items
-
-func has_item(item: Item, amount: int = 1) -> bool:
-    var count := 0
-    for slot in slots:
-        if slot.item == item:
-            count += slot.amount
-    return count >= amount
-
-func find_empty_slot() -> InventorySlot:
-    for slot in slots:
-        if slot.is_empty():
-            return slot
-    return null
-
-func get_total_weight() -> float:
-    var total := 0.0
-    for slot in slots:
-        if slot.item:
-            total += slot.item.weight * slot.amount
-    return total
-```
-
-## Inventory Slot
-
-```gdscript
-# inventory_slot.gd
-class_name InventorySlot
-extends Resource
-
-signal slot_changed
-
-var item: Item = null
-var amount: int = 0
-
-func is_empty() -> bool:
-    return item == null
-
-func clear() -> void:
-    item = null
-    amount = 0
-    slot_changed.emit()
-```
-
-## Equipment System
-
-```gdscript
-# equipment.gd
-class_name Equipment
-extends Resource
-
-signal equipment_changed(slot: String, item: Item)
-
-@export var weapon: Item = null
-@export var armor: Item = null
-@export var accessory: Item = null
-
-func equip(slot: String, item: Item) -> Item:
-    var old_item: Item = null
-    
-    match slot:
-        "weapon":
-            old_item = weapon
-            weapon = item
-        "armor":
-            old_item = armor
-            armor = item
-        "accessory":
-            old_item = accessory
-            accessory = item
-    
-    equipment_changed.emit(slot, item)
-    return old_item
-
-func unequip(slot: String) -> Item:
-    return equip(slot, null)
-
-func get_total_stats() -> Dictionary:
-    var stats := {
-        "attack": 0,
-        "defense": 0,
-        "speed": 0
-    }
-    
-    for item in [weapon, armor, accessory]:
-        if item and item.has("stats"):
-            for key in item.stats:
-                stats[key] += item.stats[key]
-    
-    return stats
-```
-
-## UI Integration
-
-```gdscript
-# inventory_ui.gd
-extends Control
-
-@onready var grid := $GridContainer
-var inventory: Inventory
-
-func _ready() -> void:
-    inventory.inventory_changed.connect(refresh_ui)
-    refresh_ui()
-
-func refresh_ui() -> void:
-    # Clear existing
-    for child in grid.get_children():
-        child.queue_free()
-    
-    # Create slot UI
-    for slot in inventory.slots:
-        var slot_ui := InventorySlotUI.new()
-        slot_ui.setup(slot)
-        grid.add_child(slot_ui)
-```
-
-## Crafting Integration
-
-```gdscript
-# crafting_recipe.gd
-class_name CraftingRecipe
-extends Resource
-
-@export var result: Item
-@export var result_amount: int = 1
-@export var requirements: Array[CraftingRequirement]
-
-func can_craft(inventory: Inventory) -> bool:
-    for req in requirements:
-        if not inventory.has_item(req.item, req.amount):
-            return false
-    return true
-
-func craft(inventory: Inventory) -> bool:
-    if not can_craft(inventory):
-        return false
-    
-    # Remove ingredients
-    for req in requirements:
-        inventory.remove_item(req.item, req.amount)
-    
-    # Add result
-    inventory.add_item(result, result_amount)
-    return true
-```
-
-## Save/Load
-
-```gdscript
-func save_inventory() -> Dictionary:
-    return {
-        "slots": slots.map(func(s): return s.to_dict())
-    }
-
-func load_inventory(data: Dictionary) -> void:
-    for i in data.slots.size():
-        slots[i].from_dict(data.slots[i])
-    inventory_changed.emit()
-```
-
-## Best Practices
-
-1. **Use Resources** - Items as Resources, not class instances
-2. **Signal-Driven UI** - Emit signals, let UI listen
-3. **Stack Logic** - Always check `max_stack` first
-4. **Weight Limits** - Validate before adding
-
----
-
-## Elite Godot 4.x Patterns
-
-### 1. Refined Partial Stacking & Overflow Logic
-Decouple data from UI using `Resource` arrays. Use a two-pass approach: fill existing partial stacks first, then seek empty slots for overflow.
-
-```gdscript
-# inventory_data.gd
-func add_item(item: Item, amount: int) -> int:
-    var remaining := amount
-    # Pass 1: Fill partial stacks
-    for slot in slots:
-        if slot.item == item and slot.amount < item.max_stack:
-            var space := item.max_stack - slot.amount
-            var to_add := mini(remaining, space)
-            slot.amount += to_add
-            remaining -= to_add
-            if remaining == 0: break
-            
-    # Pass 2: Fill empty slots
-    if remaining > 0:
-        for slot in slots:
-            if slot.is_empty():
-                var to_add := mini(remaining, item.max_stack)
-                slot.item = item
-                slot.amount = to_add
-                remaining -= to_add
-                if remaining == 0: break
-    
-    inventory_changed.emit()
-    return remaining # Returns overflow
-```
-
-### 2. Spatial Grid Inventory (Tetris-Style)
-Use a `Dictionary` keyed by `Vector2i` for O(1) coordinate lookups. Items occupy multiple cells defined by a footprint.
-
-```gdscript
-# grid_inventory.gd
-class_name GridInventory extends Resource
-
-var _grid: Dictionary[Vector2i, Item] = {}
-
-func can_place(item: Item, pos: Vector2i) -> bool:
-    for offset in item.grid_footprint:
-        var check_pos := pos + offset
-        if _grid.has(check_pos) or is_out_of_bounds(check_pos):
-            return false
-    return true
-
-func place_item(item: Item, pos: Vector2i) -> void:
-    if can_place(item, pos):
-        for offset in item.grid_footprint:
-            _grid[pos + offset] = item
-        emit_changed()
-```
-
-### 3. Safe Resource Serialization (JSON Mapping)
-Avoid bloating save files with recursive Resource data. Save only the `resource_path` and use `ResourceLoader.load()` at runtime to restore references to static item blueprints.
-
-```gdscript
-# inventory_serializer.gd
-func save_inventory(slots: Array[InventorySlot]) -> void:
-    var data := []
-    for slot in slots:
-        if not slot.is_empty():
-            data.append({
-                "path": slot.item.resource_path,
-                "amount": slot.amount
-            })
-    var file := FileAccess.open("user://inv.json", FileAccess.WRITE)
-    file.store_string(JSON.stringify(data))
-
-func load_inventory() -> void:
-    # ... read JSON string ...
-    for entry in data:
-        var slot := InventorySlot.new()
-        slot.item = ResourceLoader.load(entry.path) # Efficiently loads cached reference
-        slot.amount = entry.amount
-```
+### Save
+- Serialize `item_id` / `resource_path` + `amount` only — [inventory_persistence.gd](scripts/inventory_persistence.gd)
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
+
+### Official Documentation
+- [Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html) — Items, slots, and inventories should be `Resource` data (not Nodes) so stacks stay lightweight and shareable as `.tres` databases.
+- [Resource](https://docs.godotengine.org/en/stable/classes/class_resource.html) — Use `duplicate(true)` for runtime stack/slot instances so mutating quantity never corrupts the shared item blueprint.
+- [GDScript exports](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_exports.html) — `@export` / `@export_group` power Inspector-authored ids, icons, `max_stack`, weight, and loot weights on item Resources.
+- [Using signals](https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html) — Emit `inventory_changed` / slot signals so UI reflects data; never let slot widgets mutate arrays silently.
+- [Scene organization](https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html) — Keep “signals up, calls down”: UI listens; inventory Resources/managers own add/remove/stack logic.
+- [GUI containers](https://docs.godotengine.org/en/stable/tutorials/ui/gui_containers.html) — `GridContainer` / container sizing is the baseline for slot grids before custom Tetris footprints.
+- [Control](https://docs.godotengine.org/en/stable/classes/class_control.html) — Native `_get_drag_data` / `_can_drop_data` / `_drop_data` and `set_drag_preview` implement inventory drag-swap without a custom input stack.
+- [Custom GUI controls](https://docs.godotengine.org/en/stable/tutorials/ui/custom_gui_controls.html) — Pattern for building slot `Control`s that draw icons/counts and participate in drag-and-drop.
+- [Saving games](https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html) — Persist slot ids + amounts (not full recursive Resources) with the rest of player save data.
+- [ResourceLoader](https://docs.godotengine.org/en/stable/classes/class_resourceloader.html) — Resolve item blueprints by `resource_path` / id at load time instead of embedding textures in every save blob.
+- [JSON](https://docs.godotengine.org/en/stable/classes/class_json.html) — Compact inventory dictionaries (`path`/`id` + `amount`) for `FileAccess` save files without bloating nested Resource graphs.
+- [Random number generation](https://docs.godotengine.org/en/stable/tutorials/math/random_number_generation.html) — Weighted loot rolls and chest contents need seeded RNG patterns, not ad-hoc `randf()` sprinkled in UI code.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Inventory is Resource-first (items, slots, loot tables); learn composition/serialization patterns before inventing Node-based item trees.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Batch-safe `inventory_updated` / slot signals keep reactive UI in sync without per-item spam or ghost connections.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed Resources, Array/Dictionary slot maps, and int stack math assume solid GDScript patterns.
+- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Slot grids, equipment panels, and responsive inventory windows build on container layout before drag-drop polish.
+
+#### Complements
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Inventory persistence must round-trip through the project save schema (ids + counts, migration-safe).
+- [godot-rpg-stats](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md) — Equipment bonuses, encumbrance, and consumable effects need a consistent stats/modifier layer.
+- [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md) — Shops, buy/sell, and rarity-weighted loot tables consume the same item Resources and stack rules.
+- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — Consumable scrolls, skill books, and gear that grants abilities bridge inventory grants into AbilityManager registration.
+- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Weapons/armor equipped from inventory feed damage and hit pipelines; keep DamageData separate from item metadata.
+- [godot-ui-theming](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md) — Rarity colors, slot styles, and drag previews should live in Theme resources, not hardcoded slot scripts.
+
+#### Downstream / consumers
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — After stack sizes, weights, drop rates, and shop prices are data-driven, Monte Carlo sims prove economy/loot bands before shipping curves.
+- [godot-genre-action-rpg](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md) — Action-RPG bags, equipment screens, and loot loops assemble this skill with combat, stats, and quests.
+- [godot-genre-survival](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-survival/SKILL.md) — Weight limits, consumables, and scarce loot are core survival inventory constraints.
+- [godot-quest-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-quest-system/SKILL.md) — Fetch/collect quests query `has_item` and grant rewards through the same inventory add/remove APIs.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.

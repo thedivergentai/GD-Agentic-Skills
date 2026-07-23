@@ -25,3 +25,12 @@ func _get_rank(body: Node) -> int:
 
 ## [SKILL NOTICE]: Use 'distance_squared_to' for sorting. 
 ## It avoids expensive square root math, crucial for MOBA loops.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — aggro/target ranking
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — priority weight tuning
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-moba/SKILL.md
+# =============================================================================

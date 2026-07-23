@@ -27,3 +27,14 @@ func pop_state() -> void:
 ## Returns the current seed string (useful for sharing).
 func get_seed_string() -> String:
 	return str(rng.seed)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_randomnumbergenerator.html
+# - https://docs.godotengine.org/en/stable/tutorials/math/random_number_generation.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — persist seed + RNG state with player deltas
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md — shareable run seeds and undoable roll steps
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md
+# =============================================================================

@@ -65,3 +65,16 @@ func populate_choices(container: Control, choices: Array[StringName], callback: 
 func toggle_ui_visibility(canvas: CanvasLayer, is_visible: bool) -> void:
     var tween := create_tween()
     tween.tween_property(canvas, "modulate:a", 1.0 if is_visible else 0.0, 0.5)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html
+# - https://docs.godotengine.org/en/stable/classes/class_tween.html
+# - https://docs.godotengine.org/en/stable/tutorials/i18n/internationalizing_games.html
+# - https://docs.godotengine.org/en/stable/classes/class_configfile.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md — custom RichTextEffect / BBCode
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md — typewriter visible_ratio tweens
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md — romance UI chrome consistency
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-romance/SKILL.md
+# =============================================================================

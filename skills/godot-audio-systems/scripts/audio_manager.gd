@@ -36,3 +36,16 @@ func _find_available_player() -> AudioStreamPlayer:
 ## - NEVER play positional 3D audio on a node that dies.
 ## - Use 'AudioStreamPlayer3D' but parent it to the world root, 
 ##   setting its 'global_position' manually.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/audio/audio_buses.html
+# - https://docs.godotengine.org/en/stable/tutorials/audio/audio_streams.html
+# - https://docs.godotengine.org/en/stable/classes/class_audiostreamplayer.html
+# - https://docs.godotengine.org/en/stable/classes/class_audioserver.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — singleton AudioManager pattern
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md — music crossfade helpers
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md — keep manager across scene changes
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md
+# =============================================================================

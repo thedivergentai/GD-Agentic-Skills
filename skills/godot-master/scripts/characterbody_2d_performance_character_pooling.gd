@@ -14,3 +14,14 @@ func _on_screen_entered():
 
 func _on_screen_exited():
 	set_physics_process(false)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html
+# - https://docs.godotengine.org/en/stable/classes/class_characterbody2d.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/troubleshooting_physics_issues.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — pool vs spawn CharacterBodies
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md — deferred free and instance reuse
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md
+# =============================================================================

@@ -21,3 +21,14 @@ func force_sync_method_tracks() -> void:
 	# ensuring SFX or logic triggers don't wait for the next engine tick.
 	anim_player.play("attack")
 	anim_player.advance(0)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_animationplayer.html
+# - https://docs.godotengine.org/en/stable/classes/class_animatedsprite2d.html
+# - https://docs.godotengine.org/en/stable/tutorials/animation/introduction.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md — advance(0) pose flush with play()
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md — flip_h + anim change on facing swaps
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md
+# =============================================================================

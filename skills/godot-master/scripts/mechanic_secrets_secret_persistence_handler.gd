@@ -32,3 +32,15 @@ static func is_secret_unlocked(secret_id: String) -> bool:
 static func clear_all_secrets() -> void:
 	var config = ConfigFile.new()
 	config.save(SAVE_PATH) # Overwrite with empty
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_configfile.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/data_paths.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — user://secrets.cfg vs game saves
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — static helper vs Autoload service
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-mechanic-secrets/SKILL.md
+# =============================================================================

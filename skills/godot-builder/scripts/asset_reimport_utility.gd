@@ -47,3 +47,16 @@ func _force_lossless(path: String) -> bool:
 
 ## [SKILL NOTICE]: reimport_files() safely blocks the script while 
 ## pumping the main loop to prevent Windows "Not Responding" freezes.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_editorfilesystem.html
+# - https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/import_process.html
+# - https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_images.html
+# - https://docs.godotengine.org/en/stable/classes/class_configfile.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md — enforce lossless/ASTC before shipping
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — batch reimport vs ad-hoc editor clicks
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-builder/SKILL.md
+# =============================================================================

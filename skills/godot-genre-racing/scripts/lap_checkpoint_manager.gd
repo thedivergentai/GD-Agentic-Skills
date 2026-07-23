@@ -23,3 +23,13 @@ func _on_checkpoint_passed(id: int) -> void:
 
 ## [SKILL NOTICE]: Use 'Sequence-ID' validation (1 -> 2 -> 3) rather 
 ## than just distance to prevent players from bypassing the track.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_area3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — sequential gate validation events
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — best-lap persistence hooks
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-racing/SKILL.md
+# =============================================================================

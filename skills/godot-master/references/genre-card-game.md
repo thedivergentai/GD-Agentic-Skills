@@ -22,9 +22,8 @@ Expert blueprint for digital card games with data-driven design and juicy UI.
 
 ### UX & Animation
 - NEVER skip **Z-Index management** during drag-and-drop; strictly raise the card to the front on click to prevent it sliding under other cards.
-- NEVER allow instant card "teleportation" between piles; strictly use **Tween animations** (0.2s+) to give cards a tactile, physical feel.
-- NEVER use `global_position` for cards in hand; strictly position them using a **`Curve2D`** (Bezier) layout with **`sample_baked()`** for smooth, non-circular arcs.
-- NEVER allow instant card "teleportation" between piles; strictly use **`create_tween()`** and **`tween_property`** chainings (0.2s+) for juicy card-feel.
+- NEVER allow instant card "teleportation" between piles; strictly use **`create_tween()`** / **`tween_property`** chains (0.2s+) for pile moves.
+- NEVER use `global_position` for cards in hand; strictly position them using a **`Curve2D`** layout with **`sample_baked()`** for smooth arcs.
 
 ### Deck & State Management
 - NEVER forget to handle **Empty Deck** scenarios; strictly implement auto-reshuffle of the discard pile to prevent soft-locks.
@@ -37,11 +36,17 @@ Expert blueprint for digital card games with data-driven design and juicy UI.
 
 ## 🛠 Expert Components (scripts/)
 
+> **MANDATORY reads** before implementing the matching system:
+> 1. [card_effect_resolution.gd](../scripts/genre_card_game_card_effect_resolution.gd) — LIFO effect stack (`push_back` / `pop_back`)
+> 2. [card_tween_manager.gd](../scripts/genre_card_game_card_tween_manager.gd) — interruptible pile/hand Tweens (no teleports)
+> 3. [card_data_resource.gd](../scripts/genre_card_game_card_data_resource.gd) — Inspector-safe Resource card definitions
+
 ### Original Expert Patterns
-- [card_effect_resolution.gd](../scripts/genre_card_game_card_effect_resolution.gd) - Stack-based effect resolver (LIFO/FIFO) handling nested triggers and counter-play.
+- [card_effect_resolution.gd](../scripts/genre_card_game_card_effect_resolution.gd) - LIFO stack resolver for nested triggers and counter-play.
 
 ### Modular Components
 - [card_data_resource.gd](../scripts/genre_card_game_card_data_resource.gd) - Data-driven card definitions allowing Inspector-based design.
+- [card_data.gd](../scripts/genre_card_game_card_data.gd) - Lightweight CardData Resource stub used by validators/tests.
 - [deck_shuffle_bag.gd](../scripts/genre_card_game_deck_shuffle_bag.gd) - Secure randomization patterns for uniform card distribution.
 - [turn_state_machine.gd](../scripts/genre_card_game_turn_state_machine.gd) - Managing rigid phases (Draw, Play, Combat) via state matching.
 - [card_drag_drop.gd](../scripts/genre_card_game_card_drag_drop.gd) - Implementation of native `_get_drag_data()` for Control nodes.
@@ -55,217 +60,90 @@ Expert blueprint for digital card games with data-driven design and juicy UI.
 ---
 
 ## Core Loop
-1.  **Draw**: Player draws cards from a deck into their hand.
-2.  **Evaluate**: Player assesses board state, mana/energy, and card options.
-3.  **Play**: Player plays cards to trigger effects (damage, buff, summon).
-4.  **Resolve**: Effects occur immediately or go onto a stack.
-5.  **Discard/End**: Unused cards are discarded (roguelike) or kept (TCG), turn ends.
+1. **Draw** → 2. **Evaluate** → 3. **Play** → 4. **Resolve (LIFO stack)** → 5. **Discard/End**
+
+## Decision Trees
+
+### Effect stack
+| Need | Action |
+|------|--------|
+| Nested reactions / counters | **MANDATORY** [card_effect_resolution.gd](../scripts/genre_card_game_card_effect_resolution.gd) — **LIFO only** (`pop_back`) |
+| FIFO sequential animations only | Rare; keep a separate queue — do **not** reuse the reaction stack |
+
+### Hand & board
+| Need | Action |
+|------|--------|
+| Arc hand layout | `Curve2D.sample_baked` + [card_tween_manager.gd](../scripts/genre_card_game_card_tween_manager.gd) |
+| Drag targeting | [card_drag_drop.gd](../scripts/genre_card_game_card_drag_drop.gd) |
+| Dense boards (100+ icons) | `_draw()` / [board_state_dictionary.gd](../scripts/genre_card_game_board_state_dictionary.gd) — not Control-per-token |
+
+### Data
+| Need | Action |
+|------|--------|
+| Card definitions | **MANDATORY** [card_data_resource.gd](../scripts/genre_card_game_card_data_resource.gd) (parameterless `_init`) |
+| Deck RNG | [deck_shuffle_bag.gd](../scripts/genre_card_game_deck_shuffle_bag.gd) |
+| Turn phases | [turn_state_machine.gd](../scripts/genre_card_game_turn_state_machine.gd) |
 
 ## Skill Chain
 
 | Phase | Skills | Purpose |
 |-------|--------|---------|
-| 1. Data | `resources`, `custom-resources` | Defining Card properties (Cost, Type, Effect) |
-| 2. UI | `control-nodes`, `layout-containers` | Hand layout, card positioning, tooltips |
-| 3. Input | `drag-and-drop`, `state-machines` | Dragging cards to targets, hovering |
-| 4. Logic | `command-pattern`, `signals` | Executing card effects, turn phases |
-| 5. Polish | `godot-tweening`, `shaders` | Draw animations, holographic foils |
-
-## Architecture Overview
-
-### 1. Card Data (Resource-based)
-Godot Resources are perfect for card data.
-
-```gdscript
-# card_data.gd
-extends Resource
-class_name CardData
-
-enum Type { ATTACK, SKILL, POWER }
-enum Target { ENEMY, SELF, ALL_ENEMIES }
-
-@export var id: String
-@export var name: String
-@export_multiline var description: String
-@export var cost: int
-@export var type: Type
-@export var target_type: Target
-@export var icon: Texture2D
-@export var effect_script: Script # Custom logic per card
-```
-
-### 2. Deck Manager
-Handles the piles: Draw Pile, Hand, Discard Pile, Exhaust Pile.
-
-```gdscript
-# deck_manager.gd
-var draw_pile: Array[CardData] = []
-var hand: Array[CardData] = []
-var discard_pile: Array[CardData] = []
-
-func draw_cards(amount: int) -> void:
-    for i in amount:
-        if draw_pile.is_empty():
-            reshuffle_discard()
-            
-        if draw_pile.is_empty(): 
-            break # No cards left
-            
-        var card = draw_pile.pop_back()
-        hand.append(card)
-        card_drawn.emit(card)
-
-func reshuffle_discard() -> void:
-    draw_pile.append_array(discard_pile)
-    discard_pile.clear()
-    draw_pile.shuffle()
-```
-
-### 3. Card Visual (UI)
-The interactive node representing a card in hand.
-
-```gdscript
-# card_ui.gd
-extends Control
-
-var card_data: CardData
-var start_pos: Vector2
-var is_dragging: bool = false
-
-func _gui_input(event: InputEvent) -> void:
-    if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-        if event.pressed:
-            start_drag()
-        else:
-            end_drag()
-
-func _process(delta: float) -> void:
-    if is_dragging:
-        global_position = get_global_mouse_position() - size / 2
-    else:
-        # Hover effect or return to hand position
-        pass
-```
-
-## Key Mechanics Implementation
-
-### Effect Resolution (Command Pattern)
-Decouple the "playing" of a card from its "effect".
-
-```gdscript
-func play_card(card: CardData, target: Node) -> void:
-    if current_energy < card.cost:
-        show_error("Not enough energy")
-        return
-        
-    current_energy -= card.cost
-    
-    # Execute effect
-    var effect = card.effect_script.new()
-    effect.execute(target)
-    
-    move_to_discard(card)
-```
-
-### Hand Layout (Arching)
-Cards in hand usually form an arc. Use a math formula (Bezier or Circle) to position them based on `index` and `total_cards`.
-
-```gdscript
-func update_hand_visuals() -> void:
-    var center_x = screen_width / 2
-    var radius = 1000.0
-    var angle_step = 5.0
-    
-    for i in hand_visuals.size():
-        var card = hand_visuals[i]
-        var angle = deg_to_rad((i - hand_visuals.size() / 2.0) * angle_step)
-        var target_pos = Vector2(
-            center_x + sin(angle) * radius,
-            screen_height + cos(angle) * radius
-        )
-        card.target_rotation = angle
-        card.target_position = target_pos
-```
+| 1. Data | `resources`, `custom-resources` | Card properties (Cost, Type, Effect) |
+| 2. UI | `control-nodes`, `layout-containers` | Hand layout, tooltips |
+| 3. Input | `drag-and-drop`, `state-machines` | Targeting, hovering |
+| 4. Logic | `command-pattern`, `signals` | LIFO stack, turn phases |
+| 5. Polish | `godot-tweening`, `shaders` | Draw juice, foils |
 
 ## Common Pitfalls
 
-1.  **Complexity Overload**: Too many keywords. **Fix**: Stick to 3-5 core keywords (e.g., Taunt, Poison, Shield) and expand slowly.
-2.  **Unreadable Text**: Tiny fonts on cards. **Fix**: Use icons for common stats (Damage, Block) and keep text short.
-3.  **Animation Lock**: Waiting for slow animations to finish before playing the next card. **Fix**: Allow queueing actions or keep animations snappy (< 0.3s).
+| Pitfall | Solution |
+|---------|----------|
+| FIFO `pop_front` on reaction stack | Use LIFO `pop_back` in [card_effect_resolution.gd](../scripts/genre_card_game_card_effect_resolution.gd) |
+| Instant pile snaps | Tween via [card_tween_manager.gd](../scripts/genre_card_game_card_tween_manager.gd) |
+| Float ATK/HP | Use `int` stats on Resources |
 
-## Godot-Specific Tips
+## Elite notes (optional polish)
+- Holographic foil: UV scroll shader on card Control — not required for stack correctness.
+- Card history: signal bus logger for replay/debug; keep off the hot resolve path.
 
-*   **MouseFilter**: Getting drag/drop to work with overlapping UI requires careful setup of `mouse_filter` (Pass vs Stop).
-*   **Z-Index**: Use `z_index` or `CanvasLayer` to ensure the dragged card is always on top of everything else.
-*   **Tweens**: Essential! Tween position, rotation, and scale for that "juicy" Hearthstone/Slay the Spire feel.
+## Reference
 
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
 
----
+### Official Documentation
+- [Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html) — CardData as `.tres` Resources so designers edit cost/stats without touching UI scripts.
+- [GDScript exports](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_exports.html) — `@export` / `@export_group` patterns that drive Inspector-authored card definitions.
+- [Control](https://docs.godotengine.org/en/stable/classes/class_control.html) — `_get_drag_data` / `_can_drop_data` / `_drop_data` and `set_drag_preview` for native card drag-and-drop.
+- [Custom GUI controls](https://docs.godotengine.org/en/stable/tutorials/ui/custom_gui_controls.html) — building interactive card faces with `_gui_input`, `mouse_filter`, and `_draw` for dense boards.
+- [Size and anchors](https://docs.godotengine.org/en/stable/tutorials/ui/size_and_anchors.html) — anchoring hand/board zones so layouts survive resolution changes.
+- [Using Containers](https://docs.godotengine.org/en/stable/tutorials/ui/gui_containers.html) — when HBox/Grid help deck-builder grids vs manual hand arcing.
+- [Tween](https://docs.godotengine.org/en/stable/classes/class_tween.html) — interruptible `create_tween()` / `tween_property` juice for draw, play, and discard moves.
+- [Beziers, curves and paths](https://docs.godotengine.org/en/stable/tutorials/math/beziers_and_curves.html) — math behind arcing hand layouts instead of circular fudge factors.
+- [Curve2D](https://docs.godotengine.org/en/stable/classes/class_curve2d.html) — `sample_baked()` for smooth non-circular fan positions and rotations.
+- [Random number generation](https://docs.godotengine.org/en/stable/tutorials/math/random_number_generation.html) — seeded RNG and shuffle-bag fairness for draw piles.
+- [Using signals](https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html) — Resource `changed` and effect-stack signals that keep UI reactive without `_process` polling.
+- [Your first 2D shader](https://docs.godotengine.org/en/stable/tutorials/shaders/your_first_shader/your_first_2d_shader.html) — canvas_item foil/rarity shaders on card faces.
 
-## 🚀 Elite Technical Implementations (Batch 09)
+### Related Skills
 
-### 1. Holographic Foil (Shader Script)
-Add visual rarity and "juice" to cards using a holographic shader. This script uses iridescence based on TIME and UV coordinates to create a shifting rainbow effect.
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, Autoloads, and import basics before wiring DeckManager and card scenes.
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — `.tres` ownership, duplication, and `emit_changed` so match buffs never leak into authored card files.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed Arrays, Callables/Commands, and `match` phases used by effect stacks and turn machines.
+- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Control layout, anchors, and mouse_filter habits required for hand/board hit-testing.
 
-```glsl
-shader_type canvas_item;
+#### Complements
+- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — kill/parallel Tween patterns so rapid plays do not teleport or stack dead tweens.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — bus/signal graphs for draw, play, resolve, and discard without UI owning game rules.
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — pointer vs action maps when cards share the viewport with keyboard shortcuts and accessibility drag.
+- [godot-turn-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-turn-system/SKILL.md) — Draw/Main/Combat/End phase ownership that this skill's turn state machine plugs into.
+- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — canvas_item rarity foils and highlight materials beyond the skill's starter hologram snippet.
 
-uniform float foil_speed : hint_range(0.1, 5.0) = 1.0;
-uniform float foil_intensity : hint_range(0.0, 1.0) = 0.5;
+#### Downstream / consumers
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — simulate mulligans, mana curves, and win-rate vs cost/power so card stats stay fair under RNG.
+- [godot-genre-roguelike](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md) — run-based deckbuilders that consume CardData, shops, and per-act draft pools.
+- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — collection/deck-builder UIs that persist owned cards separately from the in-match piles.
+- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — keyword/status effects (Poison, Taunt, Shield) resolved as reusable ability resources on the stack.
 
-void fragment() {
-    vec4 base_color = texture(TEXTURE, UV);
-    
-    // Create shifting rainbow iridescence
-    vec3 holo_color = vec3(
-        0.5 + 0.5 * sin(TIME * foil_speed + UV.x * 10.0),
-        0.5 + 0.5 * sin(TIME * foil_speed + UV.y * 10.0 + 2.0),
-        0.5 + 0.5 * sin(TIME * foil_speed + (UV.x + UV.y) * 10.0 + 4.0)
-    );
-    
-    // Blend with base texture alpha
-    COLOR = vec4(mix(base_color.rgb, holo_color, foil_intensity * base_color.a), base_color.a);
-}
-```
-
-### 2. Card-History Logging (Action Tracking)
-Track card actions (Played, Drawn, Discarded) for a history panel using a custom `Logger`. This intercepts messages tagged with `[CARD]` and routes them to a turn history buffer.
-
-```gdscript
-class_name CardHistoryLogger extends Logger
-
-signal history_updated(entry: String)
-var turn_history: Array[String] = []
-
-func _log_message(message: String, error: bool) -> void:
-    if not error and message.begins_with("[CARD]"):
-        turn_history.append(message)
-        history_updated.emit(message)
-
-# To register (in an Autoload):
-# func _init(): OS.add_logger(CardHistoryLogger.new())
-```
-
-### 3. Hand-Limit Logic (Over-Draw Protection)
-Encapsulate hand data and enforce a maximum size. Use signals to notify the UI when a card is successfully drawn or discarded due to being overdrawn.
-
-```gdscript
-class_name HandManager extends Node
-
-signal card_drawn(card: Resource)
-signal card_overdrawn(card: Resource)
-
-@export var max_hand_size: int = 10
-var _current_hand: Array[Resource] = []
-
-func draw_card(new_card: Resource) -> void:
-    if _current_hand.size() >= max_hand_size:
-        # Hand is full; trigger overdraw
-        card_overdrawn.emit(new_card)
-    else:
-        _current_hand.append(new_card)
-        card_drawn.emit(new_card)
-```
-
-
-- Master Skill: [godot-master](../SKILL.md)
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.

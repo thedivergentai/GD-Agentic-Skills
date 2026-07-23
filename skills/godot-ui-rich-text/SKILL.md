@@ -7,6 +7,8 @@ description: "Expert blueprint for RichTextLabel with BBCode formatting (bold, i
 
 BBCode tags, meta clickable links, and RichTextEffect shaders define formatted text systems.
 
+## Available Scripts
+
 ### [rich_text_rainbow_effect.gd](scripts/rich_text_rainbow_effect.gd)
 Expert custom `RichTextEffect` that rotates colors over time.
 
@@ -53,7 +55,7 @@ Simple regex-based syntax highlighting pattern for code blocks in UI.
 
 ### Dialogue & Narrative
 - **NEVER use `visible_ratio` for pausing typewriter** — `visible_ratio` is unreliable for per-character logic. Use `visible_characters` and explicit character indexing (`rich_text_typewriter_controller.gd`).
-- **NEVER allow unfiltered user input in Chat Labels** — A user could type `[img]huge_image_path[/img]` or `[color=transparent]` to break your UI. ALWAYS use `rich_text_bbcode_sanitizer.gd`.
+- **NEVER allow unfiltered user input in Chat Labels** — A user could type `[img]huge_image_path[/img]` or `[color=transparent]` to break your UI. **MANDATORY**: pipe every user-generated string through [rich_text_bbcode_sanitizer.gd](scripts/rich_text_bbcode_sanitizer.gd) before assigning `text`.
 
 ---
 
@@ -69,30 +71,42 @@ $RichTextLabel.text = "[b]Bold[/b] and [i]italic[/i] text"
 - `add_image` / `update_image` width and height are now **float**, not int.
 - **NEVER** pass `true`/`false` for percent flags — use `RichTextLabel.ImageUnit` values (default changed from `false` to `0`).
 
-## Common Tags
+## Reveal API Decision
 
-```bbcode
-[b]Bold[/b]
-[i]Italic[/i]
-[u]Underline[/u]
-[color=red]Red text[/color]
-[color=#00FF00]Green hex[/color]
-[center]Centered[/center]
-[img]res://icon.png[/img]
-[url=data]Clickable link[/url]
-```
+| Need | API | **MANDATORY** |
+|------|-----|---------------|
+| Simple fade / whole-line reveal | `visible_ratio` + Tween | Inline ok (see pattern below) |
+| Pause / speed / event tags (`[pause]`, `[speed]`) | `visible_characters` + indexer | [rich_text_typewriter_controller.gd](scripts/rich_text_typewriter_controller.gd) |
+
+> **NEVER** use `visible_ratio` when you need per-character pause/speed tags.
+
+## Non-Obvious Tags & Effects
+
+Skip cataloging `[b]` / `[i]` / `[u]` / `[color]` — see docs. Prefer these when non-obvious:
+
+- `[url=payload]…[/url]` + `meta_clicked` — prefer [rich_text_meta_dispatch.gd](scripts/rich_text_meta_dispatch.gd)
+- `[img]` sizing — **Godot 4.7**: use `width_unit` / `height_unit` + `RichTextLabel.ImageUnit` (see section above); scale with [rich_text_image_scaler.gd](scripts/rich_text_image_scaler.gd)
+- Custom effects — register via `custom_effects` / `install_effect()`; examples: [rich_text_rainbow_effect.gd](scripts/rich_text_rainbow_effect.gd), [rich_text_glitch_effect.gd](scripts/rich_text_glitch_effect.gd)
+
+## User-Generated Rich Text
+
+**MANDATORY**: [rich_text_bbcode_sanitizer.gd](scripts/rich_text_bbcode_sanitizer.gd) on any chat, lobby, or player-typed path before `RichTextLabel.text = …`.
 
 ## Handle Link Clicks
+
+Prefer [rich_text_meta_dispatch.gd](scripts/rich_text_meta_dispatch.gd). Minimal hook:
 
 ```gdscript
 func _ready() -> void:
     $RichTextLabel.meta_clicked.connect(_on_meta_clicked)
 
 func _on_meta_clicked(meta: Variant) -> void:
-    print("Clicked: ", meta)
+    # Emit a command; do not run heavy game logic here
+    pass
 ```
 
 ## Expert Text Patterns
+
 
 ### 1. Rich-Text-MSDF-Outline (SDF)
 Enable crisp, high-resolution outlines and scaling by enabling MSDF on font resources and using theme overrides.
@@ -105,18 +119,17 @@ func _ready():
     label.add_theme_constant_override("outline_size", 4)
 ```
 
-### 2. Animated-Text-Reveal (Visible Ratio)
-Efficient typewriter effect that preserves BBCode animations (like [wave] or [shake]) and avoids parsing overhead.
+### 2. Animated-Text-Reveal
+**Simple fade** — tween `visible_ratio` (keeps BBCode effects; no string rewrite):
 
 ```gdscript
-# dialogue_revealer.gd
-func reveal(new_text: String):
+func reveal_fade(label: RichTextLabel, new_text: String, duration: float) -> void:
     label.text = new_text
-    label.visible_ratio = 0.0 # Set text but hide characters
-    var duration = label.get_total_character_count() / char_speed
-    # Animate ratio from 0 to 1
+    label.visible_ratio = 0.0
     create_tween().tween_property(label, "visible_ratio", 1.0, duration)
 ```
+
+**Pause/speed tags** — **MANDATORY** [rich_text_typewriter_controller.gd](scripts/rich_text_typewriter_controller.gd) using `visible_characters` (not `visible_ratio`).
 
 ### 3. Custom-BBCode-Effect (RichTextEffect)
 Define custom visual tags (like `[relic]`) by extending RichTextEffect for unique gameplay-themed text animations.
@@ -137,8 +150,42 @@ func _process_custom_fx(char_fx: CharFXTransform):
 ```
 
 ## Reference
-- [Godot Docs: BBCode in RichTextLabel](https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html)
 
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
 
-### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+### Official Documentation
+- [BBCode in RichTextLabel](https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html) — tag syntax, built-in effects, images, and `[url]` meta for dialogue and formatted UI copy.
+- [RichTextLabel](https://docs.godotengine.org/en/stable/classes/class_richtextlabel.html) — `bbcode_enabled`, `visible_characters` / `visible_ratio`, `meta_clicked`, and `custom_effects` / `install_effect()`.
+- [RichTextEffect](https://docs.godotengine.org/en/stable/classes/class_richtexteffect.html) — subclass contract for custom BBCode effects (`bbcode` id + `_process_custom_fx`).
+- [CharFXTransform](https://docs.godotengine.org/en/stable/classes/class_charfxtransform.html) — per-glyph color, offset, and `env` params used by rainbow/glitch/custom effects.
+- [Using fonts](https://docs.godotengine.org/en/stable/tutorials/ui/gui_using_fonts.html) — MSDF / dynamic fonts so titles and BBCode scale crisply across resolutions.
+- [GUI skinning](https://docs.godotengine.org/en/stable/tutorials/ui/gui_skinning.html) — theme color/constant overrides (outline, fonts) without baking styles into BBCode strings.
+- [Size and anchors](https://docs.godotengine.org/en/stable/tutorials/ui/size_and_anchors.html) — responsive dialogue boxes and log panels so rich text layouts survive resolution changes.
+- [GUI containers](https://docs.godotengine.org/en/stable/tutorials/ui/gui_containers.html) — keep buttons/icons in containers; use RichTextLabel for body text only.
+- [Custom mouse cursor](https://docs.godotengine.org/en/stable/tutorials/inputs/custom_mouse_cursor.html) — pointer feedback when hovering `[url]` / meta spans.
+- [Internationalizing games](https://docs.godotengine.org/en/stable/tutorials/i18n/internationalizing_games.html) — `tr()` / CSV keys so BBCode templates stay localization-ready.
+- [Signals](https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html) — wire `meta_clicked` / hover signals without stuffing game logic into the label.
+- [Tween](https://docs.godotengine.org/en/stable/classes/class_tween.html) — tween `visible_ratio` / `visible_characters` for typewriter reveals without re-parsing BBCode every frame.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, Control basics, and resource imports before wiring RichTextLabel dialogue chrome.
+- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — responsive VBox/HBox/Scroll shells so rich text stays body copy, not a layout engine.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — typed meta/hover command signals so click handlers stay thin on the main thread.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — RegEx, `@tool`, and RefCounted helpers used by sanitizers, highlighters, and effect scripts.
+
+#### Complements
+- [godot-ui-theming](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md) — theme type variations and font/outline overrides that BBCode should reference, not hardcode.
+- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — lifecycle-safe tweens for typewriter `visible_ratio` and auto-scroll polish.
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — skip/advance and cursor changes that pair with meta hover without fighting Control focus.
+- [godot-dialogue-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-dialogue-system/SKILL.md) — line runners and event tags that feed RichTextLabel typewriter controllers.
+- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — when CharFX alone is not enough and you need canvas-item shaders around text panels.
+
+#### Downstream / consumers
+- [godot-genre-visual-novel](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-visual-novel/SKILL.md) — VN dialogue boxes that depend on BBCode, `visible_characters`, and meta choice links.
+- [godot-genre-educational](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-educational/SKILL.md) — lesson/copy UIs and interactive rich text that reuse sanitizers and highlighters.
+- [godot-genre-romance](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-romance/SKILL.md) — affinity dialogue presentation that reuses typewriter and meta dispatch patterns.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.

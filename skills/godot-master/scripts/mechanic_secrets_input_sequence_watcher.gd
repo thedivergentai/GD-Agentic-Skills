@@ -59,3 +59,15 @@ func _process_input(action_name: String) -> void:
 
 func _reset_buffer() -> void:
 	_current_buffer.clear()
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html
+# - https://docs.godotengine.org/en/stable/classes/class_inputmap.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/input_examples.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — shared action names and echo-safe buffering
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — sequence_matched consumers
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-mechanic-secrets/SKILL.md
+# =============================================================================

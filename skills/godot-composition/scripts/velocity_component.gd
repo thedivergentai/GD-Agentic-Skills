@@ -19,3 +19,14 @@ func apply_velocity(character: CharacterBody2D) -> void:
 	character.move_and_slide()
 	# Update local velocity based on actual movement (e.g., collisions)
 	velocity = character.velocity
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_characterbody2d.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/node_alternatives.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md — apply_velocity calls move_and_slide on injected body
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — orchestrator passes Input direction into accelerate_in_direction
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md
+# =============================================================================

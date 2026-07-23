@@ -35,3 +35,14 @@ static func pulse_param(material: ShaderMaterial, param: String, min_val: float,
 ## EXPERT USAGE:
 ## Call ShaderAnimator.animate_float(mat, "dissolve", 0.0, 1.0, 2.0)
 ## Handles the tween creation automatically.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_shadermaterial.html
+# - https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/shading_language.html
+# - https://docs.godotengine.org/en/stable/classes/class_shader.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — keep shared ShaderMaterials when animating uniforms
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md — tween/lifecycle patterns for visual parameter pulses
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md
+# =============================================================================

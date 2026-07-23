@@ -105,3 +105,14 @@ func _print_violations(violations: Array[Dictionary]) -> void:
 ## Example: 
 ##   Child: signal health_depleted()
 ##   Parent: child.health_depleted.connect(_on_child_died)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/logic_preferences.html
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — deeper connect/bus fixes after validator hits
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md — children emit; parents wire and call down
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md
+# =============================================================================

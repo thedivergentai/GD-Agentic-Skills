@@ -29,3 +29,13 @@ func shoot() -> void:
 
 ## [SKILL NOTICE]: Use 'Signals' to trigger muzzle flashes and impacts. 
 ## This keeps your mathematical hitscan logic separate from the visual effects.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html
+# - https://docs.godotengine.org/en/stable/classes/class_physicsrayqueryparameters3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md - exclude player RID and collision masks
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md - hit-zone damage multipliers
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md
+# =============================================================================

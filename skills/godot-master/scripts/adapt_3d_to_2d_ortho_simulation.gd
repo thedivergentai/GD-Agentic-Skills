@@ -63,3 +63,14 @@ func _on_land() -> void:
 ## EXPERT USAGE:
 ## Sprite2D must be child. Shadow must be child (and below sprite).
 ## Simulates "Z-Jump" in top-down games like Zelda/CrossCode.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/using_character_body_2d.html
+# - https://docs.godotengine.org/en/stable/tutorials/2d/2d_movement.html
+# - https://docs.godotengine.org/en/stable/classes/class_sprite2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md — ground XY + simulated Z jump
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md — gravity scale in pixels
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-3d-to-2d/SKILL.md
+# =============================================================================

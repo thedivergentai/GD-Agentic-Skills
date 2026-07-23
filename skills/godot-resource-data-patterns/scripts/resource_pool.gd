@@ -45,3 +45,14 @@ func clear() -> void:
 ##   damage.amount = 10
 ##   # use damage...
 ##   damage_pool.release(damage)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_refcounted.html
+# - https://docs.godotengine.org/en/stable/classes/class_resource.html
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/data_preferences.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — pool short-lived Resource/RefCounted payloads
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — typed pool acquire/release discipline
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md
+# =============================================================================

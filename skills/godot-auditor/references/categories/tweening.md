@@ -10,3 +10,13 @@
 - **NEVER skip `bind_node(self)` for non-global tweens** — If the node is freed while a tween is running, it can cause errors. Binding ensures it dies with the node [13].
 - **NEVER use 0-duration tweens for state changes** — If you want an instant change, just set the property directly (`position = goal`) to save overhead [20].
 - **NEVER forget to call `chain()` when returning from `set_parallel(true)`** — If you want a sequence after a parallel block, you must explicitly chain it [15].
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

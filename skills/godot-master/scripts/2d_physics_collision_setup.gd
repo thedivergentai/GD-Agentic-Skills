@@ -26,3 +26,14 @@ func setup_bullet(bullet: RigidBody2D) -> void:
 # Disable 'Contact Monitor' unless you actually need the 'body_entered' signal.
 # RigidBody2D 'move_and_collide' is more performant than signal-based detection 
 # for hundreds of active projectiles.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/rigid_body.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — projectile vs enemy layer matrices
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — Project Settings 2D physics layer names
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md
+# =============================================================================

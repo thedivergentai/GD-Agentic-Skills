@@ -5,51 +5,7 @@ description: "Expert blueprint for procedural content generation (dungeons, terr
 
 # Procedural Generation
 
-Seeded algorithms, noise functions, and constraint propagation define replayable content generation.
-
-## Available Scripts
-
-### [fast_noise_noise2d_master.gd](../scripts/procedural_generation_fast_noise_noise2d_master.gd)
-Advanced usage of `FastNoiseLite` with image-based sampling for maximum performance.
-
-### [cellular_automata_dungeon.gd](../scripts/procedural_generation_cellular_automata_dungeon.gd)
-The classic 4-5 rule implementation for organic cave and terrain generation.
-
-### [poisson_disk_sampling_2d.gd](../scripts/procedural_generation_poisson_disk_sampling_2d.gd)
-Blue-noise distribution algorithm for non-clumping object and enemy placement.
-
-### [multi_threaded_chunk_gen.gd](../scripts/procedural_generation_multi_threaded_chunk_gen.gd)
-Expert pattern for offloading procedural generation to the `WorkerThreadPool`.
-
-### [drunknard_walk_path.gd](../scripts/procedural_generation_drunknard_walk_path.gd)
-Lightweight algorithm for generating winding paths, tunnels, and rivers.
-
-### [marching_squares_metaballs.gd](../scripts/procedural_generation_marching_squares_metaballs.gd)
-Implementing the Marching Squares algorithm for smooth contouring and influential maps.
-
-### [bsp_tree_rooms.gd](../scripts/procedural_generation_bsp_tree_rooms.gd)
-Binary Space Partitioning for generating structured, non-overlapping floor plans.
-
-### [wave_function_collapse_lite.gd](../scripts/procedural_generation_wave_function_collapse_lite.gd)
-Foundation for Wave Function Collapse (WFC) using entropy-based adjacency rules.
-
-### [mesh_gen_infinite_terrain.gd](../scripts/procedural_generation_mesh_gen_infinite_terrain.gd)
-Runtime 3D terrain generation using `ArrayMesh` and `SurfaceTool` with LOD potential.
-
-### [l_system_tree_gen.gd](../scripts/procedural_generation_l_system_tree_gen.gd)
-L-System string grammar for procedural plant and tree growth in 3D.
-
-### [wfc_level_generator.gd](../scripts/procedural_generation_wfc_level_generator.gd)
-Expert Wave Function Collapse implementation with tile adjacency rules.
-
-### [proc_gen_marching_cubes_base.gd](../scripts/procedural_generation_proc_gen_marching_cubes_base.gd)
-Base class for 3D terrain generation using ArrayMesh and direct GPU vertex array committing.
-
-### [proc_gen_graph_layout.gd](../scripts/procedural_generation_proc_gen_graph_layout.gd)
-Pattern for managing logical dungeon layouts using AStar2D/3D as a directed graph.
-
-### [proc_gen_seed_history.gd](../scripts/procedural_generation_proc_gen_seed_history.gd)
-Seed and state history manager for deterministic, undoable procedural sequences.
+Seeded algorithms, noise functions, and constraint propagation define replayable content generation. **Do not paste inline algorithm tutorials** — load the MANDATORY scripts below.
 
 ## NEVER Do in Procedural Generation
 
@@ -66,209 +22,82 @@ Seed and state history manager for deterministic, undoable procedural sequences.
 
 ---
 
+## Golden Path (MANDATORY)
+
+Every generator starts here — seed isolation, async data, main-thread commit:
+
+1. **Seed & RNG** — **MANDATORY** [proc_gen_seed_history.gd](../scripts/procedural_generation_proc_gen_seed_history.gd): one `RandomNumberGenerator` per level/chunk; persist `seed` + `state` for shareable runs.
+2. **Async chunks** — **MANDATORY** [multi_threaded_chunk_gen.gd](../scripts/procedural_generation_multi_threaded_chunk_gen.gd): `WorkerThreadPool.add_task` → compute data off-thread → `call_deferred("_finalize_chunk")` for SceneTree/node work.
+3. **Validate → bake nav** — after tiles/meshes land on the main thread, rebake `NavigationRegion` (see [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md)).
+
 ```gdscript
-func generate_dungeon(width: int, height: int, fill_percent: float = 0.4) -> Array:
-    var grid := []
-    for y in height:
-        var row := []
-        for x in width:
-            row.append(1)  # 1 = wall
-        grid.append(row)
-    
-    # Start in center
-    var x := width / 2
-    var y := height / 2
-    var floor_tiles := 0
-    var target_floor := int(width * height * fill_percent)
-    
-    while floor_tiles < target_floor:
-        if grid[y][x] == 1:
-            grid[y][x] = 0  # Create floor
-            floor_tiles += 1
-        
-        # Random walk
-        var dir := randi() % 4
-        match dir:
-            0: x = clampi(x + 1, 0, width - 1)
-            1: x = clampi(x - 1, 0, width - 1)
-            2: y = clampi(y + 1, 0, height - 1)
-            3: y = clampi(y - 1, 0, height - 1)
-    
-    return grid
+var rng := RandomNumberGenerator.new()
+
+func begin_generation(run_seed: int) -> void:
+    rng.seed = run_seed
+    WorkerThreadPool.add_task(_build_data.bind(run_seed))
+
+func _build_data(seed: int) -> Dictionary:
+    var local_rng := RandomNumberGenerator.new()
+    local_rng.seed = seed
+    var noise := FastNoiseLite.new()
+    noise.seed = seed
+    return {"heights": noise.get_image(64, 64)}
+
+func _ready() -> void:
+    # Worker returns here — safe for nodes
+    pass
+
+func _finalize_from_worker(data: Dictionary) -> void:
+    # add_child / set_pattern / create_trimesh_collision — main thread only
+    pass
 ```
+
+> **Do NOT Load** the full `scripts/` folder. Open only the script that matches your algorithm row below.
+
+## Algorithm Decision Tree
+
+| Layout / content need | Algorithm | Script (MANDATORY when chosen) |
+|-----------------------|-----------|--------------------------------|
+| Winding tunnels, rivers, simple paths | Drunkard's Walk | **MANDATORY** [drunknard_walk_path.gd](../scripts/procedural_generation_drunknard_walk_path.gd) |
+| Structured rooms + hallways | BSP | **MANDATORY** [bsp_tree_rooms.gd](../scripts/procedural_generation_bsp_tree_rooms.gd) |
+| Organic caves / smooth terrain | Cellular Automata (4/5) | **MANDATORY** [cellular_automata_dungeon.gd](../scripts/procedural_generation_cellular_automata_dungeon.gd) |
+| Heightmaps, biomes, infinite terrain | FastNoiseLite → Image | **MANDATORY** [fast_noise_noise2d_master.gd](../scripts/procedural_generation_fast_noise_noise2d_master.gd) |
+| Trees, rocks, spawns (no clumping) | Poisson Disk | **MANDATORY** [poisson_disk_sampling_2d.gd](../scripts/procedural_generation_poisson_disk_sampling_2d.gd) |
+| Tile adjacency / city blocks | Wave Function Collapse | **MANDATORY** [wave_function_collapse_lite.gd](../scripts/procedural_generation_wave_function_collapse_lite.gd) (lite) or [wfc_level_generator.gd](../scripts/procedural_generation_wfc_level_generator.gd) (full rules) |
+| Room graph before geometry | AStar graph layout | **MANDATORY** [proc_gen_graph_layout.gd](../scripts/procedural_generation_proc_gen_graph_layout.gd) |
+| 3D voxel / smooth terrain mesh | Marching Cubes base | **MANDATORY** [proc_gen_marching_cubes_base.gd](../scripts/procedural_generation_proc_gen_marching_cubes_base.gd) |
+| Infinite chunked 3D terrain | ArrayMesh + LOD chunks | **MANDATORY** [mesh_gen_infinite_terrain.gd](../scripts/procedural_generation_mesh_gen_infinite_terrain.gd) |
+| Plants / branching structures | L-System | **MANDATORY** [l_system_tree_gen.gd](../scripts/procedural_generation_l_system_tree_gen.gd) |
+| Contour / metaball maps (2D) | Marching Squares | **MANDATORY** [marching_squares_metaballs.gd](../scripts/procedural_generation_marching_squares_metaballs.gd) |
+
+**Routing hints:** Simple path → drunkard; rectangular rooms → BSP; constraint tiles → WFC lite; open-world chunks → noise + `multi_threaded_chunk_gen.gd`. For roguelike run orchestration, hand off to [godot-genre-roguelike](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md).
+
+## Available Scripts
+
+### Core (always start here)
+- [proc_gen_seed_history.gd](../scripts/procedural_generation_proc_gen_seed_history.gd) — **MANDATORY** seeded `RandomNumberGenerator` with push/pop state history
+- [multi_threaded_chunk_gen.gd](../scripts/procedural_generation_multi_threaded_chunk_gen.gd) — **MANDATORY** WorkerThreadPool → `call_deferred` chunk finalize pattern
+
+### 2D layout & placement
+- [drunknard_walk_path.gd](../scripts/procedural_generation_drunknard_walk_path.gd) — **MANDATORY** for tunnels/paths (pass local RNG, never global `randi()`)
+- [bsp_tree_rooms.gd](../scripts/procedural_generation_bsp_tree_rooms.gd) — **MANDATORY** for structured floor plans
+- [cellular_automata_dungeon.gd](../scripts/procedural_generation_cellular_automata_dungeon.gd) — **MANDATORY** for organic caves
+- [poisson_disk_sampling_2d.gd](../scripts/procedural_generation_poisson_disk_sampling_2d.gd) — **MANDATORY** for blue-noise prop/enemy placement
+- [wave_function_collapse_lite.gd](../scripts/procedural_generation_wave_function_collapse_lite.gd) — **MANDATORY** lite WFC with entropy + `max_iterations`
+- [wfc_level_generator.gd](../scripts/procedural_generation_wfc_level_generator.gd) — full WFC with tile-library adjacency rules
+- [proc_gen_graph_layout.gd](../scripts/procedural_generation_proc_gen_graph_layout.gd) — graph-before-geometry via AStar2D/3D
+
+### Noise & 3D
+- [fast_noise_noise2d_master.gd](../scripts/procedural_generation_fast_noise_noise2d_master.gd) — **MANDATORY** FastNoiseLite → Image heightmaps
+- [mesh_gen_infinite_terrain.gd](../scripts/procedural_generation_mesh_gen_infinite_terrain.gd) — runtime ArrayMesh terrain with LOD potential
+- [proc_gen_marching_cubes_base.gd](../scripts/procedural_generation_proc_gen_marching_cubes_base.gd) — 3D mesh from voxel data
+- [marching_squares_metaballs.gd](../scripts/procedural_generation_marching_squares_metaballs.gd) — 2D contour extraction
+- [l_system_tree_gen.gd](../scripts/procedural_generation_l_system_tree_gen.gd) — procedural plant/tree grammar
 
 ## Godot 4.7: Procedural 3D
 
 - **Path3D snap-to-colliders** for spline-based road/river generation on terrain colliders.
-
-## Perlin Noise Terrain
-
-```gdscript
-var noise := FastNoiseLite.new()
-
-func generate_terrain(width: int, height: int) -> Array:
-    noise.seed = randi()
-    noise.frequency = 0.05
-    
-    var terrain := []
-    for y in height:
-        var row := []
-        for x in width:
-            var value := noise.get_noise_2d(x, y)
-            
-            # Map noise to tile types
-            var tile: int
-            if value < -0.2:
-                tile = 0  # Water
-            elif value < 0.2:
-                tile = 1  # Grass
-            else:
-                tile = 2  # Mountain
-            
-            row.append(tile)
-        terrain.append(row)
-    
-    return terrain
-```
-
-## BSP Rooms
-
-```gdscript
-class_name BSPRoom
-
-var x: int
-var y: int
-var width: int
-var height: int
-var left: BSPRoom = null
-var right: BSPRoom = null
-
-func split(min_size: int = 6) -> bool:
-    if left or right:
-        return false  # Already split
-    
-    # Choose split direction
-    var split_horizontal := randf() > 0.5
-    
-    if width > height and float(width) / float(height) >= 1.25:
-        split_horizontal = false
-    elif height > width and float(height) / float(width) >= 1.25:
-        split_horizontal = true
-    
-    var max := (height if split_horizontal else width) - min_size
-    if max <= min_size:
-        return false  # Too small
-    
-    var split_pos := randi_range(min_size, max)
-    
-    if split_horizontal:
-        left = BSPRoom.new()
-        left.x = x
-        left.y = y
-        left.width = width
-        left.height = split_pos
-        
-        right = BSPRoom.new()
-        right.x = x
-        right.y = y + split_pos
-        right.width = width
-        right.height = height - split_pos
-    else:
-        left = BSPRoom.new()
-        left.x = x
-        left.y = y
-        left.width = split_pos
-        left.height = height
-        
-        right = BSPRoom.new()
-        right.x = x + split_pos
-        right.y = y
-        right.width = width - split_pos
-        right.height = height
-    
-    return true
-
-func generate_bsp_dungeon(width: int, height: int, iterations: int = 4) -> Array[BSPRoom]:
-    var root := BSPRoom.new()
-    root.x = 0
-    root.y = 0
-    root.width = width
-    root.height = height
-    
-    var rooms: Array[BSPRoom] = [root]
-    
-    for i in iterations:
-        var new_rooms: Array[BSPRoom] = []
-        for room in rooms:
-            if room.split():
-                new_rooms.append(room.left)
-                new_rooms.append(room.right)
-            else:
-                new_rooms.append(room)
-        rooms = new_rooms
-    
-    return rooms
-```
-
-## Random Loot
-
-```gdscript
-func generate_loot(loot_level: int) -> Array[Item]:
-    var items: Array[Item] = []
-    var roll_count := randi_range(1, 3)
-    
-    for i in roll_count:
-        var rarity := roll_rarity()
-        var item := get_random_item(rarity, loot_level)
-        items.append(item)
-    
-    return items
-
-func roll_rarity() -> String:
-    var roll := randf()
-    if roll < 0.6:
-        return "common"
-    elif roll < 0.85:
-        return "uncommon"
-    elif roll < 0.95:
-        return "rare"
-    else:
-        return "legendary"
-```
-
-## Wave Function Collapse
-
-```gdscript
-# Simplified WFC for tile patterns
-# Load compatible tile adjacency rules
-var tile_rules := {
-    "grass": ["grass", "path", "water_edge"],
-    "water": ["water", "water_edge"],
-    "path": ["grass", "path"]
-}
-
-func wfc_generate(width: int, height: int) -> Array:
-    var grid := []
-    for y in height:
-        var row := []
-        for x in width:
-            row.append(null)  # Uncollapsed
-        grid.append(row)
-    
-    # Collapse cells until complete
-    while has_uncollapsed(grid):
-        var pos := find_lowest_entropy(grid)
-        collapse_cell(grid, pos)
-        propagate_constraints(grid, pos)
-    
-    return grid
-```
-
-## Best Practices
-
-1. **Seeding** - Use seeds for reproducibility
-2. **Validation** - Ensure playable levels
-3. **Performance** - Generate async if needed
 
 ## Expert Procedural Patterns
 
@@ -285,8 +114,43 @@ Don't generate your dungeon geometry first. Build a logical graph using `AStar2D
 - **Benefit**: You can easily run validation (is every room reachable?) before spawning a single mesh.
 
 ## Reference
-- Related: `godot-tilemap-mastery`, `godot-resource-data-patterns`
 
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
 
-### Related
-- Master Skill: [godot-master](../SKILL.md)
+### Official Documentation
+- [FastNoiseLite](https://docs.godotengine.org/en/stable/classes/class_fastnoiselite.html) — seed, frequency, noise type, and `get_image()`/`get_noise_2d()` for heightmaps and biome masks.
+- [Random number generation](https://docs.godotengine.org/en/stable/tutorials/math/random_number_generation.html) — why per-generator `RandomNumberGenerator` seeds beat global `randi()` for shareable runs.
+- [RandomNumberGenerator](https://docs.godotengine.org/en/stable/classes/class_randomnumbergenerator.html) — `seed`/`state` APIs for deterministic sequences and undoable RNG history.
+- [Using multiple threads](https://docs.godotengine.org/en/stable/tutorials/performance/using_multiple_threads.html) — offload chunk/WFC work without freezing the main loop.
+- [Thread-safe APIs](https://docs.godotengine.org/en/stable/tutorials/performance/thread_safe_apis.html) — which Godot APIs workers may call; SceneTree/node creation stays on the main thread.
+- [WorkerThreadPool](https://docs.godotengine.org/en/stable/classes/class_workerthreadpool.html) — `add_task` + `call_deferred` finalize pattern for async chunk generation.
+- [Using ArrayMesh](https://docs.godotengine.org/en/stable/tutorials/3d/procedural_geometry/arraymesh.html) — commit vertex/normal/index arrays for marching-cubes and infinite terrain meshes.
+- [Using SurfaceTool](https://docs.godotengine.org/en/stable/tutorials/3d/procedural_geometry/surfacetool.html) — incremental vertex building and normal generation for runtime planes.
+- [Using TileMaps](https://docs.godotengine.org/en/stable/tutorials/2d/using_tilemaps.html) — TileMapLayer/pattern batch writes after BSP, CA, WFC, or drunkard-walk grids.
+- [Using GridMaps](https://docs.godotengine.org/en/stable/tutorials/3d/using_gridmaps.html) — modular 3D cell placement backend for dungeon/terrain generators.
+- [Navigation introduction (3D)](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_introduction_3d.html) — rebake NavigationRegion meshes after procedural geometry lands.
+- [AStar2D](https://docs.godotengine.org/en/stable/classes/class_astar2d.html) — room/hallway graph validation before spawning tiles or meshes.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scenes, resources, and import basics before generators emit TileMaps, GridMaps, or ArrayMeshes.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed arrays, `call_deferred`, and WorkerThreadPool task patterns used across every generator script.
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Resource-backed tile libraries, adjacency rules, and seed configs instead of hard-coded magic tables.
+
+#### Complements
+- [godot-tilemap-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md) — `set_pattern` / terrain connect batching so large CA/WFC grids do not call `set_cell` per tile.
+- [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md) — GridMap/MeshLibrary/CSG placement backends that consume room graphs and heightmaps.
+- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — runtime navmesh bake after rooms, caves, or terrain chunks finish.
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — budgets for mesh commits, collision trimeshes, and MultiMesh prop scattering after generation.
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — persist seed + player deltas instead of serializing every generated chunk.
+- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — threaded load/unload of chunk scenes that wrap generated data.
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — sample spawn density, loot tables, and room difficulty against seed distributions before shipping.
+
+#### Downstream / consumers
+- [godot-genre-roguelike](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md) — run-based dungeon crawlers that consume BSP/WFC/drunkard generators and seeded RNG.
+- [godot-genre-sandbox](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-sandbox/SKILL.md) — voxel/chunk worlds and cellular-automata sandboxes built on infinite terrain and CA scripts.
+- [godot-genre-open-world](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md) — chunk streaming and floating-origin layers that wrap multi-threaded chunk gen.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.

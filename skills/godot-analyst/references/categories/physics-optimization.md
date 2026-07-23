@@ -22,3 +22,14 @@ The solid ground of the vision. This rubric assesses how the project handles col
 
 ## 🌟 Visionary's Final Decree
 To reach **Elite** status, you must think in 'Layers'. No object should ever ask "Who am I hitting?". The layers should answer that before the question is born. Slop is a physics engine that calculates everything; Vision is an engine that calculates only what the eyes can perceive.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html
+- https://docs.godotengine.org/en/stable/tutorials/performance/cpu_optimization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/groups.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

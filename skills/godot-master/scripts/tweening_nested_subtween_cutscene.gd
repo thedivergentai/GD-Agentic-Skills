@@ -15,3 +15,14 @@ func play_sequence():
 	# Main timeline waits for the rotation sequence to finish
 	main.tween_subtween(sub)
 	main.tween_property($Actor, "modulate:a", 0, 1.0)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_subtweentweener.html
+# - https://docs.godotengine.org/en/stable/classes/class_tween.html
+# - https://docs.godotengine.org/en/stable/tutorials/animation/introduction.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md — authored cutscenes vs composable subtween modules
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-dialogue-system/SKILL.md — dialogue beats chained under parent timelines
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md
+# =============================================================================

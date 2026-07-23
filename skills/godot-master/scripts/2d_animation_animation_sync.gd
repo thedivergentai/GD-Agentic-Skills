@@ -59,3 +59,15 @@ func update_movement_animation(velocity_vector: Vector2) -> void:
     # Logic for character flipping based on blend direction
     if target_blend.x != 0:
         $Sprite2D.flip_h = target_blend.x < 0
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/animation/animation_track_types.html
+# - https://docs.godotengine.org/en/stable/tutorials/animation/animation_tree.html
+# - https://docs.godotengine.org/en/stable/classes/class_animationplayer.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md — method tracks and callback modes
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-tree-mastery/SKILL.md — blend space / travel depth
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — animation_finished orchestration
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md
+# =============================================================================

@@ -34,391 +34,70 @@ Expert guidance for retrofitting multiplayer into single-player games.
 
 ## Available Scripts
 
-> **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
+> **MANDATORY**: Architecture decision tree first, then golden-path scripts. Deep latency workflows → [`references/latency-testing.md`](adapt-single-to-multiplayer-latency-testing.md).
 
+### Authority / transport bridges
+### [multiplayer_sync.gd](../scripts/adapt_single_to_multiplayer_multiplayer_sync.gd)
+**MANDATORY** when adding `MultiplayerSynchronizer` interpolation for remote peers. Trigger: authority owns transforms; non-authority interpolates.
+
+### [rpc_bridge.gd](../scripts/adapt_single_to_multiplayer_rpc_bridge.gd)
+**MANDATORY** signal→RPC bridge. Trigger: gameplay emits local signals; bridge validates authority and fans out RPCs.
+
+### Prediction / lag / lobby
 ### [net_prediction_reconciliation.gd](../scripts/adapt_single_to_multiplayer_net_prediction_reconciliation.gd)
-Expert CharacterBody3D prediction with input-buffer replaying for server reconciliation.
+CharacterBody prediction + input-buffer replay for server reconciliation.
 
 ### [net_snapshot_interpolation.gd](../scripts/adapt_single_to_multiplayer_net_snapshot_interpolation.gd)
-Professional snapshot interpolation logic for smoothing peer movement via jitter buffers.
+Snapshot interpolation / jitter buffers for remote peers.
 
 ### [net_auth_server_validator.gd](../scripts/adapt_single_to_multiplayer_net_auth_server_validator.gd)
-Authoritative server validator for anti-cheat (Position, Speed, and Action checks).
+Authoritative validation (position, speed, actions).
 
 ### [net_rpc_rate_limiter.gd](../scripts/adapt_single_to_multiplayer_net_rpc_rate_limiter.gd)
-Expert rate-limiter to prevent RPC flooding and macro-abuse by clients.
+RPC flood / macro protection.
 
 ### [net_interest_management.gd](../scripts/adapt_single_to_multiplayer_net_interest_management.gd)
-Distance-based visibility management to optimize binary bandwidth per-peer.
+Distance-based visibility to cut bandwidth.
 
 ### [net_delta_compression_sync.gd](../scripts/adapt_single_to_multiplayer_net_delta_compression_sync.gd)
-Expert quantization and significance-checking logic for delta-compression.
-
-### [net_upnp_discovery_logic.gd](../scripts/adapt_single_to_multiplayer_net_upnp_discovery_logic.gd)
-Robust script for P2P network discovery and automatic port forwarding via UPNP.
-
-### [net_debug_overlay_monitor.gd](../scripts/adapt_single_to_multiplayer_net_debug_overlay_monitor.gd)
-In-game diagnostic overlay reporting RTT (Ping), Packet Loss, and Jitter.
+Quantization + significance checks for delta sync.
 
 ### [net_lag_compensation.gd](../scripts/adapt_single_to_multiplayer_net_lag_compensation.gd)
-Expert server-side state rewinding (Lag Compensation) for accurate hit-registration.
+Server-side rewind for hit registration.
 
 ### [net_lobby_late_join_sync.gd](../scripts/adapt_single_to_multiplayer_net_lobby_late_join_sync.gd)
-Professional state-initialization logic to bridge 'Late Joiners' into a synced session.
+Late-joiner world snapshot bootstrap.
 
+### Diagnostics
 ### [net_latency_simulator.gd](../scripts/adapt_single_to_multiplayer_net_latency_simulator.gd)
-Editor-only tool for simulating high-ping and loss conditions for stress-testing.
+**MANDATORY** before ship — see [`references/latency-testing.md`](adapt-single-to-multiplayer-latency-testing.md).
+
+### [net_debug_overlay_monitor.gd](../scripts/adapt_single_to_multiplayer_net_debug_overlay_monitor.gd)
+RTT / loss / jitter overlay.
+
+### [net_upnp_discovery_logic.gd](../scripts/adapt_single_to_multiplayer_net_upnp_discovery_logic.gd)
+UPNP port mapping for listen-server / P2P hosts.
 
 ---
 
 ## Architecture Patterns
 
-### Pattern 1: Authoritative Server (Recommended)
-
-```gdscript
-# Server validates ALL gameplay logic
-# Clients send inputs → Server processes → Server broadcasts state
-
-# Pros: Secure, prevents cheating
-# Cons: Requires server hosting, lag affects gameplay
-
-# Use for: Competitive games, PvP, games with economies
-```
-
-### Pattern 2: Peer-to-Peer (Lockstep)
-
-```gdscript
-# All clients run identical simulation
-# Inputs synced, deterministic physics
-
-# Pros: No dedicated server needed
-# Cons: Vulnerable to cheating, desyncs common
-
-# Use for: Co-op, casual games, small player counts (2-4)
-```
-
-### Pattern 3: Hybrid (Authority Transfer)
-
-```gdscript
-# Host acts as server
-# Authority can transfer between peers
-
-# Use for: 4-8 player co-op, party games
-```
+| Pattern | When | Script golden path |
+|---------|------|--------------------|
+| Authoritative server | PvP, economies, cheat risk | `rpc_bridge.gd` → `net_auth_server_validator.gd` → prediction/recon |
+| P2P lockstep | 2–4 co-op, low cheat risk | Deterministic inputs + `net_upnp_discovery_logic.gd` |
+| Hybrid / host authority | Party games 4–8 | Host authority + late-join snapshot |
 
 ---
 
-## Step-by-Step Migration
-
-### Step 1: Separate Input from Logic
-
-```gdscript
-# ❌ BAD: Input directly modifies state (single-player)
-extends CharacterBody2D
-
-func _physics_process(delta: float) -> void:
-    var input := Input.get_vector("left", "right", "up", "down")
-    velocity = input.normalized() * SPEED
-    move_and_slide()
-
-# ✅ GOOD: Input → Logic separation
-
-extends CharacterBody2D
-
-var current_input := Vector2.ZERO
-
-func _physics_process(delta: float) -> void:
-    # Only read input if this is OUR player
-    if is_multiplayer_authority():
-        current_input = Input.get_vector("left", "right", "up", "down")
-        # Send input to server (if we're client)
-        if multiplayer.get_unique_id() != 1:  # Not server
-            rpc_id(1, "receive_input", current_input)
-    
-    # EVERYONE processes movement (server + all clients)
-    _process_movement(delta, current_input)
-
-func _process_movement(delta: float, input: Vector2) -> void:
-    velocity = input.normalized() * SPEED
-    move_and_slide()
-
-@rpc("any_peer", "call_remote", "unreliable")
-func receive_input(input: Vector2) -> void:
-    # Server receives client input
-    current_input = input
-```
-
-### Step 2: Set Up Multiplayer Authority
-
-```gdscript
-# server_setup.gd
-extends Node
-
-const PORT = 7777
-const MAX_PLAYERS = 4
-
-func host_game() -> void:
-    var peer := ENetMultiplayerPeer.new()
-    peer.create_server(PORT, MAX_PLAYERS)
-    multiplayer.multiplayer_peer = peer
-    
-    multiplayer.peer_connected.connect(_on_player_connected)
-    multiplayer.peer_disconnected.connect(_on_player_disconnected)
-    
-    print("Server started on port %d" % PORT)
-
-func join_game(ip: String) -> void:
-    var peer := ENetMultiplayerPeer.new()
-    peer.create_client(ip, PORT)
-    multiplayer.multiplayer_peer = peer
-    
-    print("Connecting to %s:%d" % [ip, PORT])
-
-func _on_player_connected(id: int) -> void:
-    print("Player %d connected" % id)
-    spawn_player(id)
-
-func _on_player_disconnected(id: int) -> void:
-    print("Player %d disconnected" % id)
-    despawn_player(id)
-
-func spawn_player(id: int) -> void:
-    var player := preload("res://player.tscn").instantiate()
-    player.name = str(id)  # CRITICAL: Name must be unique and match peer ID
-    player.set_multiplayer_authority(id)  # Client owns their own player
-    get_node("/root/World").add_child(player, true)  # true = replicate to all peers
-```
-
-### Step 3: Add MultiplayerSynchronizer
-
-```gdscript
-# Scene structure:
-# Player (CharacterBody2D)
-#   ├─ Sprite2D
-#   ├─ CollisionShape2D
-#   └─ MultiplayerSynchronizer
-
-# MultiplayerSynchronizer setup (in editor):
-# - Root Path: "../"  (points to Player node)
-# - Replication Interval: 0.05  (20Hz updates)
-# - Public Visibility: true
-# - Synchronized Properties:
-#     - position
-#     - rotation
-#     - velocity (optional, for interpolation)
-
-# No code needed! MultiplayerSynchronizer auto-syncs properties
-```
-
----
-
-## Client Prediction & Server Reconciliation
-
-### Problem: Lag Makes Game Feel Unresponsive
-
-```gdscript
-# Without prediction:
-# 1. Client presses W
-# 2. Input sent to server
-# 3. Server processes (50ms later)
-# 4. Server sends back position
-# 5. Client sees movement (100ms RTT)
-# Result: 100ms delay between input and visual feedback
-```
-
-### Solution: Client-Side Prediction
-
-```gdscript
-# player_controller.gd
-extends CharacterBody2D
-
-var input_buffer: Array = []
-var server_state := {"position": Vector2.ZERO, "tick": 0}
-
-func _physics_process(delta: float) -> void:
-    if is_multiplayer_authority():
-        var input := Input.get_vector("left", "right", "up", "down")
-        
-        # Client predicts movement IMMEDIATELY
-        var tick := Engine.get_physics_frames()
-        input_buffer.append({"input": input, "tick": tick})
-        process_movement(input)
-        
-        # Send input to server
-        if multiplayer.get_unique_id() != 1:
-            rpc_id(1, "server_receive_input", input, tick)
-    
-    else:
-        # Other players: just display synced position (no prediction)
-        pass
-
-@rpc("any_peer", "call_remote", "unreliable")
-func server_receive_input(input: Vector2, client_tick: int) -> void:
-    # Server processes input
-    process_movement(input)
-    
-    # Send authoritative state back
-    rpc_id(multiplayer.get_remote_sender_id(), "client_receive_state", position, client_tick)
-
-@rpc("authority", "call_remote", "unreliable")
-func client_receive_state(server_pos: Vector2, server_tick: int) -> void:
-    # Reconciliation: check if prediction was correct
-    var error := position.distance_to(server_pos)
-    
-    if error > 5.0:  # Threshold for correction
-        # Snap to server position
-        position = server_pos
-        
-        # Replay inputs that happened after server_tick
-        for buffered_input in input_buffer:
-            if buffered_input.tick > server_tick:
-                process_movement(buffered_input.input)
-    
-    # Clean old inputs
-    input_buffer = input_buffer.filter(func(i): return i.tick > server_tick)
-
-func process_movement(input: Vector2) -> void:
-    velocity = input.normalized() * SPEED
-    move_and_slide()
-```
-
----
-
-## Lag Compensation Techniques
-
-### Interpolation (Other Player Smoothing)
-
-```gdscript
-# Other players appear choppy due to packet loss/jitter
-# Solution: Interpolate between received states
-
-extends CharacterBody2D
-
-var position_buffer: Array = []
-const BUFFER_SIZE = 3  # Store last 3 positions
-
-func _ready() -> void:
-    if not is_multiplayer_authority():
-        # Disable local physics, use interpolation
-        set_physics_process(false)
-
-func _process(delta: float) -> void:
-    if not is_multiplayer_authority() and position_buffer.size() >= 2:
-        # Interpolate between buffered positions
-        var from := position_buffer[0]
-        var to := position_buffer[1]
-        var t := 0.2  # Interpolation speed
-        
-        position = position.lerp(to, t)
-        
-        if position.distance_to(to) < 1.0:
-            position_buffer.pop_front()
-
-# Called by MultiplayerSynchronizer when position updates
-func _on_position_synced(new_pos: Vector2) -> void:
-    position_buffer.append(new_pos)
-    if position_buffer.size() > BUFFER_SIZE:
-        position_buffer.pop_front()
-
-### Server-Side Lag Compensation (Hit Rewind)
-
-To ensure clients can hit targets accurately despite latency, the server must "rewind" the world state to the exact moment the client fired.
-
-**Expert Pattern:**
-1. **Record History**: Store global transforms of all hit-able entities (players, enemies) in a rolling buffer indexed by `Engine.get_physics_frames()`.
-2. **Hit Request**: Client sends a "Fire" RPC including the `tick` when they pressed the button.
-3. **Rewind**: Server retrieves the state for that `tick`, temporarily moves all RIDs back to those transforms via `PhysicsServer3D.body_set_state()`.
-4. **Validate**: Perform a raycast query.
-5. **Restore**: Move all RIDs back to their "present day" transforms.
-
-> [!TIP]
-> Always use `PhysicsServer3D` directly for rewinding to bypass `SceneTree` overhead and prevent unwanted signal/node update cascades.
-```
-
----
-
-## Anti-Cheat Measures
-
-### Server-Side Validation
-
-```gdscript
-# server_validator.gd
-extends Node
-
-const MAX_SPEED = 300.0
-const MAX_TELEPORT_DISTANCE = 50.0
-
-@rpc("any_peer", "call_remote", "reliable")
-func request_move(new_position: Vector2) -> void:
-    var sender_id := multiplayer.get_remote_sender_id()
-    var player := get_node("/root/World/" + str(sender_id))
-    
-    # Validate movement
-    var distance := player.position.distance_to(new_position)
-    var delta := get_physics_process_delta_time()
-    var max_allowed := MAX_SPEED * delta
-    
-    if distance > max_allowed:
-        push_warning("Player %d teleported %f units (max: %f)" % [sender_id, distance, max_allowed])
-        # Reject movement, force server position
-        rpc_id(sender_id, "force_position", player.position)
-        return
-    
-    # Accept movement
-    player.position = new_position
-
-@rpc("authority", "call_remote", "reliable")
-func force_position(server_position: Vector2) -> void:
-    position = server_position
-```
-
----
-
-## Bandwidth Optimization
-
-### Input Buffering
-
-```gdscript
-# ❌ BAD: Send input every frame (60 packets/s)
-func _physics_process(delta: float) -> void:
-    var input := get_input()
-    rpc_id(1, "receive_input", input)
-
-# ✅ GOOD: Send every 3rd frame (20 packets/s)
-var input_timer := 0.0
-const INPUT_SEND_RATE = 0.05  # 20 Hz
-
-func _physics_process(delta: float) -> void:
-    input_timer += delta
-    if input_timer >= INPUT_SEND_RATE:
-        var input := get_input()
-        rpc_id(1, "receive_input", input)
-        input_timer = 0.0
-```
-
----
-
-## Testing Multiplayer Locally
-
-```gdscript
-# Launch multiple instances for testing
-# Run from command line:
-
-# Windows:
-# Server: Godot.exe --path . res://main.tscn -- --server
-# Client 1: Godot.exe --path . res://main.tscn -- --client
-# Client 2: Godot.exe --path . res://main.tscn -- --client
-
-# Parse arguments in code:
-func _ready() -> void:
-    var args := OS.get_cmdline_args()
-    if "--server" in args:
-        host_game()
-    elif "--client" in args:
-        join_game("127.0.0.1")
-```
-
----
+## Migration golden path (no inline host/join tutorials)
+
+1. Separate **input** (client) from **simulation** (authority).
+2. Set `multiplayer_authority` per player node; clients send intents only.
+3. **MANDATORY** `multiplayer_sync.gd` for property replication / remote interpolation.
+4. **MANDATORY** `rpc_bridge.gd` for gameplay events that cross the wire.
+5. Add prediction / lag compensation scripts only for the genres that need them.
+6. Validate with **latency-testing** reference + `net_latency_simulator.gd` at ~150 ms RTT.
 
 ## Decision Tree: Which Architecture?
 
@@ -448,4 +127,45 @@ Visualizing the packet timeline is critical for debugging jitter. Propose an ove
 - **RTT (Round Trip Time)**: Real-time graph of latency spikes.
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+
+> Progressive disclosure: open Official Documentation links only when researching a specific API;
+> load Related Skills when routing work to a peer domain — do not preload the whole lattice.
+
+### Official Documentation
+- [High-level multiplayer](https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html) — RPC modes, authority, and peer lifecycle you must retrofit before any gameplay state leaves the single-player path.
+- [Networking](https://docs.godotengine.org/en/stable/tutorials/networking/index.html) — Transport map (ENet / WebSocket / WebRTC) so host/join choices match platform and NAT constraints.
+- [MultiplayerSynchronizer](https://docs.godotengine.org/en/stable/classes/class_multiplayersynchronizer.html) — Property replication, delta sync, and visibility filters that replace ad-hoc position RPCs.
+- [MultiplayerSpawner](https://docs.godotengine.org/en/stable/classes/class_multiplayerspawner.html) — Spawn/despawn replication when late joiners need the same scene graph as the host.
+- [SceneMultiplayer](https://docs.godotengine.org/en/stable/classes/class_scenemultiplayer.html) — Default MultiplayerAPI implementation: root path, auth callbacks, and RPC routing under SceneTree.
+- [ENetMultiplayerPeer](https://docs.godotengine.org/en/stable/classes/class_enetmultiplayerpeer.html) — UDP host/client peer used by most LAN and dedicated-server ports of single-player games.
+- [MultiplayerAPI](https://docs.godotengine.org/en/stable/classes/class_multiplayerapi.html) — `multiplayer` singleton surface: peer IDs, signals, and `rpc` / `rpc_id` entry points.
+- [MultiplayerPeer](https://docs.godotengine.org/en/stable/classes/class_multiplayerpeer.html) — Transfer modes and connection status shared by every concrete peer backend.
+- [UPNP](https://docs.godotengine.org/en/stable/classes/class_upnp.html) — Automatic port mapping for listen-server / P2P hosts behind consumer routers.
+- [WebRTC](https://docs.godotengine.org/en/stable/tutorials/networking/webrtc.html) — Browser-friendly P2P path when ENet UDP cannot punch through firewalls alone.
+- [Node](https://docs.godotengine.org/en/stable/classes/class_node.html) — `set_multiplayer_authority` / `is_multiplayer_authority` ownership rules for input vs state.
+- [PhysicsServer3D](https://docs.godotengine.org/en/stable/classes/class_physicsserver3d.html) — Direct RID transforms for server-side hit rewind without SceneTree side effects.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Split InputMap reads from simulation so clients send intents and the authority owns outcomes.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Local signal graphs that `rpc_bridge.gd` can wrap without coupling gameplay to transport.
+- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Session/lobby Autoloads that outlive scene changes during host/join flow.
+
+#### Complements
+- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — Broader RPC, lobby, and ENet tuning once the single-player→online migration shape is fixed.
+- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — Deterministic move_and_slide steps reused by client prediction and reconciliation buffers.
+- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — Body/shape setup that lag-compensation rewind and hit validation query against.
+- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — Server-side ray/shape queries for authoritative shots after state rewind.
+- [godot-debugging-profiling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md) — RTT/jitter overlays and remote debug habits that catch sync bugs localhost never shows.
+- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — Headless/dedicated-server export presets and CLI flags for real multi-instance tests.
+- [godot-server-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-server-architecture/SKILL.md) — PhysicsServer/RID patterns and headless host scaffolding used by rewind and dedicated peers.
+
+#### Downstream / consumers
+- [godot-genre-shooter-fps](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md) — Hitscan/projectile feel that depends on prediction + lag compensation from this skill.
+- [godot-genre-battle-royale](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-battle-royale/SKILL.md) — Large-peer interest management and late-join snapshots at BR scale.
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Retune economy/TTK after netcode changes alter effective weapon timings.
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Cap replication rate and cull interest when bandwidth/CPU budgets break under peer load.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for this Domain Skill.

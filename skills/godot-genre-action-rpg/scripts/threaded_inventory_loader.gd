@@ -20,3 +20,13 @@ func _parse_single_item(index: int) -> void:
     var item_data = _item_pool[index]
     # Handle heavy logic: Resource loading, Icon generation, or dynamic stats.
     pass
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_workerthreadpool.html — add_group_task inventory parse
+# - https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html — large save/loot JSON off main thread
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md — item Resource hydration
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — async load gates
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md
+# =============================================================================

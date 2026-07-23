@@ -10,3 +10,13 @@
 - **NEVER forget to handle `await get_tree().process_frame` when updating parameters synchronously** — Sometimes the tree needs one frame to reconcile state before the next parameter change takes effect.
 - **NEVER rely on `auto_advance` for long cutscenes** — If an animation is interrupted, `auto_advance` can put the character in a broken state. Use `Method Tracks` to signal state completion instead.
 - **NEVER use `Sync` groups for animations with wildly different lengths** — It forces one animation to play at an extreme speed. Use `TimeScale` or separate layers for mismatching cycles.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-tree-mastery/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

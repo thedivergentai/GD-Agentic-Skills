@@ -49,3 +49,14 @@ static func send_analytics_event(event_name: String, params: Dictionary = {}) ->
 
 ## EXPERT USAGE:
 ## if OS.has_feature("web"): WebBridgeSync.save_to_local_storage("save1", data)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/platform/web/javascript_bridge.html
+# - https://docs.godotengine.org/en/stable/classes/class_javascriptbridge.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — serialize before localStorage put
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — bridge helper Autoload
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-web/SKILL.md
+# =============================================================================

@@ -32,3 +32,13 @@ func run_smoke_tests() -> bool:
 
 ## Usage Expert Tip:
 ## Run from terminal: godot --headless -s automated_qa_suite.gd
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/debug/overview_of_debugging_tools.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-testing-patterns/SKILL.md — GUT/CI assertion patterns
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md — headless export template runs
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md
+# =============================================================================

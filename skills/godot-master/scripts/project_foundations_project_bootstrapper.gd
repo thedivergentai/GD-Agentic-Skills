@@ -53,3 +53,14 @@ func _enforce_gdignore(path: String) -> void:
 ## NEVER put code files in the root folder. For 'project-foundations', 
 ## enforce a strict 'res://common' layer for Autoloads and 'res://data' 
 ## for JSON/Resource databases.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/data_paths.html
+# - https://docs.godotengine.org/en/stable/classes/class_diraccess.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md — clean feature tree before export packaging
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md — feature folders map to scene modules
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md
+# =============================================================================

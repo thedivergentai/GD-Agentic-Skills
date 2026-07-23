@@ -27,3 +27,15 @@ func _deferred_goto_scene(path: String) -> void:
 	get_tree().root.add_child(current_scene)
 	# Set as current for get_tree().current_scene access
 	get_tree().current_scene = current_scene
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/change_scenes_manually.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/scene_tree.html
+# - https://docs.godotengine.org/en/stable/classes/class_scenetree.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md — primary owner of load/unload UX
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — PackedScene / ResourceLoader paths
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md — fade wrappers around switch
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md
+# =============================================================================

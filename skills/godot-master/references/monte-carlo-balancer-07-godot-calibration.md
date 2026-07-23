@@ -42,3 +42,14 @@ balance-lab calibrate --cells tools/balance_lab/golden_cells.json --runs 500
 - **NEVER** claim “mathematically balanced” from an uncalibrated abstract model of physics-heavy combat.
 - **NEVER** require bit-identical Godot vs Rust — require decision-same (bands/tolerance).
 - **NEVER** calibrate only the pro style — include a weak style cell.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+- https://docs.godotengine.org/en/stable/classes/class_json.html
+- https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — Resource-first extract
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-testing-patterns/SKILL.md — Phase 7 headless calibration
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md
+-->

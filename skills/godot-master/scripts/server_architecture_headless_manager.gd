@@ -48,3 +48,16 @@ func _notification(what: int) -> void:
 
 ## EXPERT USAGE:
 ## Add as AutoLoad. Call using standard --headless -- --port=7777
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html
+# - https://docs.godotengine.org/en/stable/tutorials/export/feature_tags.html
+# - https://docs.godotengine.org/en/stable/classes/class_os.html
+# - https://docs.godotengine.org/en/stable/classes/class_displayserver.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md — headless/dedicated export and CLI packaging
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — Autoload host lifecycle for HeadlessManager
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-server-architecture/SKILL.md
+# =============================================================================

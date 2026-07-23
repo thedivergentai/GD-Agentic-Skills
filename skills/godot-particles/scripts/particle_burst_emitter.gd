@@ -63,3 +63,14 @@ static func create_burst(
 ##     hit_position,
 ##     get_tree().current_scene
 ## )
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/particles/properties.html
+# - https://docs.godotengine.org/en/stable/classes/class_gpuparticles3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/particles/creating_a_3d_particle_system.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — one-shot hit/explosion bursts from damage events
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — finished-driven cleanup after bursts
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md
+# =============================================================================

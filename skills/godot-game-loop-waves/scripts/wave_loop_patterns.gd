@@ -68,3 +68,15 @@ func setup_mob_avoidance(agent_rid: RID, layer: int) -> void:
 func _on_visible_on_screen_notifier_3d_screen_exited() -> void:
     # Optional logic: only despawn if far enough or certain conditions met
     queue_free()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/using_multimesh.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/using_servers.html
+# - https://docs.godotengine.org/en/stable/classes/class_navigationserver3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — swarm scale patterns
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md — async query_path + avoidance
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-game-loop-waves/SKILL.md
+# =============================================================================

@@ -35,3 +35,14 @@ func should_stop_instantly() -> bool:
 ## This function is called during the physics synchronization phase, 
 ## making it the correct place for custom physics engines or character controllers
 ## that require RigidBody interactions without the 'floatiness' of default physics.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/rigid_body.html
+# - https://docs.godotengine.org/en/stable/classes/class_physicsdirectbodystate2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md — when to prefer CharacterBody vs RigidBody
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — _integrate_forces state.step discipline
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md
+# =============================================================================

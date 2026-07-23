@@ -20,3 +20,15 @@ func _process(delta: float) -> void:
 	else:
 		_time = 0
 		transform.origin = transform.origin.lerp(Vector3.ZERO, delta * 5.0)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_camera3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_characterbody3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/using_transforms.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — parent CharacterBody3D velocity source
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — mouse capture / look axes for FPS
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — local-origin bob without fighting look_at
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md
+# =============================================================================

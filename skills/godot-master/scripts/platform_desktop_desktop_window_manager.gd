@@ -22,3 +22,14 @@ func set_mode_safe(mode: DisplayServer.WindowMode) -> void:
 		if not DisplayServer.has_feature(DisplayServer.FEATURE_NATIVE_DIALOG_FILE): # Simple proxy check
 			mode = DisplayServer.WINDOW_MODE_FULLSCREEN
 	DisplayServer.window_set_mode(mode)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_displayserver.html
+# - https://docs.godotengine.org/en/stable/tutorials/rendering/multiple_resolutions.html
+# - https://docs.godotengine.org/en/stable/classes/class_window.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — display stretch + window project settings
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — settings UI that drives window modes
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-desktop/SKILL.md
+# =============================================================================

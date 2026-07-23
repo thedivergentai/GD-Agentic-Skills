@@ -38,20 +38,28 @@ Expert blueprint for open worlds balancing scale, performance, and player engage
 - NEVER perform global A* searches across the entire massive world; strictly use `NavigationPathQueryParameters3D` to limit pathfinding to localized active regions.
 - NEVER use `find_child()` or deep tree iteration for global state (e.g., Time of Day); strictly use **Scene Groups** (`call_group()`) for optimized broadcasting.
 - NEVER synchronize complex Resource types over the network; strictly serialize world changes into primitive Dictionaries or PackedByteArrays.
+- NEVER spawn raw `Thread.new()` for chunk I/O when `ResourceLoader.load_threaded_request()` already covers scene streaming — prefer ResourceLoader; custom threads only for non-Resource work with deferred SceneTree apply.
 
 ---
 
 ## 🛠 Expert Components (scripts/)
 
+> **MANDATORY** by concern (read before implementing):
+> - Streaming → [world_streamer.gd](../scripts/genre_open_world_world_streamer.gd) + [async_chunk_loader.gd](../scripts/genre_open_world_async_chunk_loader.gd)
+> - Origin → choose one shifter (see decision tree) — [floating_origin_shifter.gd](../scripts/genre_open_world_floating_origin_shifter.gd) or [world_origin_shifter.gd](../scripts/genre_open_world_world_origin_shifter.gd)
+> - HLOD → [hlod_visibility_config.gd](../scripts/genre_open_world_hlod_visibility_config.gd) only (no phantom configurator)
+> - Far logic gate → [lod_logic_enabler.gd](../scripts/genre_open_world_lod_logic_enabler.gd)
+
 ### Original Expert Patterns
 - [world_streamer.gd](../scripts/genre_open_world_world_streamer.gd) - Professional-grade chunk management and streaming engine with background threading.
-- [floating_origin_shifter.gd](../scripts/genre_open_world_floating_origin_shifter.gd) - World-offset correction system to prevent floating-point precision jitter.
+- [floating_origin_shifter.gd](../scripts/genre_open_world_floating_origin_shifter.gd) - Group-based world-offset correction for float precision jitter.
 
 ### Modular Components
 - [async_chunk_loader.gd](../scripts/genre_open_world_async_chunk_loader.gd) - Background world streaming system using threaded resource loading.
-- [multimesh_foliage_manager.gd](../scripts/genre_open_world_multimesh_foliage_manager.gd) - Server-side GPU batching for thousands of landscape entities.
-- [hlod_configurator.gd](../scripts/genre_open_world_hlod_visibility_config.gd) - Distance-based mesh swapping and imposter management using VisibilityRange.
+- [world_origin_shifter.gd](../scripts/genre_open_world_world_origin_shifter.gd) - Root+player shift with `reset_physics_interpolation` + shader `world_offset` uniform.
 - [hlod_visibility_config.gd](../scripts/genre_open_world_hlod_visibility_config.gd) - Distance-based geometry swapping using VisibilityRange (HLOD).
+- [lod_logic_enabler.gd](../scripts/genre_open_world_lod_logic_enabler.gd) - Enable/disable AI/physics processing by distance/chunk activity.
+- [multimesh_foliage_manager.gd](../scripts/genre_open_world_multimesh_foliage_manager.gd) - Server-side GPU batching for thousands of landscape entities.
 - [binary_save_manager.gd](../scripts/genre_open_world_binary_save_manager.gd) - High-performance serialization for large-scale world persistence.
 - [chunk_limited_pathfinder.gd](../scripts/genre_open_world_chunk_limited_pathfinder.gd) - NavigationServer-level query limits to optimize AI in dense worlds.
 - [server_prop_spawner.gd](../scripts/genre_open_world_server_prop_spawner.gd) - Extreme optimization using RenderingServer RIDs to bypass SceneTree.
@@ -62,192 +70,77 @@ Expert blueprint for open worlds balancing scale, performance, and player engage
 ---
 
 ## Core Loop
-1.  **Traverse**: Player moves across vast distances (foot, vehicle, mount).
-2.  **Discover**: Player finds Points of Interest (POIs) dynamically.
-3.  **Quest**: Player accepts tasks that require travel.
-4.  **Progress**: World state changes based on player actions.
-5.  **Immerse**: Dynamic weather, day/night cycles affect gameplay.
+Traverse → Discover POIs → Quest/travel → Persist deltas → Weather/day cycle immersion.
 
-## Skill Chain
+## Decision Tree: Streamer / Origin / HLOD
 
-| Phase | Skills | Purpose |
-|-------|--------|---------|
-| 1. Tera | `godot-3d-world-building`, `shaders` | Large scale terrain, tri-planar mapping |
-| 2. Opti | `level-of-detail`, `multithreading` | HLOD, background loading, occlusion |
-| 3. Data | `godot-save-load-systems` | Saving state of thousands of objects |
-| 4. Nav | `godot-navigation-pathfinding` | AI pathfinding on large dynamic maps |
-| 5. Core | `floating-origin` | Preventing precision jitter at 10,000+ units |
+| Concern | Choose | Script |
+|---------|--------|--------|
+| Chunk load/unload around player | ResourceLoader threaded + deferred add_child | **MANDATORY** [world_streamer.gd](../scripts/genre_open_world_world_streamer.gd), [async_chunk_loader.gd](../scripts/genre_open_world_async_chunk_loader.gd) |
+| Origin: gameplay entities in a group, custom shift policy | Group `"world_entities"` shift | [floating_origin_shifter.gd](../scripts/genre_open_world_floating_origin_shifter.gd) |
+| Origin: single world_root + player warp + physics interp + shader offset | Root shifter | [world_origin_shifter.gd](../scripts/genre_open_world_world_origin_shifter.gd) |
+| Origin: planetary / >~few×10k units, physics-heavy | **Large World Coordinates** (double-precision build) | Project setting — may still use a shifter for shader/audio sync |
+| Distant mesh swap / impostor | VisibilityRange HLOD | **MANDATORY** [hlod_visibility_config.gd](../scripts/genre_open_world_hlod_visibility_config.gd) |
+| Disable far AI/physics | Distance/chunk gate | [lod_logic_enabler.gd](../scripts/genre_open_world_lod_logic_enabler.gd) |
+| Persist only changes | Binary delta | [binary_save_manager.gd](../scripts/genre_open_world_binary_save_manager.gd) |
 
-## Architecture Overview
-
-### 1. The Streamer (Chunk Manager)
-Loading and unloading the world around the player.
-
-```gdscript
-# world_streamer.gd
-extends Node3D
-
-@export var chunk_size: float = 100.0
-@export var render_distance: int = 4
-var active_chunks: Dictionary = {}
-
-func _process(delta: float) -> void:
-    var player_chunk = Vector2i(player.position.x / chunk_size, player.position.z / chunk_size)
-    update_chunks(player_chunk)
-
-func update_chunks(center: Vector2i) -> void:
-    # 1. Determine needed chunks
-    var needed = []
-    for x in range(-render_distance, render_distance + 1):
-        for y in range(-render_distance, render_distance + 1):
-            needed.append(center + Vector2i(x, y))
-    
-    # 2. Unload old
-    for chunk in active_chunks.keys():
-        if chunk not in needed:
-            unload_chunk(chunk)
-    
-    # 3. Load new (Threaded)
-    for chunk in needed:
-        if chunk not in active_chunks:
-            load_chunk_async(chunk)
-```
-
-### 2. Floating Origin
-Solving the floating point precision error (jitter) when far from (0,0,0).
-
-```gdscript
-# floating_origin.gd
-extends Node
-
-const THRESHOLD: float = 5000.0
-
-func _process(delta: float) -> void:
-    if player.global_position.length() > THRESHOLD:
-        shift_world(-player.global_position)
-
-func shift_world(offset: Vector3) -> void:
-    # Move the entire world opposite to the player's position
-    # So the player creates the illusion of moving, but logic stays near 0,0
-    for node in get_tree().get_nodes_in_group("world_root"):
-        node.global_position += offset
-```
-
-### 3. Quest State Database
-Tracking "Did I kill the bandits in Chunk 45?" when Chunk 45 is unloaded.
-
-```gdscript
-# global_state.gd
-var chunk_data: Dictionary = {} # Vector2i -> Dictionary
-
-func set_entity_dead(chunk_id: Vector2i, entity_id: String) -> void:
-    if not chunk_data.has(chunk_id):
-        chunk_data[chunk_id] = {}
-    chunk_data[chunk_id][entity_id] = { "dead": true }
-```
-
-## Key Mechanics Implementation
-
-### HLOD (Hierarchical Level of Detail)
-Merging 100 houses into 1 simple mesh when viewed from 1km away.
-*   **Near**: High Poly House + Props.
-*   **Far**: Low Poly Billboard / Imposter mesh.
-*   **Very Far**: Part of the Terrain texture.
-
-### Points of Interest (Discovery)
-Compass bar logic.
-
-```gdscript
-func update_compass() -> void:
-    for poi in active_pois:
-        var direction = player.global_transform.basis.z
-        var to_poi = (poi.global_position - player.global_position).normalized()
-        var angle = direction.angle_to(to_poi)
-        # Map angle to UI position
-```
-
-## Godot-Specific Tips
-
-*   **VisibilityRange**: Use specific `visibility_range_begin` and `end` on MeshInstance3D to handle LODs without a dedicated LOD node.
-*   **Thread**: Use `Thread.new()` for loading chunks to prevent frame stutters.
-*   **OcclusionCulling**: Bake occlusion for large cities. For open fields, simple distance culling is often enough.
-
-## Common Pitfalls
-
-1.  **The "Empty" World**: huge map, nothing to do. **Fix**: Density > Size. Smaller, denser maps are better than vast empty deserts.
-2.  **Save File Bloat**: Save file is 500MB. **Fix**: Only save *changes* (Delta compression). If a rock hasn't moved, don't save it.
-3.  **Physics at Distance**: Physics break far away. **Fix**: Disable physics processing for chunks > 2 units away. Use simple "simulation" for distant logic.
-
+**Pick one origin strategy** — do not dual-own `floating_origin_shifter` and `world_origin_shifter` on the same world root.
 
 ---
 
-## 🚀 Elite Technical Implementations (Batch 09)
+## Architecture (no duplicated Elite dumps)
 
-### 1. World-Origin-Shifting Pattern (Floating Origin)
-Prevent physics jitter and rendering glitches at extreme distances (>5,000 units) by shifting the entire world back to the origin. This pattern snaps the world root opposite to the player's movement threshold.
+1. **Streamer** — Active chunk set from player cell; unload with `queue_free`; load via threaded ResourceLoader; instantiate with `call_deferred`. Do not re-inline streamer pseudocode — read the MANDATORY scripts.
+2. **Delta state** — Dictionary keyed by chunk id for dead entities / looted chests; write with binary saver when chunks unload.
+3. **HLOD** — Proxy mesh `visibility_range_begin`; detail children use `visibility_parent` — configure via [hlod_visibility_config.gd](../scripts/genre_open_world_hlod_visibility_config.gd).
+4. **POI / compass** — Density > size; angle map UI from player forward to POI; no need for a second floating-origin code block.
 
-```gdscript
-class_name WorldOriginShifter extends Node
+## Common Pitfalls
 
-@export var shift_threshold: float = 4000.0
-var _player_camera: Camera3D
+1. Empty world — density over km² vanity
+2. Save bloat — delta-only persistence
+3. Far physics — [lod_logic_enabler.gd](../scripts/genre_open_world_lod_logic_enabler.gd)
+4. Phantom `hlod_configurator.gd` — does not exist; use [hlod_visibility_config.gd](../scripts/genre_open_world_hlod_visibility_config.gd)
 
-func _process(_delta: float) -> void:
-    if not is_instance_valid(_player_camera):
-        _player_camera = get_viewport().get_camera_3d()
-        return
+## Reference
 
-    if _player_camera.global_position.length() > shift_threshold:
-        _perform_origin_shift()
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
 
-func _perform_origin_shift() -> void:
-    var shift_vector: Vector3 = -_player_camera.global_position
-    var world_root = get_tree().get_first_node_in_group("world_root") as Node3D
-    if world_root:
-        world_root.global_position += shift_vector
-    # Broadcast signal so AI/Nav can update their internal coordinates
-```
+### Official Documentation
+- [Background loading](https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html) — ResourceLoader threaded chunk requests so streaming never hitch-stalls the main thread.
+- [Large world coordinates](https://docs.godotengine.org/en/stable/tutorials/physics/large_world_coordinates.html) — when floating-origin shifts vs double-precision builds for maps beyond ~8k units.
+- [Visibility ranges](https://docs.godotengine.org/en/stable/tutorials/3d/visibility_ranges.html) — GeometryInstance3D begin/end + hysteresis for HLOD impostor swaps.
+- [Mesh level of detail (LOD)](https://docs.godotengine.org/en/stable/tutorials/3d/mesh_lod.html) — importer auto-LOD and Viewport mesh_lod_threshold for adaptive outdoor quality.
+- [Using MultiMesh](https://docs.godotengine.org/en/stable/tutorials/performance/using_multimesh.html) — batching foliage/props into one draw call with spatial partitions for culling.
+- [Occlusion culling](https://docs.godotengine.org/en/stable/tutorials/3d/occlusion_culling.html) — baked OccluderInstance3D for cities; why not to move occluders at runtime.
+- [Saving games](https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html) — delta persistence patterns for entity changes across unloaded chunks.
+- [Binary serialization API](https://docs.godotengine.org/en/stable/tutorials/io/binary_serialization_api.html) — FileAccess.store_var/get_var for compact high-volume world state.
+- [Using multiple threads](https://docs.godotengine.org/en/stable/tutorials/performance/using_multiple_threads.html) — Thread/Mutex/Semaphore worker patterns used by custom streamers.
+- [Thread-safe APIs](https://docs.godotengine.org/en/stable/tutorials/performance/thread_safe_apis.html) — what may run off-thread vs what must be call_deferred onto the SceneTree.
+- [Using NavigationPathQueryObjects](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationpathqueryobjects.html) — region-limited NavigationServer3D queries for chunk-scoped AI.
+- [Ray-casting](https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html) — PhysicsDirectSpaceState3D height/placement queries without per-tile nodes.
 
-### 2. HLOD-System (Hierarchical Level of Detail)
-Optimize draw calls by merging distant objects into a single proxy mesh. Use the `Visibility Range` properties on `GeometryInstance3D` to swap high-detail children for a low-poly proxy automatically based on camera distance.
+### Related Skills
 
-```gdscript
-class_name HLODConfigurator extends Node3D
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, resources, and project settings before streaming PackedScenes and groups.
+- [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md) — GridMap/CSG/occlusion/LOD primitives that open-world chunks and HLOD build on.
+- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — collision layers, space queries, and origin-shift-safe physics for large maps.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed Resources, signals, and deferred/thread handoffs used by streamers and saves.
 
-@export var hlod_proxy_mesh: MeshInstance3D
-@export var transition_distance: float = 150.0
+#### Complements
+- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — scene packing and load queues that pair with chunk streamers.
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — draw-call budgets, MultiMesh partitions, and process throttling at world scale.
+- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — NavigationRegion3D baking and path queries limited to active chunks.
+- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — camera distance drives load radii, visibility ranges, and floating-origin thresholds.
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — durable delta saves for POI/quest flags when chunks are unloaded.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — origin-shift and weather broadcasts without find_child tree walks.
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — POI density, encounter/loot pacing, and travel-time balance across the streamed map.
 
-func _ready() -> void:
-    if not hlod_proxy_mesh: return
-        
-    # The proxy only appears when far away
-    hlod_proxy_mesh.visibility_range_begin = transition_distance
-    
-    for child in get_children():
-        if child is MeshInstance3D and child != hlod_proxy_mesh:
-            # High-detail children disappear when the proxy appears
-            child.visibility_parent = hlod_proxy_mesh.get_path()
-```
+#### Downstream / consumers
+- [godot-quest-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-quest-system/SKILL.md) — quests that reference chunk-scoped entities and discovery markers.
+- [godot-genre-sandbox](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-sandbox/SKILL.md) — player-built worlds that reuse streaming, MultiMesh, and persistence patterns.
+- [godot-genre-survival](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-survival/SKILL.md) — exploration/survival loops that inherit open-world streaming and delta state.
 
-### 3. Async-Streamer-Controller (Threaded Chunking)
-Seamlessly load and unload world chunks using `ResourceLoader.load_threaded_request()`. This prevents the main thread from blocking during heavy I/O, ensuring a stutter-free exploration experience.
-
-```gdscript
-class_name AsyncChunkStreamer extends Node
-
-func request_chunk_load(chunk_path: String) -> void:
-    var err = ResourceLoader.load_threaded_request(chunk_path)
-    if err == OK:
-        set_process(true)
-
-func _process(_delta: float) -> void:
-    # Check status of pending requests
-    var status = ResourceLoader.load_threaded_get_status(path)
-    if status == ResourceLoader.THREAD_LOAD_LOADED:
-        var chunk_scene = ResourceLoader.load_threaded_get(path) as PackedScene
-        var chunk_instance = chunk_scene.instantiate()
-        # Add to world...
-```
-
-
-- Master Skill: [godot-master](../SKILL.md)
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.

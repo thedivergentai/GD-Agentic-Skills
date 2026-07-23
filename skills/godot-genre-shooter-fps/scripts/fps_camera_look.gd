@@ -22,3 +22,13 @@ func _unhandled_input(event: InputEvent) -> void:
         transform.basis = Basis()
         rotate_object_local(Vector3.UP, _rot_y)
         rotate_object_local(Vector3.RIGHT, _rot_x)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/mouse_and_input_coordinates.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md - relative mouse and capture modes
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md - yaw/pitch pivot hierarchy
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md
+# =============================================================================

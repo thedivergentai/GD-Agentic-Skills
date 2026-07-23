@@ -19,3 +19,14 @@ void fragment() {
     
     ALBEDO = x_tex * blending.x + y_tex * blending.y + z_tex * blending.z;
 }
+// =============================================================================
+// GDSkills research links (agents) — does not affect runtime
+// Official docs:
+// - https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/spatial_shader.html
+// - https://docs.godotengine.org/en/stable/tutorials/3d/standard_material_3d.html
+// - https://docs.godotengine.org/en/stable/tutorials/shaders/your_first_shader/your_first_3d_shader.html
+// Related skills:
+// - ../godot-shaders-basics/SKILL.md — world-space projection math
+// - ../godot-3d-world-building/SKILL.md — cliffs/caves/terrain materials
+// Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md
+// =============================================================================

@@ -26,3 +26,13 @@ func _physics_process(delta: float) -> void:
 
 ## [SKILL NOTICE]: Avoid 'VehicleBody3D' for arcade feel. Manually 
 ## calculate suspension via RayCast3D and apply forces to a RigidBody3D.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/rigid_body.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — RigidBody3D custom suspension forces
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md — wheel ray recipes
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-racing/SKILL.md
+# =============================================================================

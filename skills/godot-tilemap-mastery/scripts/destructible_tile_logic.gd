@@ -20,3 +20,14 @@ func damage_tile(world_pos: Vector2, damage: float) -> void:
 func _trigger_break_fx(pos: Vector2) -> void:
 	# Spawn particles or debris debris at the world position
 	pass
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_tiledata.html
+# - https://docs.godotengine.org/en/stable/classes/class_tilemaplayer.html
+# - https://docs.godotengine.org/en/stable/tutorials/2d/using_tilesets.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-sandbox/SKILL.md — dig/break loops driven by tile custom data HP
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md — rebake or refresh nav after erase_cell holes
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md
+# =============================================================================

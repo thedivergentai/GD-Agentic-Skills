@@ -26,3 +26,15 @@ func _consume_item(path: String, amt: int) -> void: pass # Implementation logic
 
 ## [SKILL NOTICE]: Perform a full validation pass BEFORE consuming any 
 ## resources to prevent partial-crafting bugs.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md — validate-then-consume crafting
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — recipe cost / tech-tree careers
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md — crafted sinks and material costs
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-survival/SKILL.md
+# =============================================================================

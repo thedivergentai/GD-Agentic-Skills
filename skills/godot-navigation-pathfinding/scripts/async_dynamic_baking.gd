@@ -30,3 +30,13 @@ func _on_baking_finished() -> void:
 	# 3. Update the NavigationRegion3D or Server RID with the new mesh.
 	print("Navmesh baked successfully in background!")
 	# NavigationServer3D.region_set_navigation_mesh(region_rid, nav_mesh)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationmeshes.html
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_optimizing_performance.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md — bake after runtime geometry spawn
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — async bake avoids main-thread stalls
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md
+# =============================================================================

@@ -86,3 +86,15 @@ func _check_milestones(character_id: String, _stat_name: String, value: int) -> 
 		if value >= thresholds[i] and not i in record["milestones"]:
 			record["milestones"].append(i)
 			milestone_reached.emit(character_id, i, {"stat": _stat_name, "value": value})
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — multi-axis stats as Resource-backed data
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — milestone_reached / stats_changed buses
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — gift diminishing returns and thresholds
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-romance/SKILL.md
+# =============================================================================

@@ -23,3 +23,14 @@ func is_action_buffered(action: String) -> bool:
 
 func consume_buffer(action: String) -> void:
 	_buffer.erase(action)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html
+# - https://docs.godotengine.org/en/stable/classes/class_input.html
+# - https://docs.godotengine.org/en/stable/classes/class_inputevent.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-fighting/SKILL.md — priority among buffered specials
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md — dash-over-jump buffer priority
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md
+# =============================================================================

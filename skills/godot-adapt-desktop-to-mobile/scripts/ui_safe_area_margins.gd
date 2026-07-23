@@ -25,3 +25,14 @@ func _apply_safe_area() -> void:
     add_theme_constant_override("margin_top", top_margin)
     add_theme_constant_override("margin_right", right_margin)
     add_theme_constant_override("margin_bottom", bottom_margin)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_displayserver.html
+# - https://docs.godotengine.org/en/stable/tutorials/ui/gui_containers.html
+# - https://docs.godotengine.org/en/stable/tutorials/rendering/multiple_resolutions.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — MarginContainer theme/separation
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md — notch/cutout device testing
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md
+# =============================================================================

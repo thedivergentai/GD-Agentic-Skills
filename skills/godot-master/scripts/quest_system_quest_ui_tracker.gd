@@ -25,3 +25,14 @@ func _remove_quest_track(quest: Quest):
 	var label = get_node_or_null(quest.id)
 	if label:
 		label.queue_free()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/ui/gui_containers.html
+# - https://docs.godotengine.org/en/stable/classes/class_vboxcontainer.html
+# - https://docs.godotengine.org/en/stable/classes/class_label.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — reactive VBox rebuild from manager signals only
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — connect accepted/updated/completed in _ready
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-quest-system/SKILL.md
+# =============================================================================

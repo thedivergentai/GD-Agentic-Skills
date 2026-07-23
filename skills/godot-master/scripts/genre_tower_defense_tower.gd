@@ -80,3 +80,15 @@ func _on_body_exited(body: Node2D) -> void:
 ## EXPERT USAGE:
 ## Assign projectile_scene. Ensure enemies are in "enemy" group.
 ## Adjust Range Radius in inspector.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/using_area_2d.html
+# - https://docs.godotengine.org/en/stable/classes/class_area2d.html
+# - https://docs.godotengine.org/en/stable/classes/class_circleshape2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md — Area2D range cache via body_entered/exited
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md — Idle/Acquire/Attack/Cooldown tower FSM
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — projectile fire and hit resolution
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-tower-defense/SKILL.md
+# =============================================================================

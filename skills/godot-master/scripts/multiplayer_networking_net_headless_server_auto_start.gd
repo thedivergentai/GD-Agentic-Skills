@@ -19,3 +19,14 @@ func _start_dedicated_server() -> void:
 	# Init Net Logic...
 
 ## Rule: Always parse CLI arguments for port/map overrides in dedicated server builds.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html
+# - https://docs.godotengine.org/en/stable/classes/class_os.html
+# - https://docs.godotengine.org/en/stable/classes/class_enetmultiplayerpeer.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-server-architecture/SKILL.md — CLI/feature-tag headless boot
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md — dedicated-server packaging
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md
+# =============================================================================

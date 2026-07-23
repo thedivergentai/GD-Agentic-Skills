@@ -11,395 +11,91 @@ description: "Expert blueprint for data-oriented design using Resource/RefCounte
 
 # Resource & Data Patterns
 
-Resource-based design, typed arrays, and serialization define reusable, inspector-friendly data structures.
-
-## Available Scripts
-
-### [custom_data_resource.gd](../scripts/resource_data_patterns_custom_data_resource.gd)
-Pattern for defining serialized data containers (Items, Spells, Stats) for the Inspector.
-
-### [resource_flyweight_caching.gd](../scripts/resource_data_patterns_resource_flyweight_caching.gd)
-Expert example of the Flyweight pattern for memory-efficient resource sharing.
-
-### [resource_local_to_scene.gd](../scripts/resource_data_patterns_resource_local_to_scene.gd)
-Handling "Local to Scene" resources and `duplicate()` to prevent cross-contamination.
-
-### [character_stats_resource.gd](../scripts/genre_action_rpg_character_stats_resource.gd)
-Reactive data containers that emit signals when internal properties are modified.
-
-### [resource_save_system.gd](../scripts/resource_data_patterns_resource_save_system.gd)
-Pattern for serializing complex game state directly into `.tres` files on disk.
-
-### [resource_based_inventory.gd](../scripts/resource_data_patterns_resource_based_inventory.gd)
-Managing item collections and inventory logic using serialized Resource arrays.
-
-### [flyweight_enemy_config.gd](../scripts/resource_data_patterns_flyweight_enemy_config.gd)
-Using shared Resources to configure many entities efficiently (HP, Skins, Speed).
-
-### [dynamic_resource_generation.gd](../scripts/resource_data_patterns_dynamic_resource_generation.gd)
-Creating and modifying Resource instances programmatically at runtime (Loot, Procedural).
-
-### [resource_preloading_strategy.gd](../scripts/resource_data_patterns_resource_preloading_strategy.gd)
-Preventing frame drops by caching resources in a dictionary before gameplay starts.
-
-### [nested_resource_serialization.gd](../scripts/resource_data_patterns_nested_resource_serialization.gd)
-Building and saving complex data hierarchies using nested Resource properties.
+Resource-based design, typed arrays, and serialization — decision tree + scripts, not Inspector tutorials.
 
 ## NEVER Do in Resource Design
 
-- **NEVER modify resource instances directly** — Without `.duplicate()`, changing a value (like HP) modifies the `.tres` file on disk for everyone [26].
-- **NEVER use untyped arrays in Resources** — `@export var items: Array` allows logic errors. Always use `Array[ResourceClass]` for type safety [27].
-- **NEVER store Node references in Resources** — Objects that only exist in a specific SceneTree (like Players/Projectiles) cannot be serialized. Store `NodePath` or `UID` [30].
+- **NEVER modify resource instances directly** — Without `.duplicate()`, changing a value (like HP) modifies the shared `.tres` for everyone.
+- **NEVER use untyped arrays in Resources** — `@export var items: Array` allows logic errors. Always use `Array[ResourceClass]` for type safety.
+- **NEVER store Node references in Resources** — Objects that only exist in a specific SceneTree cannot be serialized. Store `NodePath` or `UID`.
 - **NEVER perform heavy calculations in Resource getters/setters** — Resources should be data containers. Offload logic to Nodes or specialized RefCounted classes.
-- **NEVER skip `ResourceSaver.save()` error checks** — Saving can fail due to permissions, disk space, or path issues. Always check the return code [31].
+- **NEVER skip `ResourceSaver.save()` error checks** — Saving can fail due to permissions, disk space, or path issues. Always check the return code.
 - **NEVER use Resources for high-frequency runtime data** — If a value changes 60 times a second (like velocity), a standard variable is faster than a Resource property.
 - **NEVER allow circular Resource references** — If A.tres references B.tres and B.tres references A.tres, the engine may crash on load.
-- **NEVER forget the `_init` defaults** — Resources created via `new()` or in the Inspector need default values in their constructor to be editable [15].
-- **NEVER share a Resource between entities if they need unique state** — Use `resource_local_to_scene = true` in the Inspector for components [26].
+- **NEVER forget the `_init` defaults** — Resources created via `new()` or in the Inspector need default values in their constructor to be editable.
+- **NEVER share a Resource between entities if they need unique state** — Use `resource_local_to_scene = true` or `duplicate()` for components.
 - **NEVER use `.tres` for massive datasets** — If you have 10,000 items, a JSON or custom binary format might be more efficient than individualized Resource files.
 
 ---
 
-| Type | Use Case | Serializable | Can Save to Disk | Inspector Support |
-|------|----------|-------------|-----------------|-------------------|
-| `Resource` | Data that needs saving/loading | ✅ | ✅ | ✅ |
-| `RefCounted` | Temporary runtime data | ❌ | ❌ | ❌ |
-| `Node` | Scene hierarchy entities | ✅ (scene files) | ✅ | ✅ |
-
-## When to Use Resources
-
-**Use Resources For:**
-- Item definitions (weapons, consumables, equipment)
-- Character stats/progression systems
-- Skill/ability data
-- Configuration files
-- Dialogue databases
-- Enemy/NPC templates
-
-**Use RefCounted For:**
-- Temporary calculations
-- Runtime-only state machines
-- Utility classes without data persistence
-
-## Implementation Patterns
-
-### Pattern 1: Custom Resource Class
-
-```gdscript
-# item_data.gd
-extends Resource
-class_name ItemData
-
-@export var item_name: String = ""
-@export var description: String = ""
-@export_enum("Weapon", "Consumable", "Armor") var item_type: int = 0
-@export var icon: Texture2D
-@export var value: int = 0
-@export var stackable: bool = false
-@export var max_stack: int = 1
-
-func use() -> void:
-    match item_type:
-        0:  # Weapon
-            print("Equipped weapon: ", item_name)
-        1:  # Consumable
-            print("Consumed: ", item_name)
-        2:  # Armor
-            print("Equipped armor: ", item_name)
-```
-
-**Create Resource Instances:**
-1. In Inspector: **Right-click → New Resource → ItemData**
-2. Fill in properties, **Save** as `res://items/health_potion.tres`
-
-### Pattern 2: Character Stats Resource
-
-```gdscript
-# character_stats.gd
-extends Resource
-class_name CharacterStats
-
-@export var max_health: int = 100
-@export var max_mana: int = 50
-@export var strength: int = 10
-@export var defense: int = 5
-@export var speed: float = 100.0
-
-var current_health: int = max_health:
-    set(value):
-        current_health = clampi(value, 0, max_health)
-
-var current_mana: int = max_mana:
-    set(value):
-        current_mana = clampi(value, 0, max_mana)
-
-func take_damage(amount: int) -> int:
-    var actual_damage := maxi(amount - defense, 0)
-    current_health -= actual_damage
-    return actual_damage
-
-func heal(amount: int) -> void:
-    current_health += amount
-
-func duplicate_stats() -> CharacterStats:
-    var stats := CharacterStats.new()
-    stats.max_health = max_health
-    stats.max_mana = max_mana
-    stats.strength = strength
-    stats.defense = defense
-    stats.speed = speed
-    stats.current_health = current_health
-    stats.current_mana = current_mana
-    return stats
-```
-
-**Usage:**
-```gdscript
-# player.gd
-extends CharacterBody2D
-
-@export var stats: CharacterStats
-
-func _ready() -> void:
-    if stats:
-        # Create runtime copy to avoid modifying the original resource
-        stats = stats.duplicate_stats()
-```
-
-### Pattern 3: Database Pattern (Array of Resources)
-
-```gdscript
-# item_database.gd
-extends Resource
-class_name ItemDatabase
-
-@export var items: Array[ItemData] = []
-
-func get_item_by_name(item_name: String) -> ItemData:
-    for item in items:
-        if item.item_name == item_name:
-            return item
-    return null
-
-func get_items_by_type(item_type: int) -> Array[ItemData]:
-    var filtered: Array[ItemData] = []
-    for item in items:
-        if item.item_type == item_type:
-            filtered.append(item)
-    return filtered
-```
-
-**Create Database:**
-1. Create `ItemDatabase` resource
-2. Expand `items` array in Inspector
-3. Add `ItemData` resources to array
-4. Save as `res://data/item_database.tres`
-
-**Usage:**
-```gdscript
-# Global autoload
-const ITEM_DB := preload("res://data/item_database.tres")
-
-func get_item(name: String) -> ItemData:
-    return ITEM_DB.get_item_by_name(name)
-```
-
-### Pattern 4: Runtime-Only Data (RefCounted)
-
-For data that doesn't need persistence:
-
-```gdscript
-# damage_calculation.gd
-extends RefCounted
-class_name DamageCalculation
-
-var base_damage: int
-var critical_hit: bool
-var damage_type: String
-
-func calculate_final_damage(target_defense: int) -> int:
-    var final_damage := base_damage - target_defense
-    if critical_hit:
-        final_damage *= 2
-    return maxi(final_damage, 1)
-```
-
-**Usage:**
-```gdscript
-var calc := DamageCalculation.new()
-calc.base_damage = 50
-calc.critical_hit = randf() > 0.8
-calc.damage_type = "physical"
-var damage := calc.calculate_final_damage(enemy.defense)
-```
-
-## Advanced Patterns
-
-### Pattern 5: Nested Resources
-
-```gdscript
-# weapon_data.gd
-extends ItemData
-class_name WeaponData
-
-@export var damage: int = 10
-@export var attack_speed: float = 1.0
-@export var special_effects: Array[StatusEffect] = []
-
-@export var effect_name: String
-@export var duration: float
-@export var damage_per_second: int
-
-### Pattern 5b: Binary Serialization (.res vs .tres)
-For production builds, use the binary `.res` format. It is faster to save and load and provides better compression than the human-readable `.tres` format [7, 8].
-
-- **Recursion**: Godot's `ResourceSaver` automatically serializes nested sub-resources recursively. Saving the parent saves the entire tree [7].
-- **Cache Mode**: When loading, use `ResourceLoader.CACHE_MODE_REPLACE` to force a fresh reload from disk, bypassing the internal cache if data has changed [5, 6].
-
-### Pattern 6: Resource Scripts with Signals
-
-```gdscript
-# inventory.gd
-extends Resource
-class_name Inventory
-
-signal item_added(item: ItemData)
-signal item_removed(item: ItemData)
-
-var items: Array[ItemData] = []
-
-func add_item(item: ItemData) -> void:
-    items.append(item)
-    item_added.emit(item)
-
-func remove_item(item: ItemData) -> void:
-    items.erase(item)
-    item_removed.emit(item)
-```
-
-### Pattern 7: Resource Loading at Runtime
-
-```gdscript
-# Load resource dynamically
-var item: ItemData = load("res://items/sword.tres")
-
-# Preload for better performance (compile-time)
-const SWORD := preload("res://items/sword.tres")
-
-# Load all resources in a directory
-func load_all_items() -> Array[ItemData]:
-    var items: Array[ItemData] = []
-    var dir := DirAccess.open("res://items/")
-    if dir:
-        dir.list_dir_begin()
-        var file_name := dir.get_next()
-        while file_name != "":
-            if file_name.ends_with(".tres"):
-                var item: ItemData = load("res://items/" + file_name)
-                items.append(item)
-            file_name = dir.get_next()
-    return items
-```
-
-## Best Practices
-
-### 1. Always Duplicate Resources in Runtime
-
-```gdscript
-# ✅ Good - create instance copy
-@export var stats: CharacterStats
-func _ready():
-    stats = stats.duplicate()  # Or custom duplicate method
-
-# ✅ Best - Use Local to Scene
-# Set `resource_local_to_scene = true` in the Inspector (or script).
-# This ensures each scene instance gets its own unique copy of the resource [10].
-func _setup_local_to_scene():
-    # Use this virtual method for unique per-instance initialization [14].
-    print("Unique resource instance ready!")
-```
-
-### 2. Use `@export` for Inspector Editing
-
-```gdscript
-# ✅ Makes properties editable in Inspector
-@export var max_health: int = 100
-@export var icon: Texture2D
-@export_range(0, 100) var drop_chance: int = 50
-```
-
-### 3. Organize Resources by Category
-
-```
-res://data/
-    items/
-        weapons/
-            sword.tres
-            bow.tres
-        consumables/
-            health_potion.tres
-    characters/
-        player_stats.tres
-        enemy_goblin.tres
-    databases/
-        item_database.tres
-```
-
-### 4. Type Your Arrays
-
-```gdscript
-# ✅ Good - typed array
-@export var items: Array[ItemData] = []
-
-# ❌ Bad - untyped array
-@export var items: Array = []
-```
-
-## Saving/Loading Resources
-
-```gdscript
-# Save resource to disk
-func save_inventory(inventory: Inventory, path: String) -> void:
-    ResourceSaver.save(inventory, path)
-
-# Load resource from disk
-func load_inventory(path: String) -> Inventory:
-    if ResourceLoader.exists(path):
-        return ResourceLoader.load(path)
-    return null
-```
-
-## Expert Data Patterns
-
-### 1. O(1) Resource Preloader
-Avoid disk I/O hitches during gameplay by caching mission-critical assets into a Dictionary during a loading phase. This enables instant O(1) retrieval for spawning [3, 17].
-
-```gdscript
-# Global Asset Cache (Autoload)
-var _cache: Dictionary = {}
-
-func cache_asset(path: String):
-    # Use threaded loading for background processing
-    ResourceLoader.load_threaded_request(path)
-    # ... poll status ...
-    var asset = ResourceLoader.load_threaded_get(path)
-    _cache[path.get_file().get_basename()] = asset
-
-func get_asset(name: StringName) -> Resource:
-    return _cache.get(name)
-```
-
-### 2. Recursive Serialization Registry
-Building complex databases using nested Resources. The root resource (e.g. `QuestDatabase`) saves all child `QuestData` and `ObjectiveData` resources in a single `.res` file [7].
-
-### 3. Local-to-Scene Component Patterns
-Mandatory for components like `HealthComponent` or `AIConfig` that share a base `.tres` but must track unique runtime values. Setting `resource_local_to_scene = true` prevents the "Damaging one damages all" bug [10].
+## Decision Tree: Resource vs RefCounted vs Node
+
+| Type | Use when | Disk / Inspector |
+|------|----------|------------------|
+| `Resource` | Shared definitions, saveable data, `@export` authoring | `.tres`/`.res`, Inspector ✅ |
+| `RefCounted` | Temporary runtime calcs, non-persistent helpers | No disk / weak Inspector |
+| `Node` | Scene entities with process/signals in the tree | Scene files |
+
+**Use Resources for:** item defs, stats templates, abilities, dialogue tables, enemy configs.
+**Use RefCounted for:** damage calc scratchpads, ephemeral state machines, non-saved utilities.
+
+## Available Scripts — MANDATORY by Scenario
+
+| Scenario | MANDATORY read |
+|----------|----------------|
+| Per-instance mutable stats (HP) sharing a base `.tres` | [resource_local_to_scene.gd](../scripts/resource_data_patterns_resource_local_to_scene.gd) |
+| Nested Item → Weapon → StatusEffect trees / save whole graph | [nested_resource_serialization.gd](../scripts/resource_data_patterns_nested_resource_serialization.gd) |
+| Many entities sharing one config (flyweight) | [resource_flyweight_caching.gd](../scripts/resource_data_patterns_resource_flyweight_caching.gd) / [flyweight_enemy_config.gd](../scripts/resource_data_patterns_flyweight_enemy_config.gd) |
+| Custom `@export` data containers | [custom_data_resource.gd](../scripts/resource_data_patterns_custom_data_resource.gd) |
+| Reactive stats with signals | [character_stats_resource.gd](../scripts/resource_data_patterns_character_stats_resource.gd) |
+| Inventory arrays of Resources | [resource_based_inventory.gd](../scripts/resource_data_patterns_resource_based_inventory.gd) |
+| Save Resource trees to disk | [resource_save_system.gd](../scripts/resource_data_patterns_resource_save_system.gd) — check `Error` |
+| Preload / O(1) cache before play | [resource_preloading_strategy.gd](../scripts/resource_data_patterns_resource_preloading_strategy.gd) |
+| Runtime `Resource.new()` loot | [dynamic_resource_generation.gd](../scripts/resource_data_patterns_dynamic_resource_generation.gd) |
+| Validate / pool / factory | [resource_validator.gd](../scripts/resource_data_patterns_resource_validator.gd) / [resource_pool.gd](../scripts/resource_data_patterns_resource_pool.gd) / [data_factory_resource.gd](../scripts/resource_data_patterns_data_factory_resource.gd) |
+
+## Expert Notes (no Pattern 1–5 dump)
+
+- **`.res` vs `.tres`:** prefer binary `.res` in production for speed/size; keep `.tres` for design-time diffs. Nested sub-resources save with the parent via `ResourceSaver`.
+- **Cache:** `ResourceLoader.CACHE_MODE_REPLACE` when you must bypass stale cache after external edits.
+- **Local-to-scene / duplicate:** mandatory for Health/AI components that share a template but mutate at runtime — see [resource_local_to_scene.gd](../scripts/resource_data_patterns_resource_local_to_scene.gd).
+- **Broken WeaponData paste-ups:** do not reconstruct nested weapon tutorials here — implement from [nested_resource_serialization.gd](../scripts/resource_data_patterns_nested_resource_serialization.gd).
 
 ## Reference
-- [Godot Docs: Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html)
-- [Godot Docs: Data Preferences](https://docs.godotengine.org/en/stable/tutorials/best_practices/data_preferences.html)
 
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
 
-### Related
-- Master Skill: [godot-master](../SKILL.md)
-- Related: `.tres` / Resources are the preferred extract source for [godot-monte-carlo-balancer](../SKILL.md) — build the data layer before regex farms.
+### Official Documentation
+- [Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html) — Custom Resource scripts, `.tres`/`.res`, sharing vs `duplicate()`, and `resource_local_to_scene` for per-instance state.
+- [Data preferences](https://docs.godotengine.org/en/stable/tutorials/best_practices/data_preferences.html) — When to store data in Resources vs dictionaries, ConfigFile, or plain scripts for inspector and serialization needs.
+- [Resource](https://docs.godotengine.org/en/stable/classes/class_resource.html) — `duplicate`, `emit_changed`, `resource_path`, and local-to-scene flags used by every data container pattern here.
+- [ResourceLoader](https://docs.godotengine.org/en/stable/classes/class_resourceloader.html) — Cached `load` / threaded requests that power flyweight sharing and preload caches.
+- [ResourceSaver](https://docs.godotengine.org/en/stable/classes/class_resourcesaver.html) — Persist custom Resources to `user://` or `res://` and always check the returned `Error`.
+- [RefCounted](https://docs.godotengine.org/en/stable/classes/class_refcounted.html) — Lightweight runtime objects when you need refcounting without disk serialization or Inspector exports.
+- [Saving games](https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html) — Broader save strategies that pair with ResourceSaver for slot-based `.tres` state.
+- [Background loading](https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html) — Threaded `ResourceLoader` polling so databases and VFX packs do not hitch the main thread.
+- [GDScript exports](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_exports.html) — Typed `@export` / `Array[T]` so item and quest Resources stay Inspector-safe.
+- [Binary serialization API](https://docs.godotengine.org/en/stable/tutorials/io/binary_serialization_api.html) — Compact FileAccess packing when thousands of rows outgrow individualized `.tres` files.
+- [Scene organization](https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html) — Why shared Resources live outside scene trees and how component scenes compose exported data.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Project layout, import, and `res://` hygiene before authoring shared `.tres` databases.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — `class_name`, typed arrays, setters, and `@tool` discipline every custom Resource script depends on.
+
+#### Complements
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Ownership and fan-out for Resource `changed` / custom signals that drive reactive UI and stats.
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Slot versioning, migration, and secure paths that wrap ResourceSaver/ResourceLoader save flows.
+- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — Packed scenes and threaded loads that consume preloaded Resource caches without hitch spikes.
+- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — Ability/buff definitions are Resource data; this skill owns the container and serialization patterns.
+- [godot-dialogue-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-dialogue-system/SKILL.md) — Dialogue graphs and line tables are nested Resources that reuse typed-array and save patterns here.
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Flyweight sharing, pooling RefCounted payloads, and when `.res` beats text `.tres` at scale.
+
+#### Downstream / consumers
+- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — Item stacks, equipment, and bags consume `ItemData` / inventory Resource arrays defined here.
+- [godot-procedural-generation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md) — Generators that instantiate loot, quests, and configs via `Resource.new()` at runtime.
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — `.tres` stats and economy tables are the preferred extract source — build the data layer before regex farms.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for cross-skill discovery.

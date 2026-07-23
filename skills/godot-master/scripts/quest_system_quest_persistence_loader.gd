@@ -19,3 +19,14 @@ func load_save_data(data: Dictionary):
 		if q_res:
 			QuestManager.accept_quest(q_res)
 			QuestManager.update_objective(id, data[id])
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html
+# - https://docs.godotengine.org/en/stable/classes/class_json.html
+# - https://docs.godotengine.org/en/stable/classes/class_fileaccess.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — slot save of quest ID → progress maps
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — reload base Quest Resources from a database, then apply progress
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-quest-system/SKILL.md
+# =============================================================================

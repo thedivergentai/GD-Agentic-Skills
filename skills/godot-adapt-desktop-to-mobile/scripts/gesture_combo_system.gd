@@ -51,3 +51,15 @@ func _analyze_drag() -> void:
         if start_dist > 10.0:
             var scale_factor = current_dist / start_dist
             zoom_detected.emit(scale_factor)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/input_examples.html
+# - https://docs.godotengine.org/en/stable/classes/class_inputeventscreentouch.html
+# - https://docs.godotengine.org/en/stable/classes/class_inputeventscreendrag.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — swipe/pinch buffers
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-puzzle/SKILL.md — tap/swipe consumers
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md
+# =============================================================================

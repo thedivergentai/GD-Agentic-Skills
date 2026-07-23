@@ -29,3 +29,13 @@ func _move_unit(safe_vel: Vector3) -> void:
 
 ## [SKILL NOTICE]: Set 'target_desired_distance' > 1.0 for crowds. 
 ## This prevents units from oscillating indefinitely when they reach a dense target.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationagents.html
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_optimizing_performance.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md — avoidance + arrival dampening
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — crowd agent budgets
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rts/SKILL.md
+# =============================================================================

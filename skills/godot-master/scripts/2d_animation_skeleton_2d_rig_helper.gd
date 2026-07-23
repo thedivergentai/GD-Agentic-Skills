@@ -31,3 +31,15 @@ func update_bone_rest_pose(bone_name: String, new_transform: Transform2D) -> voi
 		bone.rest = new_transform
 		# Mandatory for the skeleton to recognize the change
 		bone.apply_rest()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/animation/2d_skeletons.html
+# - https://docs.godotengine.org/en/stable/classes/class_skeleton2d.html
+# - https://docs.godotengine.org/en/stable/classes/class_skeletonmodificationstack2d.html
+# - https://docs.godotengine.org/en/stable/classes/class_skeletonmodification2dtwoboneik.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md — bone rotation tracks on Skeleton2D
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md — raycast IK targets for feet
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md
+# =============================================================================

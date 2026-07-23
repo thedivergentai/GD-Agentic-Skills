@@ -25,3 +25,13 @@ func clear_all() -> void:
     for rid in _spawned_rids:
         RenderingServer.free_rid(rid)
     _spawned_rids.clear()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_renderingserver.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/using_multimesh.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — RID visuals when SceneTree props are too heavy
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md — free RIDs when chunks unload
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md
+# =============================================================================

@@ -44,17 +44,28 @@ Expert blueprint for MOBAs emphasizing competitive balance and strategic depth.
 
 ---
 
+## Decision Tree: Solo prototype vs authoritative 5v5
+
+| Goal | Load first | Skip / defer |
+|------|------------|--------------|
+| **Solo lane prototype** (1 hero, local waves, no peers) | [tower_priority_aggro.gd](scripts/tower_priority_aggro.gd), [weighted_target_selector.gd](scripts/weighted_target_selector.gd), [skill_shot_indicator.gd](scripts/skill_shot_indicator.gd), [hero_state_machine.gd](scripts/hero_state_machine.gd) | `server_minion_sync`, full fog grid, prediction |
+| **Authoritative 5v5** (dedicated/listen server) | [server_minion_sync.gd](scripts/server_minion_sync.gd), [synced_ability_controller.gd](scripts/synced_ability_controller.gd), [fog_visibility_check.gd](scripts/fog_visibility_check.gd) + [fog_grid_mask.gd](scripts/fog_grid_mask.gd), [minion_worker_pathfinder.gd](scripts/minion_worker_pathfinder.gd) | Client-trusted damage, per-minion `MultiplayerSynchronizer` |
+| **Peer skill** | `godot-multiplayer-networking`, `godot-navigation-pathfinding`, `godot-ability-system` | Inventing a second networking stack inside this genre skill |
+
 ## 🛠 Expert Components (scripts/)
 
 ### Original Expert Patterns
 - [skill_shot_indicator.gd](scripts/skill_shot_indicator.gd) - Mouse-driven targeting system for range, width, and direction visualization.
-- [tower_priority_aggro.gd](scripts/tower_priority_aggro.gd) - Advanced AI for defensive towers following competitive priority rules.
+- [tower_priority_aggro.gd](scripts/tower_priority_aggro.gd) - Advanced AI for defensive towers following competitive priority rules. **MANDATORY** for tower dive/priority.
 
 ### Modular Components
-- [server_minion_sync.gd](scripts/server_minion_sync.gd) - Authoritative sync for high-count units using compressed byte arrays.
-- [fog_visibility_check.gd](scripts/fog_visibility_check.gd) - Physics raycasting for high-performance Line-of-Sight checks.
+- [server_minion_sync.gd](scripts/server_minion_sync.gd) - Authoritative sync for high-count units using compressed byte arrays. **MANDATORY** for 5v5 waves (not one synchronizer per minion).
+- [fog_visibility_check.gd](scripts/fog_visibility_check.gd) - Physics raycasting for high-performance Line-of-Sight checks. **MANDATORY** before fog mask painting.
 - [fog_grid_mask.gd](scripts/fog_grid_mask.gd) - TileMap-driven visibility masking system using Vector2i grid logic.
-- [status_effect_data.gd](scripts/status_effect_data.gd) - Lightweight Resource container forDefining buffs, debuffs, and stuns.
+- [minion_worker_pathfinder.gd](scripts/minion_worker_pathfinder.gd) - **When to load:** WorkerThreadPool path batches when wave size leaves `_physics_process` pathfinding. Prefer over per-minion full A* every frame.
+- [weighted_target_selector.gd](scripts/weighted_target_selector.gd) - **When to load:** hero/minion/tower acquisition with group-weighted priority (AA and simple aggro). Pair with tower_priority for dive rules.
+- [synced_ability_controller.gd](scripts/synced_ability_controller.gd) - **When to load:** QWER casts under authority — client predicts cooldown UI, server validates. Skip for offline prototypes.
+- [status_effect_data.gd](scripts/status_effect_data.gd) - Lightweight Resource container for defining buffs, debuffs, and stuns.
 - [status_effect_manager.gd](scripts/status_effect_manager.gd) - Modular logic for applying and managing unique status effect instances.
 - [decoupled_ability_damage.gd](scripts/decoupled_ability_damage.gd) - Inter-hero combat interaction using safe duck-typing patterns.
 - [hero_state_machine.gd](scripts/hero_state_machine.gd) - Optimized StringName-based state machine for hero logic.
@@ -84,72 +95,24 @@ Expert blueprint for MOBAs emphasizing competitive balance and strategic depth.
 
 ## Architecture Overview
 
-### 1. Lane Manager
-Spawns waves of minions periodically.
+### 1. Lane / Minion Waves (authoritative)
+Do **not** invent inline `lane_manager` / `minion_ai` samples.
 
-```gdscript
-# lane_manager.gd
-extends Node
+> **MANDATORY reads**: [server_minion_sync.gd](scripts/server_minion_sync.gd) for batched wave state; [minion_worker_pathfinder.gd](scripts/minion_worker_pathfinder.gd) when agent count needs WorkerThreadPool; [weighted_target_selector.gd](scripts/weighted_target_selector.gd) for march→combat target picks. Spawn cadence stays data/timer-driven on the server; clients render from sync arrays.
 
-@export var lane_path: Path3D
-@export var spawn_interval: float = 30.0
-var timer: float = 0.0
+### 2. Tower Aggro Logic
+Priority: Hero attacking Ally > unit attacking Ally Hero > closest minion > closest hero.
 
-func _process(delta: float) -> void:
-    timer -= delta
-    if timer <= 0:
-        spawn_wave()
-        timer = spawn_interval
+> **MANDATORY read**: [tower_priority_aggro.gd](scripts/tower_priority_aggro.gd). Compose with [weighted_target_selector.gd](scripts/weighted_target_selector.gd) for group ranks.
 
-func spawn_wave() -> void:
-    # Spawn 3 Melee, 3 Ranged, 1 Cannon (every 3rd wave)
-    for i in range(3):
-        spawn_minion(MeleeMinion, lane_path)
-        await get_tree().create_timer(1.0).timeout
-```
-
-### 2. Minion AI
-Simple but follows strict rules.
-
-```gdscript
-# minion_ai.gd
-extends CharacterBody3D
-
-enum State { MARCH, COMBAT }
-var current_target: Node3D
-
-func _physics_process(delta: float) -> void:
-    match state:
-        State.MARCH:
-            move_along_path()
-            scan_for_enemies()
-        State.COMBAT:
-            if is_instance_valid(current_target):
-                attack(current_target)
-            else:
-                state = State.MARCH
-```
-
-### 3. Tower Aggro Logic
-The most misunderstood mechanic by new players.
-
-```gdscript
-# tower.gd
-func _on_aggro_check() -> void:
-    # Priority 1: Enemy Hero attacking Ally Hero
-    # Priority 2: Enemy Unit attacking Ally Hero
-    # Priority 3: Closest Enemy Minion
-    # Priority 4: Closest Enemy Hero
-    var target = determine_best_target()
-    if target:
-        shoot_at(target)
-```
+### 3. Fog of War
+> **MANDATORY read**: [fog_visibility_check.gd](scripts/fog_visibility_check.gd) for nodeless LoS; paint results into [fog_grid_mask.gd](scripts/fog_grid_mask.gd). Never use `Area2D` overlap as the fog oracle.
 
 ### 4. Skill-Shot Ability Cycle
 Implementation pattern for "QWER" targeting:
 1. **Idle**: Waiting for input.
-2. **Telegraphed**: Show indicator (`skill_shot_indicator.gd`) while mouse is held.
-3. **Active**: Spawn hitbox/projectile on release.
+2. **Telegraphed**: Show indicator ([skill_shot_indicator.gd](scripts/skill_shot_indicator.gd)) while mouse is held.
+3. **Active**: Spawn hitbox/projectile on release — under multiplayer, route through [synced_ability_controller.gd](scripts/synced_ability_controller.gd).
 4. **Recovery**: Brief backswing animation where movement/casting is locked.
 
 ## Key Mechanics Implementation
@@ -265,4 +228,45 @@ func _physics_process(_delta: float) -> void:
 
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+
+> Progressive disclosure: open Official Documentation links only when researching a specific API;
+> load Related Skills when routing work to a peer domain — do not preload the whole lattice.
+
+### Official Documentation
+- [High-level multiplayer](https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html) — Authority, RPCs, and transfer modes for server-validated casts and unreliable movement.
+- [MultiplayerSynchronizer](https://docs.godotengine.org/en/stable/classes/class_multiplayersynchronizer.html) — Property replication for hero health/mana/cooldowns without per-minion synchronizer spam.
+- [SceneReplicationConfig](https://docs.godotengine.org/en/stable/classes/class_scenereplicationconfig.html) — Which properties replicate and how often when pairing with low tick-rate hero sync.
+- [Using NavigationAgents](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationagents.html) — Click-to-move, minion march, and avoidance for lane flow without stacking.
+- [Using navigation meshes](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationmeshes.html) — Baking lanes/jungle/bases and async rebake when arena geometry changes.
+- [Optimizing navigation performance](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_optimizing_performance.html) — Time-slicing and agent budgets when hundreds of minions path each wave.
+- [Ray-casting](https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html) — Click-to-ground picking and nodeless fog LOS via direct space-state rays.
+- [Physics interpolation introduction](https://docs.godotengine.org/en/stable/tutorials/physics/interpolation/physics_interpolation_introduction.html) — Smooth hero visuals when network sync runs at 10–20 Hz.
+- [Using Viewports](https://docs.godotengine.org/en/stable/tutorials/rendering/viewports.html) — SubViewport fog masks and minimap projections painted from allied vision.
+- [Using multiple threads](https://docs.godotengine.org/en/stable/tutorials/performance/using_multiple_threads.html) — WorkerThreadPool patterns for minion batch logic off the main thread.
+- [Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html) — Ability/status `Resource` data with `duplicate(true)` so buffs never mutate shared templates.
+- [Mouse and input coordinates](https://docs.godotengine.org/en/stable/tutorials/inputs/mouse_and_input_coordinates.html) — Screen→world mapping for skill-shot indicators and RTS-style move orders.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Physics ticks, layer names, and input map setup before lanes, towers, and fog queries stay consistent.
+- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — Authority, RPC hygiene, and sync budgets that MOBA minion/hero networking builds on.
+- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — NavigationAgent avoidance, baking, and performance contracts for waves and jungle camps.
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Action maps and physics-step input sampling for click-to-move and QWER cast telegraphs.
+
+#### Complements
+- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — Data-driven QWER cooldowns, costs, and effect scenes wired into authoritative cast validation.
+- [godot-rpg-stats](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md) — Hero growth, armor/MR-style modifiers, and Resource-backed stats towers and abilities read.
+- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Hit/hurt contracts for skill-shots, AA, and tower shots without hard class coupling.
+- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — Deeper space-state recipes for fog LOS, dive checks, and click picking under load.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Decoupled ability UI binders and cast buses so cooldowns never live inside hero combat scripts.
+- [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md) — Lane corridors, jungle geometry, and collision that match the navmesh bake surface.
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Profiling and batching when minion sync arrays or fog grids threaten frame time.
+- [godot-genre-rts](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rts/SKILL.md) — Shared click-to-move, selection, and fog-mask patterns when borrowing RTS control UX for MOBA heroes.
+
+#### Downstream / consumers
+- [godot-adapt-single-to-multiplayer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md) — Lifts a solo lane prototype into lobby/authority/prediction flows this genre assumes.
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Hero asymmetry, kill-bounty, and catch-up XP matrices — simulate matchup win% instead of AFK→pro PvE bands alone.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored entry for discovering MOBA patterns beside sibling domains.

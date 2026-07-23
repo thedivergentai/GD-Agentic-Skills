@@ -1,6 +1,6 @@
 ---
 name: godot-adapt-3d-to-2d
-description: "Expert patterns for simplifying 3D games to 2D including dimension reduction strategies, camera flattening, physics conversion, 3D-to-sprite art pipeline, and control simplification. Use when porting 3D to 2D, creating 2D versions for mobile, or prototyping. Trigger keywords: CharacterBody3D to CharacterBody2D, Camera3D to Camera2D, Vector3 to Vector2, flatten Z-axis, orthogonal projection, 3D to sprite conversion, performance optimization."
+description: "Expert patterns for simplifying 3D games to 2D including dimension reduction strategies, 2.5D fake-depth, isometric ports, camera flattening, physics conversion, 3D-to-sprite art pipeline, and control simplification. Use when porting 3D to 2D, building 2.5D / isometric / fake-depth gameplay, creating 2D versions for mobile, or prototyping. Trigger keywords: CharacterBody3D to CharacterBody2D, Camera3D to Camera2D, Vector3 to Vector2, flatten Z-axis, 2.5D, isometric, fake depth, Y-sort, simulated Z, orthogonal projection, 3D to sprite conversion, performance optimization."
 ---
 
 ## Godot 4.7 Baseline
@@ -17,15 +17,26 @@ Expert guidance for simplifying 3D games into 2D (or 2.5D).
 
 - **NEVER remove Z-axis without gameplay compensation** — Blindly flattening 3D to 2D removes spatial strategy. Add other depth mechanics (layers, jump height variations).
 - **NEVER keep 3D collision shapes** — Use simpler 2D shapes (CapsuleShape2D, RectangleShape2D). 3D shapes don't convert automatically.
-- **NEVER use orthographic Camera3D as "2D mode"** — Use actual Camera2D for proper 2D rendering pipeline and performance.
+- **NEVER use orthographic Camera3D as "2D mode"** — WHY: You still pay 3D transform/lighting costs and miss CanvasItem batching. Use Camera2D + 2D nodes ([`ortho_simulation.gd`](scripts/ortho_simulation.gd) only for simulated height).
 - **NEVER assume automatic performance gain** — Poorly optimized 2D (too many draw calls, large sprite sheets) can be slower than optimized 3D.
 - **NEVER forget to adjust gravity** — 3D gravity is Vector3(0, -9.8, 0). 2D gravity is float (980 pixels/s²). Scale appropriately.
+- **NEVER treat ground and air hits as the same Area2D overlap** — In 2.5D, a ground slash must not hit jumping targets. WHY: 2D physics has no Z. Use [`hitbox_depth_manager.gd`](scripts/hitbox_depth_manager.gd) height AABB checks.
+- **NEVER fight Y-sort with per-sprite `z_index` spam** — WHY: Ownership of sort order belongs on the Y-sorted parent. Use [`depth_sorting_y_sort.gd`](scripts/depth_sorting_y_sort.gd); manual z_index drifts every frame.
 
 ---
 
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
+
+### Strategy router (MANDATORY / Do NOT Load)
+| Strategy | Load | Do NOT Load |
+|----------|------|-------------|
+| True 2D (drop Z) | `jump_z_axis_sim.gd` only if platformer height remains; else CharacterBody2D patterns | `ortho_simulation.gd`, iso math, fake shadows |
+| 2.5D / fake depth | **MANDATORY** `ortho_simulation.gd` + `jump_z_axis_sim.gd` + `hitbox_depth_manager.gd` + `depth_sorting_y_sort.gd` (+ `parallax_depth_camera.gd` / `fake_3d_shadows.gd`) | Manual `z_index = int(y)` spam; ortho Camera3D as 2D |
+| Isometric stay | **MANDATORY** `isometric_math_core.gd` + `depth_sorting_y_sort.gd` | Cartesian-only velocity samples; Camera3D ortho fake |
+| Bake 3D→sprites | **MANDATORY** `model_to_sprite_bake.gd` (+ `billboard_sprite_manager.gd` for Doom-style) | Blender bake recipes in body |
+| Node/physics convert only | Decision tree + gravity/collision notes below | Strategy code samples; Dimensional Patcher regex without review |
 
 ### [ortho_simulation.gd](scripts/ortho_simulation.gd)
 Simulates 3D Z-axis height in 2D top-down games. Handles vertical velocity, gravity, sprite offset, and shadow scaling.
@@ -63,211 +74,30 @@ Screen space CanvasItem warp Shader simulating a Mode 7 / tabletop perspective p
 ### [2d_lighting_normals.gd](scripts/2d_lighting_normals.gd)
 Automatic programmatic generation of `CanvasTexture` combining base albedo and baked normal maps at runtime so Sprites correctly react to 2D PointLIGHTs like 3D geometry.
 
+### [model_to_sprite_bake.gd](scripts/model_to_sprite_bake.gd)
+**MANDATORY** for automated 3D→sprite angle baking via SubViewport. Keep body as strategy router.
 
----
-
-## Why Go from 3D to 2D?
-
-| Reason | Benefit |
-|--------|---------|
-| **Mobile performance** | 5-10x faster on low-end devices |
-| **Simpler art pipeline** | Sprites easier to create than 3D models |
-| **Faster iteration** | 2D level design is quicker |
-| **Accessibility** | Lower hardware requirements |
-| **Clarity** | Reduce visual clutter for puzzle/strategy games |
 
 ---
 
 ## Dimension Reduction Strategies
 
-### Strategy 1: True 2D (Remove Z-axis)
+Pick one row from the strategy router above — do not paste conversion tutorials in-scene.
 
-```gdscript
-# Top-down or side-view
-# Example: 3D isometric → 2D top-down
+| Strategy | Intent | Scripts |
+|----------|--------|---------|
+| True 2D | Drop Z; `Vector2` velocity; Camera2D | Peer `godot-characterbody-2d` / `godot-camera-systems` |
+| 2.5D / fake depth | Simulated height + Y-sort ownership + ground-vs-air hitboxes | `ortho_simulation.gd`, `jump_z_axis_sim.gd`, `hitbox_depth_manager.gd`, `depth_sorting_y_sort.gd` |
+| Isometric stay | 2D physics + iso projection | **MANDATORY** `isometric_math_core.gd` |
 
-# Before (3D):
-var velocity := Vector3(input.x, 0, input.y) * speed
-
-# After (2D):
-var velocity := Vector2(input.x, input.y) * speed
-
-# Use case: Top-down shooters, RTS, turn-based strategy
-```
-
-### Strategy 2: 2.5D (Fake depth with layers)
-
-```gdscript
-# Keep visual depth perception without Z-axis gameplay
-# Use ParallaxBackground for depth layers
-
-# Scene structure:
-# ParallaxBackground
-#   ├─ ParallaxLayer (far mountains, scroll slow)
-#   ├─ ParallaxLayer (mid buildings, scroll medium)
-#   └─ ParallaxLayer (near trees, scroll fast)
-
-# player.gd
-extends CharacterBody2D
-
-func _ready() -> void:
-    var parallax := get_node("../ParallaxBackground")
-    parallax.scroll_base_scale = Vector2(0.5, 0.5)  # Parallax strength
-```
-
-### Strategy 3: Fixed Perspective (Isometric Stay)
-
-```gdscript
-# Keep isometric/dimetric view but use 2D physics
-# Use rotated sprites to simulate 3D angles
-
-const ISO_ANGLE := deg_to_rad(-30)  # Isometric tilt
-
-func world_to_iso(pos: Vector2) -> Vector2:
-    return Vector2(
-        pos.x - pos.y,
-        (pos.x + pos.y) * 0.5
-    )
-
-func iso_to_world(iso_pos: Vector2) -> Vector2:
-    return Vector2(
-        (iso_pos.x + iso_pos.y * 2) * 0.5,
-        (iso_pos.y * 2 - iso_pos.x) * 0.5
-    )
-```
-
----
-
-## Node Conversion
-
-### Physics Bodies
-
-```gdscript
-# CharacterBody3D → CharacterBody2D
-extends CharacterBody3D  # Before
-
-const SPEED = 5.0
-const JUMP_VELOCITY = 4.5
-const GRAVITY = 9.8
-
-func _physics_process(delta: float) -> void:
-    velocity.y -= GRAVITY * delta
-    var input := Input.get_vector("left", "right", "forward", "back")
-    velocity.x = input.x * SPEED
-    velocity.z = input.y * SPEED
-    move_and_slide()
-
-# ⬇️ Convert to:
-
-extends CharacterBody2D  # After
-
-const SPEED = 300.0
-const JUMP_VELOCITY = -400.0
-const GRAVITY = 980.0  # Pixels per second squared
-
-func _physics_process(delta: float) -> void:
-    velocity.y += GRAVITY * delta
-    var input := Input.get_vector("left", "right", "up", "down")
-    velocity.x = input.x * SPEED
-    # Note: No Z-axis. For platformer, use input.y for jump
-    move_and_slide()
-```
-
-### Camera Conversion
-
-```gdscript
-# Camera3D → Camera2D
-# Before: Third-person 3D camera
-extends SpringArm3D
-
-@onready var camera: Camera3D = $Camera3D
-
-func _process(delta: float) -> void:
-    spring_length = 10.0
-    rotate_y(Input.get_axis("cam_left", "cam_right") * delta)
-
-# ⬇️ Convert to:
-
-extends Camera2D  # After
-
-@onready var player: CharacterBody2D = $"../Player"
-
-func _process(delta: float) -> void:
-    global_position = player.global_position
-    zoom = Vector2(2.0, 2.0)  # Adjust to taste
-```
+Gravity scale: 3D `9.8` m/s² → 2D `~980` px/s² when 1 m ≈ 100 px. Collisions: CapsuleShape3D → CapsuleShape2D (see Physics Adjustments). Camera: Camera3D/SpringArm → Camera2D — **NEVER** ortho Camera3D as “2D mode”.
 
 ---
 
 ## Art Pipeline: 3D Models → Sprites
 
-### Option 1: Render Sprites from 3D (Automation)
-
-```gdscript
-# Use Godot to render 3D model from fixed angles
-# sprite_renderer.gd (tool script)
-@tool
-extends Node3D
-
-@export var model_path: String = "res://models/character.glb"
-@export var output_dir: String = "res://sprites/"
-@export var angles: int = 8  # 8-directional sprites
-@export var render: bool = false:
-    set(value):
-        if value:
-            render_sprites()
-
-func render_sprites() -> void:
-    var model := load(model_path).instantiate()
-    add_child(model)
-    
-    var camera := Camera3D.new()
-    camera.position = Vector3(0, 2, 5)
-    camera.look_at(Vector3.ZERO)
-    add_child(camera)
-    
-    var viewport := SubViewport.new()
-    viewport.size = Vector2i(256, 256)
-    viewport.transparent_bg = true
-    viewport.add_child(camera)
-    add_child(viewport)
-    
-    for i in range(angles):
-        model.rotation.y = (TAU / angles) * i
-        
-        await RenderingServer.frame_post_draw
-        var img := viewport.get_texture().get_image()
-        img.save_png("%s/sprite_%d.png" % [output_dir, i])
-    
-    model.queue_free()
-    camera.queue_free()
-    viewport.queue_free()
-```
-
-### Option 2: Manual Export (Blender)
-
-```python
-# Blender Python script (run in Blender)
-import bpy
-import math
-
-angles = 8
-output_dir = "/path/to/sprites/"
-model = bpy.data.objects["Character"]
-
-for i in range(angles):
-    model.rotation_euler.z = (2 * math.pi / angles) * i
-    bpy.ops.render.render(write_still=True)
-    bpy.data.images['Render Result'].save_render(
-        filepath=f"{output_dir}/sprite_{i}.png"
-    )
-```
-
-### Option 3: Use Sprite3D as Reference
-
-```gdscript
-# Keep 3D model in editor, export  frame-by-frame
-```
+**MANDATORY** when baking multi-angle sprites from GLB/scenes: [`model_to_sprite_bake.gd`](scripts/model_to_sprite_bake.gd) (`@tool` SubViewport baker).
+Manual Blender export stays outside this skill. Strategy choice stays in the decision tree below — do not re-inline bake recipes in the body.
 
 ---
 
@@ -322,15 +152,6 @@ velocity = input_2d.normalized() * SPEED
 
 ## Performance Gains
 
-### Expected Improvements
-
-| Metric | 3D | 2D | Improvement |
-|--------|----|----|-------------|
-| Draw calls | 100 | 20 | 5x |
-| GPU load | High | Low | 10x |
-| Battery life (mobile) | 1 hour | 5 hours | 5x |
-| RAM usage | 500MB | 100MB | 5x |
-
 ### Optimization Techniques
 
 ```gdscript
@@ -368,17 +189,7 @@ func _on_viewport_resized() -> void:
 
 ### Depth Sorting
 
-```gdscript
-# Problem: Overlapping sprites need sorting
-# Solution: Use Y-sort or z_index
-
-extends Sprite2D
-
-func _ready() -> void:
-    y_sort_enabled = true  # Auto-sort by Y position
-    # Or set z_index manually:
-    z_index = int(global_position.y)
-```
+**NEVER** drive sort with per-sprite `z_index = int(global_position.y)` — that contradicts Y-sort ownership. **MANDATORY** [`depth_sorting_y_sort.gd`](scripts/depth_sorting_y_sort.gd): enable `y_sort_enabled` on the parent and keep children at default relative z.
 
 ### Lost Spatial Audio
 
@@ -461,4 +272,43 @@ func _run() -> void:
 ```
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
+
+### Official Documentation
+- [Introduction to 2D](https://docs.godotengine.org/en/stable/tutorials/2d/introduction_to_2d.html) — Establishes the CanvasItem/Camera2D pipeline you must switch into when leaving Node3D rendering for real 2D performance.
+- [Using CharacterBody2D](https://docs.godotengine.org/en/stable/tutorials/physics/using_character_body_2d.html) — Canonical `move_and_slide` / floor / jump patterns after `CharacterBody3D` → `CharacterBody2D` conversion.
+- [Physics introduction](https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html) — Units, layers/masks, and why 3D gravity/`Vector3` assumptions break when gravity becomes a 2D scalar.
+- [2D transforms](https://docs.godotengine.org/en/stable/tutorials/2d/2d_transforms.html) — `Transform2D` basis/skew math used for isometric placement and fake projected shadows.
+- [2D parallax](https://docs.godotengine.org/en/stable/tutorials/2d/2d_parallax.html) — Layer scroll scales that replace Z-depth when gameplay collapses to a plane.
+- [Canvas layers](https://docs.godotengine.org/en/stable/tutorials/2d/canvas_layers.html) — Stacking `CanvasLayer`s for fake-depth cameras without keeping an orthographic `Camera3D`.
+- [2D lights and shadows](https://docs.godotengine.org/en/stable/tutorials/2d/2d_lights_and_shadows.html) — Normal-mapped `CanvasTexture` / `Light2D` path that restores 3D-looking lighting on sprites.
+- [Navigation introduction (2D)](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_introduction_2d.html) — 2D nav regions/layers for flattening vertical 3D pathing into tiered 2D agents.
+- [Using Viewports](https://docs.godotengine.org/en/stable/tutorials/rendering/viewports.html) — `SubViewport` capture of 3D models into `Sprite2D` textures (runtime or bake pipeline).
+- [Camera2D](https://docs.godotengine.org/en/stable/classes/class_camera2d.html) — Zoom, limits, and follow API that should replace “ortho Camera3D as 2D mode.”
+- [CanvasItem](https://docs.godotengine.org/en/stable/classes/class_canvasitem.html) — `y_sort_enabled` / `z_index` / `z_as_relative` for depth sorting after losing true Z.
+- [General optimization](https://docs.godotengine.org/en/stable/tutorials/performance/general_optimization.html) — Reminds that 2D only wins if draw calls, overdraw, and process cost are actually reduced.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — Destination movement API for top-down/platformer ports once Z is simulated or removed.
+- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — `CapsuleShape2D`/`Area2D` collision simplification and layer masks after dropping 3D shapes.
+- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — `Camera2D` follow/limits/zoom so ports do not keep a fake ortho `Camera3D`.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed `Vector2`/`Transform2D` math and tooling scripts used throughout dimension-reduction helpers.
+
+#### Complements
+- [godot-2d-animation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md) — Sprite-sheet / `AnimatedSprite2D` pipeline after baking 3D models to directional frames.
+- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — CanvasItem shaders for Mode-7 / perspective pitch and other screen-space depth fakes.
+- [godot-tilemap-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md) — `TileMapLayer` batching that often replaces individual 3D mesh instances in the 2D port.
+- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — Deeper 2D navmesh/`AStarGrid2D` patterns when flattening aerial/vertical routes.
+- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — `AudioStreamPlayer3D` → `AudioStreamPlayer2D` panning/attenuation after spatial audio is lost.
+- [godot-adapt-2d-to-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-2d-to-3d/SKILL.md) — Inverse adaptation lattice when deciding which axis of the port to keep or reverse.
+
+#### Downstream / consumers
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Escalate when the 2D port still misses frame budgets despite dimensional reduction.
+- [godot-platform-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md) — Common shipping target that motivates 3D→2D simplification for battery and GPU limits.
+- [godot-adapt-desktop-to-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md) — Broader desktop→mobile adaptation that often includes this skill’s flatten-to-2D step.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting 2D/3D concern.

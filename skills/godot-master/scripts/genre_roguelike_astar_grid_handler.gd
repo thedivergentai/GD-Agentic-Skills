@@ -26,3 +26,13 @@ func get_cell_path(from: Vector2i, to: Vector2i) -> Array[Vector2i]:
 	if not _grid.region.has_point(from) or not _grid.region.has_point(to):
 		return []
 	return _grid.get_id_path(from, to)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_astargrid2d.html
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_introduction_2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md — grid A* vs NavigationRegion rebake choice
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md — solid cells mirror TileMapLayer walkability
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md
+# =============================================================================

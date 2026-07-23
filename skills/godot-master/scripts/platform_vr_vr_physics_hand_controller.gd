@@ -18,3 +18,13 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 ## Tip: Use 'move_and_slide' to ensure hands slide against surfaces naturally.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_xrcontroller3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_characterbody3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — move_and_slide hands that respect solids
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — physics_process follow toward controllers
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-vr/SKILL.md
+# =============================================================================

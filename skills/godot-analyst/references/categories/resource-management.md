@@ -22,3 +22,14 @@ The breath of the project. This rubric assesses how the vision handles the lifec
 
 ## 🌟 Visionary's Final Decree
 A project that ignores its own weight is doomed to collide with the floor of performance. To achieve **Elite** status, you must achieve 'Resource Transparency'—where every byte is accounted for and serves the vision's current moment. Slop is cheap; memory is an investment.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+- https://docs.godotengine.org/en/stable/classes/class_resourceloader.html
+- https://docs.godotengine.org/en/stable/classes/class_performance.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

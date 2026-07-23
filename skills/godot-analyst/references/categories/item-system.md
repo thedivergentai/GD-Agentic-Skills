@@ -22,3 +22,14 @@ The artifacts of the vision. This rubric measures the project's ability to defin
 
 ## 🌟 Visionary's Final Decree
 To reach **Elite** status, your items must be 'Pure Data' until the moment of manifestation. Use **Resources** as the anchor of existence. If your 'Item' script is longer than 50 lines, it is performing logic that belongs to a **Component**. Simplicity in data leads to complexity in the vision.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_styleguide.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

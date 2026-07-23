@@ -23,3 +23,15 @@ func setup_footstep_audio(sfx_node: AudioStreamPlayer2D) -> void:
 ## Using Audio Tracks is superior to 'get_node().play()' via Method Tracks 
 ## because Audio Tracks automatically handle stopping/fading when 
 ## animations are interrupted or blended.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/animation/animation_track_types.html
+# - https://docs.godotengine.org/en/stable/classes/class_animation.html
+# - https://docs.godotengine.org/en/stable/classes/class_audiostreamplayer.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md — footstep streams and blend-aware audio tracks
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md — 2D walk cycles keyed to TYPE_AUDIO
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md
+# =============================================================================

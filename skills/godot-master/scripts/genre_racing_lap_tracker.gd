@@ -32,3 +32,13 @@ func _complete_lap() -> void:
     current_lap += 1
     next_checkpoint_idx = 0
     lap_start_time = end_time
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_area3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — lap_completed signal graph
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — lap-time fairness sampling
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-racing/SKILL.md
+# =============================================================================

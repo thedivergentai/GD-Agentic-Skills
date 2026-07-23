@@ -22,3 +22,14 @@ The sanctity of the vision. This rubric assesses the project's defenses against 
 
 ## 🌟 Visionary's Final Decree
 To reach **Elite** status, you must achieve 'Trustless Architecture'. The system shouldn't trust the client, the user, or even its own previous state. Everything must be verified. If a player can bypass the vision through a text editor, you have **Slop**. Vision is absolute.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/export/exporting_projects.html
+- https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/filesystem.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

@@ -64,3 +64,15 @@ func _propagate_constraints() -> void:
 ## loading without frame-stutters.
 ## NEVER use 'randi()' for map seeds; use a unique 'RandomNumberGenerator' 
 ## instance per level to ensure the same seed ALWAYS produces the same map.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/2d/using_tilemaps.html
+# - https://docs.godotengine.org/en/stable/classes/class_workerthreadpool.html
+# - https://docs.godotengine.org/en/stable/classes/class_randomnumbergenerator.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — tile_library adjacency Resources
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md — constraint-safe room tiles for seeded runs
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — keep WFC off the main thread
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md
+# =============================================================================

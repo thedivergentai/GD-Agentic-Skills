@@ -26,3 +26,14 @@ func pop_state() -> void:
 		state_stack.back().enter({"is_resume": true})
 
 ## Tip: Use 'is_resume' in 'enter()' to avoid re-triggering one-shot entry animations.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/scene_tree.html
+# - https://docs.godotengine.org/en/stable/classes/class_node.html
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-dialogue-system/SKILL.md — push dialogue/cutscene overlays then pop back to gameplay
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md — pause/menu stacks must survive scene ownership rules
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md
+# =============================================================================

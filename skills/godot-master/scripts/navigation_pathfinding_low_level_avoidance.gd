@@ -28,3 +28,13 @@ func _on_safe_velocity_computed(safe_velocity: Vector3) -> void:
 
 func calculate_desired_velocity() -> Vector3:
 	return Vector3.ZERO # Implementation specific
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationservers.html
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationagents.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rts/SKILL.md — server RVO for large unit counts
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — avoidance callbacks without agent nodes
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md
+# =============================================================================

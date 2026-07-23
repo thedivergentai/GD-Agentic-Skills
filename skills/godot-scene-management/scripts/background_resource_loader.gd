@@ -29,3 +29,14 @@ func _process(_delta: float) -> void:
 			_pending_scene = ""
 		ResourceLoader.THREAD_LOAD_FAILED:
 			_pending_scene = ""
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html
+# - https://docs.godotengine.org/en/stable/classes/class_resourceloader.html
+# - https://docs.godotengine.org/en/stable/classes/class_packedscene.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — avoid main-thread load stalls on large scenes
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — host loader as Autoload when crossing levels
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md
+# =============================================================================

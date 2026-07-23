@@ -28,3 +28,17 @@ func _init():
     os.remove(script)
 
 if __name__ == "__main__": main()
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_3d_scenes/index.html
+# - https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_3d_scenes/available_formats.html
+# - https://docs.godotengine.org/en/stable/classes/class_gltfdocument.html
+# - https://docs.godotengine.org/en/stable/classes/class_resourcesaver.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md — place converted scenes into levels
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md — material import expectations on glTF
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — follow with collision_generator
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-builder/SKILL.md
+# =============================================================================

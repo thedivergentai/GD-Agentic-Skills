@@ -24,3 +24,13 @@ func _process(delta: float) -> void:
 
 ## [SKILL NOTICE]: Use exponential 'lerp' for recoil return to ensure the 
 ## camera animation feels consistent at 30, 60, or 144 FPS.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_camera3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/using_transforms.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md - kick on pivot, not weapon mesh
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md - recoil pattern vs TTK feel bands
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md
+# =============================================================================

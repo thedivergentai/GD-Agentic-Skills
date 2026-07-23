@@ -23,3 +23,12 @@ func update_ghost_transform(xform: Transform3D) -> void:
 func destroy_ghost() -> void:
     if _ghost_rid.is_valid():
         RenderingServer.free_rid(_ghost_rid)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_renderingserver.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/using_servers.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — RID ghosts without SceneTree cost
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rts/SKILL.md
+# =============================================================================

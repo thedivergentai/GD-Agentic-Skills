@@ -19,3 +19,14 @@ func go_to_running_strafe() -> void:
 	
 	# Travel to Run in Grounded sub-machine
 	travel_sub_state("Grounded", "Run")
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_animationnodestatemachine.html
+# - https://docs.godotengine.org/en/stable/classes/class_animationnodestatemachineplayback.html
+# - https://docs.godotengine.org/en/stable/classes/class_animationtree.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md — hierarchical intent mirrors nested anim graphs
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md — locomotion/combat sub-machines
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-tree-mastery/SKILL.md
+# =============================================================================

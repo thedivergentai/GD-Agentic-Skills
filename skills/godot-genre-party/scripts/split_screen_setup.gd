@@ -24,3 +24,14 @@ func setup(players: int) -> void:
 
 ## [SKILL NOTICE]: Use 'SubViewportContainer' with 'stretch=true'. 
 ## For adaptive split-screen (merging), use a custom shader on a ColorRect.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_gridcontainer.html
+# - https://docs.godotengine.org/en/stable/classes/class_subviewportcontainer.html
+# - https://docs.godotengine.org/en/stable/tutorials/rendering/viewports.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — 1–4 player column grid
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — spawn camera per viewport
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-party/SKILL.md
+# =============================================================================

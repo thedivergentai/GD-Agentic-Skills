@@ -16,3 +16,14 @@ func _process(_delta: float) -> void:
 	# Interpolate the sprite's position between previous and current physics state
 	# visual_node.global_position = _prev_pos.lerp(global_position, weight)
 	pass # Logic is cleaner if using built-in Godot 4 interpolation settings
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/interpolation/physics_interpolation_introduction.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/interpolation/using_physics_interpolation.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md — smooth rendered body motion
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — interpolate vs fix tick rate tradeoffs
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md
+# =============================================================================

@@ -52,3 +52,14 @@ func _on_state_enter(_state: String) -> void: pass
 ## For 'project-templates', pre-configure a 'test/' directory with 
 ## a simple GUT test that verifies the 'change_state' logic works 
 ## before any new logic is added.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/autoloads_versus_regular_nodes.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/pausing_games.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — boot order and lean GameManager ownership
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — typed buses when state_changed outgrows one Autoload
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-templates/SKILL.md
+# =============================================================================

@@ -36,3 +36,13 @@ func set_mode(mode: WindowMode) -> void:
             DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, true)
             
     print("Window mode set to: ", WindowMode.keys()[current_mode])
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_displayserver.html
+# - https://docs.godotengine.org/en/stable/classes/class_window.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-desktop/SKILL.md — OS window mode expectations
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — display project defaults
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-mobile-to-desktop/SKILL.md
+# =============================================================================

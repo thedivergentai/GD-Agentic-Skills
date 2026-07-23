@@ -22,3 +22,14 @@ The evolution of the soul within the vision. This rubric assesses how the projec
 
 ## 🌟 Visionary's Final Decree
 To reach **Elite** status, progression must be 'Recursive'. Every unlock should open a new path, not just a stronger version of the old one. Use **Resources** to define your 'Skill Manifest'. If I have to update the 'Player' script to add a new level, you are in the realm of **Slop**.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_styleguide.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

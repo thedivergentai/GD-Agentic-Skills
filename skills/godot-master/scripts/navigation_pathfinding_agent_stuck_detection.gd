@@ -25,3 +25,13 @@ func handle_recovery(agent: NavigationAgent3D) -> void:
 	var random_bump = Vector3(randf_range(-1,1), 0, randf_range(-1,1)).normalized()
 	# agent.target_position = ...
 	stuck_time = 0.0
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationagents.html
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_debug_tools.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md — recovery transitions on stall
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — unstick engage/flank movement
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md
+# =============================================================================

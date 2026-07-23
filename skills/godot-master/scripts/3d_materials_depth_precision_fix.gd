@@ -12,3 +12,14 @@ func optimize_depth_precision() -> void:
 	
 	# This compresses the depth buffer range and grants 
 	# significantly more precision per unit of distance.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_camera3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/gpu_optimization.html
+# - https://docs.godotengine.org/en/stable/classes/class_geometryinstance3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — near/far and large-world camera setup
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md — scale where Z-fighting appears
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md
+# =============================================================================

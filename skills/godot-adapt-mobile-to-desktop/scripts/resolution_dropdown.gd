@@ -41,3 +41,13 @@ func _on_resolution_selected(index: int) -> void:
     var screen_center = DisplayServer.screen_get_position() + (DisplayServer.screen_get_size() / 2)
     var new_window_pos = screen_center - (res / 2)
     DisplayServer.window_set_position(new_window_pos)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/rendering/multiple_resolutions.html
+# - https://docs.godotengine.org/en/stable/classes/class_displayserver.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — layout survival across resolution changes
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — stretch mode / content scale
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-mobile-to-desktop/SKILL.md
+# =============================================================================

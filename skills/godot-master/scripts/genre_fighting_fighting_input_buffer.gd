@@ -100,3 +100,14 @@ func check_motion_sequence(sequence: Array, end_frame: int, window: int) -> bool
 
 ## EXPERT USAGE:
 ## Autoload this node. Bind your fighter's state machine to check `FightingInputBuffer.is_button_just_pressed(...)`.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_input.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/input_examples.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — frame buffers and action sampling
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — input map + physics tick defaults
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-fighting/SKILL.md
+# =============================================================================

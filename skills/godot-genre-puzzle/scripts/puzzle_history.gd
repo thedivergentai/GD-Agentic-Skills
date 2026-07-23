@@ -23,3 +23,11 @@ func undo_last_move() -> void:
 func redo_last_move() -> void:
     if undo_redo.has_redo():
         undo_redo.redo()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_undoredo.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — notify HUD after commit_action
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-puzzle/SKILL.md
+# =============================================================================

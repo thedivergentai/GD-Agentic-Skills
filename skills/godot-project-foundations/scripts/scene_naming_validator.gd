@@ -76,3 +76,14 @@ func _is_pascal_case(text: String) -> bool:
 ## Run this validator BEFORE submitting PRs or releasing builds.
 ## CRITICAL: %SceneUniqueNames are NOT validated here - use runtime checks.
 ## For CI/CD: export violations to JSON for automated PR blocking.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_styleguide.html
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+# - https://docs.godotengine.org/en/stable/classes/class_editorscript.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — snake_case / PascalCase enforcement source
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md — unique names stabilize parent wiring
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md
+# =============================================================================

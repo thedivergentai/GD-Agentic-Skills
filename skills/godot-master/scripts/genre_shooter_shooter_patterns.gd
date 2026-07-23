@@ -80,3 +80,14 @@ func _unhandled_input(event: InputEvent) -> void:
     if event.is_action_pressed(&"reload"):
         Input.flush_buffered_events()
         # Trigger reload logic
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_physicsdirectspacestate3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_physicsshapequeryparameters3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/using_decals.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md — direct-space hitscan and shape AoE helpers
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md — server-side fire validation patterns
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md
+# =============================================================================

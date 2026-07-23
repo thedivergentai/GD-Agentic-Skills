@@ -15,4 +15,14 @@ func update_group_targets(leader_pos: Vector3, agents: Array[RID]) -> void:
 
 func calculate_formation_offset(index: int) -> Vector3:
 	# Grid or Wedge formation logic
-	return Vector3.ZERO 
+	return Vector3.ZERO
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationagents.html
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_optimizing_performance.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rts/SKILL.md — formation offsets prevent clumping
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — crowd spacing affects engagement timing
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md
+# =============================================================================

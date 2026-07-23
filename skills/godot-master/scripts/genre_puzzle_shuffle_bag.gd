@@ -21,3 +21,12 @@ func get_next() -> Variant:
         # Pattern: Reinitialize when empty to guarantee fair distribution.
         _refill_and_shuffle()
     return _items.pop_front()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/data_preferences.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — stress fair bag distributions vs pure RNG streaks
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md — feed bag draws into generated boards
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-puzzle/SKILL.md
+# =============================================================================

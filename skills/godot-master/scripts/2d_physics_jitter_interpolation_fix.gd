@@ -17,3 +17,14 @@ func _ready() -> void:
 	
 	# Low latency input mode for competitive physics feel
 	Input.set_use_accumulated_input(false)
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/interpolation/physics_interpolation_introduction.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/interpolation/using_physics_interpolation.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — diagnosing micro-stutter vs logic bugs
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-desktop/SKILL.md — high-refresh desktop vsync/FPS coupling
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md
+# =============================================================================

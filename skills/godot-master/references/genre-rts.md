@@ -44,281 +44,161 @@ Expert blueprint for RTS games balancing strategy, micromanagement, and performa
 
 ## 🛠 Expert Components (scripts/)
 
-### Original Expert Patterns
-- [selection_manager_marquee_2d.gd](../scripts/genre_rts_selection_manager_marquee_2d.gd) - Professional-grade unit selection system with drag-box, unit filtering, and shift-add support.
+> **MANDATORY**: Read the script for the workflow you are implementing — do not re-inline selection/fog recipes in the agent body.
 
-### Modular Components
-- [rts_army_manager.gd](../scripts/genre_rts_rts_army_manager.gd) - Multithreaded AI update system for managing mass units on background cores.
-- [selection_manager_raycast_3d.gd](../scripts/genre_rts_selection_manager_raycast_3d.gd) - Optimized 3D selection using direct PhysicsServer raycasting.
-- [rts_path_query_pool.gd](../scripts/genre_rts_rts_path_query_pool.gd) - Pooled Navigation query system to prevent memory allocations.
-- [navigation_mask_helper.gd](../scripts/genre_rts_navigation_mask_helper.gd) - Bitmask utilities for dynamic navigation layers and avoidance.
-- [rts_targeting_logic.gd](../scripts/genre_rts_rts_targeting_logic.gd) - Distance-squared performance optimization for mass enemy filtering.
-- [rts_group_commander.gd](../scripts/genre_rts_rts_group_commander.gd) - SceneTree group broadcasting pattern for decoupled mass units.
-- [rts_unit_stat_duplicator.gd](../scripts/genre_rts_rts_unit_stat_duplicator.gd) - Pattern for deep duplicating unit data for isolation.
-- [rts_unit.gd](../scripts/genre_rts_rts_unit.gd) - Comprehensive unit controller with state management and navigation integration.
-- [building_grid_astar.gd](../scripts/genre_rts_building_grid_astar.gd) - High-speed grid-based pathfinding for building placement.
-- [fog_of_war_tile_mask.gd](../scripts/genre_rts_fog_of_war_tile_mask.gd) - Efficient Fog of War clearing using the TileMapLayer API and Vector2i.
-- [rendering_ghost_spawner.gd](../scripts/genre_rts_rendering_ghost_spawner.gd) - Optimized placement ghosts using RenderingServer RIDs.
+### Selection / commands
+- [selection_manager_marquee_2d.gd](../scripts/genre_rts_selection_manager_marquee_2d.gd) — **MANDATORY** for 2D drag-box, filter, shift-add.
+- [selection_manager_raycast_3d.gd](../scripts/genre_rts_selection_manager_raycast_3d.gd) — **MANDATORY** for 3D PhysicsServer picks.
+- [rts_selection_overlay.gd](../scripts/genre_rts_rts_selection_overlay.gd) — Selection visuals / box overlay.
+- [rts_group_commander.gd](../scripts/genre_rts_rts_group_commander.gd) — SceneTree group broadcast for mass orders.
+- [rts_targeting_logic.gd](../scripts/genre_rts_rts_targeting_logic.gd) — Distance-squared enemy filtering.
+
+### Units / navigation / army
+- [rts_unit.gd](../scripts/genre_rts_rts_unit.gd) — **MANDATORY** unit controller (states + NavigationAgent).
+- [crowd_navigation_unit.gd](../scripts/genre_rts_crowd_navigation_unit.gd) — RVO / crowd agent wiring.
+- [rts_path_query_pool.gd](../scripts/genre_rts_rts_path_query_pool.gd) — Pooled Navigation path queries.
+- [navigation_mask_helper.gd](../scripts/genre_rts_navigation_mask_helper.gd) — Nav layers / avoidance bitmasks.
+- [rts_army_manager.gd](../scripts/genre_rts_rts_army_manager.gd) — WorkerThreadPool army AI batches.
+- [rts_unit_stat_duplicator.gd](../scripts/genre_rts_rts_unit_stat_duplicator.gd) — `duplicate_deep()` isolation for unit Resources.
+
+### Economy / build / fog / ghosts
+- [global_economy_manager.gd](../scripts/genre_rts_global_economy_manager.gd) — Gather/spend bank Autoload pattern.
+- [building_grid_astar.gd](../scripts/genre_rts_building_grid_astar.gd) — Grid placement pathing.
+- [fog_of_war_tile_mask.gd](../scripts/genre_rts_fog_of_war_tile_mask.gd) — **MANDATORY** TileMapLayer fog clear (2D/grid).
+- [rendering_ghost_spawner.gd](../scripts/genre_rts_rendering_ghost_spawner.gd) — Placement ghosts via RenderingServer RIDs.
 
 ---
 
 ## Core Loop
-1.  **Gather**: Units collect resources (Gold, Wood, etc.).
-2.  **Build**: Construct base buildings to unlock tech/units.
-3.  **Train**: Produce an army of diverse units.
-4.  **Command**: Micromanage units in real-time battles.
-5.  **Expand**: Secure map control and resources.
+1. **Gather**: Units collect resources (Gold, Wood, etc.).
+2. **Build**: Construct base buildings to unlock tech/units.
+3. **Train**: Produce an army of diverse units.
+4. **Command**: Micromanage units in real-time battles.
+5. **Expand**: Secure map control and resources.
 
 ## Skill Chain
 
 | Phase | Skills | Purpose |
 |-------|--------|---------|
-| 1. Controls | `godot-input-handling`, `camera-rts` | Selection box, camera panning/zoom |
-| 2. Units | `navigation-server`, `state-machines` | Pathfinding, avoidance, states (Idle/Move/Attack) |
-| 3. Systems | `fog-of-war`, `building-system` | Map visibility, grid placement |
-| 4. AI | `behavior-trees`, `utility-ai` | Enemy commander logic |
-| 5. Polish | `ui-minimap`, `godot-particles` | Strategic overview, battle feedback |
+| 1. Controls | `godot-input-handling`, `godot-camera-systems` | Selection box, camera pan/zoom/edge-scroll |
+| 2. Units | `godot-navigation-pathfinding`, `godot-state-machine-advanced` | Pathfinding, RVO avoidance, Idle/Move/Attack |
+| 3. Systems | `godot-shaders-basics`, `godot-tilemap-mastery`, `godot-economy-system` | Fog masks / TileMap fog, gather-spend ledger |
+| 4. AI | `godot-ai-navigation`, `godot-autoload-architecture` | Enemy commander routing + army/economy Autoloads |
+| 5. Polish | `godot-ui-containers`, `godot-particles` | Strategic UI chrome, battle feedback |
 | 6. Balance | `godot-monte-carlo-balancer` | Build-order policies vs extracted AI orders |
+
+## Decision Tree: NavigationAgent+RVO vs MultiMesh+server sim
+
+| Active units (order of magnitude) | Simulation / pathing | Rendering | Load |
+|-----------------------------------|----------------------|-----------|------|
+| < ~80 | Per-unit `NavigationAgent2D/3D` + RVO; `set_velocity` → `velocity_computed` | MeshInstance / Sprite nodes OK | **MANDATORY** `rts_unit.gd`, `crowd_navigation_unit.gd` |
+| ~80–400 | Stagger path queries; RVO only while moving; static → `NavigationObstacle`; central commander | Still node visuals; pool path queries | + `rts_path_query_pool.gd`, `rts_army_manager.gd`, Batch 09 COM formation |
+| > ~400 / thousands | **Server sim**: logical transforms on WorkerThreadPool; few NavigationServer map queries (COM / squads), not one agent per soldier | **`MultiMeshInstance`** + `INSTANCE_CUSTOM`; push buffers off main thread | `rts_army_manager.gd` + MultiMesh path in Batch 09; **Do NOT Load** per-unit `_process` agents |
+
+**Rule**: Keep NavigationAgent+RVO while units need individual collision avoidance and micromanage feel. Switch to MultiMesh + server-side transforms when draw-call/node cost dominates — path as squads, not as thousands of agents.
 
 ## Architecture Overview
 
-### 1. Selection Manager (Singleton or Commander Node)
-Handles mouse input for selecting units.
-
-```gdscript
-# selection_manager.gd
-extends Node2D
-
-var selected_units: Array[Unit] = []
-var drag_start: Vector2
-var is_dragging: bool = false
-@onready var selection_box: Panel = $SelectionBox
-
-func _unhandled_input(event):
-    if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-        if event.pressed:
-            start_selection(event.position)
-        else:
-            end_selection(event.position)
-    elif event is InputEventMouseMotion and is_dragging:
-        update_selection_box(event.position)
-
-func end_selection(end_pos: Vector2):
-    is_dragging = false
-    selection_box.visible = false
-    var rect = Rect2(drag_start, end_pos - drag_start).abs()
-    
-    if Input.is_key_pressed(KEY_SHIFT):
-        # Add to selection
-        pass
-    else:
-        deselect_all()
-        
-    # Query physics server for units in rect
-    var query = PhysicsShapeQueryParameters2D.new()
-    var shape = RectangleShape2D.new()
-    shape.size = rect.size
-    query.shape = shape
-    query.transform = Transform2D(0, rect.get_center())
-    # ... execute query and add units to selected_units
-    
-    for unit in selected_units:
-        unit.set_selected(true)
-
-func issue_command(target_position: Vector2):
-    for unit in selected_units:
-        unit.move_to(target_position)
-```
+### 1. Selection Manager
+**MANDATORY**: [selection_manager_marquee_2d.gd](../scripts/genre_rts_selection_manager_marquee_2d.gd) (2D) or [selection_manager_raycast_3d.gd](../scripts/genre_rts_selection_manager_raycast_3d.gd) (3D). Maintain a **typed selection set** (not SceneTree-only) for netcode/save. Overlay: [rts_selection_overlay.gd](../scripts/genre_rts_rts_selection_overlay.gd).
 
 ### 2. Unit Controller (State Machine)
-Units need robust state management to handle commands and auto-attacks.
+**MANDATORY**: [rts_unit.gd](../scripts/genre_rts_rts_unit.gd) for Idle/Move/Attack/Hold + NavigationAgent. Deep state graphs → `godot-state-machine-advanced`. Always `duplicate_deep()` shared stat Resources ([rts_unit_stat_duplicator.gd](../scripts/genre_rts_rts_unit_stat_duplicator.gd)).
 
-```gdscript
-# unit.gd
-extends CharacterBody2D
-class_name Unit
+### 3. Group Movement & Formations
+Avoid clumping on one click target: compute **center of mass**, apply **relative offsets**, issue per-unit destinations. For hundreds of units, use **one** NavigationServer path for the COM (Batch 09) plus [rts_group_commander.gd](../scripts/genre_rts_rts_group_commander.gd) / [rts_path_query_pool.gd](../scripts/genre_rts_rts_path_query_pool.gd).
 
-enum State { IDLE, MOVE, ATTACK, HOLD }
-var state: State = State.IDLE
-var command_queue: Array[Command] = []
-
-@onready var nav_agent: NavigationAgent2D = $NavigationAgent2D
-
-func move_to(target: Vector2):
-    nav_agent.target_position = target
-    state = State.MOVE
-
-func _physics_process(delta):
-    if state == State.MOVE:
-        if nav_agent.is_navigation_finished():
-            state = State.IDLE
-            return
-            
-        var next_pos = nav_agent.get_next_path_position()
-        var direction = global_position.direction_to(next_pos)
-        velocity = direction * speed
-        move_and_slide()
-
-### 3. Group Movement & Flocking
-Instead of moving all units directly to a single point (clumping), use **Relative Offsets**:
-- Calculate the **Center of Mass** for the selected group.
-- On click, calculate each unit's **Relative Offset** from the center.
-- Issue `target_position + unit_offset` to each unit to maintain formation.
-```
-
-### 3. Fog of War
-A system to hide unvisited areas. Usually implemented with a texture and a shader.
-
-*   **Grid Approach**: 2D array of "visibility" values.
-*   **Viewport Texture**: A `SubViewport` drawing white circles for units on a black background. This texture is then used as a mask in a shader on a full-screen `ColorRect` overlay.
-
-```gdshader
-shader_type canvas_item;
-uniform sampler2D visibility_texture; 
-uniform vec4 fog_color : source_color;
-
-void fragment() {
-    float visibility = texture(visibility_texture, UV).r;
-    COLOR = mix(fog_color, vec4(0,0,0,0), visibility);
-}
-```
+### 4. Fog of War
+**MANDATORY** for tile/grid fog: [fog_of_war_tile_mask.gd](../scripts/genre_rts_fog_of_war_tile_mask.gd). SubViewport mask + shader overlay is valid for soft vision — implement via docs (`Using Viewports`) + `godot-shaders-basics`; **Do NOT** paste long fog shaders into this skill body when the tile-mask script covers the grid path.
 
 ## Key Mechanics Implementation
 
 ### Command Queue
-Allow players to chain commands (Shift-Click).
-*   **Implementation**: Store commands in an `Array`. When one finishes, pop the next.
-*   **Visuals**: Draw lines showing the queued path.
+Shift-click chains: store `Array` of serializable commands; pop on finish; draw queued path lines. Pair with selection scripts' issue-command hooks.
 
 ### Resource Gathering
-*   **Nodes**: `ResourceNode` (Tree/GoldMine) and `DropoffPoint` (TownCenter).
-*   **Logic**:
-    1.  Move to Resource.
-    2.  Work (Timer).
-    3.  Move to Dropoff.
-    4.  Deposit (Global Economy update).
-    5.  Repeat.
+`ResourceNode` → work timer → `DropoffPoint` → bank update. Wire bank through [global_economy_manager.gd](../scripts/genre_rts_global_economy_manager.gd) / `godot-economy-system`.
 
 ## Common Pitfalls
 
-1.  **Pathfinding Jitter**: Units pushing each other endlessly. **Fix**: Use RVO (Reciprocal Velocity Obstacles) built into Godot's `NavigationAgent2D` (properties `avoidance_enabled`, `radius`).
-2.  **Too Much Micro**: Automate mundane tasks (auto-attack nearby, auto-gather behavior).
-3.  **Performance**: Too many nodes. **Fix**: Use `MultiMeshInstance2D` for rendering thousands of units if needed, and run logic on a `Server` node rather than individual scripts for mass units.
+1. **Pathfinding jitter** — Enable RVO; call `set_velocity` + move on `velocity_computed`; stagger group path queries.
+2. **Too much micro** — Auto-aggro / auto-return gather; command queue for force-move/attack.
+3. **Node explosion** — Past a few hundred units, follow the decision tree (MultiMesh + army manager), not per-unit `_process`.
 
 ## Godot-Specific Tips
 
-*   **Avoidance**: `NavigationAgent2D` has built-in RVO avoidance. Make sure to call `set_velocity()` and use the `velocity_computed` signal for the actual movement!
-*   **Server Architecture**: For 100+ units, don't use `_process` on every unit. Have a central `UnitManager` iterate through active units to save function call overhead.
-*   **Groups**: Use Groups heavily (`Units`, `Buildings`, `Resources`) for easy selection filters.
-
+* **Avoidance**: `NavigationAgent*` RVO requires `set_velocity()` + `velocity_computed` for the actual move.
+* **Server architecture**: Central `UnitManager` / [rts_army_manager.gd](../scripts/genre_rts_rts_army_manager.gd) for 100+ units.
+* **Groups**: `Units`, `Buildings`, `Resources` for selection filters.
 
 ---
 
 ## 🚀 Elite Technical Implementations (Batch 09)
 
-### 1. Center-of-Mass Formation Movement Pattern
-To prevent CPU bottlenecks when moving hundreds of units, avoid querying individual paths. Instead, calculate the "Center of Mass" of the selection and perform a single `NavigationServer3D` (or 2D) path query.
+### 1. Center-of-Mass Formation Movement
+For large selections, one NavigationServer path from COM → target, then offset each unit (see decision tree). Keep the algorithm in project code or formation helpers; pair with [rts_path_query_pool.gd](../scripts/genre_rts_rts_path_query_pool.gd) so path objects are pooled.
 
 ```gdscript
-class_name RTSFormationManager extends Node
-
-## Moves a group of units in formation to a target destination using a single path query.
-static func move_group_to_target(units: Array[CharacterBody3D], target_position: Vector3, map_rid: RID) -> void:
+# Sketch only — prefer pooled queries from rts_path_query_pool.gd
+static func move_group_to_target(units: Array, target: Vector3, map_rid: RID) -> void:
     if units.is_empty():
         return
-        
-    # 1. Calculate the Center of Mass (Average Position)
-    var center_of_mass := Vector3.ZERO
-    for unit in units:
-        center_of_mass += unit.global_position
-    center_of_mass /= units.size()
-    
-    # 2. Query NavigationServer for the optimized central path
-    var central_path: PackedVector3Array = NavigationServer3D.map_get_path(
-        map_rid,
-        center_of_mass,
-        target_position,
-        true 
-    )
-    
-    if central_path.is_empty():
+    var com := Vector3.ZERO
+    for u in units:
+        com += u.global_position
+    com /= units.size()
+    var path: PackedVector3Array = NavigationServer3D.map_get_path(map_rid, com, target, true)
+    if path.is_empty():
         return
-        
-    var final_center_destination: Vector3 = central_path[central_path.size() - 1]
-    
-    # 3. Distribute commands with relative offsets to maintain formation
-    for unit in units:
-        var offset: Vector3 = unit.global_position - center_of_mass
-        var unit_destination: Vector3 = final_center_destination + offset
-        
-        if unit.has_method("set_movement_target"):
-            unit.set_movement_target(unit_destination)
+    var dest: Vector3 = path[path.size() - 1]
+    for u in units:
+        u.set_movement_target(dest + (u.global_position - com))
 ```
 
-### 2. MultiMeshInstance Rendering for Massive Armies
-Standard nodes fail when unit counts reach thousands. Use `MultiMeshInstance3D` to draw millions of objects in a single draw call via the GPU.
+### 2. MultiMesh armies (when decision tree says so)
+Pre-allocate `instance_count`, drive `visible_instance_count`, push transforms (optionally via WorkerThreadPool → `RenderingServer.multimesh_set_buffer`). No per-soldier `MeshInstance3D`. See Official Documentation → Using MultiMesh.
 
-- **Architectural Tip**: Pre-allocate the maximum expected units and toggle visibility via `visible_instance_count`.
-- **Performance**: Note that individual frustum culling is disabled for MultiMesh instances; the entire group is either drawn or not.
+### 3. Fog — script first
+Prefer [fog_of_war_tile_mask.gd](../scripts/genre_rts_fog_of_war_tile_mask.gd). SubViewport vision masks: docs + `godot-shaders-basics` (do not duplicate long shader bodies here).
+## Reference
 
-```gdscript
-class_name RTSMassiveUnitRenderer extends MultiMeshInstance3D
+> Progressive disclosure: open Official Documentation links only when researching a specific API;
+> load Related Skills when routing work to a peer domain — do not preload the whole lattice.
 
-@export var max_units: int = 10000
-@export var unit_mesh: Mesh
+### Official Documentation
+- [Navigation (tutorial index)](https://docs.godotengine.org/en/stable/tutorials/navigation/index.html) — Entry map for agents, servers, meshes, layers, and obstacles before wiring army movement.
+- [Using NavigationAgents](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationagents.html) — `set_velocity` / `velocity_computed` RVO loop that stops crowd jitter and stuck IDLE timeouts.
+- [Using NavigationServers](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationservers.html) — Direct map path queries for center-of-mass formation moves without per-unit agent spam.
+- [Using navigation path query objects](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationpathqueryobjects.html) — Pooled `NavigationPathQueryParameters*` patterns for mass move orders without heap churn.
+- [Optimizing navigation performance](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_optimizing_performance.html) — Staggered queries, avoidance budgets, and obstacle swaps when hundreds of units path each tick.
+- [Using MultiMesh](https://docs.godotengine.org/en/stable/tutorials/performance/using_multimesh.html) — GPU instance buffers for thousands of units instead of one `MeshInstance` per soldier.
+- [Using multiple threads](https://docs.godotengine.org/en/stable/tutorials/performance/using_multiple_threads.html) — `WorkerThreadPool` contracts for army AI batches off the main thread.
+- [Ray-casting](https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html) — Direct space-state picks for 3D selection and ground click targeting.
+- [Using Viewports](https://docs.godotengine.org/en/stable/tutorials/rendering/viewports.html) — SubViewport vision masks that feed fog-of-war shaders without CPU tile floods.
+- [Mouse and input coordinates](https://docs.godotengine.org/en/stable/tutorials/inputs/mouse_and_input_coordinates.html) — Screen-to-world mapping for marquee boxes, unproject selection, and shift-queued orders.
+- [AStarGrid2D](https://docs.godotengine.org/en/stable/classes/class_astargrid2d.html) — Fast grid pathing for building footprints and base placement checks.
+- [Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html) — Why unit stats must `duplicate(true)` so health/armor never mutate a shared template.
 
-func _ready() -> void:
-    multimesh = MultiMesh.new()
-    multimesh.transform_format = MultiMesh.TRANSFORM_3D
-    multimesh.use_colors = true 
-    multimesh.instance_count = max_units
-    multimesh.mesh = unit_mesh
-    multimesh.visible_instance_count = 0
+### Related Skills
 
-## Sync logical unit transforms to GPU instances
-func synchronize_rendering(active_units: Array[Transform3D]) -> void:
-    var count: int = min(active_units.size(), max_units)
-    multimesh.visible_instance_count = count
-    
-    for i in range(count):
-        multimesh.set_instance_transform(i, active_units[i])
-```
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Physics ticks, navigation/avoidance project settings, and input map actions before selection and pathing stay deterministic.
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Mouse buttons, shift-modifiers, and physics-step sampling that drive marquee select and command queuing.
+- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — NavigationAgent RVO, maps, layers, and query-object pools this genre's army movement builds on.
 
-### 3. SubViewport Fog-of-War System
-Avoid complex geometry. Use a `SubViewport` as a dynamic render target to generate a vision mask (White = Vision, Black = Fog).
+#### Complements
+- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — RTS pan/zoom/edge-scroll framing so selection and orders stay readable at strategic scale.
+- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — PhysicsServer ray/shape recipes for 3D picks under heavy unit counts.
+- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — Idle/Move/Attack/Hold command states and queue transitions per unit without spaghetti flags.
+- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — CanvasItem/spatial mask shaders that sample SubViewport fog textures.
+- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Global economy and army managers as Autoloads with clear boot order.
+- [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md) — Gather/spend ledgers and cost dictionaries the RTS bank Autoload should reuse.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Group broadcast and command buses so commanders never hard-iterate every unit node.
 
-**Mask Generator Logic:**
-```gdscript
-class_name FogOfWarManager extends SubViewport
+#### Downstream / consumers
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Build-order policies, unit cost curves, and AI opponent strength — simulate win% instead of gut-tuning gather rates.
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Escalate here when MultiMesh buffers, avoidance, or WorkerThreadPool still dominate the profiler.
+- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Hit/hurt and targeting contracts once move/attack commands need damage resolution.
 
-@export var terrain_material: ShaderMaterial
-@export var world_bounds: Vector2 = Vector2(1024, 1024)
-
-func _ready() -> void:
-    disable_3d = true 
-    render_target_update_mode = SubViewport.UPDATE_ALWAYS
-    
-    await RenderingServer.frame_post_draw 
-    var fow_texture: ViewportTexture = get_texture()
-    terrain_material.set_shader_parameter("fow_mask", fow_texture)
-    terrain_material.set_shader_parameter("world_bounds", world_bounds)
-```
-
-**Projection Shader (Spatial):**
-```glsl
-shader_type spatial;
-uniform sampler2D fow_mask : hint_default_black, filter_linear;
-uniform vec2 world_bounds;
-uniform vec3 fog_color : source_color = vec3(0.1, 0.1, 0.15);
-
-void fragment() {
-    // Map World X/Z to 2D UV Coordinates
-    vec2 fow_uv = (NODE_POSITION_WORLD.xz / world_bounds) + vec2(0.5);
-    float visibility = texture(fow_mask, fow_uv).r;
-    
-    ALBEDO = mix(fog_color, ALBEDO, visibility);
-}
-```
-
-
-- Master Skill: [godot-master](../SKILL.md)
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting RTS concern.

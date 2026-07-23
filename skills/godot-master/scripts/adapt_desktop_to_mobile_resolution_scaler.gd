@@ -34,3 +34,15 @@ func _process(delta: float) -> void:
             # Plenty of headroom, try increasing resolution
             var new_scale = clampf(current_scale + (scale_step / 2.0), min_scale, 1.0)
             get_viewport().scaling_3d_scale = new_scale
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/resolution_scaling.html
+# - https://docs.godotengine.org/en/stable/classes/class_viewport.html
+# - https://docs.godotengine.org/en/stable/tutorials/rendering/multiple_resolutions.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/gpu_optimization.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — escalate when scale floor still misses FPS
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md — Mobile renderer pairing
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md
+# =============================================================================

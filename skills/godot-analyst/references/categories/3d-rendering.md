@@ -22,3 +22,14 @@ The three-dimensional manifestation of the vision. This rubric assesses the effi
 
 ## 🌟 Visionary's Final Decree
 Elite 3D rendering is about 'Visual Budgeting'. Know where every triangle belongs. To reach this level, implement a custom 'Post-Processing' stack that hides the machine's limitations and highlights the vision's strengths. A visionary environment is one where the light tells a story.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/performance/gpu_optimization.html
+- https://docs.godotengine.org/en/stable/tutorials/3d/using_multi_mesh_instance.html
+- https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_images.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

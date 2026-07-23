@@ -65,3 +65,17 @@ func jump_to_node(id: String) -> void:
 func clear_stage(container: Node) -> void:
     for child in container.get_children():
         child.queue_free()
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html
+# - https://docs.godotengine.org/en/stable/tutorials/ui/size_and_anchors.html
+# - https://docs.godotengine.org/en/stable/tutorials/i18n/internationalizing_games.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md — BBCode-aware visible_ratio animation
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md — background crossfade modulate tweens
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — ConfigFile flag persistence patterns
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-visual-novel/SKILL.md
+# =============================================================================

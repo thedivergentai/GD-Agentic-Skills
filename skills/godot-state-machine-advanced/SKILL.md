@@ -45,8 +45,17 @@ Debug ring-buffer for tracking state transition history and stack depth.
 ### [hsm_state_timer_component.gd](scripts/hsm_state_timer_component.gd)
 Auto-transition component for finite states like Stun or Dash.
 
-> **MANDATORY**: Read hsm_logic_state.gd before implementing hierarchical AI behaviors.
+> **MANDATORY**: For hierarchy / pushdown / guards read [hsm_hierarchical_base.gd](scripts/hsm_hierarchical_base.gd), [hsm_pushdown_stack.gd](scripts/hsm_pushdown_stack.gd), [hsm_transition_guard.gd](scripts/hsm_transition_guard.gd) (plus [hsm_logic_state.gd](scripts/hsm_logic_state.gd) for leaf behaviors).
 
+## Decision Tree — Which Machine?
+
+| Need | Choose | **MANDATORY** scripts |
+|------|--------|------------------------|
+| Few exclusive states, no nesting | Flat FSM | [hsm_logic_state.gd](scripts/hsm_logic_state.gd) + thin parent |
+| Nested sub-states (Move/Air/Attack children) | HSM | [hsm_hierarchical_base.gd](scripts/hsm_hierarchical_base.gd) |
+| Interrupt overlays (stun/menu/dialogue) then resume | Pushdown | [hsm_pushdown_stack.gd](scripts/hsm_pushdown_stack.gd) + [hsm_reentry_aware_state.gd](scripts/hsm_reentry_aware_state.gd) |
+| Parallel concerns (locomotion + weapon) | Concurrent | [hsm_concurrent_logic.gd](scripts/hsm_concurrent_logic.gd) |
+| Pick best action by score each tick | Utility cost polling | Expert pattern §3 + [hsm_transition_guard.gd](scripts/hsm_transition_guard.gd) |
 
 ## NEVER Do (Expert State Rules)
 
@@ -64,84 +73,25 @@ Auto-transition component for finite states like Stun or Dash.
 - **NEVER push states indefinitely** — In a Pushdown Automaton, every `push_state` MUST have a retirement plan (`pop_state`) to avoid stack overflow.
 - **NEVER assume state re-entry is always a fresh start** — Resuming from a stack pop should often bypass "Entry SFX/VFX"; use re-entry flags.
 
----
+## Implementation — Scripts Are Source of Truth
+
+> **Do NOT** copy inline HierarchicalState / push_state samples. Prior body double-`exit()`ed and ignored resume messages.
+
+**MANDATORY route:**
+- Hierarchy / physics-input forward: [hsm_hierarchical_base.gd](scripts/hsm_hierarchical_base.gd)
+- Push / pop with `enter({"is_resume": true})`: [hsm_pushdown_stack.gd](scripts/hsm_pushdown_stack.gd)
+- Illegal transition blocking: [hsm_transition_guard.gd](scripts/hsm_transition_guard.gd)
+- Context payload: [hsm_state_context.gd](scripts/hsm_state_context.gd)
+
+Pushdown contract (from script — single exit, resume msg):
 
 ```gdscript
-# hierarchical_state.gd
-class_name HierarchicalState
-extends Node
-
-signal transitioned(from_state: String, to_state: String)
-
-var current_state: Node
-var state_stack: Array[Node] = []
-
-func  _ready() -> void:
-    for child in get_children():
-        child.state_machine = self
-    
-    if get_child_count() > 0:
-        current_state = get_child(0)
-        current_state.enter()
-
-func transition_to(state_name: String) -> void:
-    if not has_node(state_name):
-        return
-    
-    var new_state := get_node(state_name)
-    
-    if current_state:
-        current_state.exit()
-    
-    transitioned.emit(current_state.name if current_state else "", state_name)
-    current_state = new_state
-    current_state.enter()
-
-func push_state(state_name: String) -> void:
-    if current_state:
-        state_stack.append(current_state)
-        current_state.exit()
-    
-    transition_to(state_name)
-
+# See hsm_pushdown_stack.gd — do not reimplement
+func push_state(state_path: String, msg: Dictionary = {}) -> void: ...
 func pop_state() -> void:
-    if state_stack.is_empty():
-        return
-    
-    var previous_state := state_stack.pop_back()
-    transition_to(previous_state.name)
-```
-
-## State Base Class
-
-```gdscript
-# state.gd
-class_name State
-extends Node
-
-var state_machine: HierarchicalState
-
-func enter() -> void:
-    pass
-
-func exit() -> void:
-    pass
-
-func update(delta: float) -> void:
-    pass
-
-func physics_update(delta: float) -> void:
-    pass
-
-func handle_input(event: InputEvent) -> void:
+    # old.exit(); stack.back().enter({"is_resume": true})
     pass
 ```
-
-## Best Practices
-
-1. **Separation** - One state per file
-2. **Signals** - Communicate state changes
-3. **Stack** - Use push/pop for interruptions
 
 ## Expert State Machine Patterns
 
@@ -198,8 +148,43 @@ func _physics_process(_d: float) -> void:
 ```
 
 ## Reference
-- Related: `godot-characterbody-2d`, `godot-animation-player`
 
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
 
-### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+### Official Documentation
+- [Using signals](https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html) — Drive `state_changed` / transition fan-out so listeners (anim, audio, AI) stay decoupled from enter/exit bodies.
+- [Scene organization](https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html) — Child-node state ownership and signal-up / call-down so the machine orchestrates without sibling hard-coupling.
+- [What are Godot classes](https://docs.godotengine.org/en/stable/tutorials/best_practices/what_are_godot_classes.html) — Prefer composed state nodes + `class_name` over deep inheritance trees for layered AI behaviors.
+- [Idle and Physics Processing](https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html) — Why HSMs must forward `_physics_process` / `_process` into the active child (or hierarchy) every tick.
+- [Using SceneTree](https://docs.godotengine.org/en/stable/tutorials/scripting/scene_tree.html) — `call_deferred` transitions avoid re-entrant `transition_to()` crashes inside `enter()`.
+- [Godot notifications](https://docs.godotengine.org/en/stable/tutorials/best_practices/godot_notifications.html) — Safe wiring timing for initial `enter()` relative to `_ready` and parent caches.
+- [Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html) — Data-driven state definitions (`.tres`) for modular AI without baking scripts into every actor.
+- [Using AnimationTree](https://docs.godotengine.org/en/stable/tutorials/animation/animation_tree.html) — Logic-to-AnimationTree travel when gameplay HSM states map to blend/state-machine graphs.
+- [AnimationNodeStateMachinePlayback](https://docs.godotengine.org/en/stable/classes/class_animationnodestatemachineplayback.html) — `travel()` / `start()` APIs used by animation syncers tied to HSM state names.
+- [Node](https://docs.godotengine.org/en/stable/classes/class_node.html) — Child lookup, process modes, and lifecycle hooks state nodes inherit as scene-tree citizens.
+- [InputEvent](https://docs.godotengine.org/en/stable/classes/class_inputevent.html) — Typed events parents forward into `handle_input` on the active state.
+- [Timer](https://docs.godotengine.org/en/stable/classes/class_timer.html) — Finite-duration states (stun, dash) via one-shot timers that emit transition signals.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Scene ownership and project layout conventions every HSM root and child state scene assumes.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — class_name, typed Dictionaries/payloads, and Callables needed for guards, deferred transitions, and context objects.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Signal-up transition events without circular graphs where states emit and also listen to themselves.
+
+#### Complements
+- [godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md) — Drop HSM / VSM as a StateComponent under a composition root instead of bloating the actor script.
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Sense-layer sampling; states receive directions/actions via handle_input rather than polling globals.
+- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — Locomotion states call move_and_slide / velocity APIs on the actor passed through context.
+- [godot-animation-tree-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-tree-mastery/SKILL.md) — Blend trees and AnimationNodeStateMachine graphs that HSM syncers travel into by state name.
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Tunable state Resources (speeds, stun durations, AI weights) separate from runtime Node lifecycle.
+- [godot-2d-animation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md) — Sprite / AnimationPlayer presentation when a lighter sync path than a full AnimationTree is enough.
+
+#### Downstream / consumers
+- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Hit-stun, attack windup, and death stacks are classic pushdown / HSM consumers on fighters.
+- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — Cast, channel, and cooldown phases map cleanly to guarded transitions and timed states.
+- [godot-turn-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-turn-system/SKILL.md) — Turn phases and interrupt stacks reuse pushdown / concurrent machine orchestration patterns.
+- [godot-dialogue-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-dialogue-system/SKILL.md) — Cutscene and dialogue overlays push over gameplay states and must pop without losing context.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting architecture concern.

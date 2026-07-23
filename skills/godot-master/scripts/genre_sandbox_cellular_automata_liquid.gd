@@ -74,3 +74,14 @@ static func _move(grid: Dictionary, from: Vector2i, to: Vector2i, processed: Dic
 
 ## EXPERT USAGE:
 ## Call from _physics_process on the active chunk data.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/performance/using_multiple_threads.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md — seed/grid patterns that feed CA sims
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — dirty-cell lists vs full-grid ticks
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-sandbox/SKILL.md
+# =============================================================================

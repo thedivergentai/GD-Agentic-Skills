@@ -19,3 +19,12 @@ func get_optimized_path(start: Vector3, target: Vector3, layers: int = 1) -> Pac
     NavigationServer3D.query_path(map_rid, _query_params, _query_result)
     
     return _query_result.path
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationpathqueryobjects.html
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationservers.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md — pooled path queries for mass orders
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rts/SKILL.md
+# =============================================================================

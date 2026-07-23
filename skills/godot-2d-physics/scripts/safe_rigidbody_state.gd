@@ -13,3 +13,14 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
     # Example: Applying a custom impulse that overrides existing velocity
     if Input.is_action_just_pressed("jump"):
         state.linear_velocity.y = -500
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/rigid_body.html
+# - https://docs.godotengine.org/en/stable/classes/class_physicsdirectbodystate2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — never mutate RigidBody in _process
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — parallel integrate_forces discipline in 3D
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md
+# =============================================================================

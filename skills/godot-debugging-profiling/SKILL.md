@@ -1,8 +1,7 @@
 ---
 name: godot-debugging-profiling
-description: "Expert debugging workflows including print debugging (push_warning, push_error, assert), breakpoints (conditional breakpoints), Godot Debugger (stack trace, variables, remote debug), profiler (time profiler, memory monitor), error handling patterns, and performance optimization. Use for bug fixing, performance tuning, or development diagnostics. Trigger keywords: breakpoint, print_debug, push_error, assert, profiler, remote_debug, memory_leak, orphan_nodes, Performance.get_monitor."
+description: "Expert debugging and profiling for leaks, GPU/Visual Profiler, headless CI QA, orphan nodes, thread-safe logs, and custom Debugger monitors — not print/breakpoint tutorials. Trigger on OBJECT_ORPHAN_NODE_COUNT, ObjectDB growth, Visual Profiler GPU spikes, flaky headless exits, or remote device consoles. Keywords: orphan nodes, Performance.get_monitor, Visual Profiler, Time.get_ticks_usec, EditorDebuggerPlugin, headless QA, push_error, backtrace."
 ---
-
 ## Godot 4.7 Baseline
 
 - Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
@@ -11,7 +10,7 @@ description: "Expert debugging workflows including print debugging (push_warning
 
 # Debugging & Profiling
 
-Expert guidance for finding and fixing bugs efficiently with Godot's debugging tools.
+Symptom → monitor/API → script routing for leaks, GPU, and CI — Official Docs cover print/breakpoint basics.
 
 ## NEVER Do
 
@@ -30,304 +29,101 @@ Expert guidance for finding and fixing bugs efficiently with Godot's debugging t
 - **NEVER strip debugging symbols if using external C++ profilers** — Stripping destroys call stack readability for external tools like Perfetto or VerySleepy [26].
 - **NEVER forget to unregister an `EditorDebuggerPlugin` in `_exit_tree()`** — Failing to clean up leaves "ghost" connections in the engine's debugging loop [27].
 - **NEVER trust the Visual Profiler on macOS when using the Compatibility renderer** — Platform-specific driver limitations severely restrict OpenGL profiling accuracy on macOS [28].
----
 
-## Available Scripts
-
-> **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
-
-### [high_precision_benchmarker.gd](scripts/high_precision_benchmarker.gd)
-Micrometer-precision execution timing using `Time.get_ticks_usec()`, essential for identifying CPU micro-bottlenecks.
-
-### [orphan_node_detector.gd](scripts/orphan_node_detector.gd)
-Automated detection and logging of "Orphan Nodes" (nodes removed from tree but not freed) using internal Performance monitors.
-
-### [advanced_backtrace_recorder.gd](scripts/advanced_backtrace_recorder.gd)
-Capturing detailed script backtraces programmatically, including local variable snapshots for deep crash reporting.
-
-### [engine_error_interceptor.gd](scripts/engine_error_interceptor.gd)
-Intercepting underlying C++ engine errors and piping them to custom backend logs or analytics services.
-
-### [custom_editor_monitor.gd](scripts/custom_editor_monitor.gd)
-Exposing game-specific performance metrics (AI counts, bullet physics) directly to the Godot Editor's Debugger > Monitors tab.
-
-### [debugger_tab_plugin.gd](scripts/debugger_tab_plugin.gd)
-Project-specific debugger extensions that inject custom visual tabs and data into the Godot bottom panel.
-
-### [thread_safe_logger.gd](scripts/thread_safe_logger.gd)
-Mutext-locked logger subclass for thread-safe writing of logs from worker threads to external files.
-
-### [custom_debug_draw.gd](scripts/custom_debug_draw.gd)
-Pro-level visualization patterns for non-visual data like pathfinding nodes, physics raycasts, and local AI influence maps.
-
-### [break_on_condition.gd](scripts/break_on_condition.gd)
-Hardcoded breakpoint triggers for halting execution on invalid logic states in a team-agnostic manner.
-
-### [remote_debug_console.gd](scripts/remote_debug_console.gd)
-In-game command console for debugging mobile and console builds where standard terminal output is inaccessible.
-
-> **Do NOT Load** debug_overlay.gd in release builds - wrap usage in `if OS.is_debug_build()`.
-
-
----
-
-## Print Debugging
-
-```gdscript
-# Basic print
-print("Value: ", some_value)
-
-# Formatted print
-print("Player at %s with health %d" % [position, health])
-
-# Print with caller info
-print_debug("Debug info here")
-
-# Warning (non-fatal)
-push_warning("This might be a problem")
-
-# Error (non-fatal)
-push_error("Something went wrong!")
-
-# Assert (fatal in debug)
-assert(health > 0, "Health cannot be negative!")
-```
-
-## Breakpoints
-
-**Set Breakpoint:**
-- Click line number gutter in script editor
-- Or use `breakpoint` keyword:
-
-```gdscript
-func suspicious_function() -> void:
-    breakpoint  # Execution stops here
-    var result := calculate_something()
-```
-
-## Debugger Panel
-
-**Debug → Debugger** (Ctrl+Shift+D)
-
-Tabs:
-- **Stack Trace**: Call stack when paused
-- **Variables**: Inspect local/member variables
-- **Breakpoints**: Manage all breakpoints
-- **Errors**: Runtime errors and warnings
-
-## Remote Debug
-
-**Debug running game:**
-1. Run project (F5)
-2. Debug → Remote Debug → Select running instance
-3. Inspect live game state
-
-## Common Debugging Patterns
-
-### Null Reference
-
-```gdscript
-# ❌ Crash: null reference
-$NonExistentNode.do_thing()
-
-# ✅ Safe: check first
-var node := get_node_or_null("MaybeExists")
-if node:
-    node.do_thing()
-```
-
-### Track State Changes
-
-```gdscript
-var _health: int = 100
-
-var health: int:
-    get:
-        return _health
-    set(value):
-        print("Health changed: %d → %d" % [_health, value])
-        print_stack()  # Show who changed it
-        _health = value
-```
-
-### Visualize Raycasts
-
-```gdscript
-func _draw() -> void:
-    if Engine.is_editor_hint():
-        draw_line(Vector2.ZERO, ray_direction * ray_length, Color.RED, 2.0)
-```
-
-### Debug Draw in 3D
-
-```gdscript
-# Use DebugDraw addon or create debug meshes
-func debug_draw_sphere(pos: Vector3, radius: float) -> void:
-    var mesh := SphereMesh.new()
-    mesh.radius = radius
-    var instance := MeshInstance3D.new()
-    instance.mesh = mesh
-    instance.global_position = pos
-    add_child(instance)
-```
-
-## Error Handling
-
-```gdscript
-# Handle file errors
-func load_save() -> Dictionary:
-    if not FileAccess.file_exists(SAVE_PATH):
-        push_warning("No save file found")
-        return {}
-    
-    var file := FileAccess.open(SAVE_PATH, FileAccess.READ)
-    if file == null:
-        push_error("Failed to open save: %s" % FileAccess.get_open_error())
-        return {}
-    
-    var json := JSON.new()
-    var error := json.parse(file.get_as_text())
-    if error != OK:
-        push_error("JSON parse error: %s" % json.get_error_message())
-        return {}
-    
-    return json.data
-```
-
-## Profiler
-
-**Debug → Profiler** (F3)
-
-### Time Profiler
-- Shows function execution times
-- Identify slow functions
-- Target: < 16.67ms per frame (60 FPS)
-
-### Monitor
-- FPS, physics, memory
-- Object count
-- Draw calls
-
-## Common Performance Issues
-
-### Issue: Low FPS
-
-```gdscript
-# Check in _process
-func _process(delta: float) -> void:
-    print(Engine.get_frames_per_second())  # Monitor FPS
-```
-
-### Issue: Memory Leaks
-
-```gdscript
-# Check with print
-func _exit_tree() -> void:
-    print("Node freed: ", name)
-
-# Use groups to track
-add_to_group("tracked")
-print("Active objects: ", get_tree().get_nodes_in_group("tracked").size())
-```
-
-### Issue: Orphaned Nodes
-
-```gdscript
-# Check for orphans
-func check_orphans() -> void:
-    print("Orphan nodes: ", Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT))
-```
-
-## Debug Console
-
-```gdscript
-# Runtime debug console
-var console_visible := false
-
-func _input(event: InputEvent) -> void:
-    if event is InputEventKey and event.keycode == KEY_QUOTELEFT:
-        console_visible = not console_visible
-        $DebugConsole.visible = console_visible
-```
-
-## Best Practices
-
-### 1. Use Debug Flags
-
-```gdscript
-const DEBUG := true
-
-func debug_log(message: String) -> void:
-    if DEBUG:
-        print("[DEBUG] ", message)
-```
-
-### 2. Conditional Breakpoints
-
-```gdscript
-# Only break on specific condition
-if player.health <= 0:
-    breakpoint
-```
-
-### 3. Scene Tree Inspector
-
-```
-Debug → Remote Debug → Inspect scene tree
-See live node hierarchy
-```
-
-## Expert Debugging Patterns
-
-### 1. Automated-QA-Suite (Headless CI/CD)
-Pattern for verifying game state in automated pipelines with deterministic exit codes.
-- **Headless Execution**: Use `godot --headless -s test_runner.gd` to run tests without a display server.
-- **Verification**: Evaluate state and call `get_tree().quit(0)` for success or `quit(1)` for failure to pass exit codes back to the CI runner.
-- **Implementation**:
-    ```gdscript
-    func _run() -> void: # Main entry for --script
-        var success := _run_all_tests()
-        if success:
-            print("[TEST_RESULT] PASS")
-            get_tree().quit(0)
-        else:
-            printerr("[TEST_RESULT] FAIL")
-            get_tree().quit(1)
-    ```
-- **CLI Flags**: Use `--gpu-validation` and `--gpu-abort` to catch driver-level errors in CI.
-
-### 2. Visual-Profiler-Extensions (GPU Costs)
-Custom diagnostic overlays to monitor rendering overhead in-game.
-- **Metric Querying**: Use `RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME)` for draw calls.
-- **GPU Profiling**: Enable `debug/settings/stdout/print_gpu_profile` in Project Settings to dump a per-second breakdown of CanvasItem, shadow, and glow costs.
-- **VRAM Tracking**: Use `Performance.get_monitor(Performance.RENDER_VIDEO_MEM_USED)` to track total GPU memory consumption.
-- **Implementation**:
-    ```gdscript
-    func _process(_delta):
-        var calls = RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME)
-        var primitives = RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_PRIMITIVES_IN_FRAME)
-        # Display on-screen overlay
-    ```
-
-### 3. Thread-Safety-Analyzer (Race Conditions)
-Ensuring safe access to the SceneTree and data from worker threads.
-- **Safety Checks**: Use `Thread.set_thread_safety_checks_enabled(true)` to force Godot to throw errors when unsafe SceneTree access occurs from a thread.
-- **Deferred Access**: ALWAYS use `call_deferred()` or `set_deferred()` when a worker thread needs to modify the SceneTree.
-- **Server Safety**: Servers (Rendering/Physics) are thread-safe ONLY if enabled in Project Settings under `threading/worker_pool/allow_group_tasks`.
-- **Implementation**:
-    ```gdscript
-    func _ready():
-        Thread.set_thread_safety_checks_enabled(true) # Global enforcement
-    ```
-
-### 4. Memory-Leak-Tracker (Transient Scenes)
-Identifying leaks in scenes that are instantiated and freed frequently.
-- **Orphan Detection**: Periodically check `Node.get_orphan_node_ids()`. If the count grows indefinitely after closing transient scenes, you have a leak.
-- **ObjectDB Snapshots**: Use the Godot 4.7 ObjectDB Profiler to take "Before" and "After" snapshots. Diffing these reveals exactly which `RefCounted` objects are causing circular reference leaks.
+## Symptom → Monitor → Script
+
+> **MANDATORY** for the matching row. **Do NOT Load** every debug script for one bug.
+
+| Symptom | Monitor / API | Script |
+|---------|---------------|--------|
+| Nodes removed but RAM climbs | `OBJECT_ORPHAN_NODE_COUNT` (debug) | **MANDATORY** [orphan_node_detector.gd](scripts/orphan_node_detector.gd) |
+| ObjectDB / instance growth | custom monitors + dump | [memory_usage_threshold_alert.gd](scripts/memory_usage_threshold_alert.gd), [scene_tree_dump.gd](scripts/scene_tree_dump.gd) |
+| GPU / overdraw mystery | Visual Profiler (briefly) | Pair with perf skill; use [performance_plotter.gd](scripts/performance_plotter.gd) for trends — do not leave Visual Profiler on |
+| Flaky headless / CI exit | exit codes + asserts | **MANDATORY** [automated_qa_suite.gd](scripts/automated_qa_suite.gd), [push_error_safe_exit.gd](scripts/push_error_safe_exit.gd) |
+| Microbenchmark lies | `Time.get_ticks_usec` | **MANDATORY** [high_precision_benchmarker.gd](scripts/high_precision_benchmarker.gd) |
+| Crash needs locals | backtraces (debug only) | [advanced_backtrace_recorder.gd](scripts/advanced_backtrace_recorder.gd), [stack_trace_logger.gd](scripts/stack_trace_logger.gd) |
+| Engine errors to backend | Logger intercept | [engine_error_interceptor.gd](scripts/engine_error_interceptor.gd) — never print inside Logger |
+| Custom Debugger metrics | Monitors tab | [custom_editor_monitor.gd](scripts/custom_editor_monitor.gd), [debugger_tab_plugin.gd](scripts/debugger_tab_plugin.gd) |
+| Mobile/console no stdout | in-game console | [remote_debug_console.gd](scripts/remote_debug_console.gd), [debug_overlay.gd](scripts/debug_overlay.gd) (debug builds only) |
+| Thread races / log corruption | mutex logger / asserts | [thread_safe_logger.gd](scripts/thread_safe_logger.gd), [thread_safety_assert.gd](scripts/thread_safety_assert.gd) |
+| Invisible logic (AI/physics) | debug draw / gizmos | [custom_debug_draw.gd](scripts/custom_debug_draw.gd), [property_watcher_gizmo.gd](scripts/property_watcher_gizmo.gd) |
+| Conditional halt | hardcoded break | [break_on_condition.gd](scripts/break_on_condition.gd) |
+| Editor vs runtime paths | `Engine.is_editor_hint` | [engine_editor_hint_logic.gd](scripts/engine_editor_hint_logic.gd) |
+
+## Available Scripts (full catalog)
+
+### Leaks & memory
+- [orphan_node_detector.gd](scripts/orphan_node_detector.gd)
+- [memory_usage_threshold_alert.gd](scripts/memory_usage_threshold_alert.gd)
+- [scene_tree_dump.gd](scripts/scene_tree_dump.gd)
+
+### Timing & QA
+- [high_precision_benchmarker.gd](scripts/high_precision_benchmarker.gd)
+- [automated_qa_suite.gd](scripts/automated_qa_suite.gd)
+- [push_error_safe_exit.gd](scripts/push_error_safe_exit.gd)
+- [performance_plotter.gd](scripts/performance_plotter.gd)
+
+### Errors, stacks, threads
+- [advanced_backtrace_recorder.gd](scripts/advanced_backtrace_recorder.gd)
+- [stack_trace_logger.gd](scripts/stack_trace_logger.gd)
+- [engine_error_interceptor.gd](scripts/engine_error_interceptor.gd)
+- [thread_safe_logger.gd](scripts/thread_safe_logger.gd)
+- [thread_safety_assert.gd](scripts/thread_safety_assert.gd)
+
+### Editor / remote / viz
+- [custom_editor_monitor.gd](scripts/custom_editor_monitor.gd)
+- [debugger_tab_plugin.gd](scripts/debugger_tab_plugin.gd) — unregister in `_exit_tree()`
+- [remote_debug_console.gd](scripts/remote_debug_console.gd)
+- [debug_overlay.gd](scripts/debug_overlay.gd) — debug builds only
+- [custom_debug_draw.gd](scripts/custom_debug_draw.gd)
+- [property_watcher_gizmo.gd](scripts/property_watcher_gizmo.gd)
+- [break_on_condition.gd](scripts/break_on_condition.gd)
+- [engine_editor_hint_logic.gd](scripts/engine_editor_hint_logic.gd)
+
+## Expert Pointers
+
+- Profile release/`--release` with V-Sync off; never trust Debug-build timings.
+- Prefer structured logs over `print_stack()` in anything that might ship.
+- Escalate sustained FPS issues to `godot-performance-optimization` after the symptom tree identifies the bottleneck class.
 
 ## Reference
-- [Godot Docs: Debugger](https://docs.godotengine.org/en/stable/tutorials/scripting/debug/debugger_panel.html)
 
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
 
-### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+### Official Documentation
+- [Overview of debugging tools](https://docs.godotengine.org/en/stable/tutorials/scripting/debug/overview_of_debugging_tools.html) — Map of remote scene tree, breakpoints, Output, and profiler entry points before picking a deeper page.
+- [Debugger panel](https://docs.godotengine.org/en/stable/tutorials/scripting/debug/debugger_panel.html) — Stack, variables, breakpoints, errors, and monitors used for live remote debug sessions.
+- [The profiler](https://docs.godotengine.org/en/stable/tutorials/scripting/debug/the_profiler.html) — Time and visual profilers: why you profile release-like builds and how frame charts isolate CPU/GPU spikes.
+- [Output panel](https://docs.godotengine.org/en/stable/tutorials/scripting/debug/output_panel.html) — How `print` / `push_warning` / `push_error` surface in the editor and why noisy release logs hide real faults.
+- [ObjectDB profiler](https://docs.godotengine.org/en/stable/tutorials/scripting/debug/objectdb_profiler.html) — Before/after ObjectDB snapshots for RefCounted cycles and leaked instances that orphan monitors miss.
+- [Custom performance monitors](https://docs.godotengine.org/en/stable/tutorials/scripting/debug/custom_performance_monitors.html) — `Performance.add_custom_monitor` so game-specific metrics appear next to engine monitors.
+- [Logging](https://docs.godotengine.org/en/stable/tutorials/scripting/logging.html) — Custom `Logger` registration, file sinks, and recursion hazards when logging from inside log handlers.
+- [Command line tutorial](https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html) — Headless `--script` / export flags for automated QA and CI exit-code runners.
+- [CPU optimization](https://docs.godotengine.org/en/stable/tutorials/performance/cpu_optimization.html) — Interpreting profiler hotspots into GDScript/server/thread fixes after measurement.
+- [Using multiple threads](https://docs.godotengine.org/en/stable/tutorials/performance/using_multiple_threads.html) — Worker-thread rules that motivate thread-safety asserts and mutexed loggers.
+- [Thread-safe APIs](https://docs.godotengine.org/en/stable/tutorials/performance/thread_safe_apis.html) — Which servers/APIs may be called off-main-thread without corrupting the SceneTree.
+- [Performance](https://docs.godotengine.org/en/stable/classes/class_performance.html) — Built-in monitors (`OBJECT_ORPHAN_NODE_COUNT`, memory, render) used by overlays and leak detectors.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Debug/release feature tags, project settings, and Autoload layout must exist before debugger plugins or global monitors.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed Callables, `assert`/`push_error`, and `Time` APIs underpin benchmarks, breakpoints, and stack helpers.
+
+#### Complements
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — After the profiler names a hotspot, apply pooling, culling, and MultiMesh fixes from that skill.
+- [godot-testing-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-testing-patterns/SKILL.md) — GUT/assert/CI patterns pair with headless QA suites and deterministic `quit` exit codes.
+- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — Profile and remote-debug against real export templates; debug symbols and strip settings matter for external profilers.
+- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — Scene swap lifetime bugs show up as orphan-node growth; use tree dumps when loaders fail to free.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Ghost listeners and deferred connects often explain “why is this still running?” stack traces.
+- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Global loggers, monitors, and error interceptors belong in Autoloads with clear boot order.
+- [godot-server-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-server-architecture/SKILL.md) — When debug draw or metrics push into Rendering/Physics servers, keep server ownership separate from nodes.
+
+#### Downstream / consumers
+- [godot-auditor](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md) — Consumes debugger/profiler evidence when enforcing never-lists and architectural integrity reviews.
+- [godot-platform-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md) — Device remote debug and on-screen consoles are required when desktop Output is unavailable.
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Headless microbenchmarks and CI QA feed balance sims that need stable timing and exit codes.
+- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — Networked games need remote inspectors and structured logs across peers without flooding the Output panel.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting debug or perf concern.

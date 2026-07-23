@@ -15,3 +15,13 @@ func setup_responsive_padding(padding: float = 20.0) -> void:
 	offset_top = padding
 	offset_right = -padding
 	offset_bottom = -padding
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/ui/size_and_anchors.html
+# - https://docs.godotengine.org/en/stable/classes/class_control.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — shallow trees vs deep Margin stacks
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md — safe-area padding via offsets
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md
+# =============================================================================

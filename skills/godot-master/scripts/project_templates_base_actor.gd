@@ -26,3 +26,13 @@ func take_damage(amount: int, source: Node = null) -> void:
 
 func _on_damage_received(_amount: int, _source: Node) -> void:
 	pass
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/nodes_and_scene_instances.html
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — virtual hooks and typed signals on base entities
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md — actor state_changed paired with FSM nodes
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-templates/SKILL.md
+# =============================================================================

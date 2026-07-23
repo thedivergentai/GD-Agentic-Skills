@@ -15,3 +15,13 @@
 - **NEVER use global variables for local collection progress** — Keep counts encapsulated within the `CollectionManager` and emit signals to update the UI.
 - **NEVER leave orphaned nodes in the tree during state swaps** — Always ensure the previous level/state is properly queued for deletion before instantiating the new one.
 - **NEVER scale collision shapes non-uniformly for collectibles** — This breaks collision detection math. Adjust the internal shape resource properties instead.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-game-loop-collection/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

@@ -22,3 +22,14 @@ The efficiency of the soul. This rubric measures the project's implementation of
 
 ## 🌟 Visionary's Final Decree
 Optimization is the act of removing everything that is not the vision. To reach **Elite** status, you must think in **Frame Budgets (16.6ms)**. If a system takes 1ms, it must justify its existence. Slop is cheap; performance is the luxury of the visionary architect.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/performance/cpu_optimization.html
+- https://docs.godotengine.org/en/stable/tutorials/performance/gpu_optimization.html
+- https://docs.godotengine.org/en/stable/classes/class_performance.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

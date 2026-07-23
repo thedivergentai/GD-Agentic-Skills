@@ -9,8 +9,9 @@ class_name InputBuffer
 var _buffer: Dictionary = {}  # action_name → buffer time remaining
 @export var buffer_duration: float = 0.15  # 150ms
 
-func _process(delta: float) -> void:
-	# Decay all buffered inputs
+func _physics_process(delta: float) -> void:
+	# Decay on the physics tick so buffer windows match CharacterBody consumption,
+	# not render FPS (avoids short windows vanishing on hitch frames).
 	for action in _buffer.keys():
 		_buffer[action] -= delta
 		if _buffer[action] <= 0:
@@ -36,3 +37,14 @@ func consume_action(action_name: String) -> bool:
 ## In _physics_process():
 ##   if is_on_floor() and input_buffer.consume_action("jump"):
 ##     velocity.y = JUMP_VELOCITY
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html
+# - https://docs.godotengine.org/en/stable/classes/class_input.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md — jump/dash buffer windows
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md — consume buffer on floor contact
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md
+# =============================================================================

@@ -22,3 +22,14 @@ The rhythm of the tactical vision. This rubric measures the project's logic for 
 
 ## 🌟 Visionary's Final Decree
 To reach **Elite** status, the Turn System must be 'Immutable'. Once a turn is committed, the result must be absolute. Use an **Action Queue** to process turns; never allow the UI to drive the core logic. A visionary project controls time with absolute architectural precision.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_styleguide.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-turn-system/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

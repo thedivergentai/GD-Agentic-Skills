@@ -14,3 +14,14 @@ func bullet_time_transition(target_scale: float, duration: float) -> void:
 	# Tweens can target AnimationTree parameters directly!
 	tween.tween_property(self, "parameters/GlobalTime/scale", target_scale, duration)\
 		.set_trans(Tween.TRANS_SINE)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_animationnodetimescale.html
+# - https://docs.godotengine.org/en/stable/classes/class_animationtree.html
+# - https://docs.godotengine.org/en/stable/classes/class_tween.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md — interruptible scale ramps
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — stun / haste presentation
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-tree-mastery/SKILL.md
+# =============================================================================

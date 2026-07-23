@@ -23,3 +23,13 @@ func _recalculate_path(target_pos: Vector3) -> void:
 
 ## [SKILL NOTICE]: Connect NPCs to a central TimeManager signal 
 ## to trigger schedule updates without polling every frame.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationservers.html
+# - https://docs.godotengine.org/en/stable/classes/class_navigationserver3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md — map_get_path and agent budgets
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — hour_passed schedule triggers
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-simulation/SKILL.md
+# =============================================================================

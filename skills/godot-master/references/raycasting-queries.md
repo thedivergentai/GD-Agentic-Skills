@@ -15,6 +15,13 @@ Physics queries allow for instantaneous detection of objects using lines (rays),
 
 ## Available Scripts
 
+> **MANDATORY** for common paths — read before implementing (do not improvise query APIs from memory):
+> - [direct_space_state_raycast.gd](../scripts/raycasting_queries_direct_space_state_raycast.gd) — high-frequency `intersect_ray` without RayCast nodes.
+> - [query_exclusion_optimization.gd](../scripts/raycasting_queries_query_exclusion_optimization.gd) — RID exclude lists so casters never self-hit.
+> - [shapecast_ground_detection.gd](../scripts/raycasting_queries_shapecast_ground_detection.gd) — footing / volume casts when thin rays tunnel or miss.
+>
+> **Do NOT Load** every script below for one task. Open only the row that matches the decision table.
+
 ### [direct_space_state_raycast.gd](../scripts/raycasting_queries_direct_space_state_raycast.gd)
 Expert usage of `PhysicsDirectSpaceState2D/3D` for bypassing node-based overhead in high-frequency queries.
 
@@ -57,6 +64,20 @@ Optimizing performance by excluding specific RIDs (Resource IDs) from intersecti
 - **NEVER use rays for small, fast detection areas** — Rays can "tunnel" through thin walls if the frame rate drops. Use `cast_motion` or high-frequency stepping for bullets.
 - **NEVER query 1000+ rays individually in GDScript** — Batch your queries or use the `PhysicsServer` directly in C++ if you reach extreme query counts.
 - **NEVER ignore the `result.rid`** — RIDs are the fastest way to identify and exclude objects in subsequent queries, bypassing node-path lookups [20].
+
+## Query-Type Decision Table
+
+Pick the cheapest API that answers the question. Always pair rays/shapes with RID exclude + masks ([query_exclusion_optimization.gd](../scripts/raycasting_queries_query_exclusion_optimization.gd)).
+
+| Need | Prefer | Cost | When | Script |
+|------|--------|------|------|--------|
+| Persistent sensor in the scene (ledge, aim assist debug) | `RayCast2D`/`RayCast3D` node | Low–med | Few casts; OK waiting one physics frame (or `force_raycast_update()`) | Scene node + NEVER rules |
+| Hitscan / LOS / one-shot mid-frame ray | `PhysicsDirectSpaceState*.intersect_ray` | Low | High frequency, no permanent node | **MANDATORY** [direct_space_state_raycast.gd](../scripts/raycasting_queries_direct_space_state_raycast.gd) |
+| Footing, thick walls, melee volume | `ShapeCast*` / `intersect_shape` | Med–high | Thin ray tunnels or misses volume | **MANDATORY** [shapecast_ground_detection.gd](../scripts/raycasting_queries_shapecast_ground_detection.gd) |
+| Explosion / occupancy at a point | `intersect_point` | Low–med | Epicenter overlap list | [point_in_shape_query.gd](../scripts/raycasting_queries_point_in_shape_query.gd) |
+| Stuck / penetration resolve | `get_rest_info` | Med | Overlap recovery | [rest_info_3d_stuck_fix.gd](../scripts/raycasting_queries_rest_info_3d_stuck_fix.gd) |
+| Pierce / multi-hit along a line | Repeated `intersect_ray` + exclude RIDs | Med | Projectiles that keep going | [multiple_hit_piercing_ray.gd](../scripts/raycasting_queries_multiple_hit_piercing_ray.gd) |
+| Screen → world click | Camera project + `intersect_ray` | Low | Picking | [mouse_pick_3d_query.gd](../scripts/raycasting_queries_mouse_pick_3d_query.gd) |
 
 ---
 
@@ -130,50 +151,52 @@ func perform_surface_raycast() -> void:
         print_rich("[color=cyan]Hit surface: %s[/color]" % surface)
 ```
 
-### 3. Compute-Shader-Raycast (Massively Parallel Hits)
-When performing tens of thousands of rays (Radar, GI, or Volumetrics), CPU-bound queries bottleneck. Use the `RenderingDevice` API to execute GLSL compute shaders. Note: Since the physics BVH is CPU-bound, world geometry must be serialized into a GPU storage buffer to perform ray-triangle intersections in GLSL.
+### 3. Compute Path — Demoted (not a physics-query substitute)
+GPU compute raycasts are **out of scope** for this skill’s production recipes. Godot’s physics BVH lives on the CPU; there is **no** shipped `compute_raycast` shader or BVH→GPU serializer here.
 
-```gdscript
-class_name ComputeRaycaster extends Node
-## Orchestrates massively parallel raycasts using the RenderingDevice API.
-
-var _rd: RenderingDevice
-var _shader: RID
-var _pipeline: RID
-
-func _ready() -> void:
-    _rd = RenderingServer.get_rendering_device()
-    var shader_file: RDShaderFile = load("res://compute_raycast.glsl")
-    var spirv: RDShaderSPIRV = shader_file.get_spirv()
-    _shader = _rd.shader_create_from_spirv(spirv)
-    _pipeline = _rd.compute_pipeline_create(_shader)
-
-func dispatch_rays(data_bytes: PackedByteArray) -> PackedByteArray:
-    var buffer_rid: RID = _rd.storage_buffer_create(data_bytes.size(), data_bytes)
-    var uniform := RDUniform.new()
-    uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_STORAGE_BUFFER
-    uniform.binding = 0
-    uniform.add_id(buffer_rid)
-    
-    var uniform_set: RID = _rd.uniform_set_create([uniform], _shader, 0)
-    var compute_list: int = _rd.compute_list_begin()
-    _rd.compute_list_bind_compute_pipeline(compute_list, _pipeline)
-    _rd.compute_list_bind_uniform_set(compute_list, uniform_set, 0)
-    _rd.compute_list_dispatch(compute_list, 1, 1, 1) 
-    _rd.compute_list_end()
-    _rd.submit()
-    _rd.sync()
-    
-    var output: PackedByteArray = _rd.buffer_get_data(buffer_rid)
-    _rd.free_rid(buffer_rid)
-    return output
-```
+- **Default**: stay on DirectSpaceState / ShapeCast / masks / RID exclude (table above).
+- **If you truly need 10k+ custom rays**: treat it as a rendering research spike — you must own triangle buffers, acceleration structure rebuilds, and sync stalls yourself. Do **not** assume `RenderingDevice` replaces `intersect_ray` for gameplay hit detection.
+- Escalate extreme CPU query counts to `godot-performance-optimization` (batching, C++/GDExtension) before inventing a compute pipeline.
 
 ## Reference
-- [Godot Docs: Raycasting](https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html)
-- [Godot Docs: Compute Shaders](https://docs.godotengine.org/en/stable/tutorials/shaders/compute_shaders.html)
 
+> Progressive disclosure: open Official Documentation links only when researching a specific API;
+> load Related Skills when routing work to a peer domain — do not preload the whole lattice.
 
-### Related
-- `godot-2d-physics`, `godot-physics-3d`
-- Master Skill: [godot-master](../SKILL.md)
+### Official Documentation
+- [Ray-casting](https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html) — Node `RayCast*` vs `PhysicsDirectSpaceState*` queries, result dictionaries, and `exclude` to avoid self-hits.
+- [Physics introduction](https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html) — Collision layers/masks that filter every ray, shape, and point query at the physics server.
+- [Collision shapes (3D)](https://docs.godotengine.org/en/stable/tutorials/physics/collision_shapes_3d.html) — Why queries need primitive/convex shapes instead of visual meshes for reliable, cheap intersections.
+- [PhysicsDirectSpaceState3D](https://docs.godotengine.org/en/stable/classes/class_physicsdirectspacestate3d.html) — `intersect_ray` / `intersect_shape` / `intersect_point` / `get_rest_info` / `cast_motion` contracts for mid-frame space queries.
+- [PhysicsDirectSpaceState2D](https://docs.godotengine.org/en/stable/classes/class_physicsdirectspacestate2d.html) — 2D twin of direct space queries for LOS, hitscan, and point epicenters without permanent cast nodes.
+- [PhysicsRayQueryParameters3D](https://docs.godotengine.org/en/stable/classes/class_physicsrayqueryparameters3d.html) — Mask, exclude RIDs, `hit_from_inside`, and collide-with flags for reusable ray parameter objects.
+- [PhysicsShapeQueryParameters3D](https://docs.godotengine.org/en/stable/classes/class_physicsshapequeryparameters3d.html) — Shape RID + transform setup for volume casts, rest info, and stuck-overlap resolution.
+- [PhysicsPointQueryParameters3D](https://docs.godotengine.org/en/stable/classes/class_physicspointqueryparameters3d.html) — Point-in-shape overlap lists for explosion epicenters and occupancy checks.
+- [RayCast3D](https://docs.godotengine.org/en/stable/classes/class_raycast3d.html) — Scene-tree cast nodes, collision exceptions, and when `force_raycast_update()` is required after moving.
+- [ShapeCast3D](https://docs.godotengine.org/en/stable/classes/class_shapecast3d.html) — Volume casts and `force_shapecast_update()` for footing/melee detection that thin rays miss.
+- [Camera3D](https://docs.godotengine.org/en/stable/classes/class_camera3d.html) — `project_ray_origin` / `project_ray_normal` for screen-to-world picking rays from the active camera.
+- [Mouse and input coordinates](https://docs.godotengine.org/en/stable/tutorials/inputs/mouse_and_input_coordinates.html) — Viewport mouse position vs canvas/world space before building a pick ray.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Named physics layers and tick settings must exist before query masks and water/ground layer bits stay coherent.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed query parameters, RID arrays, and `_physics_process`-only space access are language-level contracts this skill depends on.
+- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — 2D body/area layer matrices and when to prefer `RayCast2D` nodes vs direct space state for sensors.
+
+#### Complements
+- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — 3D body types, CCD, and collision setup that determine what your rays and shape casts can actually hit.
+- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — Grounding, ledges, and coyote-time feel often consume ShapeCast/ray footing results from this domain.
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Physics-step click/aim sampling couples with mouse-pick rays and hitscan timing.
+- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — Physics LOS vs NavMesh path-straightness checks; keep obstacle carve and collision worlds consistent.
+- [godot-ai-navigation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ai-navigation/SKILL.md) — FOV fans and vision sensors feed AI perception stacks that still need correct query masks/exclusions.
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Budgeting hundreds of rays, reusing query params, and knowing when node casts become SceneTree overhead.
+- [godot-debugging-profiling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md) — Visualizing cast lines/shapes and diagnosing missed hits from mask, exclude, or update-timing mistakes.
+
+#### Downstream / consumers
+- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Hitscan, piercing rays, and melee volumes resolve damage from query results produced here.
+- [godot-genre-shooter](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md) — Hitscan weapons, bullet pierce, and aim assist consume exclusion/mask recipes and multi-hit pierce loops.
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — View distance, FOV ray counts, pierce max-hits, and query tick rate change fairness and difficulty; simulate those knobs instead of guessing.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored entry point for discovering raycasting/query patterns alongside sibling domains.

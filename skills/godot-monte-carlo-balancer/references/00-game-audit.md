@@ -77,3 +77,14 @@ Present audit before coding. Lock: bands/metrics, grind minutes, in-scope modes/
 ## Deliverable
 
 `BALANCE_PLAN.md` in the tool directory. Phases 1–7 must not silently deviate from it.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+- https://docs.godotengine.org/en/stable/classes/class_json.html
+- https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — Resource-first extract
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-testing-patterns/SKILL.md — Phase 7 headless calibration
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md
+-->

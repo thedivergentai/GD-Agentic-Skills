@@ -38,3 +38,13 @@ func _spawn_grave(pos: Vector3, amount: int) -> void:
 	grave.global_position = pos
 	
 	grave.setup(amount)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_packedscene.html — spawn grave_scene at death position
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/scene_tree.html — add_child on current_scene for persistence
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md — currency_loss_percentage vs wallet
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md — grave outlives player death transition
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-mechanic-revival/SKILL.md
+# =============================================================================

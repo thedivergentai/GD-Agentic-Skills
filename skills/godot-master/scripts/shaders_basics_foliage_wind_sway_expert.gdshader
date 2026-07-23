@@ -16,3 +16,14 @@ void vertex() {
 	VERTEX.x += sin(time + VERTEX.x * 0.5) * strength;
 	VERTEX.z += cos(time * 0.8 + VERTEX.z * 0.4) * strength;
 }
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/spatial_shader.html
+# - https://docs.godotengine.org/en/stable/tutorials/shaders/making_trees.html
+# - https://docs.godotengine.org/en/stable/classes/class_geometryinstance3d.html
+# Related skills:
+# - ../godot-3d-world-building/SKILL.md — foliage placement and environment LODs
+# - ../godot-genre-open-world/SKILL.md — large-world vegetation sway at scale
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md
+# =============================================================================

@@ -23,3 +23,14 @@ func _log_state() -> void:
 	# Check specific blend values
 	var movement_pos = get("parameters/Movement/blend_position")
 	print("  - Movement Blend: ", movement_pos)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_animationnodestatemachineplayback.html
+# - https://docs.godotengine.org/en/stable/classes/class_animationtree.html
+# - https://docs.godotengine.org/en/stable/tutorials/animation/animation_tree.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — structured runtime diagnostics
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — throttle debug logging off hot paths
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-tree-mastery/SKILL.md
+# =============================================================================

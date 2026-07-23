@@ -27,3 +27,14 @@ func _background_processing(input_data: Variant) -> void:
 func _on_task_finalized() -> void:
 	# Back on main thread: Safe to modify SceneTree
 	pass
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_workerthreadpool.html
+# - https://docs.godotengine.org/en/stable/classes/class_mutex.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/scene_tree.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — offload CPU work without tree mutations from workers
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — call_deferred / Mutex patterns in typed GDScript
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md
+# =============================================================================

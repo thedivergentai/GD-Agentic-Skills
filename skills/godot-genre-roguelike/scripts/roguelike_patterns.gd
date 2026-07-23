@@ -74,3 +74,14 @@ func get_random_loot() -> String:
     if _loot_pool.is_empty(): return ""
     _loot_pool.shuffle()
     return _loot_pool.pop_back()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_astargrid2d.html
+# - https://docs.godotengine.org/en/stable/classes/class_workerthreadpool.html
+# - https://docs.godotengine.org/en/stable/classes/class_randomnumbergenerator.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md — BSP/shuffle-bag/WorkerThreadPool snippets
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — frame-safe generation patterns
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md
+# =============================================================================

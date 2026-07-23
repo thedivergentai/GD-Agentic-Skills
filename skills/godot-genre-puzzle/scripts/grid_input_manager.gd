@@ -18,3 +18,11 @@ func _screen_to_grid(_pos: Vector2) -> Vector2i:
 
 func _handle_grid_click(_grid_pos: Vector2i) -> void:
     pass
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — consume viewport events after grid hit-tests
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-puzzle/SKILL.md
+# =============================================================================

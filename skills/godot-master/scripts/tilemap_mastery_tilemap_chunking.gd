@@ -111,3 +111,14 @@ func _mark_chunk_dirty(chunk_pos: Vector2i) -> void:
 ## 
 ## func _process(_delta):
 ##     chunking.update_chunks_around(player.global_position)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/2d/using_tilemaps.html
+# - https://docs.godotengine.org/en/stable/classes/class_tilemaplayer.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md — stream chunk scenes around the camera without orphan layers
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — load radius tied to Camera2D follow position
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md
+# =============================================================================

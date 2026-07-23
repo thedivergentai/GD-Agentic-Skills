@@ -44,3 +44,13 @@ func recharge(amount: int = 1) -> void:
 
 func full_restore() -> void:
 	current_charges = max_charges
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html — revival_available / true_death events
+# - https://docs.godotengine.org/en/stable/classes/class_node.html — charge counters as Node component state
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — health-zero calls attempt_revive
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md — charges as child component, not Character monolith
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-mechanic-revival/SKILL.md
+# =============================================================================

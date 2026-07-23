@@ -8,3 +8,13 @@
 - **NEVER delete the player node on death** — `queue_free()`ing the player breaks UI refs and references from enemies. Disable processing, hide the mesh, and 'Revive' the existing instance instead.
 - **NEVER respawn instantly** — An instant snap is disorienting. Always use a 1-2s delay with a screen fade or death animation to allow the player to process the failure.
 - **NEVER reset the entire world on player death** — In modern design, opened doors and collected unique items should stay persisted. Use a bitmask in the checkpoint resource to track 'World Progress'.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-mechanic-revival/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

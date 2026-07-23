@@ -20,3 +20,11 @@ func redo() -> void:
 
 ## [SKILL NOTICE]: Do not build custom stacks. Use Godot's 'UndoRedo' 
 ## object to handle the Command pattern and memory limits automatically.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_undoredo.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — bind undo/redo actions from keyboard/gamepad
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-puzzle/SKILL.md
+# =============================================================================

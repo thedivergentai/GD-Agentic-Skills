@@ -15,3 +15,13 @@ func _tick_bot(index: int):
 	pass
 
 var bots: Array = []
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_workerthreadpool.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/thread_safe_apis.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ai-navigation/SKILL.md — bot pathfinding off the match tick
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-server-architecture/SKILL.md — server CPU isolation for AI
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-battle-royale/SKILL.md
+# =============================================================================

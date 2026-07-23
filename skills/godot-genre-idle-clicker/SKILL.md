@@ -38,230 +38,107 @@ Expert blueprint for idle/clicker games with exponential progression and prestig
 
 ## 🛠 Expert Components (scripts/)
 
+> **MANDATORY reads** before implementing the matching system:
+> 1. [big_number.gd](scripts/big_number.gd) — mantissa + exponent beyond float INF
+> 2. [generator.gd](scripts/generator.gd) — exponential cost / rate units
+> 3. [scientific_notation_formatter.gd](scripts/scientific_notation_formatter.gd) — K/M/B/T + scientific display
+> 4. [offline_progress_calculator.gd](scripts/offline_progress_calculator.gd) — UNIX offline catch-up (not `ticks_msec`)
+
 ### Original Expert Patterns
-- [big_number.gd](scripts/idle_performance_setup.gd) - The foundation for handling e308+ scales using Mantissa + Exponent math.
-- [generator.gd](scripts/precision_cost_validator.gd) - Generic template for exponential cost units and rate calculation.
-- [scientific_notation_formatter.gd](scripts/scientific_notation_math.gd) - readable formatting for K, M, B, T suffixes and scientific notation.
+- [big_number.gd](scripts/big_number.gd) - Mantissa + Exponent math for e308+ scales.
+- [generator.gd](scripts/generator.gd) - Exponential cost units and production rate calculation.
+- [scientific_notation_formatter.gd](scripts/scientific_notation_formatter.gd) - Readable K/M/B/T and scientific suffixes.
 
 ### Modular Components
 - [offline_progress_calculator.gd](scripts/offline_progress_calculator.gd) - Real-world delta tracking using UNIX timestamps.
-- [functional_income_reducer.gd](scripts/functional_income_reducer.gd) - C++ optimized array reduction for fast income summation.
-- [threaded_catchup_simulator.gd](scripts/threaded_catchup_simulator.gd) - WorkerThreadPool background simulation patterns.
+- [functional_income_reducer.gd](scripts/functional_income_reducer.gd) - Fast income summation patterns.
+- [threaded_catchup_simulator.gd](scripts/threaded_catchup_simulator.gd) - WorkerThreadPool background catch-up.
+- [precision_cost_validator.gd](scripts/precision_cost_validator.gd) - Cost curve / affordability checks.
+- [scientific_notation_math.gd](scripts/scientific_notation_math.gd) - Shared mantissa helpers for formatters.
+- [idle_performance_setup.gd](scripts/idle_performance_setup.gd) - `low_processor_usage_mode` + signal-throttled UI.
+- [decoupled_economy_signal_bus.gd](scripts/decoupled_economy_signal_bus.gd) - Throttled economy→UI signals.
+- [lightweight_upgrade_resource.gd](scripts/lightweight_upgrade_resource.gd) - Upgrade `.tres` pattern.
+- [big_int_save_parser.gd](scripts/big_int_save_parser.gd) - Persist big numbers safely.
+- [thread_safe_ui_updater.gd](scripts/thread_safe_ui_updater.gd) - Deferred UI after threaded catch-up.
 
 ---
 
 ## Core Loop
-1.  **Click**: Player performs manual action to gain currency.
-2.  **Buy**: Player purchases "generators" (auto-clickers).
-3.  **Wait**: Game plays itself, numbers go up.
-4.  **Upgrade**: Player buys multipliers to increase efficiency.
-5.  **Prestige**: Player resets progress for a permanent global multiplier.
+1. **Click** → 2. **Buy generators** → 3. **Idle income** → 4. **Upgrade** → 5. **Prestige**
+
+## Decision Trees
+
+### Numbers & display
+| Need | Action |
+|------|--------|
+| Values past ~1e308 | **MANDATORY** [big_number.gd](scripts/big_number.gd) |
+| Labels / abbreviations | **MANDATORY** [scientific_notation_formatter.gd](scripts/scientific_notation_formatter.gd) |
+| Cost curve ~1.15^n | [generator.gd](scripts/generator.gd) + [precision_cost_validator.gd](scripts/precision_cost_validator.gd) |
+
+### Offline & perf
+| Need | Action |
+|------|--------|
+| Offline catch-up | **MANDATORY** [offline_progress_calculator.gd](scripts/offline_progress_calculator.gd) (UNIX time) |
+| Long catch-up | [threaded_catchup_simulator.gd](scripts/threaded_catchup_simulator.gd) |
+| Battery / idle CPU | [idle_performance_setup.gd](scripts/idle_performance_setup.gd) |
+
+Do **not** re-inline BigNumber/Offline tutorials in the skill body — load the scripts above.
 
 ## Skill Chain
 
 | Phase | Skills | Purpose |
 |-------|--------|---------|
-| 1. Math | `godot-gdscript-mastery` | Handling numbers larger than 64-bit float |
-| 2. UI | `godot-ui-containers`, `labels` | Displaying "1.5e12" or "1.5T" cleanly |
-| 3. Data | `godot-save-load-systems` | Saving progress, offline time calculation |
-| 4. Logic | `signals` | Decoupling UI from the economic simulation |
-| 5. Meta | `json-serialization` | Balancing hundreds of upgrades via data |
-| 6. Balance | `godot-monte-carlo-balancer` | Career / minutes-to-milestone bands (not win%) |
-
-## Architecture Overview
-
-### 1. Big Number System
-Standard `float` goes to `INF` around 1.8e308. Idle games often go beyond.
-You need a custom `BigNumber` class (Mantissa + Exponent).
-
-```gdscript
-# big_number.gd
-class_name BigNumber
-
-var mantissa: float = 0.0 # 1.0 to 10.0
-var exponent: int = 0     # Power of 10
-
-func _init(m: float, e: int) -> void:
-    mantissa = m
-    exponent = e
-    normalize()
-
-func normalize() -> void:
-    if mantissa >= 10.0:
-        mantissa /= 10.0
-        exponent += 1
-    elif mantissa < 1.0 and mantissa != 0.0:
-        mantissa *= 10.0
-        exponent -= 1
-```
-
-### 2. Generator System
-The core entities that produce currency.
-
-```gdscript
-# generator.gd
-class_name Generator extends Resource
-
-@export var id: String
-@export var base_cost: BigNumber
-@export var base_revenue: BigNumber
-@export var cost_growth_factor: float = 1.15
-
-var count: int = 0
-
-func get_cost() -> BigNumber:
-    # Cost = Base * (Growth ^ Count)
-    return base_cost.multiply(pow(cost_growth_factor, count))
-```
-
-### 3. Simulation Manager (Offline Progress)
-Calculating gains while the game was closed.
-
-```gdscript
-# game_manager.gd
-func _ready() -> void:
-    var last_save_time = save_data.timestamp
-    var current_time = Time.get_unix_time_from_system()
-    var seconds_offline = current_time - last_save_time
-    
-    if seconds_offline > 60:
-        var revenue = calculate_revenue_per_second().multiply(seconds_offline)
-        add_currency(revenue)
-        show_welcome_back_popup(revenue)
-```
-
-## Key Mechanics Implementation
-
-### Prestige System (Reset)
-Resetting `generators` but keeping `prestige_currency`.
-
-```gdscript
-func prestige() -> void:
-    if current_money.less_than(prestige_threshold):
-        return
-        
-    # Formula: Cube root of money / 1 million
-    # (Just an example, depends on balance)
-    var gained_keys = calculate_prestige_gain()
-    
-    save_data.prestige_currency += gained_keys
-    save_data.global_multiplier = 1.0 + (save_data.prestige_currency * 0.10)
-    
-    # Reset
-    save_data.money = BigNumber.new(0, 0)
-    save_data.generators = ResetGenerators()
-    save_game()
-    reload_scene()
-```
-
-### Formatting Numbers
-Displaying `1234567` as `1.23M`.
-
-```gdscript
-static func format(bn: BigNumber) -> String:
-    if bn.exponent < 3:
-        return str(int(bn.mantissa * pow(10, bn.exponent)))
-    
-    var suffixes = ["", "K", "M", "B", "T", "Qa", "Qi"]
-    var suffix_idx = bn.exponent / 3
-    
-    if suffix_idx < suffixes.size():
-        return "%.2f%s" % [bn.mantissa * pow(10, bn.exponent % 3), suffixes[suffix_idx]]
-    else:
-        return "%.2fe%d" % [bn.mantissa, bn.exponent]
-```
-
-## Godot-Specific Tips
-
-*   **Timers**: Do NOT use `Timer` nodes for revenue generation (drifting). Use `_process(delta)` and accumulate time.
-*   **GridContainer**: Perfect for the "Generators" list.
-*   **Resources**: Use `.tres` files to define every generator (Farm, Mine, Factory) so you can tweak balance without touching code.
+| 1. Math | `godot-gdscript-mastery` | Big-number arithmetic |
+| 2. UI | `godot-ui-containers`, `labels` | Scientific / suffix labels |
+| 3. Data | `godot-save-load-systems` | Offline timestamps + prestige |
+| 4. Logic | `signals` | Throttled economy UI |
+| 5. Balance | `godot-monte-carlo-balancer` | Minutes-to-milestone bands |
 
 ## Common Pitfalls
 
-1.  **Floating Point Errors**: Using standard `float` for money. **Fix**: Use BigNumber implementation immediately.
-2.  **Boring Prestige**: Resetting feels like a punishment. **Fix**: Ensure the post-prestige run is *significantly* faster (2x-5x speed).
-3.  **UI Lag**: Updating 50 text labels every frame. **Fix**: Only update labels when values actually change (Signal-based), or throttling updates to 10fps.
+| Pitfall | Solution |
+|---------|----------|
+| Wrong Expert Component hrefs | Links above point at canonical `big_number` / `generator` / formatter |
+| `Time.get_ticks_msec` offline | Use UNIX via offline calculator |
+| UI every frame | Signal-throttle via economy bus / performance setup |
 
+## Reference
 
----
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
 
-## 🚀 Elite Technical Implementations (Batch 09)
+### Official Documentation
+- [Idle and physics processing](https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html) — Revenue must accumulate in `_process(delta)` (or a fixed sim tick), not drifting `Timer` nodes, so generators stay frame-rate independent.
+- [Time](https://docs.godotengine.org/en/stable/classes/class_time.html) — Offline catch-up uses `Time.get_unix_time_from_system()`; never `get_ticks_msec()`, which resets when the app restarts.
+- [Saving games](https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html) — Persist currency, generator counts, prestige multipliers, and last-save UNIX timestamps so welcome-back earnings survive restarts.
+- [Data paths](https://docs.godotengine.org/en/stable/tutorials/io/data_paths.html) — Keep save blobs under `user://` so offline timestamps and big-number strings remain writable across platforms.
+- [Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html) — Generators, upgrades, and prestige curves belong as `.tres` Resources so designers retune `cost_growth_factor` without code changes.
+- [GDScript exports](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_exports.html) — `@export` base costs, revenue rates, and growth factors so balance sheets stay Inspector-driven.
+- [Using signals](https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html) — Emit `currency_updated` only when balances change so HUD labels do not rewrite every frame.
+- [OS](https://docs.godotengine.org/en/stable/classes/class_os.html) — Enable `OS.low_processor_usage_mode` (and sleep usec) for mobile idle sessions that spend most time waiting on generators.
+- [Using multiple threads](https://docs.godotengine.org/en/stable/tutorials/performance/using_multiple_threads.html) — Long offline catch-up sims belong on `WorkerThreadPool`; UI must not block while thousands of ticks replay.
+- [Thread-safe APIs](https://docs.godotengine.org/en/stable/tutorials/performance/thread_safe_apis.html) — Marshaling sim results to Labels requires `call_deferred` / main-thread rules from this page.
+- [Formatting strings](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_format_string.html) — K/M/B suffixes and `%.2fe%d` scientific display depend on correct format strings (and `String.num_scientific` when appropriate).
+- [RefCounted](https://docs.godotengine.org/en/stable/classes/class_refcounted.html) — BigNumber and upgrade payloads should be lightweight `RefCounted`/`Resource` data, not Node trees.
 
-### 1. BigReal-Math-Structure (Handling > 1e308)
-Idle games often exceed the limits of 64-bit floats (~1.8e308). Use a custom `RefCounted` class to store numbers in scientific notation (mantissa + exponent), allowing for virtually infinite growth.
+### Related Skills
 
-```gdscript
-class_name BigReal extends RefCounted
+#### Prerequisites
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Mantissa/exponent classes, `pow` growth, and precision-safe compares (`is_equal_approx`) are core GDScript patterns before building idle economies.
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Generator and upgrade definitions should be Resource-first so balance curves stay data-driven `.tres` assets.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Decoupled currency buses must signal up to UI and never let Labels mutate the simulation wallet.
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Offline progress and prestige state need versioned save handlers that store UNIX timestamps and big-number strings safely.
 
-@export var mantissa: float = 0.0
-@export var exponent: int = 0
+#### Complements
+- [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md) — Soft-currency wallets, sinks, and transaction APIs compose with idle generators when the game grows shops or prestige shops.
+- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Generator lists and upgrade grids are `GridContainer`/`VBoxContainer` layouts bound to throttle-friendly labels.
+- [godot-ui-rich-text](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md) — Scientific notation, suffix strings, and append-only logs belong in Label/RichTextLabel patterns rather than rebuilding huge `text` blobs.
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Low-processor mode, UI throttling, and pooled click-juice keep idle loops battery-friendly on mobile.
+- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Simulation managers and economy buses that survive scene reloads should follow Autoload ownership rules.
+- [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — Click-feedback bursts should use batched `GPUParticles2D.emit_particle` rather than spawning Label nodes per tap.
 
-func _init(m: float = 0.0, e: int = 0) -> void:
-    mantissa = m
-    exponent = e
-    _normalize()
+#### Downstream / consumers
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — After cost curves and prestige multipliers are Resource-driven, Monte Carlo career sims prove minutes-to-milestone bands (not win%) before shipping growth factors.
+- [godot-platform-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md) — Shipping idle on phones consumes low-processor mode, background resume, and offline catch-up patterns from this genre skill.
 
-func _normalize() -> void:
-    if mantissa == 0.0:
-        exponent = 0
-        return
-    while abs(mantissa) >= 10.0:
-        mantissa /= 10.0
-        exponent += 1
-    while abs(mantissa) < 1.0 and mantissa != 0.0:
-        mantissa *= 10.0
-        exponent -= 1
-
-func multiply(other: BigReal) -> BigReal:
-    return BigReal.new(mantissa * other.mantissa, exponent + other.exponent)
-```
-
-### 2. Multi-Offline-Progression Pattern
-Calculate retroactively what the player earned while the game was closed using `Time.get_unix_time_from_system()`. Save the timestamp to `user://` and compare it upon relaunch.
-
-```gdscript
-class_name OfflineProgressionManager extends Node
-
-signal offline_earnings_calculated(seconds_offline: float)
-const SAVE_PATH: String = "user://offline_save.json"
-
-func _ready() -> void:
-    _process_offline_time()
-
-func _process_offline_time() -> void:
-    var current_time = Time.get_unix_time_from_system()
-    var last_time = load_timestamp() # From FileAccess
-    var delta = current_time - last_time
-    
-    if delta > 60.0:
-        offline_earnings_calculated.emit(delta)
-
-func save_timestamp() -> void:
-    var file = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
-    file.store_string(JSON.stringify({"last_time": Time.get_unix_time_from_system()}))
-```
-
-### 3. Particle-Batch-Juice (Manual Emission)
-Spawning new nodes for click-juice is expensive. Use a single `GPUParticles2D` and call `emit_particle()` manually on every click to batch spawn particles directly at the mouse coordinates.
-
-```gdscript
-class_name ClickJuiceManager extends Node2D
-
-@export var click_particles: GPUParticles2D
-
-func _input(event: InputEvent) -> void:
-    if event.is_action_pressed(&"click"):
-        var click_pos = get_global_mouse_position()
-        _burst_particles(click_pos)
-
-func _burst_particles(pos: Vector2) -> void:
-    for i in range(15):
-        var xform = Transform2D(0.0, pos)
-        var velocity = Vector2(randf_range(-200.0, 200.0), randf_range(-200.0, 200.0))
-        # Direct GPU emission bypasses SceneTree overhead
-        click_particles.emit_particle(xform, velocity, Color.WHITE, Color.WHITE, 0)
-```
-
-
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.

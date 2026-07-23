@@ -18,6 +18,7 @@ Expert guidance for PBR materials and StandardMaterial3D in Godot.
 - **NEVER create hundreds of slightly varied StandardMaterial3D resources if performance is dropping** — Godot minimizes GPU state changes by automatically reusing the underlying shader for materials that share the exact same configuration flags (checkboxes). Try to group your material configurations.
 - **NEVER attempt to fix Z-fighting strictly by moving objects further apart** — Floating-point precision degrades over distance. To fix flickering textures, increase your Camera3D's `Near` plane property and decrease the `Far` property to compress the precision range.
 - **NEVER use unique Material resources per MeshInstance3D** — This breaks draw call batching. Use 'Instance Uniforms' to vary parameters while keeping a single shared material.
+- **NEVER mutate a shared Material `.tres` / surface material at runtime** — Call `duplicate(true)` or enable **Local To Scene**, then assign the unique instance before tweaking parameters. **MANDATORY** use [`material_fx.gd`](../scripts/3d_materials_material_fx.gd) `ensure_unique_override()` / overlay helpers for flash/dissolve.
 - **NEVER use Decals on dynamic moving actors without a Cull Mask** — Bullet holes should not stick to the player's face as they walk over them. Mask out character layers.
 
 ---
@@ -31,8 +32,21 @@ Expert guidance for PBR materials and StandardMaterial3D in Godot.
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
 
+### Workflow router (MANDATORY / Do NOT Load)
+| Task | Load | Do NOT Load |
+|------|------|-------------|
+| StandardMaterial3D / ORM / transparency | `pbr_orm_packer.gd`, `transparency_sorting_fix.gd`, `material_batcher.gd`, `material_fx.gd` | `triplanar_world*.gdshader`, `vertex_wind_sway.gdshader` |
+| UV-less terrain / cliffs | `triplanar_world.gdshader` or `triplanar_world_projection.gdshader` + `pbr_material_builder.gd` | Wind sway unless foliage |
+| Foliage wind | `vertex_wind_sway.gdshader` | Triplanar unless rock/terrain also needed |
+| Runtime damage / dissolve | **MANDATORY** `material_fx.gd` | Editing shared imported materials |
+| Instance color/health / texture-array variants | **MANDATORY** `instance_uniform_batching.gdshader` | Per-mesh unique StandardMaterial3D copies; body texture-array samples |
+| HLOD / distant material simplify | `material_batcher.gd` (`setup_lod_materials`) | Alpha-blend distance fade (use Pixel Dither) |
+| Organic SSS / rim / clearcoat | `organic_material.gd`, `subsurface_scattering_setup.gd` | SSS recipes on Mobile/Compatibility |
+
+> Pure StandardMaterial3D albedo/ORM/transparency work: **Do NOT Load** triplanar, wind, or texture-array shaders.
+
 ### [material_fx.gd](../scripts/3d_materials_material_fx.gd)
-Runtime material property animation for damage effects, dissolve, and texture swapping. Use for dynamic material state changes.
+**MANDATORY** for runtime FX. `ensure_unique_override()` / overlay flash / scissor dissolve — never tween shared `.tres` materials.
 
 ### [pbr_material_builder.gd](../scripts/3d_materials_pbr_material_builder.gd)
 Runtime PBR material creation with ORM textures and triplanar mapping.
@@ -75,73 +89,26 @@ Global override system to ensure environmental meshes draw in optimized, state-l
 
 ---
 
-## StandardMaterial3D Basics
+## StandardMaterial3D Checklist (script-first)
 
-### PBR Texture Setup
+1. Pack AO/Roughness/Metallic → **MANDATORY** [`pbr_orm_packer.gd`](../scripts/3d_materials_pbr_orm_packer.gd); set `orm_texture` (never three separate maps).
+2. Enable `normal_enabled` before assigning `normal_texture` (silent no-op otherwise).
+3. Pick transparency from the matrix below — not docs-default ALPHA for cutouts.
+4. Organic skin/leaves → [`organic_material.gd`](../scripts/3d_materials_organic_material.gd) + [`subsurface_scattering_setup.gd`](../scripts/3d_materials_subsurface_scattering_setup.gd) (Forward+ only for real SSS).
+5. Runtime flash/dissolve → **MANDATORY** [`material_fx.gd`](../scripts/3d_materials_material_fx.gd) `ensure_unique_override()` first.
+6. Shared-mesh tint/variant → [`instance_uniform_batching.gdshader`](../scripts/3d_materials_instance_uniform_batching.gdshader); never unique `.tres` per instance.
+7. Distant LOD simplify / Pixel Dither fade → [`material_batcher.gd`](../scripts/3d_materials_material_batcher.gd) `setup_lod_materials()`.
+8. Check Forward+ vs Mobile feature matrix before enabling SSS/clearcoat/anisotropy.
 
-```gdscript
-# Create physically-based material
-var mat := StandardMaterial3D.new()
+### Forward+ vs Mobile (material features)
 
-# Albedo (base color)
-mat.albedo_texture = load("res://textures/wood_albedo.png")
-mat.albedo_color = Color.WHITE  # Tint multiplier
-
-# Normal map (surface detail)
-mat.normal_enabled = true  # CRITICAL: Must enable first
-mat.normal_texture = load("res://textures/wood_normal.png")
-mat.normal_scale = 1.0  # Bump strength
-
-# ORM Texture (R=Occlusion, G=Roughness, B=Metallic)
-mat.orm_texture = load("res://textures/wood_orm.png")
-
-# Alternative: Separate textures (less efficient)
-# mat.roughness_texture = load("res://textures/wood_roughness.png")
-# mat.metallic_texture = load("res://textures/wood_metallic.png")
-# mat.ao_texture = load("res://textures/wood_ao.png")
-
-# Apply to mesh
-$MeshInstance3D.material_override = mat
-```
-
----
-
-## Metallic vs Roughness
-
-### Metal Workflow
-
-```gdscript
-# Pure metal (steel, gold, copper)
-mat.metallic = 1.0
-mat.roughness = 0.2  # Polished metal
-mat.albedo_color = Color(0.8, 0.8, 0.8)  # Metal tint
-
-# Rough metal (iron, aluminum)
-mat.metallic = 1.0
-mat.roughness = 0.7
-```
-
-### Dielectric Workflow
-
-```gdscript
-# Non-metal (wood, plastic, stone)
-mat.metallic = 0.0
-mat.roughness = 0.6  # Typical for wood
-mat.albedo_color = Color(0.6, 0.4, 0.2)  # Brown wood
-
-# Glossy plastic
-mat.metallic = 0.0
-mat.roughness = 0.1  # Very smooth
-```
-
-### Transition Materials (Rust/Dirt)
-
-```gdscript
-# Use texture to blend metal/non-metal
-mat.metallic_texture = load("res://rust_mask.png")
-# White areas (1.0) = metal
-# Black areas (0.0) = rust (dielectric)
-```
+| Feature | Forward+ | Mobile / Compatibility | WHY |
+|---------|----------|------------------------|-----|
+| Subsurface scattering / Skin Mode | Full | Limited / often unavailable | SSS needs Forward+ lighting path; fake with rim + transmittance bake on Mobile |
+| Clearcoat | Yes | Often stripped / approximate | Extra specular lobe cost; drop on distant LOD and Mobile |
+| Anisotropy | Yes | Prefer off | Flowmap + anisotropic BRDF burns mobile fragment budget |
+| Alpha Hash / Pixel Dither fade | Yes | Prefer Alpha Scissor or opaque dither | Hash noise + overdraw hurts tile GPUs |
+| Instance uniforms (batching) | Yes | Yes (prefer this) | Keeps one material; avoids unique-resource draw breaks |
 
 ---
 
@@ -193,72 +160,9 @@ mat.cull_mode = BaseMaterial3D.CULL_DISABLED  # Show both sides
 
 ---
 
-## Advanced Features
-
-### Emission (Glowing Materials)
-
-```gdscript
-mat.emission_enabled = true
-mat.emission = Color(1.0, 0.5, 0.0)  # Orange glow
-mat.emission_energy_multiplier = 2.0  # Brightness (HDR)
-mat.emission_texture = load("res://lava_emission.png")
-
-# Animated emission
-func _process(delta: float) -> void:
-    mat.emission_energy_multiplier = 1.0 + sin(Time.get_ticks_msec() * 0.005) * 0.5
-```
-
-### Rim Lighting (Fresnel)
-
-```gdscript
-mat.rim_enabled = true
-mat.rim = 1.0  # Intensity
-mat.rim_tint = 0.5  # How much albedo affects rim color
-```
-
-### Clearcoat (Car Paint)
-
-```gdscript
-mat.clearcoat_enabled = true
-mat.clearcoat = 1.0  # Layer strength
-mat.clearcoat_roughness = 0.1  # Glossy top layer
-```
-
-### Anisotropy (Brushed Metal)
-
-```gdscript
-mat.anisotropy_enabled = true
-mat.anisotropy = 1.0  # Directional highlights
-mat.anisotropy_flowmap = load("res://brushed_flow.png")
-```
-
----
-
 ## Texture Channel Packing
 
-### ORM Texture (Recommended)
-
-```python
-# External tool (GIMP, Substance, Python script):
-# Combine 3 grayscale textures into 1 RGB:
-# R channel = Ambient Occlusion (bright = no occlusion)
-# G channel = Roughness (bright = rough)
-# B channel = Metallic (bright = metal)
-```
-
-```gdscript
-# In Godot:
-mat.orm_texture = load("res://textures/material_orm.png")
-# This replaces ao_texture, roughness_texture, and metallic_texture!
-```
-
-### Custom Packing
-
-```gdscript
-# If using custom channel assignments:
-mat.roughness_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_GREEN
-mat.metallic_texture_channel = BaseMaterial3D.TEXTURE_CHANNEL_BLUE
-```
+**MANDATORY** [`pbr_orm_packer.gd`](../scripts/3d_materials_pbr_orm_packer.gd) for R=AO / G=Roughness / B=Metallic. Do not inline packing recipes here. Custom channel remaps only when an imported atlas already disagrees with ORM layout.
 
 ---
 
@@ -386,33 +290,6 @@ mat.roughness_texture = load("res://roughness.png")
 
 ---
 
-## Common Material Presets
-
-```gdscript
-# Glass
-func create_glass() -> StandardMaterial3D:
-    var mat := StandardMaterial3D.new()
-    mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-    mat.albedo_color = Color(1, 1, 1, 0.2)
-    mat.metallic = 0.0
-    mat.roughness = 0.0
-    mat.refraction_enabled = true
-    mat.refraction_scale = 0.05
-    return mat
-
-# Gold
-func create_gold() -> StandardMaterial3D:
-    var mat := StandardMaterial3D.new()
-    mat.albedo_color = Color(1.0, 0.85, 0.3)
-    mat.metallic = 1.0
-    mat.roughness = 0.3
-    return mat
-```
-
-
-
----
-
 ## Expert Techniques & Optimizations
 
 ### 1. LOD Transitions using Pixel Dither
@@ -440,81 +317,57 @@ void fragment() {
 
 ## Expert Pattern: Material-Texture-Array (Instanced Variation)
 
-To render hundreds of varied objects (e.g., forest trees, crowd variants) in a single draw call, use **Instance Uniforms** with a texture array in a custom Spatial shader. This bypasses the need for unique material resources per variation.
-
-### The Spatial Shader (`texture_array.gdshader`)
-```glsl
-shader_type spatial;
-
-uniform sampler2D texture_array[4];
-// This uniform is unique per GeometryInstance3D node, NOT per material
-instance uniform int texture_index;
-
-void fragment() {
-    vec4 tex_color;
-    switch (texture_index) {
-        case 0: tex_color = texture(texture_array[0], UV); break;
-        case 1: tex_color = texture(texture_array[1], UV); break;
-        case 2: tex_color = texture(texture_array[2], UV); break;
-        case 3: tex_color = texture(texture_array[3], UV); break;
-    }
-    ALBEDO = tex_color.rgb;
-}
-```
-
-### The GDScript Controller
-```gdscript
-func apply_variant(mesh_instance: GeometryInstance3D, index: int) -> void:
-    # Set the per-instance uniform. The underlying material remains shared.
-    mesh_instance.set_instance_shader_parameter(&"texture_index", index)
-```
+**MANDATORY** [`instance_uniform_batching.gdshader`](../scripts/3d_materials_instance_uniform_batching.gdshader) for per-instance color/health **and** texture-array index variants. Set `texture_index` via `GeometryInstance3D.set_instance_shader_parameter` — never unique materials per tree/crowd variant.
 
 ---
 
 ## Expert Pattern: Dissolve-Shader-Integration (Alpha Scissor)
 
-For high-performance impact or dissolve effects, use **Alpha Scissor** transparency. Unlike standard Alpha blending, Scissor allows the mesh to cast shadows and avoids the expensive transparency sorting pipeline.
-
-```gdscript
-func trigger_dissolve(mesh: MeshInstance3D, duration: float = 1.0) -> void:
-    var mat := mesh.get_surface_override_material(0) as StandardMaterial3D
-    if not mat: return
-
-    # 1. Force Alpha Scissor for performance
-    mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
-    
-    # 2. Tween threshold to discard pixels based on noise/albedo alpha
-    var tween := create_tween()
-    tween.tween_property(mat, "alpha_scissor_threshold", 1.0, duration).from(0.0)
-```
+Use Alpha Scissor for performant dissolves (keeps shadows, avoids alpha sort). **MANDATORY** [`material_fx.gd`](../scripts/3d_materials_material_fx.gd) `dissolve_scissor()` — it duplicates the override first.
 
 ---
 
 ## Expert Pattern: Material-LOD-System (HLOD)
 
-While Godot handles Mesh LOD (geometry) automatically, it does not simplify material shading at a distance. Use **Visibility Ranges** to swap meshes and apply simplified materials to reduce fragment shading costs.
-
-```gdscript
-func setup_lod_materials(detailed_node: GeometryInstance3D, distant_node: GeometryInstance3D) -> void:
-    # 1. Detailed version: Hide at 50m
-    detailed_node.visibility_range_end = 50.0
-    detailed_node.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
-
-    # 2. Distant version: Appear at 50m
-    distant_node.visibility_range_begin = 50.0
-    distant_node.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
-
-    # 3. Simplify Distant Material
-    var dist_mat := distant_node.get_surface_override_material(0) as StandardMaterial3D
-    if dist_mat:
-        # Disable expensive shading features for distant LOD
-        dist_mat.normal_enabled = false
-        dist_mat.rim_enabled = false
-        dist_mat.clearcoat_enabled = false
-        dist_mat.subsurf_scatter_enabled = false
-        # Use Pixel Dither for seamless, non-transparent fading
-        dist_mat.distance_fade_mode = BaseMaterial3D.DISTANCE_FADE_PIXEL_DITHER
-```
+Mesh LOD is automatic; material shading is not. **MANDATORY** [`material_batcher.gd`](../scripts/3d_materials_material_batcher.gd) `setup_lod_materials()` for visibility-range swaps, feature strip on distant materials, and Pixel Dither distance fade (not alpha blend).
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+
+> Progressive disclosure: open Official Documentation links only when researching a specific API;
+> load Related Skills when routing work to a peer domain — do not preload the whole lattice.
+
+### Official Documentation
+- [Standard Material 3D and ORM Material 3D](https://docs.godotengine.org/en/stable/tutorials/3d/standard_material_3d.html) — Primary PBR tutorial for albedo/metallic/roughness, ORM packing, transparency modes, and feature flags on StandardMaterial3D.
+- [BaseMaterial3D](https://docs.godotengine.org/en/stable/classes/class_basematerial3d.html) — Shared API for transparency enums, texture channels, cull/depth draw, distance fade, and subsurface scattering controls.
+- [StandardMaterial3D](https://docs.godotengine.org/en/stable/classes/class_standardmaterial3d.html) — Concrete material class used throughout this skill’s builders, FX helpers, and presets.
+- [ORMMaterial3D](https://docs.godotengine.org/en/stable/classes/class_ormmaterial3d.html) — Dedicated ORM-packed material path when Occlusion/Roughness/Metallic already live in one RGB texture.
+- [Using decals](https://docs.godotengine.org/en/stable/tutorials/3d/using_decals.html) — Projector decals, cull masks, and performance limits for bullet holes and detail without unique materials.
+- [Importing images](https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_images.html) — Correct normal-map and channel import settings so PBR maps are not treated as color data.
+- [Visibility ranges (HLOD)](https://docs.godotengine.org/en/stable/tutorials/3d/visibility_ranges.html) — Distance swap / fade modes that pair with simplified distant materials and Pixel Dither distance fade.
+- [Spatial shader](https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/spatial_shader.html) — Built-ins for triplanar, wind sway, `instance uniform`, and `shadow_to_opacity` when StandardMaterial3D is not enough.
+- [Your first 3D shader](https://docs.godotengine.org/en/stable/tutorials/shaders/your_first_shader/your_first_3d_shader.html) — Conversion path from StandardMaterial3D settings into a writable spatial ShaderMaterial.
+- [GeometryInstance3D](https://docs.godotengine.org/en/stable/classes/class_geometryinstance3d.html) — `set_instance_shader_parameter`, material overlays/overrides, and visibility-range properties for shared-material batching.
+- [GPU optimization](https://docs.godotengine.org/en/stable/tutorials/performance/gpu_optimization.html) — Overdraw, transparency cost, and batching guidance that motivates ORM packing and avoiding unique materials.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Nodes, Resources, and import basics required before authoring reusable `.tres` materials and texture sets.
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Material/texture Resources, duplication vs sharing, and data-driven presets that keep draw-call batching intact.
+- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — Shading language and ShaderMaterial fundamentals before converting StandardMaterial3D or writing triplanar/instance-uniform shaders.
+
+#### Complements
+- [godot-3d-lighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md) — Emission energy, HDR, GI, and AreaLight3D interactions that determine how PBR and emissive materials actually read in-scene.
+- [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md) — Applying shared environment materials, decals, and triplanar projection across large level geometry.
+- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — Camera3D near/far and framing choices that fix Z-fighting / depth precision issues materials alone cannot solve.
+- [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — Particle draw modes and alpha pipelines that must stay consistent with material transparency choices (scissor/hash vs blend).
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Draw-call batching, MultiMesh, and GPU budgets when scaling unique vs shared materials.
+- [godot-debugging-profiling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md) — GPU/overdraw profilers to verify transparency and material-state regressions after material changes.
+
+#### Downstream / consumers
+- [godot-genre-open-world](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md) — Large worlds consume HLOD visibility ranges, dithered distance fade, and shared-material batching patterns from this skill.
+- [godot-procedural-generation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md) — Procedural meshes and terrains typically need triplanar / world-projection materials when UVs are absent or unstable.
+- [godot-adapt-2d-to-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-2d-to-3d/SKILL.md) — Moving flat art into 3D requires PBR map setup, normal import, and transparency mode choices covered here.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for cross-skill discovery.

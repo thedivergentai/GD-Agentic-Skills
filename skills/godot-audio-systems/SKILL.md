@@ -2,10 +2,9 @@
 name: godot-audio-systems
 description: "Expert patterns for Godot audio including AudioStreamPlayer variants (2D positional, 3D spatial), AudioBus mixing architecture, dynamic effects (reverb, EQ,compression), audio pooling for performance, music transitions (crossfade, bpm-sync), and procedural audio generation. Use for music systems, sound effects, spatial audio, or audio-reactive gameplay. Trigger keywords: AudioStreamPlayer, AudioStreamPlayer2D, AudioStreamPlayer3D, AudioBus, AudioServer, AudioEffect, music_crossfade, audio_pool, positional_audio, reverb, bus_volume."
 ---
-
 # Audio Systems
 
-Expert guidance for Godot's audio engine and mixing architecture.
+Expert mixing, spatial, pooling, and interactive-music patterns for Godot's audio engine.
 
 ## NEVER Do (Expert Audio Rules)
 
@@ -31,497 +30,143 @@ Expert guidance for Godot's audio engine and mixing architecture.
 - `AudioEffectSpectrumAnalyzer.tap_back_pos` **removed** — migrate analyzers to alternative tap APIs.
 - `AudioStreamPlayer` default `area_mask` is now **0** (disabled), not layer 1. If using `Area2D`/`Area3D` `audio_bus_override`, explicitly set `area_mask` to layer 1 or your bus layer.
 
-## Available Scripts
-
-> **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
-
-### [audio_voice_pool_manager.gd](scripts/audio_voice_pool_manager.gd)
-Expert high-performance voice pooler with priority-based 'voice stealing' logic.
-
-### [audio_occlusion_raycast.gd](scripts/audio_occlusion_raycast.gd)
-Professional Raycast-based audio occlusion for dynamic muffling behind walls.
-
-### [audio_interactive_music_manager.gd](scripts/audio_interactive_music_manager.gd)
-Manager for vertical music layering using AudioStreamSynchronized for dynamic intensity.
-
-### [audio_reactive_visualizer_component.gd](scripts/audio_reactive_visualizer_component.gd)
-Expert FFT spectrum analysis component for driving logic-to-data visuals.
-
-### [audio_bus_ducker_logic.gd](scripts/audio_bus_ducker_logic.gd)
-Professional sidechain-style bus ducking (Dialogue-over-Music).
-
-### [audio_procedural_generator_synth.gd](scripts/audio_procedural_generator_synth.gd)
-Expert real-time synthesizer for procedural hums, engines, and signals.
-
-### [audio_environmental_reverb_zone.gd](scripts/audio_environmental_reverb_zone.gd)
-Dynamic reverb/bus effect management via Area3D trigger zones.
-
-### [audio_voice_limiter_manager.gd](scripts/audio_voice_limiter_manager.gd)
-Concurrency manager that prevents 'Ear Bleed' by capping identical SFX instances.
-
-### [audio_linear_volume_interpolator.gd](scripts/audio_linear_volume_interpolator.gd)
-Expert helper for smooth, musically-accurate UI volume slider mapping.
-
-### [audio_footstep_surface_selector.gd](scripts/audio_footstep_surface_selector.gd)
-Physics-driven surface detection and sound-bank selector for footsteps.
-
----
-
-## AudioStreamPlayer Variants
-
-### AudioStreamPlayer (Global/UI)
-
-```gdscript
-# No spatial positioning, same volume everywhere
-# Use for: Music, UI sounds, voiceovers
-
-@onready var music := AudioStreamPlayer.new()
-
-func _ready() -> void:
-    music.stream = load("res://audio/music_main.ogg")
-    music.volume_db = -10  # Quieter
-    music.autoplay = false
-    music.bus = "Music"  # Route to Music bus
-    add_child(music)
-    music.play()
-```
-
-### AudioStreamPlayer2D (Positional)
-
-```gdscript
-# 2D panning based on distance from camera
-# Use for: 2D games, top-down audio cues
-
-extends Area2D
-
-@onready var footstep := AudioStreamPlayer2D.new()
-
-func _ready() -> void:
-    footstep.stream = load("res://audio/footstep.ogg")
-    footstep.max_distance = 500  # Audible range (pixels)
-    footstep.attenuation = 2.0  # Falloff curve (higher = faster fadeout)
-    add_child(footstep)
-
-func play_footstep() -> void:
-    if not footstep.playing:
-        footstep.play()
-```
-
-### AudioStreamPlayer3D (Spatial)
-
-```gdscript
-# 3D spatial audio with doppler, reverb send
-# Use for: 3D games, realistic sound positioning
-
-extends Node3D
-
-@onready var explosion := AudioStreamPlayer3D.new()
-
-func _ready() -> void:
-    explosion.stream = load("res://audio/explosion.ogg")
-    explosion.unit_size = 10.0  # Size of sound source
-    explosion.max_distance = 100.0  # Range
-    explosion.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
-    explosion.doppler_tracking = AudioStreamPlayer3D.DOPPLER_TRACKING_PHYSICS_STEP
-    add_child(explosion)
-    
-    explosion.play()
-```
-
----
-
-## AudioBus Architecture
-
-### Bus Setup (Project Settings)
-
-```
-Master (always exists)
-  ├─ Music
-  │   └─ Effects: Compressor, EQ
-  ├─ SFX
-  │   └─ Effects: Reverb (for environment)
-  └─ Ambient
-      └─ Effects: LowPassFilter (muffled ambience)
-```
-
-### Volume Control (Decibels)
-
-```gdscript
-# ❌ BAD: Linear volume (doesn't work)
-AudioServer.set_bus_volume_db(music_bus_idx, 0.5)  # WRONG!
-
-# ✅ GOOD: Use decibels
-var music_bus := AudioServer.get_bus_index("Music")
-AudioServer.set_bus_volume_db(music_bus, -10)  # -10 dB (quieter)
-
-# Convert linear (0.0-1.0) to dB:
-var linear_volume := 0.5  # 50%
-var db := linear_to_db(linear_volume)  # ~-6 dB
-AudioServer.set_bus_volume_db(music_bus, db)
-
-# Convert dB to linear:
-var current_db := AudioServer.get_bus_volume_db(music_bus)
-var linear := db_to_linear(current_db)
-print("Current volume: %d%%" % int(linear * 100))
-```
-
-### Mute Bus
-
-```gdscript
-func toggle_mute(bus_name: String) -> void:
-    var bus_idx := AudioServer.get_bus_index(bus_name)
-    var is_muted := AudioServer.is_bus_mute(bus_idx)
-    AudioServer.set_bus_mute(bus_idx, not is_muted)
-```
-
----
-
-## Audio Pooling (Performance)
-
-### Problem: Creating Players Every Frame
-
-```gdscript
-# ❌ BAD: Creates 60 new nodes/second at 60 FPS
-func play_footstep() -> void:
-    var player := AudioStreamPlayer.new()
-    add_child(player)
-    player.stream = load("res://audio/footstep.ogg")
-    player.finished.connect(player.queue_free)
-    player.play()
-    # Result: 3600 nodes created in 1 minute!
-```
-
-### Solution: Audio Pool
-
-```gdscript
-# audio_pool.gd (AutoLoad)
-extends Node
-
-const POOL_SIZE = 10
-var pool: Array[AudioStreamPlayer] = []
-var pool_index := 0
-
-func _ready() -> void:
-    # Pre-create players
-    for i in range(POOL_SIZE):
-        var player := AudioStreamPlayer.new()
-        player.bus = "SFX"
-        add_child(player)
-        pool.append(player)
-
-func play_sound(stream: AudioStream, volume_db := 0.0) -> void:
-    var player := pool[pool_index]
-    pool_index = (pool_index + 1) % POOL_SIZE  # Round-robin
-    
-    # Stop previous sound if still playing
-    if player.playing:
-        player.stop()
-    
-    player.stream = stream
-    player.volume_db = volume_db
-    player.play()
-
-# Usage:
-AudioPool.play_sound(load("res://audio/coin.ogg"), -5.0)
-```
-
----
-
-## Music Transitions
-
-### Crossfade Between Tracks
-
-```gdscript
-# music_manager.gd (AutoLoad)
-extends Node
-
-@onready var track_a := AudioStreamPlayer.new()
-@onready var track_b := AudioStreamPlayer.new()
-
-var current_track: AudioStreamPlayer
-var fade_duration := 2.0
-
-func _ready() -> void:
-    track_a.bus = "Music"
-    track_b.bus = "Music"
-    add_child(track_a)
-    add_child(track_b)
-    current_track = track_a
-
-func crossfade_to(new_stream: AudioStream) -> void:
-    var next_track := track_b if current_track == track_a else track_a
-    
-    # Start new track at 0 dB
-    next_track.stream = new_stream
-    next_track.volume_db = -80  # Silent
-    next_track.play()
-    
-    # Fade out current, fade in next
-    var tween := create_tween().set_parallel(true)
-    tween.tween_property(current_track, "volume_db", -80, fade_duration)
-    tween.tween_property(next_track, "volume_db", 0, fade_duration)
-    
-    await tween.finished
-    
-    # Stop old track
-    current_track.stop()
-    current_track = next_track
-```
-
-### BPM-Synced Transitions
-
-```gdscript
-# Transition on beat boundary
-var bpm := 120.0  # Beats per minute
-var beat_duration := 60.0 / bpm  # 0.5s per beat
-
-func queue_transition_on_beat(new_stream: AudioStream) -> void:
-    # Wait for next beat
-    var current_time := current_track.get_playback_position()
-    var time_to_next_beat := beat_duration - fmod(current_time, beat_duration)
-    
-    await get_tree().create_timer(time_to_next_beat).timeout
-    crossfade_to(new_stream)
-```
-
----
-
-## Dynamic Audio Effects
-
-### Add Effect at Runtime
-
-```gdscript
-# Add reverb to SFX bus
-var sfx_bus := AudioServer.get_bus_index("SFX")
-var reverb := AudioEffectReverb.new()
-reverb.room_size = 0.8  # Large room
-reverb.damping = 0.5
-reverb.wet = 0.3  # 30% effect, 70% dry
-AudioServer.add_bus_effect(sfx_bus, reverb)
-```
-
-### Underwater Effect
-
-```gdscript
-func set_underwater(enabled: bool) -> void:
-    var sfx_bus := AudioServer.get_bus_index("SFX")
-    
-    if enabled:
-        # Add low-pass filter (muffled sound)
-        var lowpass := AudioEffectLowPassFilter.new()
-        lowpass.cutoff_hz = 500  # Cut frequencies above 500 Hz
-        AudioServer.add_bus_effect(sfx_bus, lowpass)
-    else:
-        # Remove all effects
-        for i in range(AudioServer.get_bus_effect_count(sfx_bus)):
-            AudioServer.remove_bus_effect(sfx_bus, 0)
-```
-
----
-
-## Procedural Audio
-
-### Synthesize Beep
-
-```gdscript
-# Generate simple sine wave
-func create_beep(frequency: float, duration: float) -> AudioStreamGenerator:
-    var stream := AudioStreamGenerator.new()
-    stream.mix_rate = 44100  # Sample rate
-    
-    var playback := stream.instantiate_playback()
-    
-    var increment := frequency / stream.mix_rate
-    var phase := 0.0
-    
-    for i in range(int(stream.mix_rate * duration)):
-        var sample := sin(phase * TAU)
-        playback.push_frame(Vector2(sample, sample))  # Stereo
-        phase += increment
-        phase = fmod(phase, 1.0)
-    
-    return stream
-
-# Usage:
-var beep_stream := create_beep(440.0, 0.1)  # 440 Hz (A4), 0.1s
-$AudioStreamPlayer.stream = beep_stream
-$AudioStreamPlayer.play()
-```
-
----
-
-## Advanced Patterns
-
-### Audio Ducking (Lower Music During Dialogue)
-
-```gdscript
-# auto_duck.gd (on Dialogue AudioStreamPlayer)
-extends AudioStreamPlayer
-
-func _ready() -> void:
-    playing.connect(_on_playing)
-    finished.connect(_on_finished)
-
-func _on_playing() -> void:
-    # Duck music to -15 dB
-    var music_bus := AudioServer.get_bus_index("Music")
-    var tween := create_tween()
-    tween.tween_method(set_music_volume, 0.0, -15.0, 0.5)
-
-func _on_finished() -> void:
-    # Restore music to 0 dB
-    var tween := create_tween()
-    tween.tween_method(set_music_volume, -15.0, 0.0, 0.5)
-
-func set_music_volume(db: float) -> void:
-    var music_bus := AudioServer.get_bus_index("Music")
-    AudioServer.set_bus_volume_db(music_bus, db)
-```
-
-### Randomize Pitch for Variation
-
-```gdscript
-# Prevent identical sounds (footsteps, gunshots)
-func play_varied_sound(stream: AudioStream) -> void:
-    $AudioStreamPlayer.stream = stream
-    $AudioStreamPlayer.pitch_scale = randf_range(0.9, 1.1)  # ±10% pitch
-    $AudioStreamPlayer.play()
-```
-
-### Layered Music (Adaptive)
-
-```gdscript
-# Intensity-based music layers (start quiet, add layers as intensity increases)
-# Example: Peaceful exploration → Combat
-
-@onready var layer_drums := $Music/Drums
-@onready var layer_bass := $Music/Bass
-@onready var layer_melody := $Music/Melody
-
-var intensity := 0.0  # 0.0 = calm, 1.0 = intense
-
-func _ready() -> void:
-    # Start all layers in sync
-    layer_drums.play()
-    layer_bass.play()
-    layer_melody.play()
-    
-    # Mute high-intensity layers
-    layer_bass.volume_db = -80
-    layer_melody.volume_db = -80
-
-func set_music_intensity(new_intensity: float) -> void:
-    intensity = clamp(new_intensity, 0.0, 1.0)
-    
-    # Fade in layers based on intensity
-    var tween := create_tween().set_parallel(true)
-    
-    # Layer 1 (drums): always audible
-    tween.tween_property(layer_drums, "volume_db", 0, 1.0)
-    
-    # Layer 2 (bass): fade in at 33% intensity
-    var bass_db := -80 if intensity < 0.33 else lerp(-80.0, 0.0, (intensity - 0.33) / 0.67)
-    tween.tween_property(layer_bass, "volume_db", bass_db, 1.0)
-    
-    # Layer 3 (melody): fade in at 66% intensity
-    var melody_db := -80 if intensity < 0.66 else lerp(-80.0, 0.0, (intensity - 0.66) / 0.34)
-    tween.tween_property(layer_melody, "volume_db", melody_db, 1.0)
-
-# Usage (combat system):
-func _on_enemy_spotted() -> void:
-    MusicManager.set_music_intensity(1.0)  # Full intensity
-
-func _on_all_enemies_defeated() -> void:
-    MusicManager.set_music_intensity(0.0)  # Back to calm
-```
-
----
-
-## Expert Audio Patterns
-
-### 1. Subtitle-Sync-System
-Standard pattern for perfectly timed dialogue using `AnimationPlayer`.
-- **Tracks**: Use an **Audio Playback Track** for the voice-over and a **Call Method Track** to trigger subtitles.
-- **Localization**: Pass a translation key (e.g., `show_subtitle("VO_LINE_01")`) as the method argument. The subtitle script uses `tr()` to fetch the localized text, ensuring perfect sync across all languages.
-
-### 2. Audio-Occlusion-Profiling (Dynamic Muffling)
-Simulate sound muffling behind obstacles using built-in filters.
-- **Occlusion Detection**: Use a `RayCast3D` from the `AudioStreamPlayer3D` towards the listener.
-- **Filter Modulation**: If the raycast is blocked, use a `Tween` to lower the `attenuation_filter_cutoff_hz` (e.g., from 20500 Hz to 1500 Hz) to create a muffled effect.
-- **Room Occlusion**: Use `Area3D` with **Audio Bus Overrides** to redirect sound to a bus with a `LowPassFilter` when the source/listener enters a specific room.
-
-### 3. Interactive-Music-Graph (Non-Linear Scoring)
-Godot 4's advanced music resources for dynamic transitions.
-- **Horizontal Re-sequencing**: Use `AudioStreamInteractive`. It functions as a state machine where you can define transitions between clips (e.g., "Exploration" to "Combat") that snap to the next beat or bar automatically.
-- **Vertical Layering**: Use `AudioStreamSynchronized` to play multiple stems in perfect sync. Dynamically fade stem volumes (e.g., adding drums during intensity) using `set_sync_stream_volume()`.
-
-## Performance Optimization
-
-### Disable Far Audio
-
-```gdscript
-# Don't play sounds the player can't hear
-extends AudioStreamPlayer3D
-
-func _process(delta: float) -> void:
-    var listener := get_viewport().get_camera_3d()
-    if not listener:
-        return
-    
-    var distance := global_position.distance_to(listener.global_position)
-    
-    if distance > max_distance * 1.5:  # 1.5x max range
-        if playing:
-            stop()
-```
-
----
-
-## Edge Cases
-
-### Audio Doesn't Play
-
-```gdscript
-# Check:
-# 1. Is stream assigned?
-if not $AudioStreamPlayer.stream:
-    push_error("No audio stream assigned!")
-
-# 2. Is bus muted?
-var bus_idx := AudioServer.get_bus_index($AudioStreamPlayer.bus)
-if AudioServer.is_bus_mute(bus_idx):
-    print("Bus is muted!")
-
-# 3. Is volume too low?
-if $AudioStreamPlayer.volume_db < -60:
-    print("Volume too quiet (< -60 dB)")
-```
-
----
-
 ## Decision Matrix: Which AudioStreamPlayer?
 
 | Feature | AudioStreamPlayer | AudioStreamPlayer2D | AudioStreamPlayer3D |
 |---------|------------------|---------------------|---------------------|
-| **Spatial** | ❌ Global | ✅ 2D panning | ✅ 3D positioning |
-| **Doppler** | ❌ | ❌ | ✅ |
-| **Attenuation** | ❌ | ✅ Distance-based | ✅ 3D falloff |
-| **Reverb send** | ❌ | ❌ | ✅ |
-| **Use for** | Music, UI | 2D games | 3D games |
+| **Spatial** | Global | 2D panning | 3D positioning |
+| **Doppler** | No | No | Yes |
+| **Attenuation** | No | Distance-based | 3D falloff |
+| **Reverb send** | No | No | Yes |
+| **Use for** | Music, UI, VO | 2D games | 3D games |
 | **Performance** | Fastest | Medium | Slowest |
 
+## Golden Path → Scripts
 
-## Advanced Audio Patterns
+> **MANDATORY** — open only the script that matches the row. Do **not** reinvent pools, duckers, or interactive graphs from memory.
+>
+> **Do NOT Load** every script below for one mix task.
 
-### 1. High-Precision Subtitle Sync
-To prevent subtitle drift in long audio tracks, don't rely on simple timers.
-- **Formula**: `Position = get_playback_position() + get_time_since_last_mix() - get_output_latency()`.
-- **Implementation**: Poll this value in `_process` and compare against a timestamped subtitle track.
+| Need | Script |
+|------|--------|
+| One-shot SFX spam / voice steal | **MANDATORY** [audio_voice_pool_manager.gd](scripts/audio_voice_pool_manager.gd) |
+| Cap identical SFX (ear-bleed) | **MANDATORY** [audio_voice_limiter_manager.gd](scripts/audio_voice_limiter_manager.gd) |
+| Dialogue over music | **MANDATORY** [audio_bus_ducker_logic.gd](scripts/audio_bus_ducker_logic.gd) |
+| Bus layout / runtime mute | [audio_bus_manager.gd](scripts/audio_bus_manager.gd) |
+| Linear UI slider → dB | [audio_linear_volume_interpolator.gd](scripts/audio_linear_volume_interpolator.gd) |
+| Wall muffling | **MANDATORY** [audio_occlusion_raycast.gd](scripts/audio_occlusion_raycast.gd) |
+| Room reverb zones | [audio_environmental_reverb_zone.gd](scripts/audio_environmental_reverb_zone.gd) |
+| Vertical intensity stems | **MANDATORY** [audio_interactive_music_manager.gd](scripts/audio_interactive_music_manager.gd) |
+| Horizontal clip graph | [interactive_music_graph.gd](scripts/interactive_music_graph.gd) + [references/interactive-music-deep-dive.md](references/interactive-music-deep-dive.md) |
+| Adaptive music player wrapper | [audio_adaptive_music_player.gd](scripts/audio_adaptive_music_player.gd) |
+| Autoload SFX entry | [audio_manager.gd](scripts/audio_manager.gd) |
+| Footstep surface banks | [audio_footstep_surface_selector.gd](scripts/audio_footstep_surface_selector.gd) |
+| Procedural hum / engine | [audio_procedural_generator_synth.gd](scripts/audio_procedural_generator_synth.gd) |
+| Spectrum → gameplay / VFX | [audio_reactive_visualizer_component.gd](scripts/audio_reactive_visualizer_component.gd), [audio_visualizer.gd](scripts/audio_visualizer.gd) |
+| Dialogue subtitle sync | [subtitle_sync_system.gd](scripts/subtitle_sync_system.gd) |
 
-### 2. Vertical Music Layering
-Use `AudioStreamSynchronized` to keep multiple stems (drums, bass, melodies) perfectly aligned.
-- **Dynamic Mix**: Use `set_sync_stream_volume(index, db)` to fade layers in/out based on combat intensity or exploration progress.
-- **Tweening**: Always use a `Tween` to interpolate volume changes over 1-2 seconds for a natural transition.
+## Available Scripts (catalog)
+
+### [audio_voice_pool_manager.gd](scripts/audio_voice_pool_manager.gd)
+Priority voice pool with steal of lowest-priority oldest voice (hero voices protected).
+
+### [audio_voice_limiter_manager.gd](scripts/audio_voice_limiter_manager.gd)
+Concurrency cap for identical SFX instances.
+
+### [audio_bus_ducker_logic.gd](scripts/audio_bus_ducker_logic.gd)
+Sidechain-style dialogue-over-music ducking.
+
+### [audio_bus_manager.gd](scripts/audio_bus_manager.gd)
+Runtime bus volume/mute helpers for Music/SFX/UI/Voice groups.
+
+### [audio_manager.gd](scripts/audio_manager.gd)
+Autoload entry for play-one-shot routing onto the pool.
+
+### [audio_linear_volume_interpolator.gd](scripts/audio_linear_volume_interpolator.gd)
+Musically-correct linear↔dB UI slider mapping.
+
+### [audio_occlusion_raycast.gd](scripts/audio_occlusion_raycast.gd)
+Raycast muffling via attenuation filter cutoff.
+
+### [audio_environmental_reverb_zone.gd](scripts/audio_environmental_reverb_zone.gd)
+Area3D-driven reverb/bus override zones.
+
+### [audio_interactive_music_manager.gd](scripts/audio_interactive_music_manager.gd)
+`AudioStreamSynchronized` vertical stem intensity.
+
+### [interactive_music_graph.gd](scripts/interactive_music_graph.gd)
+`AudioStreamInteractive` horizontal clip graph.
+
+### [audio_adaptive_music_player.gd](scripts/audio_adaptive_music_player.gd)
+Adaptive music player wrapper for intensity-driven stems.
+
+### [audio_footstep_surface_selector.gd](scripts/audio_footstep_surface_selector.gd)
+Physics-driven surface → sound-bank selection.
+
+### [audio_procedural_generator_synth.gd](scripts/audio_procedural_generator_synth.gd)
+Realtime procedural tones for hums/engines/signals.
+
+### [audio_reactive_visualizer_component.gd](scripts/audio_reactive_visualizer_component.gd)
+FFT spectrum → gameplay/visual driver.
+
+### [audio_visualizer.gd](scripts/audio_visualizer.gd)
+Spectrum analyzer visualization helper.
+
+### [subtitle_sync_system.gd](scripts/subtitle_sync_system.gd)
+Playback-position-accurate subtitle sync (latency-compensated).
+
+## Expert Audio Patterns (pointers only)
+
+### Bus architecture
+Master = final limiter only. Gameplay → Music / SFX / UI / Voice sub-buses. Set volumes with `linear_to_db()` / `db_to_linear()`.
+
+### Occlusion muffling
+Ray source→listener; blocked → Tween `attenuation_filter_cutoff_hz` down. Prefer [audio_occlusion_raycast.gd](scripts/audio_occlusion_raycast.gd).
+
+### Interactive music
+Horizontal (`AudioStreamInteractive`) vs vertical (`AudioStreamSynchronized`) — deep-dive in [references/interactive-music-deep-dive.md](references/interactive-music-deep-dive.md). Load scripts above; do not paste stem managers into scenes from memory.
+
+### Subtitle sync formula
+`pos = get_playback_position() + AudioServer.get_time_since_last_mix() - AudioServer.get_output_latency()` — implemented in [subtitle_sync_system.gd](scripts/subtitle_sync_system.gd).
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
+
+### Official Documentation
+- [Audio (tutorial index)](https://docs.godotengine.org/en/stable/tutorials/audio/index.html) — Entry point for buses, streams, effects, sync, mic, and TTS before diving into class pages.
+- [Audio buses](https://docs.godotengine.org/en/stable/tutorials/audio/audio_buses.html) — Decibel scale, Master/sub-bus routing, and why linear slider values break mixing.
+- [Audio streams](https://docs.godotengine.org/en/stable/tutorials/audio/audio_streams.html) — AudioStreamPlayer / 2D / 3D roles, randomizers, and how streams reach buses.
+- [Audio effects](https://docs.godotengine.org/en/stable/tutorials/audio/audio_effects.html) — Bus FX chain (EQ, filters, reverb, compressor, limiter) for ducking and environment zones.
+- [Sync the gameplay with audio and music](https://docs.godotengine.org/en/stable/tutorials/audio/sync_with_audio.html) — Playback-position helpers (`get_time_since_last_mix`, latency) for BPM and subtitle sync.
+- [Importing audio samples](https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_audio_samples.html) — WAV/Ogg/MP3 tradeoffs that decide pool size and CPU cost for SFX spam.
+- [AudioServer](https://docs.godotengine.org/en/stable/classes/class_audioserver.html) — Runtime bus volume, mute, effect add/remove, and spectrum analyzer instances.
+- [AudioStreamPlayer](https://docs.godotengine.org/en/stable/classes/class_audiostreamplayer.html) — Non-positional music/UI/voice player API used by pools and crossfade managers.
+- [AudioStreamPlayer3D](https://docs.godotengine.org/en/stable/classes/class_audiostreamplayer3d.html) — Attenuation models, Doppler, and filter cutoff for spatial SFX and occlusion.
+- [AudioStreamInteractive](https://docs.godotengine.org/en/stable/classes/class_audiostreaminteractive.html) — Clip graph / switch modes for horizontal combat↔explore music transitions.
+- [AudioStreamSynchronized](https://docs.godotengine.org/en/stable/classes/class_audiostreamsynchronized.html) — Stem layering API (`set_sync_stream_volume`) for vertical intensity mixes.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Bus names, import defaults, and project audio latency settings must exist before runtime mix code.
+- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Music/SFX pools and bus managers are almost always Autoloads; use this for singleton ownership and boot order.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed Resources, signals, and await/Tween patterns underpin pooling, ducking, and interactive music graphs.
+
+#### Complements
+- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Crossfades, sidechain duck ramps, and occlusion cutoff sweeps should be Tween-driven, not per-frame lerps.
+- [godot-animation-player](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md) — Audio Playback + Call Method tracks keep dialogue VO and subtitles frame-locked across locales.
+- [godot-dialogue-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-dialogue-system/SKILL.md) — Routes spoken lines to a Voice/Dialog bus and should trigger Music ducking from this skill’s bus helpers.
+- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — Occlusion muffling needs correct `PhysicsRayQueryParameters3D` masks from source to listener.
+- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — Spectrum analyzer magnitudes commonly drive shader uniforms or light energy for audio-reactive VFX.
+- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Volume menus need linear→dB mapping (`linear_to_db`) wired to bus indices, not raw slider values.
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Persist per-bus volume/mute so mixer choices survive relaunch without rewriting bus layout.
+
+#### Downstream / consumers
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Escalate here when voice pools, polyphony, or mix-callback cost still show up in profilers after pooling.
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Use when SFX concurrency caps, “loudness budget,” or spam-vs-clarity tradeoffs need simulated balance passes (pairs with voice limiters).
+- [godot-genre-rhythm](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rhythm/SKILL.md) — Consumes sync-with-audio timing helpers for note windows and BPM-aligned transitions.
+- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Hit/explosion layers must share SFX bus routing plus voice stealing so combat never clips the mix.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting audio concern.

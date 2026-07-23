@@ -16,3 +16,14 @@ func _setup_session(session_id: int):
 	
 	var session := get_session(session_id)
 	session.add_session_tab(panel)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_editordebuggerplugin.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/debug/debugger_panel.html
+# - https://docs.godotengine.org/en/stable/tutorials/plugins/running_code_in_the_editor.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — EditorPlugin registration layout
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — avoid Autoload-only debugger hooks
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md
+# =============================================================================

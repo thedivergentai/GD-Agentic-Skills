@@ -12,3 +12,13 @@
 - **NEVER**: Use `get_var(true)` on data received via `PacketPeer` or `StreamPeer`.
 - **NEVER**: Enable `allow_object_decoding = true` on the `MultiplayerAPI` for public servers.
 - **NEVER**: Reference a file with mismatched casing (e.g., `res://Player.png` when the file is `player.png`).
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+- https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

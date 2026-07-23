@@ -23,3 +23,14 @@ func _update_safe_area() -> void:
 	target_control.offset_right = -(screen_size.x - safe_area.end.x)
 
 ## Rule: Always use safe-area insets for critical gameplay UI (Health, Menu buttons).
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_displayserver.html
+# - https://docs.godotengine.org/en/stable/tutorials/rendering/multiple_resolutions.html
+# - https://docs.godotengine.org/en/stable/tutorials/ui/gui_containers.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — MarginContainer / offset contracts for insets
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md — safe-area margin pairing on ports
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md
+# =============================================================================

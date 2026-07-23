@@ -22,3 +22,14 @@ The infinite creation of the vision. This rubric assesses the project's logic fo
 
 ## 🌟 Visionary's Final Decree
 To reach **Elite** status, the generation must be 'Contextual'. It shouldn't just be random; it should tell a story. Use **NoiseTextures** as the seed for your soul. If a player feels the 'Grid' in your procedural world, you have **Slop**. Visionaries make the infinite feel intentional.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_styleguide.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

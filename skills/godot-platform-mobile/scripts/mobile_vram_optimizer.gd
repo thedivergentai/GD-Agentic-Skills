@@ -16,3 +16,15 @@ func _flush_expensive_resources() -> void:
 	pass
 
 ## Rule: Always enable 'ETC2/ASTC' compression in Export Presets.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_os.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/gpu_optimization.html
+# - https://docs.godotengine.org/en/stable/tutorials/rendering/renderers.html
+# - https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_android.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — escalate when memory flush is not enough
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md — cheaper materials that cut VRAM pressure
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md
+# =============================================================================

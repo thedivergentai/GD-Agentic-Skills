@@ -87,3 +87,16 @@ func _setup_default_gradients() -> void:
 ## EXPERT USAGE:
 ## Attach to DirectionalLight3D. Assign WorldEnvironment.
 ## Customize gradients for alien worlds.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/lights_and_shadows.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/physical_light_and_camera_units.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/environment_and_post_processing.html
+# - https://docs.godotengine.org/en/stable/classes/class_directionallight3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — exposure follows sun intensity
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md — smooth dawn/dusk energy ramps
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — day/night visibility balance
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md
+# =============================================================================

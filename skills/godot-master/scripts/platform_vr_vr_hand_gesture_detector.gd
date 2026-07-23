@@ -17,3 +17,13 @@ func is_grabbing() -> bool:
 	return false
 
 ## Tip: Hand tracking is highly sensitive to lighting; always provide controller fallbacks.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/xr/openxr_hand_tracking.html
+# - https://docs.godotengine.org/en/stable/classes/class_xrhandmodifier3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — gesture strength as input alongside controllers
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — pinch/grab driving physics interactables
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-vr/SKILL.md
+# =============================================================================

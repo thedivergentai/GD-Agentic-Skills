@@ -70,3 +70,14 @@ static func chain_with_callback(tweens: Array[Tween], callbacks: Array[Callable]
 ## var t1 := TweenBuilder.fade_in($Panel)
 ## var t2 := TweenBuilder.bounce_scale($Panel/Title)
 ## t1.finished.connect(func(): t2.play())
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_tween.html
+# - https://docs.godotengine.org/en/stable/classes/class_scenetree.html
+# - https://docs.godotengine.org/en/stable/classes/class_engine.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — fluent static builders and typed returns
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — SceneTree/main-loop create_tween ownership
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md
+# =============================================================================

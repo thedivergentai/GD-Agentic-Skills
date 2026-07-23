@@ -42,3 +42,16 @@ func _respawn_node(node: Node3D) -> void:
 		node.collision_layer = 1 << 0 # Layer 1 (World)
 		node.show()
 	node_respawned.emit(node)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html — Autoload world respawn registry
+# - https://docs.godotengine.org/en/stable/classes/class_time.html — respawn_at via ticks; prefer unix for saves
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html — _process poll of depleted list
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html — node_respawned consumers
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — singleton init order for managers
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — persist depleted IDs and absolute respawn times
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-survival/SKILL.md — open-world resource regeneration loops
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-game-loop-harvest/SKILL.md
+# =============================================================================

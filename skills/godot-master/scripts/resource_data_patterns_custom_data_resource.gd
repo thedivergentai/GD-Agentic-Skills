@@ -14,3 +14,14 @@ class_name ItemData extends Resource
 func _init(p_name: String = "Unknown", p_value: int = 10):
 	name = p_name
 	base_value = p_value
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_exports.html
+# - https://docs.godotengine.org/en/stable/classes/class_resource.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — class_name + typed @export on Resource scripts
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md — ItemData consumed by inventory stacks
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md
+# =============================================================================

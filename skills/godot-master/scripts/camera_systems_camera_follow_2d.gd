@@ -51,3 +51,15 @@ func set_limits_from_rect(rect: Rect2) -> void:
     limit_top = int(rect.position.y)
     limit_right = int(rect.end.x)
     limit_bottom = int(rect.end.y)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_camera2d.html
+# - https://docs.godotengine.org/en/stable/tutorials/math/interpolation.html
+# - https://docs.godotengine.org/en/stable/classes/class_characterbody2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md — velocity look-ahead from real_velocity
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md — optional soft handoff when retargeting
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — level limit rects / stretch context
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md
+# =============================================================================

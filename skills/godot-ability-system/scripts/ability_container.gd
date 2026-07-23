@@ -60,3 +60,14 @@ func activate_ability(ability_name: String, context: Dictionary = {}) -> bool:
 ## EXPERT USAGE:
 ## var container = $AbilityContainer
 ## container.activate_ability("Fireball", { "target": enemy_pos })
+# ---
+# GDSkills research links (agents)
+# Docs:
+# - https://docs.godotengine.org/en/stable/classes/class_timer.html — one-shot per-ability cooldown Timers
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/nodes_and_scene_instances.html — PackedScene ability children
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html — added/activated/cooldown_started
+# Related:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md — container owns ability nodes + timers
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — surface container signals to HUD/FSM
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — activate_ability from action map / hotbar
+# ---

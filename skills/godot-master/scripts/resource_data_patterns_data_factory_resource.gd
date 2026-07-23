@@ -41,3 +41,14 @@ func clone() -> DataFactoryResource:
 ## other scenes using that same file, leading to 'Ghost Bugs'.
 ## Use 'ResourceSaver' to persist modified resources to binary .res 
 ## files for 3-5x faster loading than .tres text format.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_resource.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_exports.html
+# - https://docs.godotengine.org/en/stable/classes/class_resourcesaver.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — @tool setters and static factory methods
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — naming conventions validated in Inspector
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md
+# =============================================================================

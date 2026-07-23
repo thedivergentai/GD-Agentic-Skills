@@ -21,6 +21,14 @@ In Godot, Nodes **are** components. A complex entity (Player) is simply an Orche
 3.  **The Orchestrator**: The root script (e.g., `player.gd`) does **no logic**. It only manages state and passes data between components.
 4.  **Decoupling**: Components communicate via **Signals** (up) and **Methods** (down).
 
+## Decision Tree — Composition vs Autoload vs Inheritance
+
+| Situation | Choose |
+|-----------|--------|
+| Gameplay entity behaviors (HP, hitbox, move, interact) | **Composition** — child components + orchestrator ([composition_root_init.gd](scripts/composition_root_init.gd)) |
+| Cross-scene services (audio bus, save, net, economy ledger) | **Autoload** — not a component on the player |
+| True is-a engine specialization (custom Control/Node with shared lifecycle) | **Inheritance exception** — rare; never for "adds a gun" / "adds HP" |
+
 ---
 
 ## Available Scripts
@@ -53,7 +61,7 @@ Managing temporary modifiers (buffs/debuffs) by stacking effect scenes as childr
 Separating logical state (velocity/direction) from visual representation (sprite flipping).
 
 ### [composition_root_init.gd](scripts/composition_root_init.gd)
-The "Orchestrator" pattern for wiring and connecting components in a parent node.
+**MANDATORY first read** — Orchestrator wiring via typed `@export` (Inspector / `%UniqueNames` in the scene). Matches NEVER: no `$` / `get_node` for components.
 
 ## NEVER Do in Composition
 
@@ -115,163 +123,96 @@ func do_logic(delta: float) -> void:
 
 ---
 
-## Standard Components
+## Standard Components — Use Scripts
 
-### The Input Component (The Senses)
-**Responsibility**: Read hardware state. Store it. Do NOT act on it.
-*State*: `move_dir`, `jump_pressed`, `attack_just_pressed`.
+> Inline Input/Movement/Health recipes removed. **MANDATORY**: start from [composition_root_init.gd](scripts/composition_root_init.gd), then load the matching script:
 
-```gdscript
-class_name InputComponent extends Node
+- Health / death: [health_component.gd](scripts/health_component.gd)
+- Damage areas: [hit_box_component.gd](scripts/hit_box_component.gd), [hurt_box_component.gd](scripts/hurt_box_component.gd)
+- Motion: [velocity_component.gd](scripts/velocity_component.gd)
+- Interact / follow / VFX sync: [interaction_component.gd](scripts/interaction_component.gd), [follower_component.gd](scripts/follower_component.gd), [visual_sync_component.gd](scripts/visual_sync_component.gd)
+- States / statuses: [state_component_vsm.gd](scripts/state_component_vsm.gd), [status_effect_component.gd](scripts/status_effect_component.gd)
 
-var move_dir: Vector2
-var jump_pressed: bool
-
-func update() -> void:
-    # Called by Orchestrator every frame
-    move_dir = Input.get_vector("left", "right", "up", "down")
-    jump_pressed = Input.is_action_just_pressed("jump")
-```
-
-### The Movement Component (The Legs)
-**Responsibility**: Manipulate physics body. Handle velocity/gravity.
-**Constraint**: Requires a reference to the physics body it moves.
-
-```gdscript
-class_name MovementComponent extends Node
-
-@export var body: CharacterBody3D # The thing we move
-@export var speed: float = 8.0
-@export var jump_velocity: float = 12.0
-
-func tick(delta: float, direction: Vector2, wants_jump: bool) -> void:
-    if not body: return
-    
-    # Handle Gravity
-    if not body.is_on_floor():
-        body.velocity.y -= 9.8 * delta
-        
-    # Handle Movement
-    if direction:
-        body.velocity.x = direction.x * speed
-        body.velocity.z = direction.y * speed # 3D conversion
-    else:
-        body.velocity.x = move_toward(body.velocity.x, 0, speed)
-        body.velocity.z = move_toward(body.velocity.z, 0, speed)
-        
-    # Handle Jump
-    if wants_jump and body.is_on_floor():
-        body.velocity.y = jump_velocity
-        
-    body.move_and_slide()
-```
-
-### The Health Component (The Life)
-**Responsibility**: Manage HP, Clamp values, Signal changes.
-**Context Agnostic**: Can be put on a Player, Enemy, or a Wooden Crate.
-
-```gdscript
-class_name HealthComponent extends Node
-
-signal died
-signal health_changed(current, max)
-
-@export var max_health: float = 100.0
-var current_health: float
-
-func _ready():
-    current_health = max_health
-
-func damage(amount: float):
-    current_health = clamp(current_health - amount, 0, max_health)
-    health_changed.emit(current_health, max_health)
-    if current_health == 0:
-        died.emit()
-```
-
----
-
-## The Orchestrator (Putting it Together)
-
-The Orchestrator (`player.gd`) binds the components in the `_physics_process`. It acts as the bridge.
-
-```gdscript
-class_name Player extends CharacterBody3D
-
-@onready var input: InputComponent = %InputComponent
-@onready var move: MovementComponent = %MovementComponent
-@onready var health: HealthComponent = %HealthComponent
-
-func _ready():
-    # Connect signals (The ears)
-    health.died.connect(_on_death)
-
-func _physics_process(delta):
-    # 1. Update Senses
-    input.update()
-    
-    # 2. Pass Data to Workers (State Management)
-    # The Player script decides that "Input Direction" maps to "Movement Direction"
-    move.tick(delta, input.move_dir, input.jump_pressed)
-
-func _on_death():
-    queue_free()
-```
+Typed `@export` wiring stays under **Implementation Standards** above.
 
 ## Expert Composition Patterns
 
+
 ### 1. State-Component Pattern (FSM)
-Encapsulate complex behaviors into child nodes that act as states. The parent `StateMachine` component delegates lifecycle calls to the active child [4, 6].
+Encapsulate complex behaviors into child nodes that act as states. The parent StateComponent delegates lifecycle calls to the active child [4, 6].
 
-```gdscript
-class_name StateMachine extends Node
-@export var initial_state: Node
-@onready var _state: Node = initial_state
-
-func _ready() -> void:
-    if _state.has_method("enter"): _state.enter()
-
-func _physics_process(delta: float) -> void:
-    if _state.has_method("physics_process"):
-        _state.physics_process(delta)
-
-func transition_to(target_state_path: NodePath) -> void:
-    if _state.has_method("exit"): _state.exit()
-    _state = get_node(target_state_path)
-    if _state.has_method("enter"): _state.enter()
-```
+> **MANDATORY**: Read [state_component_vsm.gd](scripts/state_component_vsm.gd) — do not paste an inline StateMachine. For deeper VSM / hierarchical FSMs, open [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md).
 
 ### 2. Component-Registry (O(1) Lookup)
-Avoid slow tree traversal (`get_node`) for sibling communication. The Orchestrator catalogs children in a Dictionary for instant access [3, 13].
+Avoid slow tree traversal for sibling communication. Catalog children in a Dictionary at ready (by name or group).
 
 ```gdscript
-# Inside the Orchestrator (e.g. Entity.gd)
 var _components: Dictionary = {}
 
 func _ready() -> void:
     for child in get_children():
         _components[child.name] = child
-        # Or register by group for interface-like access
         for group in child.get_groups():
             _components[group] = child
-
-### 3. Dependency-Validation
-Ensure critical components are present before execution. Use `assert()` in `_ready()` to fail fast during development if a required component is missing [7, 8].
-
-```gdscript
-# Inside Orchestrator
-func _ready() -> void:
-    assert(get_node_or_null("HealthComponent") != null, "Missing HealthComponent!")
-    assert(get_node_or_null("InputComponent") != null, "Missing InputComponent!")
-```
 
 func get_comp(key: StringName) -> Node:
     return _components.get(key)
 ```
 
+### 3. Dependency-Validation
+Fail fast with **`@export` asserts**, not `get_node_or_null` paths (paths break when the tree is rearranged).
+
+```gdscript
+@export var health_component: HealthComponent
+@export var input_component: InputComponent
+
+func _ready() -> void:
+    assert(health_component != null, "Missing HealthComponent export!")
+    assert(input_component != null, "Missing InputComponent export!")
+```
+
 ## Performance Note
 Nodes are lightweight. Do not fear adding 10-20 nodes per entity. The organizational benefit of Composition vastly outweighs the negligible memory cost of `Node` instances.
 
-
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
+
+### Official Documentation
+- [Scene organization](https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html) — Canonical signal-up / call-down ownership so orchestrators wire components without sibling hard-coupling.
+- [Nodes and Scenes](https://docs.godotengine.org/en/stable/getting_started/step_by_step/nodes_and_scenes.html) — Why Godot treats nodes as reusable building blocks (components) assembled into entity scenes.
+- [What are Godot classes](https://docs.godotengine.org/en/stable/tutorials/best_practices/what_are_godot_classes.html) — Prefer scene composition and `class_name` components over deep inheritance trees for gameplay entities.
+- [When and how to avoid using nodes for everything](https://docs.godotengine.org/en/stable/tutorials/best_practices/node_alternatives.html) — Keep pure data in Resources; reserve Nodes for lifecycle, signals, and process ticks.
+- [Logic preferences](https://docs.godotengine.org/en/stable/tutorials/best_practices/logic_preferences.html) — Placement of game logic across scene trees so parents orchestrate and children stay single-purpose.
+- [Data preferences](https://docs.godotengine.org/en/stable/tutorials/best_practices/data_preferences.html) — Choose Node vs Resource vs plain data for stats and config that components consume.
+- [Using signals](https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html) — Past-tense component events (`health_depleted`, `state_changed`) parents connect without reverse dependencies.
+- [GDScript exported properties](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_exports.html) — Typed `@export` slots for Inspector dependency injection instead of brittle `$` paths.
+- [Scene Unique Nodes](https://docs.godotengine.org/en/stable/tutorials/scripting/scene_unique_nodes.html) — `%Name` lookups that survive scene-tree reorders when wiring composition roots.
+- [Groups](https://docs.godotengine.org/en/stable/tutorials/scripting/groups.html) — Tag components for O(1)-style registry / interface-like lookup without inheritance.
+- [Godot notifications](https://docs.godotengine.org/en/stable/tutorials/best_practices/godot_notifications.html) — Safe `_ready` / enter-tree timing for validating and connecting component dependencies.
+- [Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html) — Share tunables (max health, speeds) as Resources so components stay reusable across entities.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Scene ownership, project layout, and Inspector wiring conventions every composition root assumes.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — `class_name`, typed `@export`, Callables, and assert patterns required for typed component APIs.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Signal-up / call-down connect hygiene so selfish components never grab parent scripts.
+
+#### Complements
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Stats and effect definitions as Resources; composition nodes own runtime mutation and emit change events.
+- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — Child-node FSM / VSM patterns that plug in as a StateComponent without bloating the orchestrator.
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Sense-layer InputComponents that only sample actions; parents pass directions into movement components.
+- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — Physics-body movement APIs VelocityComponents and composition roots call via `move_and_slide`.
+- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — Area2D layers/masks and overlap rules HitBox/HurtBox/Interaction components depend on.
+- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — Spawn/despawn entities as composed scenes and re-wire exports when instances are swapped.
+
+#### Downstream / consumers
+- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Damage pipelines assemble Health/HitBox/HurtBox components under combat orchestrators.
+- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — Abilities attach as composed workers (cooldowns, targeting) rather than subclassing every caster.
+- [godot-rpg-stats](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md) — Stat sheets feed Health/StatusEffect components as Resources plus change signals.
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Simulate tunable component exports (HP, damage, speeds) before locking entity kits.
+- [godot-composition-apps](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition-apps/SKILL.md) — Same Has-A node composition applied to tools/apps rather than gameplay entities.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting architecture concern.

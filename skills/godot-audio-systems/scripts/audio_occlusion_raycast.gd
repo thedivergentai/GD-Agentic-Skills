@@ -32,3 +32,15 @@ func _fade_to_freq(target: float) -> void:
 	if _active_tween: _active_tween.kill()
 	_active_tween = create_tween()
 	_active_tween.tween_property(audio_player, "attenuation_filter_cutoff_hz", target, 0.25).set_trans(Tween.TRANS_SINE)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_audiostreamplayer3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/audio/audio_effects.html
+# - https://docs.godotengine.org/en/stable/classes/class_audioeffectlowpassfilter.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md — PhysicsRayQueryParameters3D masks for LOS
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — collision layers for occluders
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md — smooth attenuation_filter_cutoff_hz ramps
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md
+# =============================================================================

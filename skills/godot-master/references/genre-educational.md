@@ -34,175 +34,113 @@ Expert blueprint for educational games that make learning engaging through game 
 - NEVER ignore `mouse_filter` on overlays; strictly set to `PASS` to prevent invisible containers from silently consuming clicks.
 - NEVER update static strings in `_process()`; strictly update labels ONLY on state change events to save mobile/tablet battery.
 - NEVER embed sensitive database credentials in exports; strictly use **Environment Variables** or proxy APIs for student data security.
+
 ---
 
-## 🛠 Expert Components (scripts/)
+## Available Scripts
 
-> **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
+> **MANDATORY**: Read the script matching the scenario before implementing. Do not paste quiz/profile tutorials inline.
 
-### Original Expert Patterns
-- [adaptive_difficulty_adjuster.gd](../scripts/genre_educational_adaptive_difficulty_adjuster.gd) - Sophisticated logic engine for Flow-State targeting (70%) and progressive hints.
+### Pedagogy / Adaptivity
+- [adaptive_difficulty_adjuster.gd](../scripts/genre_educational_adaptive_difficulty_adjuster.gd) — **MANDATORY** when targeting ~70% flow / progressive hints.
+- [spaced_repetition_scheduler.gd](../scripts/genre_educational_spaced_repetition_scheduler.gd) — **MANDATORY** when scheduling question reappearance (intervals after success/fail).
+- [student_progress_config.gd](../scripts/genre_educational_student_progress_config.gd) — **MANDATORY** before persisting mastery/XP (ConfigFile profile).
+- [threaded_scoring_engine.gd](../scripts/genre_educational_threaded_scoring_engine.gd) — **MANDATORY** before heavy assessment/grading on school hardware.
 
-### Modular Components
-- [tts_manager.gd](../scripts/genre_educational_tts_manager.gd) - displayServer Text-to-Speech integration for accessibility.
-- [dynamic_localization.gd](../scripts/genre_educational_dynamic_localization.gd) - Runtime localization switching and pluralization support.
-- [interactive_rich_text.gd](../scripts/genre_educational_interactive_rich_text.gd) - Meta-click handling for interactive glossaries.
-- [threaded_scoring_engine.gd](../scripts/genre_educational_threaded_scoring_engine.gd) - WorkerThreadPool patterns for grading algorithms.
+### Accessibility / Classroom UI
+- [tts_manager.gd](../scripts/genre_educational_tts_manager.gd) — **MANDATORY** before DisplayServer TTS (consent toggle first).
+- [dynamic_localization.gd](../scripts/genre_educational_dynamic_localization.gd) — Runtime locale switch / pluralization.
+- [adaptive_ui_anchors.gd](../scripts/genre_educational_adaptive_ui_anchors.gd) — Responsive tablet/laptop lesson layouts.
+- [focus_navigation_manager.gd](../scripts/genre_educational_focus_navigation_manager.gd) — Keyboard/controller focus for classroom navigation.
+- [interactive_rich_text.gd](../scripts/genre_educational_interactive_rich_text.gd) — Meta-click glossaries / formula prompts.
+- [text_reveal_effect.gd](../scripts/genre_educational_text_reveal_effect.gd) — Progressive text reveal without walls of text.
+
+### Assessment UX
+- [assessment_pause_handler.gd](../scripts/genre_educational_assessment_pause_handler.gd) — Pause world logic while quiz UI stays interactive.
+- [low_processor_optimizer.gd](../scripts/genre_educational_low_processor_optimizer.gd) — Battery-friendly idle for ed apps on school devices.
 
 ---
 
 ## Core Loop
-1.  **Learn**: Player receives new information (text, diagram, video).
-2.  **Apply**: Player solves a problem or completes a task using that info.
-3.  **Feedback**: Game provides immediate correction or reward.
-4.  **Adapt**: System adjusts future questions based on performance.
-5.  **Master**: Player unlocks new topics or cosmetic rewards.
+1. **Learn** → 2. **Apply** → 3. **Feedback** → 4. **Adapt** → 5. **Master**
 
 ## Skill Chain
 
 | Phase | Skills | Purpose |
 |-------|--------|---------|
 | 1. UI | `godot-ui-rich-text`, `godot-ui-theming` | Readable text, drag-and-drop answers |
-| 2. Data | `godot-save-load-systems`, `json-serialization` | Student profiles, progress tracking |
-| 3. Logic | `state-machine` | Quiz flow (Question -> Answer -> Result) |
+| 2. Data | `godot-save-load-systems` | Student profiles, progress tracking |
+| 3. Logic | `godot-state-machine-advanced` | Quiz flow (Question → Answer → Result) |
 | 4. Juice | `godot-particles`, `godot-tweening` | Making learning feel rewarding |
 | 5. Meta | `godot-scene-management` | Navigating between lessons and map |
 | 6. Balance | `godot-monte-carlo-balancer` | Override bands to ~70% flow / mastery |
 
-## Architecture Overview
+## Architecture Decision Tree
 
-### 1. The Curtain (Question Manager)
-Manages the flow of a single "Lesson" or "Quiz".
+Pick the owner script; keep SKILL free of duplicate `StudentProfile` / quiz_manager paste-ups.
 
-```gdscript
-# quiz_manager.gd
-extends Node
+| Need | Decision | MANDATORY script |
+|------|----------|------------------|
+| Track mastery / XP / badges | One `StudentProfile` Resource + ConfigFile I/O | [student_progress_config.gd](../scripts/genre_educational_student_progress_config.gd) |
+| Keep learners in flow (~70%) | Windowed success ratio + hint branch | [adaptive_difficulty_adjuster.gd](../scripts/genre_educational_adaptive_difficulty_adjuster.gd) |
+| Long-term retention | Interval queue (success → longer delay; fail → sooner) | [spaced_repetition_scheduler.gd](../scripts/genre_educational_spaced_repetition_scheduler.gd) |
+| Prerequisite lesson map | Curriculum Resource graph (id + required_topics) — data only, no UI | Peer `godot-resource-data-patterns` |
+| Grade without hitching | Offload scoring | [threaded_scoring_engine.gd](../scripts/genre_educational_threaded_scoring_engine.gd) |
+| Classroom a11y | TTS + locale + focus + anchors | `tts_manager` / `dynamic_localization` / `focus_navigation_manager` / `adaptive_ui_anchors` |
+| Live debugger metrics | `Performance.add_custom_monitor("edu/...")` — no custom dashboards | (inline one-liner OK) |
 
-var current_question: QuestionData
-var correct_streak: int = 0
+**StudentProfile (single shape):** `@export` mastery Dictionary + XP; emit change signals; persist via `student_progress_config.gd`. Do not redefine the class twice in this skill.
 
-func submit_answer(answer_index: int) -> void:
-    if current_question.is_correct(answer_index):
-        handle_success()
-    else:
-        handle_failure()
+**Quiz curtain:** state machine owns Question → Answer → Result → Adapt; spaced-repetition + adaptive-difficulty scripts decide *what* is next — do not inline a full `quiz_manager.gd` tutorial here.
 
-func handle_success() -> void:
-    correct_streak += 1
-    EffectManager.play_confetti()
-    StudentProfile.add_xp(current_question.topic, 10)
-    load_next_question()
-
-func handle_failure() -> void:
-    correct_streak = 0
-    # Spaced Repetition: Add this question back to the queue
-    question_queue.push_back(current_question)
-    show_explanation()
-```
-
-### 2. The Student Profile
-Persistent data tracking mastery.
-
-```gdscript
-# student_profile.gd
-class_name StudentProfile extends Resource
-
-@export var topic_mastery: Dictionary = {} # "math_add": 0.5 (50%)
-@export var total_xp: int = 0
-@export var badges: Array[String] = []
-
-func get_mastery(topic: String) -> float:
-    return topic_mastery.get(topic, 0.0)
-```
-
-### 3. Curriculum Tree
-Defining the dependency graph of knowledge.
-
-```gdscript
-# curriculum_node.gd
-extends Resource
-@export var id: String
-@export var title: String
-@export var required_topics: Array[String] # Prereqs
-```
-
-### 4. Mastery-Based Matchmaking (Profiles)
-Use custom Resources for student profiles to track and react to mastery changes.
-
-```gdscript
-# student_profile.gd (Resource)
-class_name StudentProfile extends Resource
-signal mastery_up(new_tier: int)
-
-@export var score: int = 0:
-    set(v):
-        score = v
-        if score > threshold: _promote()
-
-func _promote():
-    tier += 1
-    mastery_up.emit(tier)
-```
-
-### 5. Visual Analytics (Custom Monitors)
-Inject metrics into the Godot Editor Debugger without building complex UI.
-
-```gdscript
-# analytics_manager.gd (Autoload)
-func _ready():
-    if not Engine.is_editor_hint():
-        Performance.add_custom_monitor("edu/correct_rate", _get_rate)
-
-func _get_rate():
-    return float(correct) / total_attempts
-```
-
-### 6. Hint-Cooldown (Progressive Disclosure)
-Decouple time-based hint reveals using signals.
-
-```gdscript
-# hint_manager.gd
-signal hint_revealed(text: String)
-var _timer: float = 0.0
-
-func _process(delta):
-    _timer += delta
-    if _timer >= cooldown:
-        hint_revealed.emit(hints.pop_front())
-        _timer = 0.0
-```
-
-## Key Mechanics Implementation
-
-### Adaptive Difficulty algorithm
-If player is crushing it, give harder questions. If struggling, ease up.
-
-```gdscript
-func get_next_question() -> QuestionData:
-    var player_rating = StudentProfile.get_rating(current_topic)
-    # Target a 70% success rate for "Flow State"
-    var target_difficulty = player_rating + 0.1 
-    return QuestionBank.find_question(target_difficulty)
-```
-
-### Juice (The "Duolingo Effect")
-Learning is hard. The game must heavily reward effort visually.
-*   **Sound**: Satisfying "Ding!" on correct.
-*   **Visuals**: Screen shake, godot-particles, multiplier popup.
-*   **UI**: Progress bars filling up smoothly (Tweening).
-
-## Godot-Specific Tips
-
-*   **RichTextLabel**: Essential for mathematical formulas or coloring keywords (BBCode).
-*   **Drag and Drop**: Godot's Control nodes have built-in `_get_drag_data` and `_drop_data` methods. Perfect for "Match the items" puzzles.
-*   **Localization**: Educational games often need to support multiple languages. Use Godot's `TranslationServer` from day one.
+## Juice (Duolingo Effect)
+Learning is hard — reward effort: satisfying SFX, particles on correct, Tweened XP bars. Pedagogue first; juice never substitutes for spaced repetition / ZPD scaffolding.
 
 ## Common Pitfalls
 
-1.  **Chocolate-Covered Broccoli**: Game loop and Learning loop are separate. **Fix**: Make the mechanic *be* the learning (e.g., Typing of the Dead).
-2.  **Punishing Failure**: Player gets "Game Over" for being wrong. **Fix**: Never fail state. Just "Try Again" or "Here's a hint".
-3.  **Wall of Text**: Too much reading. **Fix**: Interaction first. Show, don't tell.
-
+1. **Chocolate-Covered Broccoli** — mechanic must *be* the learning.
+2. **Punishing Failure** — Try Again / hint, never Game Over for wrong answers.
+3. **Wall of Text** — show/interact first; use `text_reveal_effect` / rich-text meta.
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
+
+### Official Documentation
+- [Internationalizing games](https://docs.godotengine.org/en/stable/tutorials/i18n/internationalizing_games.html) — `tr()` / locale workflow for classroom multi-language UI without hardcoding strings.
+- [Localization using gettext](https://docs.godotengine.org/en/stable/tutorials/i18n/localization_using_gettext.html) — PO/CSV pipeline and plural forms used by runtime locale switching.
+- [Text-to-speech](https://docs.godotengine.org/en/stable/tutorials/audio/text_to_speech.html) — DisplayServer TTS voices, speak/stop, and consent-friendly accessibility read-aloud.
+- [BBCode in RichTextLabel](https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html) — Colored keywords, formulas, meta links, and custom RichTextEffect reveals for lessons.
+- [Using Containers](https://docs.godotengine.org/en/stable/tutorials/ui/gui_containers.html) — Responsive quiz/layout composition for tablets and classroom laptops.
+- [Size and anchors](https://docs.godotengine.org/en/stable/tutorials/ui/size_and_anchors.html) — Anchor/offset rules that replace absolute pixel placement across orientations.
+- [Keyboard/Controller Navigation and Focus](https://docs.godotengine.org/en/stable/tutorials/ui/gui_navigation.html) — Focus neighbors and grab_focus patterns for keyboard-only classroom navigation.
+- [Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html) — StudentProfile / curriculum node Resources decoupled from presentation.
+- [Saving games](https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html) — Persist mastery, XP, and progress without baking credentials into exports.
+- [Using multiple threads](https://docs.godotengine.org/en/stable/tutorials/performance/using_multiple_threads.html) — WorkerThreadPool grading so heavy assessment never freezes the quiz UI.
+- [Pausing games](https://docs.godotengine.org/en/stable/tutorials/scripting/pausing_games.html) — Tree pause + `process_mode` so assessments freeze world logic while UI stays interactive.
+- [Performance](https://docs.godotengine.org/en/stable/tutorials/performance/index.html) — Custom monitors, low-processor mode, and battery-friendly idle screens for ed apps.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Project locale, display, and input map defaults must exist before classroom UI and TTS toggles.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed Resources, signals, and await patterns underpin student profiles and quiz flow.
+- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Anchors/containers are the non-negotiable layout base for multi-device lesson screens.
+
+#### Complements
+- [godot-ui-rich-text](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md) — BBCode, meta clicks, and custom effects for glossaries and formula-heavy prompts.
+- [godot-ui-theming](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md) — Readable theme scales and contrast for mixed tablet/laptop classrooms.
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Durable StudentProfile / mastery persistence beyond ad-hoc ConfigFile snippets.
+- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — XP bars, confetti timing, and overlay fades that sell the “Duolingo effect.”
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Mastery-up, hint-revealed, and difficulty-changed events without UI↔logic hardwiring.
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Focus actions, drag-and-drop answers, and IME-safe text entry for assessments.
+
+#### Downstream / consumers
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Simulate override bands so adaptive difficulty actually lands near ~70% flow/mastery success.
+- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — Question → Answer → Result → Adapt quiz FSMs once the curtain grows beyond one script.
+- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — Lesson map ↔ quiz ↔ results transitions without leaking paused tree state.
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Escalate when scoring threads, TTS, or rich-text effects still show profiler cost on school hardware.
+- [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — Confetti/reward bursts wired to correct-answer juice without blocking pedagogy.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting educational concern.

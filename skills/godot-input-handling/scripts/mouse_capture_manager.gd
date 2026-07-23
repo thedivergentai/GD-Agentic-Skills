@@ -23,3 +23,14 @@ func _toggle_capture(enable: bool) -> void:
 
 func _apply_rotation(_rot: Vector2):
 	pass
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_input.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/mouse_and_input_coordinates.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/handling_quit_requests.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md — FPS look capture
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — apply relative motion to camera
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md
+# =============================================================================

@@ -55,3 +55,17 @@ func _migrate_data(old_data: Dictionary, from_version: int) -> Dictionary:
 ## For 'Cloud-Proxy Syncing', implement a 'Snapshot' system that 
 ## creates a temporary unencrypted buffer specifically for Steam 
 ## Cloud or Epic Online Services APIs.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/data_paths.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/binary_serialization_api.html
+# - https://docs.godotengine.org/en/stable/classes/class_fileaccess.html
+# - https://docs.godotengine.org/en/stable/classes/class_resourcesaver.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md — schema fields that commonly need migration
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-quest-system/SKILL.md — quest flag version bumps
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md — currency/unlock defaults in migrate steps
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md
+# =============================================================================

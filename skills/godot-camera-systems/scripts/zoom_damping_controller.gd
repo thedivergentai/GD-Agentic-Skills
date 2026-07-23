@@ -18,3 +18,15 @@ func _input(event: InputEvent) -> void:
 func _process(delta: float) -> void:
 	# Exponential lerp for zoom feels smoother than linear
 	zoom = zoom.lerp(target_zoom, zoom_speed * delta)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_camera2d.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/mouse_and_input_coordinates.html
+# - https://docs.godotengine.org/en/stable/tutorials/math/interpolation.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — wheel / magnify gesture routing
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md — alternative cubic zoom Tweens
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — keep HUD crisp when zoom changes world scale
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md
+# =============================================================================

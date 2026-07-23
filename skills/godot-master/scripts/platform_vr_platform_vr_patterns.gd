@@ -80,3 +80,16 @@ func set_xr_resolution_scale(multiplier: float) -> void:
     var xr_interface := XRServer.find_interface("OpenXR")
     if xr_interface:
         xr_interface.render_target_size_multiplier = multiplier
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/xr/setting_up_xr.html
+# - https://docs.godotengine.org/en/stable/tutorials/xr/ar_passthrough.html
+# - https://docs.godotengine.org/en/stable/tutorials/xr/openxr_settings.html
+# - https://docs.godotengine.org/en/stable/classes/class_webxrinterface.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-web/SKILL.md — WebXR session_started/ended patterns
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md — OpenXR + WebXR export packaging
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — foveation and render scale knobs
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-vr/SKILL.md
+# =============================================================================

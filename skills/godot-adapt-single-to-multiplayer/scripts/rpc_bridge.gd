@@ -59,3 +59,14 @@ func trigger_event(name: String, data: Dictionary) -> void:
 ## EXPERT USAGE:
 ## Use this bridge to avoid littering @rpc functions inside every Actor.
 ## connect("input_received", _on_input) in your ServerController.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html
+# - https://docs.godotengine.org/en/stable/classes/class_multiplayerapi.html
+# - https://docs.godotengine.org/en/stable/classes/class_scenemultiplayer.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — local signals bridged into RPCs
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — typical home for a session RPC hub
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md
+# =============================================================================

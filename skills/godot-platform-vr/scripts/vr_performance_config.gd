@@ -17,3 +17,14 @@ func set_supersampling(multiplier: float) -> void:
 	XRServer.primary_interface.render_target_size_multiplier = multiplier
 
 ## Rule: 90/120Hz is mandatory for comfort; favor resolution over post-effects.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/xr/openxr_settings.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/variable_rate_shading.html
+# - https://docs.godotengine.org/en/stable/classes/class_openxrinterface.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — 90/120 Hz budgets vs supersampling
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md — thermal/resolution tradeoffs on standalone HMDs
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-vr/SKILL.md
+# =============================================================================

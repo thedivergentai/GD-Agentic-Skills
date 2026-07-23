@@ -19,3 +19,14 @@ func _physics_process(delta: float) -> void:
 
 ## [SKILL NOTICE]: Use 'PhysicsMaterial' on the RigidBody3D for 
 ## friction and bounce. Use 'Magnus Effect' for realistic curve balls.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_rigidbody3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_physicsmaterial.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — spin/force application on RigidBody3D
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-sports/SKILL.md
+# =============================================================================

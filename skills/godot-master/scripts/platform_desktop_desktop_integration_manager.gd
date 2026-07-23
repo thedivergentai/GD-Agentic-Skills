@@ -95,3 +95,16 @@ func _apply_graphics_settings() -> void:
 
 ## EXPERT USAGE:
 ## Add as AutoLoad. Connect to settings menu UI.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/handling_quit_requests.html
+# - https://docs.godotengine.org/en/stable/classes/class_configfile.html
+# - https://docs.godotengine.org/en/stable/classes/class_engine.html
+# - https://docs.godotengine.org/en/stable/classes/class_displayserver.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — central desktop integration autoload
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — quit-path save flush
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md — store SDK availability at export
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-desktop/SKILL.md
+# =============================================================================

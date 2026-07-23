@@ -30,3 +30,13 @@ func _check_z_overlap(other: SimulatedDepthArea2D) -> bool:
 ## Call this to dynamically update height if attached to a jumping player
 func update_current_z_height(new_z: float) -> void:
     base_z_height = new_z
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_area2d.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md — Area2D masks + custom height AABB
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — ground-vs-air hit validation
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-3d-to-2d/SKILL.md
+# =============================================================================

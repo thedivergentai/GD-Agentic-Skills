@@ -23,3 +23,14 @@ func _drop_data(_at_position: Vector2, data: Variant) -> void:
 	var dropped_slot = data as ItemSlot
 	# Swap logic goes here
 	# (e.g. notify inventory_data to swap indices)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_control.html
+# - https://docs.godotengine.org/en/stable/tutorials/ui/custom_gui_controls.html
+# - https://docs.godotengine.org/en/stable/classes/class_texture2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — PanelContainer/slot chrome around drag targets
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — pointer paths that start Control drag
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md
+# =============================================================================

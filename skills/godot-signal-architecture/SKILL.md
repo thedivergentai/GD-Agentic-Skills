@@ -11,324 +11,121 @@ description: "Expert blueprint for signal-driven architecture using \"Signal Up,
 
 # Signal Architecture
 
-Signal Up/Call Down pattern, typed signals, and event buses define decoupled, maintainable architectures.
-
-## Available Scripts
-
-### [signal_up_call_down_pattern.gd](scripts/signal_up_call_down_pattern.gd)
-Clean implementation of decoupled hierarchy communication: children signal up, parents call down.
-
-### [global_signal_bus_router.gd](scripts/global_signal_bus_router.gd)
-Expert AutoLoad event bus for system-level event routing (Achievements, UI, Saving).
-
-### [callable_bind_context.gd](scripts/callable_bind_context.gd)
-Injecting extra static context into signal callbacks using `Callable.bind()`.
-
-### [unbind_unwanted_args.gd](scripts/unbind_unwanted_args.gd)
-Cleaning up function signatures by discarding unneeded signal arguments with `unbind()`.
-
-### [await_signal_sequencing.gd](scripts/await_signal_sequencing.gd)
-Replacing messy timers and state flags with linear, readable `await` signal sequences.
-
-### [safe_dynamic_connections.gd](scripts/safe_dynamic_connections.gd)
-Verifying connection state using `is_connected()` to prevent runtime multi-connection errors.
-
-### [disconnect_ghost_signals.gd](scripts/disconnect_ghost_signals.gd)
-Crucial memory management pattern for disconnecting signals when switching tracking targets.
-
-### [one_shot_deferred_connections.gd](scripts/one_shot_deferred_connections.gd)
-Using `CONNECT_ONE_SHOT` and `CONNECT_DEFERRED` for self-cleaning and physics-safe callbacks.
-
-### [track_signal_emitter_source.gd](scripts/track_signal_emitter_source.gd)
-Identifying which node fired a shared signal using `CONNECT_APPEND_SOURCE_OBJECT`.
-
-### [complex_signal_sequencer.gd](scripts/complex_signal_sequencer.gd)
-Managing multi-step asynchronous loading and transitions using sequential signal awaits.
+Signal Up/Call Down, typed signals, and scoped buses — not connect/emit tutorials.
 
 ## NEVER Do in Signal Architecture
 
--**NEVER use the legacy string-based `Object.connect()`** — Typos result in silent failures. Always use `signal.connect(_callback)` for compile-time validation [1].
-- **NEVER use signals to dictate behavior top-down** — Signals are past-tense events (e.g., "died"). Use direct method calls for commands (e.g., "kill") [2].
-- **NEVER connect a signal twice to the same Callable** — This throws an `ERR_INVALID_PARAMETER` at runtime unless using the `Object.CONNECT_REFERENCE_COUNTED` flag to stack connections [3, 4].
-- **NEVER use a Global Signal Bus for local data** — Pollutes global state and makes debugging harder. Use local connections for scene-specific logic [4].
-- **NEVER assume callbacks must accept all signal arguments** — Use `unbind()` to drop unwanted parameters and keep your API clean [5].
-- **NEVER create circular signal dependencies** — A signals B, B signals back to A? Use a mediator (parent or AutoLoad) to break the loop [26].
-- **NEVER skip signal typing** — `signal moved` without types lacks editor support. Always use `signal moved(dir: Vector2)` [27].
-- **NEVER forget to disconnect dynamic signals** — Ghost connections cause "call on null instance" errors. Disconnect in `_exit_tree()` or use `bind_node()` [28].
-- **NEVER emit signals with immediate side effects on the emitter** — If `died.emit()` calls `queue_free()`, listeners might fail to respond. Emit first [31].
+- **NEVER use the legacy string-based `Object.connect()`** — Typos result in silent failures. Always use `signal.connect(_callback)` for compile-time validation.
+- **NEVER use signals to dictate behavior top-down** — Signals are past-tense events (e.g., "died"). Use direct method calls for commands (e.g., "kill").
+- **NEVER connect a signal twice to the same Callable** — This throws an `ERR_INVALID_PARAMETER` at runtime unless using the `Object.CONNECT_REFERENCE_COUNTED` flag to stack connections.
+- **NEVER use a Global Signal Bus for local data** — Pollutes global state and makes debugging harder. Use local connections for scene-specific logic.
+- **NEVER assume callbacks must accept all signal arguments** — Use `unbind()` to drop unwanted parameters and keep your API clean.
+- **NEVER create circular signal dependencies** — A signals B, B signals back to A? Use a mediator (parent or AutoLoad) to break the loop.
+- **NEVER skip signal typing** — `signal moved` without types lacks editor support. Always use `signal moved(dir: Vector2)`.
+- **NEVER forget to disconnect dynamic signals** — Ghost connections cause "call on null instance" errors. Disconnect in `_exit_tree()` or when retargeting ([disconnect_ghost_signals.gd](scripts/disconnect_ghost_signals.gd)).
+- **NEVER emit signals with immediate side effects on the emitter** — If `died.emit()` calls `queue_free()`, listeners might fail to respond. Emit first.
 - **NEVER use signals for high-frequency data streams** — Sending 1000+ signals/second (like per-particle updates) is inefficient. Use shared arrays or direct buffers.
 
 ---
 
-**Use Signals For:**
-- UI button presses → game logic
-- Player death → game over screen
-- Item collected → inventory update
-- Enemy killed → score update
-- Cross-scene communication via AutoLoad
+## Signal Up / Call Down
 
-**Use Direct Calls For:**
-- Parent controlling child behavior
-- Accessing child properties
-- Simple, local interactions
+- **Children → parents:** past-tense signals (`health_changed`, `died`).
+- **Parents → children:** direct calls / properties (`apply_damage`, `play_anim`).
+- **Siblings:** parent mediator or carefully scoped Autoload bus — never sibling hard refs.
 
-## Implementation Patterns
+**Use signals for:** UI presses, death → game over, loot → inventory, cross-scene bus events.
+**Use direct calls for:** parent commanding child, local property access.
 
-### Pattern 1: Define Typed Signals
+## Decision Tree: Where to Connect
 
-```gdscript
-extends CharacterBody2D
+| Scope | Pattern | MANDATORY script |
+|-------|---------|------------------|
+| Child notifies parent / UI | Local `signal.connect` in parent `_ready` | [signal_up_call_down_pattern.gd](scripts/signal_up_call_down_pattern.gd) |
+| Parent orchestrates children | Method calls down (not signals) | same |
+| Cross-scene / systems (achievements, save) | Autoload bus | [global_signal_bus_router.gd](scripts/global_signal_bus_router.gd) / [global_event_bus.gd](scripts/global_event_bus.gd) |
+| Linear async steps (load → fade → spawn) | `await` signal sequence | [await_signal_sequencing.gd](scripts/await_signal_sequencing.gd) / [complex_signal_sequencer.gd](scripts/complex_signal_sequencer.gd) |
+| Retarget tracking (new enemy) | Disconnect old first | [disconnect_ghost_signals.gd](scripts/disconnect_ghost_signals.gd) |
+| One-shot / physics-safe | `CONNECT_ONE_SHOT` / `CONNECT_DEFERRED` | [one_shot_deferred_connections.gd](scripts/one_shot_deferred_connections.gd) |
+| Extra context / drop args | `Callable.bind` / `unbind` | [callable_bind_context.gd](scripts/callable_bind_context.gd) / [unbind_unwanted_args.gd](scripts/unbind_unwanted_args.gd) |
 
-# ✅ Good - typed signals (Godot 4.x)
-signal health_changed(new_health: int, max_health: int)
-signal died()
-signal item_collected(item_name: String, item_type: int)
+## Available Scripts
 
-# ❌ Bad - untyped signals
-signal health_changed
-signal died
-```
+- [signal_up_call_down_pattern.gd](scripts/signal_up_call_down_pattern.gd) — **MANDATORY** before hierarchy wiring.
+- [global_signal_bus_router.gd](scripts/global_signal_bus_router.gd) / [global_event_bus.gd](scripts/global_event_bus.gd) — **MANDATORY** before Autoload buses.
+- [disconnect_ghost_signals.gd](scripts/disconnect_ghost_signals.gd) — **MANDATORY** when switching tracked emitters.
+- [await_signal_sequencing.gd](scripts/await_signal_sequencing.gd) / [complex_signal_sequencer.gd](scripts/complex_signal_sequencer.gd) — **MANDATORY** for multi-step awaits.
+- [safe_dynamic_connections.gd](scripts/safe_dynamic_connections.gd) — `is_connected` guards.
+- [one_shot_deferred_connections.gd](scripts/one_shot_deferred_connections.gd) — one-shot / deferred flags.
+- [callable_bind_context.gd](scripts/callable_bind_context.gd) / [unbind_unwanted_args.gd](scripts/unbind_unwanted_args.gd) — bind/unbind.
+- [track_signal_emitter_source.gd](scripts/track_signal_emitter_source.gd) — `CONNECT_APPEND_SOURCE_OBJECT`.
+- [signal_debugger.gd](scripts/signal_debugger.gd) / [signal_spy.gd](scripts/signal_spy.gd) — debug / test spies.
 
-### Pattern 2: Emit Signals on State Changes
+## Lambda Capture Cleanup (complete)
 
-```gdscript
-# player.gd
-extends CharacterBody2D
-
-signal health_changed(current: int, maximum: int)
-signal died()
-
-var health: int = 100:
-    set(value):
-        health = clamp(value, 0, max_health)
-        health_changed.emit(health, max_health)
-        if health <= 0:
-            died.emit()
-
-var max_health: int = 100
-
-func take_damage(amount: int) -> void:
-    health -= amount  # Triggers setter, which emits signal
-```
-
-### Pattern 3: Connect Signals in Parent
-
-```gdscript
-# game.gd (parent)
-extends Node2D
-
-@onready var player: CharacterBody2D = $Player
-@onready var ui: Control = $UI
-
-func _ready() -> void:
-    # Connect child signals
-    player.health_changed.connect(_on_player_health_changed)
-    player.died.connect(_on_player_died)
-
-func _on_player_health_changed(current: int, maximum: int) -> void:
-    # Call down to UI
-    ui.update_health_bar(current, maximum)
-
-func _on_player_died() -> void:
-    # Orchestrate game over
-    ui.show_game_over()
-    get_tree().paused = true
-```
-
-### Pattern 4: Global Signals via AutoLoad
-
-For cross-scene communication:
-
-```gdscript
-# events.gd (AutoLoad)
-extends Node
-
-signal level_completed(level_number: int)
-signal player_spawned(player: Node2D)
-signal boss_defeated(boss_name: String)
-
-# Any script can emit:
-Events.level_completed.emit(3)
-
-# Any script can listen:
-Events.level_completed.connect(_on_level_completed)
-```
-
-## Advanced Patterns
-
-### Pattern 5: Signal Chains
-
-```gdscript
-# enemy.gd
-signal died(score_value: int)
-
-func _on_health_depleted() -> void:
-    died.emit(100)
-    queue_free()
-
-# combat_manager.gd
-func _ready() -> void:
-    for enemy in get_tree().get_nodes_in_group("enemies"):
-        enemy.died.connect(_on_enemy_died)
-
-func _on_enemy_died(score_value: int) -> void:
-    GameManager.add_score(score_value)
-    Events.enemy_killed.emit()
-```
-
-### Pattern 6: One-Shot Connections
-
-For single-use signal connections:
-
-```gdscript
-# Connect with CONNECT_ONE_SHOT flag
-timer.timeout.connect(_on_timer_timeout, CONNECT_ONE_SHOT)
-
-func _on_timer_timeout() -> void:
-    print("This only fires once")
-    # Connection automatically removed
-```
-
-### Pattern 7: Custom Signal Arguments
-
-```gdscript
-# item.gd
-signal picked_up(item_data: Dictionary)
-
-func _on_player_enter() -> void:
-    picked_up.emit({
-        "name": item_name,
-        "type": item_type,
-        "value": item_value,
-        "icon": item_icon
-    })
-
-# inventory.gd
-func _on_item_picked_up(item_data: Dictionary) -> void:
-    add_item(
-        item_data.name,
-        item_data.type,
-        item_data.value
-    )
-```
-
-## Best Practices
-
-### 1. Descriptive Signal Names
-
-```gdscript
-# ✅ Good
-signal button_pressed()
-signal enemy_defeated(enemy_type: String)
-signal animation_finished(animation_name: String)
-
-# ❌ Bad
-signal pressed()
-signal done()
-signal finished()
-```
-
-### 2. Avoid Circular Dependencies
-
-```gdscript
-# ❌ BAD: A signals to B, B signals back to A
-# A.gd
-signal data_requested
-func _ready():
-    B.data_ready.connect(_on_data_ready)
-    data_requested.emit()
-
-# B.gd
-signal data_ready
-func _ready():
-    A.data_requested.connect(_on_data_requested)
-
-# ✅ GOOD: Use a mediator (parent or AutoLoad)
-# Parent.gd
-func _ready():
-    A.data_requested.connect(_on_A_data_requested)
-    B.data_ready.connect(_on_B_data_ready)
-```
-
-### 3. Disconnect Signals When Nodes Are Freed
-Godot automatically disconnects signals when a node or object is freed [6]. However, there is a **CRITICAL EXCEPTION**:
-
-- **Capturing Lambdas**: If a lambda captures a local variable (e.g., `func(): print(x)`), Godot cannot automatically disconnect it. You MUST manually disconnect it in `_exit_tree()` or a cleanup method to prevent crashes [8, 9].
+Godot auto-disconnects most connections when a node frees. **Exception:** lambdas that capture locals — you must disconnect manually.
 
 ```gdscript
 var my_lambda: Callable
 
 func _ready() -> void:
-    var x = 10
-    my_lambda = func(): print(x) # Capturing lambda
+    var x := 10
+    my_lambda = func(): print(x)
     player.died.connect(my_lambda)
 
 func _exit_tree() -> void:
+    if player and player.died.is_connected(my_lambda):
+        player.died.disconnect(my_lambda)
 ```
 
-**Or use automatic cleanup:**
-```gdscript
-# Signal auto-disconnects when this node is freed
-player.died.connect(_on_player_died, CONNECT_REFERENCE_COUNTED)
-```
+Prefer named methods or [disconnect_ghost_signals.gd](scripts/disconnect_ghost_signals.gd) when retargeting.
 
-### 4. Group Related Signals
+## CONNECT_REFERENCE_COUNTED — Correct Semantics
 
-```gdscript
-# ✅ Good organization
-# Combat signals
-signal health_changed(current: int, max: int)
-signal died()
-signal respawned()
+`CONNECT_REFERENCE_COUNTED` means **multiple identical connects share one connection with a refcount** (connect N times / disconnect N times). It is **not** "auto-cleanup when the emitter frees" and does **not** fix capturing-lambda leaks.
 
-# Movement signals
-signal jumped()
-signal landed()
-signal direction_changed(direction: Vector2)
-
-# Inventory signals
-signal item_added(item: Dictionary)
-signal item_removed(item: Dictionary)
-signal inventory_full()
-```
-
-## Testing Signals
-
-```gdscript
-func test_health_signal() -> void:
-    var signal_emitted := false
-    var received_health := 0
-    
-    player.health_changed.connect(
-        func(current: int, _max: int):
-            signal_emitted = true
-            received_health = current
-    )
-    
-    player.health = 50
-    assert(signal_emitted, "Signal was not emitted")
-    assert(received_health == 50, "Health value incorrect")
-```
-
-## Common Gotchas
-
-**Issue**: Signal not firing
-- **Check**: Is the signal spelled correctly when connecting?
-- **Check**: Is the emitting code path actually being executed?
-- **Check**: Use `print()` before `emit()` to verify
-
-**Issue**: Signal firing multiple times
-- **Cause**: Multiple connections to the same signal
-- **Solution**: Check connections or use `CONNECT_ONE_SHOT`
-
-**Issue**: "Attempt to call function on a null instance"
-- **Cause**: Node was freed but signal still connected
-- **Solution**: Disconnect in `_exit_tree()` or use `CONNECT_REFERENCE_COUNTED`
+- Auto-cleanup on free: normal connections to Object methods (non-capturing) are cleared when either side is freed.
+- Capturing lambdas: always manual `disconnect` (see above).
+- One-shot auto-remove after fire: `CONNECT_ONE_SHOT`.
 
 ## Reference
-- [Godot Docs: Signals](https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html)
-- [Best Practices: Signals Up, Calls Down](https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html)
 
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
 
-### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+### Official Documentation
+- [Using signals](https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html) — Core emit/connect model and why signals decouple nodes without hard references.
+- [Scene organization](https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html) — Canonical “signal up, call down” ownership rules that keep parent→child command flows explicit.
+- [Instancing with signals](https://docs.godotengine.org/en/stable/tutorials/scripting/instancing_with_signals.html) — Emit from spawned scenes so parents/managers receive bullets, loot, and other products without fixed node paths.
+- [Autoloads versus regular nodes](https://docs.godotengine.org/en/stable/tutorials/best_practices/autoloads_versus_regular_nodes.html) — When a global EventBus is justified vs when scene-local signal wiring is safer.
+- [Singletons (Autoload)](https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html) — How to register a typed signal bus that survives scene changes.
+- [Signal](https://docs.godotengine.org/en/stable/classes/class_signal.html) — Typed `Signal` API: `emit`, `connect`, `is_connected`, and disconnect helpers used throughout this skill.
+- [Callable](https://docs.godotengine.org/en/stable/classes/class_callable.html) — `bind()` / `unbind()` for injecting or discarding callback context without wrapper lambdas.
+- [Object](https://docs.godotengine.org/en/stable/classes/class_object.html) — `CONNECT_ONE_SHOT`, `CONNECT_DEFERRED`, `CONNECT_REFERENCE_COUNTED`, and `CONNECT_APPEND_SOURCE_OBJECT` flags.
+- [GDScript basics](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html) — Typed `signal` declarations and `await` on signals for linear async sequences.
+- [Using SceneTree](https://docs.godotengine.org/en/stable/tutorials/scripting/scene_tree.html) — Connection lifetime across enter/exit tree and why dynamic listeners must disconnect when retargeting.
+- [Godot notifications](https://docs.godotengine.org/en/stable/tutorials/best_practices/godot_notifications.html) — Safe connection timing relative to `_ready`, parent caches, and user signals.
+- [Idle and Physics Processing](https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html) — Why deferred signal handlers matter when callbacks mutate physics bodies mid-step.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Project layout, Autoload registration, and scene ownership conventions signals plug into.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed Callables, `await`, and signal syntax required before advanced connect flags and sequencers.
+- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Singleton boot order and ownership rules for global EventBus routers (not for local scene events).
+
+#### Complements
+- [godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md) — Component nodes emit past-tense events; parents compose by connecting those signals and calling down.
+- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — Scene swaps and loaders must reconnect or re-emit through buses without ghost listeners.
+- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — State enter/exit often drives signal fan-out; keeps FSM transitions from becoming circular signal graphs.
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Prefer Resources for shared config; signals carry change events, not duplicated mutable state blobs.
+- [godot-testing-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-testing-patterns/SKILL.md) — `watch_signals` / spies pair with this skill’s emit contracts for unit and integration tests.
+- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Buttons and menus should signal intent upward; controllers call down to update Control trees.
+
+#### Downstream / consumers
+- [godot-dialogue-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-dialogue-system/SKILL.md) — Line/choice completion events should follow signal-up orchestration into UI and quest listeners.
+- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — Cooldown, cast, and hit payloads need typed signals so HUD/VFX stay decoupled from ability nodes.
+- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Damage/death/score chains are the classic signal-up fan-out into UI, audio, and progression.
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Escalate when high-frequency emit storms show up; replace per-tick signals with buffers or direct reads.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting architecture concern.

@@ -11,3 +11,13 @@
 - **NEVER ignore the cost of "Integration Tests"** — Testing a whole level is slow. Favor narrow Unit Tests for logic and small Scene Tests for interaction.
 - **NEVER hardcode file paths in tests** — Use `Path` constants or project-relative strings. If a resource directory moves, your suite shouldn't break.
 - **NEVER test third-party plugins** — Trust the library; test YOUR integration of it.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/warning_system.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-testing-patterns/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

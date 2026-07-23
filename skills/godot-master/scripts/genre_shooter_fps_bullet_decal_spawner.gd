@@ -26,3 +26,13 @@ func spawn_decal(hit_position: Vector3, hit_normal: Vector3) -> void:
     # Optimization: Decals should have a lifespan.
     var timer := get_tree().create_timer(10.0)
     timer.timeout.connect(decal.queue_free)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/using_decals.html
+# - https://docs.godotengine.org/en/stable/classes/class_decal.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md - decal fade/pool budgets under fire spam
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md - shared impact polish patterns
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md
+# =============================================================================

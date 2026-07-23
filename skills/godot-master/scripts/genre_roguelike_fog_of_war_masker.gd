@@ -18,3 +18,13 @@ func reveal_cells(visible_cells: Array[Vector2i]) -> void:
 	for cell in visible_cells:
 		# Setting source_id to -1 removes the cell (erases fog)
 		fog_layer.set_cell(cell, -1)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_tilemaplayer.html
+# - https://docs.godotengine.org/en/stable/tutorials/2d/using_tilemaps.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md — fog layer clears from FOV cell sets
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — tile fog vs GPU mask tradeoffs
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md
+# =============================================================================

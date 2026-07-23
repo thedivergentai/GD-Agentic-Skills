@@ -5,486 +5,112 @@ description: "Expert patterns for CharacterBody2D including platformer movement 
 
 # CharacterBody2D Implementation
 
-Expert guidance for player-controlled 2D movement using Godot's physics system.
+Expert CharacterBody2D feel systems — not beginner `move_and_slide` tutorials.
 
 ## NEVER Do
 
 - **NEVER use `RigidBody2D` for standard player controllers** — RigidBody is for physics-simulated objects. For responsive, feel-driven player movement, always use `CharacterBody2D`.
-- **NEVER multiply `velocity` by `delta` before `move_and_slide()`** — `move_and_slide()` handles delta internally. Manual multiplication makes movement framerate-dependent [12].
-- **NEVER use `global_position` updates for movement** — Use `velocity` and `move_and_slide()`. Direct position updates bypass collision detection and floor snapping.
-- **NEVER ignore the return value of `move_and_slide()`** — While optional, checking `is_on_floor()` or `get_last_motion()` immediately after is critical for state logic.
-- **NEVER rely on default `floor_snap_length` for fast stair-climbing** — Default snapping is too small for high-velocity characters. Use custom raycast-based stair logic for smooth transitions.
-- **NEVER apply gravity while `is_on_floor()` is true** — Constant downward force on the floor can cause "micro-jitter" or prevent floor-snap from working correctly. Reset `velocity.y` to 0 or a small constant.
-- **NEVER use `Area2D` for ground detection** — Real collisions (rays/shapecasts) are more precise. `is_on_floor()` is highly optimized; only augment it if necessary.
-- **NEVER forget Ceiling Bonk detection** — If you don't reset `velocity.y` to 0 when `is_on_ceiling()`, the player will "float" against the ceiling until gravity pulls them down.
-- **NEVER use high-precision physics for pixel art visuals** — Keep physics math high-precision, but round your Sprite nodal positions in `_process` to avoid visual sub-pixel jitter.
-- **NEVER use `queue_free()` on characters every frame** — Use object pooling for bullets or enemies to avoid SceneTree performance spikes.
+- **NEVER multiply `velocity` by `delta` before `move_and_slide()`** — `move_and_slide()` handles delta internally. Manual multiplication makes movement framerate-dependent.
+- **NEVER use `global_position` updates for gameplay movement** — Use `velocity` + `move_and_slide()`. Direct position hacks bypass collision, floor snap, and one-way rules.
+- **NEVER "fall through" one-ways by nudging `position.y`** — Use one-way collision shapes + layer/mask (and temporary mask disable / collide-with-areas patterns). See [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md).
+- **NEVER ignore floor/wall/ceiling state right after `move_and_slide()`** — `is_on_floor()`, `is_on_wall()`, `is_on_ceiling()`, and slide collisions drive coyote, wall jump, and bonk logic.
+- **NEVER rely on default `floor_snap_length` for fast stair-climbing** — Default snapping is too small for high-velocity characters. Use custom raycast-based stair logic.
+- **NEVER apply gravity while `is_on_floor()` is true** — Constant downward force causes micro-jitter and fights floor-snap. Reset `velocity.y` on land.
+- **NEVER use `Area2D` as primary ground detection** — Prefer `is_on_floor()` / shapecasts; Areas are for triggers, not floor truth.
+- **NEVER forget ceiling bonk** — Reset `velocity.y` when `is_on_ceiling()` or the player floats into the ceiling until gravity wins.
+- **NEVER round physics positions for pixel art** — Keep physics high-precision; round **sprite** positions in `_process` only ([subpixel_movement_rounding.gd](scripts/subpixel_movement_rounding.gd)).
+- **NEVER spam `queue_free()` for hordes** — Pool bullets/enemies when spawn/despawn is frequent ([performance_character_pooling.gd](scripts/performance_character_pooling.gd)).
+
 ---
 
 ## Godot 4.7: CharacterBody2D
 
 - Jolt 3D changes do not apply to 2D, but one-way **direction** on `CollisionShape2D` affects platformer feel — align with movement normals.
 
-## Available Scripts
-
-> **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
-
-### [frame_perfect_coyote_time.gd](scripts/frame_perfect_coyote_time.gd)
-Professional platformer mechanics: Coyote Time (jump after fall) and Input Buffering.
-
-### [slope_stair_snapping.gd](scripts/slope_stair_snapping.gd)
-Advanced procedural stair-climbing and smooth slope snapping logic.
-
-### [variable_jump_height.gd](scripts/variable_jump_height.gd)
-Customizable 'Short Hop' vs 'Full Jump' implementation based on input duration.
-
-### [wall_slide_jump_refined.gd](scripts/wall_slide_jump_refined.gd)
-Responsive Wall Slide and Wall Jump mechanics with proper push-back forces.
-
-### [dash_state_controller.gd](scripts/dash_state_controller.gd)
-State-based dash logic with invincibility frames and customizable cooldowns.
-
-### [subpixel_movement_rounding.gd](scripts/subpixel_movement_rounding.gd)
-Expert pattern for maintaining pixel-perfect visuals in low-res games while keeping smooth physics.
-
-### [performance_character_pooling.gd](scripts/performance_character_pooling.gd)
-Logic for optimizing 100+ active characters using visibility-based physics toggling.
-
-### [impulse_response_handler.gd](scripts/impulse_response_handler.gd)
-Expert handling of external forces (Knockback, Blow-back, Wind) integrated with `move_and_slide`.
-
-### [aerial_drift_acceleration.gd](scripts/aerial_drift_acceleration.gd)
-Precise air control and acceleration logic for professional platformer feel.
-
-### [ceiling_bonk_detection.gd](scripts/ceiling_bonk_detection.gd)
-Fixing 'sticky head' syndrome by correctly handling vertical momentum on ceiling hits.
-
-### [expert_physics_2d.gd](scripts/expert_physics_2d.gd)
-Complete platformer movement with coyote time, jump buffering, smooth acceleration/friction, and sub-pixel stabilization. Uses move_toward for precise control.
-
-### [dash_controller.gd](scripts/dash_controller.gd)
-Frame-perfect dash with I-frames, cooldown, and momentum preservation.
-
-### [wall_jump_controller.gd](scripts/wall_jump_controller.gd)
-Wall slide, cling, and directional wall jump with auto-correction.
-
-> **Do First**: Read expert_physics_2d.gd for platformer foundation before adding dash/wall-jump.
-
----
-
 ## When to Use CharacterBody2D
 
-**Use CharacterBody2D For:**
-- Player characters (platformer, top-down, side-scroller)
-- NPCs with custom movement logic
-- Enemies with non-physics-based movement
+| Need | Body |
+|------|------|
+| Feel-driven player / NPC / enemy locomotion | **CharacterBody2D** |
+| Rolling debris, ragdoll-ish props, force piles | RigidBody2D |
+| Static level colliders | StaticBody2D / TileMapLayer physics |
 
-**Use RigidBody2D For:**
-- Physics-driven objects (rolling boulders, vehicles)
-- Objects affected by forces and impulses
+## Decision Tree → MANDATORY Scripts
 
-## Platformer Movement Pattern
+| Task | Do First | Then (optional) | Do NOT Load |
+|------|----------|-----------------|-------------|
+| Platformer foundation (coyote, buffer, accel/friction) | **[expert_physics_2d.gd](scripts/expert_physics_2d.gd)** | — | Inline tutorial controllers |
+| Isolate coyote/buffer only | [frame_perfect_coyote_time.gd](scripts/frame_perfect_coyote_time.gd) | — | Duplicate coyote blocks in SKILL |
+| Variable jump / short hop | [variable_jump_height.gd](scripts/variable_jump_height.gd) | — | — |
+| Slopes / stairs | [slope_stair_snapping.gd](scripts/slope_stair_snapping.gd) | [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) | — |
+| Wall slide / wall jump | [wall_slide_jump_refined.gd](scripts/wall_slide_jump_refined.gd) or [wall_jump_controller.gd](scripts/wall_jump_controller.gd) | — | Both unless comparing |
+| Dash + i-frames | [dash_state_controller.gd](scripts/dash_state_controller.gd) or [dash_controller.gd](scripts/dash_controller.gd) | — | Both unless comparing |
+| Air control polish | [aerial_drift_acceleration.gd](scripts/aerial_drift_acceleration.gd) | — | — |
+| Ceiling stick / bonk | [ceiling_bonk_detection.gd](scripts/ceiling_bonk_detection.gd) | — | — |
+| Knockback / wind impulses | [impulse_response_handler.gd](scripts/impulse_response_handler.gd) | — | — |
+| Pixel-art visuals | [subpixel_movement_rounding.gd](scripts/subpixel_movement_rounding.gd) | — | Rounding `global_position` in physics |
+| Many AI bodies | [performance_character_pooling.gd](scripts/performance_character_pooling.gd) | — | — |
+| One-way platforms | Tile/StaticBody one-way + layers/masks | [godot-tilemap-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md) / [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) | `position.y += 1` drop-through hacks |
 
-### Basic Platformer Controller
+**Golden path:** Read **expert_physics_2d.gd** first. Add dash/wall/jump scripts only after that controller is in place. Do not re-inline coyote/buffer/accel loops in the scene when the script already owns them.
 
-```gdscript
-extends CharacterBody2D
+## One-Way Platforms (correct recipe)
 
-const SPEED := 300.0
-const JUMP_VELOCITY := -400.0
-
-# Get the gravity from the project settings
-var gravity: int = ProjectSettings.get_setting("physics/2d/default_gravity")
-
-func _physics_process(delta: float) -> void:
-    # Apply gravity
-    if not is_on_floor():
-        velocity.y += gravity * delta
-    
-    # Handle jump
-    if Input.is_action_just_pressed("jump") and is_on_floor():
-        velocity.y = JUMP_VELOCITY
-    
-    # Get input direction
-    var direction := Input.get_axis("move_left", "move_right")
-    
-    # Apply movement
-    if direction:
-        velocity.x = direction * SPEED
-    else:
-        velocity.x = move_toward(velocity.x, 0, SPEED)
-    
-    move_and_slide()
-```
-
-### Advanced Platformer with Coyote Time & Jump Buffer
-
-```gdscript
-extends CharacterBody2D
-
-const SPEED := 300.0
-const JUMP_VELOCITY := -400.0
-const ACCELERATION := 1500.0
-const FRICTION := 1200.0
-const AIR_RESISTANCE := 200.0
-
-# Coyote time: grace period after leaving platform
-const COYOTE_TIME := 0.1
-var coyote_timer := 0.0
-
-# Jump buffering: remember jump input slightly before landing
-const JUMP_BUFFER_TIME := 0.1
-var jump_buffer_timer := 0.0
-
-var gravity: int = ProjectSettings.get_setting("physics/2d/default_gravity")
-
-func _physics_process(delta: float) -> void:
-    # Gravity
-    if not is_on_floor():
-        velocity.y += gravity * delta
-        coyote_timer -= delta
-    else:
-        coyote_timer = COYOTE_TIME
-    
-    # Jump buffering
-    if Input.is_action_just_pressed("jump"):
-        jump_buffer_timer = JUMP_BUFFER_TIME
-    else:
-        jump_buffer_timer -= delta
-    
-    # Jump (with coyote time and buffer)
-    if jump_buffer_timer > 0 and coyote_timer > 0:
-        velocity.y = JUMP_VELOCITY
-        jump_buffer_timer = 0
-        coyote_timer = 0
-    
-    # Variable jump height
-    if Input.is_action_just_released("jump") and velocity.y < 0:
-        velocity.y *= 0.5
-    
-    # Movement with acceleration/friction
-    var direction := Input.get_axis("move_left", "move_right")
-    
-    if direction:
-        velocity.x = move_toward(velocity.x, direction * SPEED, ACCELERATION * delta)
-    else:
-        var friction_value := FRICTION if is_on_floor() else AIR_RESISTANCE
-        velocity.x = move_toward(velocity.x, 0, friction_value * delta)
-    
-    move_and_slide()
-```
-
-## Top-Down Movement Pattern
-
-### 8-Directional Top-Down
-
-```gdscript
-extends CharacterBody2D
-
-const SPEED := 200.0
-const ACCELERATION := 1500.0
-const FRICTION := 1000.0
-
-func _physics_process(delta: float) -> void:
-    # Get input direction (normalized for diagonal movement)
-    var input_vector := Input.get_vector(
-        "move_left", "move_right",
-        "move_up", "move_down"
-    )
-    
-    if input_vector != Vector2.ZERO:
-        # Accelerate toward target velocity
-        velocity = velocity.move_toward(
-            input_vector * SPEED,
-            ACCELERATION * delta
-        )
-    else:
-        # Apply friction
-        velocity = velocity.move_toward(
-            Vector2.ZERO,
-            FRICTION * delta
-        )
-    
-    move_and_slide()
-```
-
-### Top-Down with Rotation (Tank Controls)
-
-```gdscript
-extends CharacterBody2D
-
-const SPEED := 200.0
-const ROTATION_SPEED := 3.0
-
-func _physics_process(delta: float) -> void:
-    # Rotation
-    var rotate_direction := Input.get_axis("rotate_left", "rotate_right")
-    rotation += rotate_direction * ROTATION_SPEED * delta
-    
-    # Forward/backward movement
-    var move_direction := Input.get_axis("move_backward", "move_forward")
-    velocity = transform.x * move_direction * SPEED
-    
-    move_and_slide()
-```
-
-## Collision Handling
-
-### Detecting Floor/Walls/Ceiling
-
-```gdscript
-func _physics_process(delta: float) -> void:
-    move_and_slide()
-    
-    if is_on_floor():
-        print("Standing on ground")
-    
-    if is_on_wall():
-        print("Touching wall")
-    
-    if is_on_ceiling():
-        print("Hitting ceiling")
-```
-
-### Get Collision Information
-
-```gdscript
-func _physics_process(delta: float) -> void:
-    move_and_slide()
-    
-    # Process each collision
-    for i in get_slide_collision_count():
-        var collision := get_slide_collision(i)
-        print("Collided with: ", collision.get_collider().name)
-        print("Collision normal: ", collision.get_normal())
-        
-        # Example: bounce off walls
-        if collision.get_collider().is_in_group("bouncy"):
-            velocity = velocity.bounce(collision.get_normal())
-```
-
-### One-Way Platforms
-
-```gdscript
-extends CharacterBody2D
-
-func _physics_process(delta: float) -> void:
-    # Allow falling through platforms by pressing down
-    if Input.is_action_pressed("move_down") and is_on_floor():
-        position.y += 1  # Move slightly down to pass through
-    
-    velocity.y += gravity * delta
-    move_and_slide()
-```
-
-## Movement States with State Machine
-
-```gdscript
-extends CharacterBody2D
-
-enum State { IDLE, RUNNING, JUMPING, FALLING, DASHING }
-
-var current_state := State.IDLE
-var dash_velocity := Vector2.ZERO
-const DASH_SPEED := 600.0
-const DASH_DURATION := 0.2
-var dash_timer := 0.0
-
-func _physics_process(delta: float) -> void:
-    match current_state:
-        State.IDLE:
-            _state_idle(delta)
-        State.RUNNING:
-            _state_running(delta)
-        State.JUMPING:
-            _state_jumping(delta)
-        State.FALLING:
-            _state_falling(delta)
-        State.DASHING:
-            _state_dashing(delta)
-
-func _state_idle(delta: float) -> void:
-    velocity.x = move_toward(velocity.x, 0, FRICTION * delta)
-    
-    if Input.is_action_pressed("move_left") or Input.is_action_pressed("move_right"):
-        current_state = State.RUNNING
-    elif Input.is_action_just_pressed("jump"):
-        current_state = State.JUMPING
-    
-    move_and_slide()
-
-func _state_dashing(delta: float) -> void:
-    dash_timer -= delta
-    velocity = dash_velocity
-    
-    if dash_timer <= 0:
-        current_state = State.IDLE
-    
-    move_and_slide()
-```
-
-## Best Practices
-
-### 1. Use Constants for Tuning
-
-```gdscript
-# ✅ Good - easy to tweak
-const SPEED := 300.0
-const JUMP_VELOCITY := -400.0
-
-# ❌ Bad - magic numbers
-velocity.x = 300
-velocity.y = -400
-```
-
-### 2. Use `@export` for Designer Control
-
-```gdscript
-@export var speed: float = 300.0
-@export var jump_velocity: float = -400.0
-@export_range(0, 2000) var acceleration: float = 1500.0
-```
-
-### 3. Separate Movement from Animation
-
-```gdscript
-func _physics_process(delta: float) -> void:
-    _handle_movement(delta)
-    _handle_animation()
-    move_and_slide()
-
-func _handle_movement(delta: float) -> void:
-    # Movement logic only
-    pass
-
-func _handle_animation() -> void:
-    # Animation state changes only
-    if velocity.x > 0:
-        $AnimatedSprite2D.flip_h = false
-    elif velocity.x < 0:
-        $AnimatedSprite2D.flip_h = true
-```
-
-### 4. Use Floor Detection Parameters
-
-```gdscript
-func _ready() -> void:
-    # Set floor parameters
-    floor_max_angle = deg_to_rad(45)  # Max slope angle
-    floor_snap_length = 8.0  # Distance to snap to floor
-    motion_mode = MOTION_MODE_GROUNDED  # Vs MOTION_MODE_FLOATING
-```
-
-## Common Gotchas
-
-**Issue**: Character slides on slopes
-```gdscript
-# Solution: Increase friction
-const FRICTION := 1200.0
-```
-
-**Issue**: Character stutters on moving platforms
-```gdscript
-# Solution: Enable platform snap
-func _physics_process(delta: float) -> void:
-    move_and_slide()
-    
-    # Snap to platform velocity
-    if is_on_floor():
-        var floor_velocity := get_platform_velocity()
-        velocity += floor_velocity
-```
-
-**Issue**: Double jump exploit
-```gdscript
-# Solution: Track if jump was used
-var can_jump := true
-
-func _physics_process(delta: float) -> void:
-    if is_on_floor():
-        can_jump = true
-    
-    if Input.is_action_just_pressed("jump") and can_jump:
-        velocity.y = JUMP_VELOCITY
-        can_jump = false
-```
+1. Author one-way on the **platform collider** (`CollisionShape2D` one-way / TileSet physics one-way), not by teleporting the player.
+2. Put platforms and player on explicit **collision layers/masks** so drop-through can temporarily clear the platform bit (or disable collide-with) while holding down + jump — then restore next physics frames.
+3. Keep drop-through on the **physics tick**; never bypass `move_and_slide` with `position` nudges.
+4. For tile one-ways, align TileSet physics layers with CharacterBody masks — see [godot-tilemap-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md) + [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md).
 
 ## Expert Character Architectures
 
 ### 1. Wall Cling (Variable Friction)
-To implement a professional "Wall Cling" or "Wall Slide," monitor `is_on_wall()` while the character is falling. Instead of a binary state, apply a friction scalar to the `velocity.y` to allow for varying slide speeds based on player input or surface types (Custom Data).
-
-```gdscript
-class_name WallClingController extends CharacterBody2D
-## Implements variable friction wall-clinging.
-
-@export var wall_friction: float = 0.15
-@export var gravity: float = 980.0
-
-func _physics_process(delta: float) -> void:
-    if not is_on_floor():
-        velocity.y += gravity * delta
-        
-        # Apply cling friction if moving against a wall and falling.
-        if is_on_wall() and velocity.y > 0:
-            velocity.y *= wall_friction
-            
-    move_and_slide()
-```
+Monitor `is_on_wall()` while falling; scale `velocity.y` by a friction factor (optionally from tile custom data) instead of a binary wall-slide bool. Prefer [wall_slide_jump_refined.gd](scripts/wall_slide_jump_refined.gd) over a bespoke cling fork.
 
 ### 2. Animation-Driven Movement (Root Motion)
-For pixel-perfect animation/physics synchronization, use the `AnimationTree` root motion API. Retrieve the motion delta from the animation track using `get_root_motion_position()` and apply it to the character's velocity. This ensures that the character's feet never slide across the ground during complex movement cycles.
-
-```gdscript
-class_name RootMotionController2D extends CharacterBody2D
-## Synchronizes physics displacement with AnimationTree root motion.
-
-@export var animation_tree: AnimationTree
-
-func _physics_process(delta: float) -> void:
-    # 1. Retrieve the 3D root motion delta (standardized API).
-    var root_motion: Vector3 = animation_tree.get_root_motion_position()
-    
-    # 2. Convert the 3D delta to a 2D velocity vector.
-    var motion_2d := Vector2(root_motion.x, root_motion.z)
-    velocity = motion_2d / delta
-    
-    move_and_slide()
-```
+Pull `AnimationTree.get_root_motion_position()`, convert to 2D, assign `velocity = motion / delta`, then `move_and_slide()`. Keeps feet locked to authored clips; pair with [godot-2d-animation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md).
 
 ### 3. Game-Feel Profiler (Jump Arcs)
-To debug and polish platforming "feel," implement a real-time trajectory profiler. Use the `CanvasItem._draw()` callback to plot the character's historical positions as a polyline. This allows you to visualize jump arcs, apex duration, and buffer windows to ensure the movement matches the intended design.
-
-```gdscript
-class_name GameFeelProfiler extends Node2D
-## Visualizes character jump arcs and velocity vectors for debugging.
-
-@export var character: CharacterBody2D
-var _points: PackedVector2Array = []
-
-func _process(_delta: float) -> void:
-    if not character: return
-    
-    # Capture global position relative to the debugger's origin.
-    _points.append(character.global_position - global_position)
-    if _points.size() > 100: _points.remove_at(0)
-    
-    queue_redraw()
-
-func _draw() -> void:
-    if _points.size() < 2: return
-    
-    # Draw the jump arc as a persistent polyline.
-    draw_polyline(_points, Color.CYAN, 2.0, true)
-    
-    # Draw current velocity vector.
-    draw_line(_points[-1], _points[-1] + character.velocity * 0.1, Color.YELLOW, 3.0)
-```
+Debug-draw historical positions + current velocity in `_draw()` to visualize apex, coyote, and buffer windows while tuning exports on **expert_physics_2d.gd**.
 
 ## Reference
-- [Godot Docs: CharacterBody2D](https://docs.godotengine.org/en/stable/classes/class_characterbody2d.html)
-- [Godot Docs: AnimationTree](https://docs.godotengine.org/en/stable/classes/class_animationtree.html)
 
+> Progressive disclosure: open Official Documentation links only when researching a specific API;
+> load Related Skills when routing work to a peer domain — do not preload the whole lattice.
 
-### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+### Official Documentation
+- [Using CharacterBody2D](https://docs.godotengine.org/en/stable/tutorials/physics/using_character_body_2d.html) — Canonical `move_and_slide` / floor-wall-ceiling contracts; do not set `position` for gameplay motion.
+- [CharacterBody2D](https://docs.godotengine.org/en/stable/classes/class_characterbody2d.html) — API for `velocity`, snap, `is_on_floor` / wall / ceiling, and slide-collision accessors.
+- [Physics introduction](https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html) — Why CharacterBody vs RigidBody/StaticBody, and how layers/masks gate every contact.
+- [Collision shapes (2D)](https://docs.godotengine.org/en/stable/tutorials/physics/collision_shapes_2d.html) — Capsule/box sizing and why scaled `CollisionShape2D` nodes corrupt normals and floor detect.
+- [2D movement](https://docs.godotengine.org/en/stable/tutorials/2d/2d_movement.html) — Input axes into velocity for top-down and platformer starters before juice systems.
+- [Kinematic character (2D)](https://docs.godotengine.org/en/stable/tutorials/physics/kinematic_character_2d.html) — Classic slide/collision loop patterns that still inform custom stair and slope handling.
+- [Troubleshooting physics issues](https://docs.godotengine.org/en/stable/tutorials/physics/troubleshooting_physics_issues.html) — One-way platforms, tunneling, and jitter diagnoses that show up in CharacterBody feel bugs.
+- [Ray-casting](https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html) — Direct-space rays for stair snaps, ledge checks, and ground probes beyond `is_on_floor()`.
+- [KinematicCollision2D](https://docs.godotengine.org/en/stable/classes/class_kinematiccollision2d.html) — Per-slide normals/remainders from `get_slide_collision` for wall jumps and ceiling bonks.
+- [Physics interpolation introduction](https://docs.godotengine.org/en/stable/tutorials/physics/interpolation/physics_interpolation_introduction.html) — Smooth visuals at high refresh while keeping jump/coyote logic on the physics tick.
+- [InputEvent](https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html) — Action just-pressed timing that jump buffers and coyote windows depend on.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Default gravity, physics tick rate, and 2D layer names must be set before coyote/jump feel is tunable.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed `_physics_process`, timers, and `move_toward` discipline underpin every movement script here.
+- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — Collision layer/mask matrices, one-way shapes, and query hygiene CharacterBody motion sits on.
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Physics-step action sampling so jump buffer / coyote windows stay frame-stable.
+
+#### Complements
+- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — Stair snaps, wall cling probes, and ledge rays that extend beyond `is_on_*` helpers.
+- [godot-tilemap-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md) — One-way tiles and tile physics layers must match CharacterBody masks for platforms.
+- [godot-2d-animation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md) — Drive walk/jump/fall clips from floor/air/dash state without fighting `move_and_slide`.
+- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — Dash, wall-slide, and airborne states scale cleaner than giant `_physics_process` switches.
+- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — Follow/look-ahead cameras couple tightly to CharacterBody velocity and landing snaps.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Landed/dashed/wall-jumped events need clean ownership so UI/VFX listeners do not spam.
+
+#### Downstream / consumers
+- [godot-genre-platformer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md) — Genre-level platformer feel consumes coyote, buffer, slopes, and one-ways from this skill.
+- [godot-genre-metroidvania](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-metroidvania/SKILL.md) — Ability-gated movement (wall jump, dash) builds on the controllers defined here.
+- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Knockback and hitstun apply impulses through the same `velocity` + slide loop.
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Coyote frames, jump height, dash cooldown, and air accel are balance knobs — simulate them instead of guessing.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored entry point for CharacterBody2D alongside sibling domains.

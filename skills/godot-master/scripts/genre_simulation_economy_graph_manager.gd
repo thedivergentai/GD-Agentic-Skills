@@ -24,3 +24,13 @@ func process_production(refinery_id: StringName) -> bool:
 
 ## [SKILL NOTICE]: Use data-driven Dictionaries for economy logic 
 ## instead of physical nodes. This allows for massive, high-speed simulations.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_exports.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — recipe DAGs as data Resources
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — yield/cost Monte Carlo before shipping
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-simulation/SKILL.md
+# =============================================================================

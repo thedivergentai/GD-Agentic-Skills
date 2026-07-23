@@ -17,3 +17,13 @@ func speak_ui_element(text: String, context: StringName = &"") -> void:
 		DisplayServer.tts_speak(translated, voices[0]["id"])
 
 ## Tool tip for templates: Use 'set_input_as_handled' in accessibility overlays.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/audio/text_to_speech.html
+# - https://docs.godotengine.org/en/stable/tutorials/i18n/internationalizing_games.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — speak focused Control labels from menus/HUD
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — Autoload placement for accessibility services
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-templates/SKILL.md
+# =============================================================================

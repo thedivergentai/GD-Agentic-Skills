@@ -51,3 +51,16 @@ This document defines the technical benchmarks for the **Aurelius Protocol**. Th
 
 ---
 *Reference version 2.0.0 | Aurelius Protocol Authorized | Godot 4.7+ Verified*
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+- https://docs.godotengine.org/en/stable/tutorials/performance/using_multiple_threads.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — foundational pillars Aurelius standards assume
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — main-thread and RID performance protocol
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — signal-up topology in the standards
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

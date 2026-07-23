@@ -52,3 +52,14 @@ func _handle_collision(collision: KinematicCollision3D) -> void:
 
 ## EXPERT USAGE:
 ## Instantiate from WeaponController. Call setup().
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_characterbody3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_kinematiccollision3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — move_and_collide projectile bodies and bounce
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — take_damage on collider impact
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md
+# =============================================================================

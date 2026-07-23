@@ -44,3 +44,13 @@ func _physics_process(delta: float) -> void:
 
 ## [SKILL NOTICE]: Use 'lerpf' for movement smoothing and 'move_and_slide()' 
 ## for standard CharacterBody2D interaction. Time-based buffering is mandatory.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/using_character_body_2d.html
+# - https://docs.godotengine.org/en/stable/tutorials/2d/2d_movement.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md — move_and_slide + lerpf ground control
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — jump action buffering
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md
+# =============================================================================

@@ -47,3 +47,14 @@ func _server_validate_movement() -> void:
 ## NEVER trust client-provided health or physics values. The Server MUST 
 ## handle all damage calculations and broadcast results via 
 ## 'MultiplayerSynchronizer'.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html
+# - https://docs.godotengine.org/en/stable/classes/class_node.html
+# - https://docs.godotengine.org/en/stable/classes/class_multiplayersynchronizer.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md — prediction/reconcile shells
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md — deterministic move steps for resim
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md
+# =============================================================================

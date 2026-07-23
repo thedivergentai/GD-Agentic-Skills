@@ -19,3 +19,14 @@
 - NEVER execute heavy world/minimap logic on the main thread; strictly offload complex array math to `WorkerThreadPool` to maintain 60+ FPS.
 - NEVER rigidly couple UI cooldowns to Hero scripts; strictly use a Signal Bus or `Callable` bindings for decoupled architecture.
 - NEVER evaluate exact floating-point equality (==); strictly use `is_equal_approx()` for range, cooldown, and mana validations.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-moba/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — simulate balance impact of structural fixes
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

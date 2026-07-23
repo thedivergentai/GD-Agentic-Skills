@@ -28,16 +28,30 @@ Expert guidance for migrating 2D games into the third dimension.
 
 ## Available Scripts
 
-> **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
+> **MANDATORY**: Load migration scripts before pasting camera/movement recipes.
+
+### [spring_arm_camera_setup.gd](../scripts/adapt_2d_to_3d_spring_arm_camera_setup.gd)
+**MANDATORY** third-person SpringArm3D + Camera3D. Do not parent Camera3D bare to the body.
+
+### [characterbody3d_migration_movement.gd](../scripts/adapt_2d_to_3d_characterbody3d_migration_movement.gd)
+**MANDATORY** camera-relative CharacterBody3D movement for 2D→3D ports.
+
+### [physics_layer_migration_checklist.gd](../scripts/adapt_2d_to_3d_physics_layer_migration_checklist.gd)
+**MANDATORY** checklist: 3D Physics layer names are separate from 2D — mirror names, then apply bits.
 
 ### [sprite_plane.gd](../scripts/adapt_2d_to_3d_sprite_plane.gd)
-Sprite3D billboard configuration and world-to-screen projection for placing 2D UI over 3D objects. Handles behind-camera detection.
+Sprite3D billboard configuration and world-to-screen projection for placing 2D UI over 3D objects.
 
 ### [vector_mapping.gd](../scripts/adapt_2d_to_3d_vector_mapping.gd)
-Static utility for 2D→3D vector translation. The Y-to-Z rule: 2D Y (down) maps to 3D Z (forward). Essential for movement code.
+Vector2↔Vector3 mapping helpers (Y-up vs Z-forward pitfalls).
 
 ### [crisp_projected_ui.gd](../scripts/adapt_2d_to_3d_crisp_projected_ui.gd)
-Projected 2D UI for 3D Objects mapping snippet. Replaces blurry text elements with true 2D Canvas space positioning projected from 3D space.
+Diegetic / projected UI sharpness patterns.
+
+### [adapt_2d_to_3d_patterns.gd](../scripts/adapt_2d_to_3d_adapt_2d_to_3d_patterns.gd)
+Billboards, mouse→3D rays, CanvasLayer overlay helpers.
+
+> **Do NOT Load** lighting deep-dives here — route to [godot-3d-lighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md). Add a DirectionalLight3D + ambient only; GI/cascades live there.
 
 ---
 
@@ -45,134 +59,22 @@ Projected 2D UI for 3D Objects mapping snippet. Replaces blurry text elements wi
 
 | 2D Node | 3D Equivalent | Notes |
 |---------|---------------|-------|
-| CharacterBody2D | CharacterBody3D | Add Z-axis movement, rotate with mouse |
-| RigidBody2D | RigidBody3D | Gravity now Vector3(0, -9.8, 0) |
-| StaticBody2D | StaticBody3D | Collision shapes use Shape3D |
-| Area2D | Area3D | Triggers work the same way |
-| Sprite2D | MeshInstance3D + QuadMesh | Or use Sprite3D (billboarded) |
-| AnimatedSprite2D | AnimatedSprite3D | Billboard mode available |
-| TileMapLayer | GridMap | Requires MeshLibrary creation |
-| Camera2D | Camera3D | Requires repositioning logic |
-| CollisionShape2D | CollisionShape3D | BoxShape2D → BoxShape3D, etc. |
-| RayCast2D | RayCast3D | target_position is now Vector3 |
+| CharacterBody2D | CharacterBody3D | **MANDATORY** `characterbody3d_migration_movement.gd` |
+| RigidBody2D | RigidBody3D | Gravity `Vector3(0, -9.8, 0)` |
+| StaticBody2D | StaticBody3D | Shape3D resources (no auto-convert) |
+| Area2D | Area3D | Same trigger idea; new layers |
+| Sprite2D | MeshInstance3D / Sprite3D | Billboard vs mesh art choice |
+| Camera2D | Camera3D | **MANDATORY** `spring_arm_camera_setup.gd` |
+| CollisionShape2D | CollisionShape3D | Re-author shapes |
+| RayCast2D | RayCast3D | `target_position` is Vector3 |
 
 ---
 
-## Migration Steps
+## Migration Steps (script-first)
 
-### Step 1: Physics Layer Reconfiguration
-
-```gdscript
-# 2D collision layers are SEPARATE from 3D
-# You must reconfigure in Project Settings → Layer Names → 3D Physics
-
-# Before (2D):
-# Layer 1: Player
-# Layer 2: Enemies
-# Layer 3: World
-
-# After (3D) - same names, but different system
-# In code, update all collision layer references:
-
-# 2D version:
-# collision_layer = 0b0001
-
-# 3D version (same logic, different node):
-var character_3d := CharacterBody3D.new()
-character_3d.collision_layer = 0b0001  # Layer 1: Player
-character_3d.collision_mask = 0b0110   # Detect Enemies + World
-```
-
-### Step 2: Camera Conversion
-
-```gdscript
-# ❌ BAD: Direct 2D follow logic
-extends Camera3D
-
-@onready var player: Node3D = $"../Player"
-
-func _process(delta: float) -> void:
-    global_position = player.global_position  # Clipping, disorienting!
-
-# ✅ GOOD: Third-person camera with SpringArm3D
-# Scene structure:
-# Player (CharacterBody3D)
-#   └─ SpringArm3D
-#       └─ Camera3D
-
-# player.gd
-extends CharacterBody3D
-
-@onready var spring_arm: SpringArm3D = $SpringArm3D
-@onready var camera: Camera3D = $SpringArm3D/Camera3D
-
-func _ready() -> void:
-    spring_arm.spring_length = 10.0  # Distance from player
-    spring_arm.position = Vector3(0, 2, 0)  # Above player
-
-func _unhandled_input(event: InputEvent) -> void:
-    if event is InputEventMouseMotion:
-        spring_arm.rotate_y(-event.relative.x * 0.005)  # Horizontal rotation
-        spring_arm.rotate_object_local(Vector3.RIGHT, -event.relative.y * 0.005)  # Vertical
-        
-        # Clamp vertical rotation
-        spring_arm.rotation.x = clamp(spring_arm.rotation.x, -PI/3, PI/6)
-```
-
-### Step 3: Movement Conversion
-
-```gdscript
-# 2D platformer movement
-extends CharacterBody2D
-
-const SPEED = 300.0
-const JUMP_VELOCITY = -400.0
-
-func _physics_process(delta: float) -> void:
-    if not is_on_floor():
-        velocity.y += gravity * delta
-    
-    if Input.is_action_just_pressed("jump") and is_on_floor():
-        velocity.y = JUMP_VELOCITY
-    
-    var direction := Input.get_axis("left", "right")
-    velocity.x = direction * SPEED
-    
-    move_and_slide()
-
-# ✅ 3D equivalent (third-person platformer)
-extends CharacterBody3D
-
-const SPEED = 5.0
-const JUMP_VELOCITY = 4.5
-const GRAVITY = 9.8
-
-@onready var spring_arm: SpringArm3D = $SpringArm3D
-
-func _physics_process(delta: float) -> void:
-    if not is_on_floor():
-        velocity.y -= GRAVITY * delta
-    
-    if Input.is_action_just_pressed("jump") and is_on_floor():
-        velocity.y = JUMP_VELOCITY
-    
-    # Movement relative to camera direction
-    var input_dir := Input.get_vector("left", "right", "forward", "back")
-    var camera_basis := spring_arm.global_transform.basis
-    var direction := (camera_basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
-    
-    if direction:
-        velocity.x = direction.x * SPEED
-        velocity.z = direction.z * SPEED
-        
-        # Rotate player to face movement direction
-        rotation.y = lerp_angle(rotation.y, atan2(-direction.x, -direction.z), 0.1)
-    else:
-        velocity.x = move_toward(velocity.x, 0, SPEED)
-        velocity.z = move_toward(velocity.z, 0, SPEED)
-    
-    move_and_slide()
-```
+1. **Physics layers** — **MANDATORY** [`physics_layer_migration_checklist.gd`](../scripts/adapt_2d_to_3d_physics_layer_migration_checklist.gd). Project Settings → Layer Names → **3D Physics**.
+2. **Camera** — **MANDATORY** [`spring_arm_camera_setup.gd`](../scripts/adapt_2d_to_3d_spring_arm_camera_setup.gd). Never copy Camera2D follow onto Camera3D.
+3. **Movement** — **MANDATORY** [`characterbody3d_migration_movement.gd`](../scripts/adapt_2d_to_3d_characterbody3d_migration_movement.gd). Camera-relative XZ; jump on Y.
 
 ---
 
@@ -222,25 +124,7 @@ anim_player.play("idle")
 
 ## Lighting Considerations
 
-### Minimum Lighting Setup
-
-```gdscript
-# Add to main scene
-var sun := DirectionalLight3D.new()
-sun.rotation_degrees = Vector3(-45, 30, 0)
-sun.light_energy = 1.0
-sun.shadow_enabled = true
-add_child(sun)
-
-# Ambient light
-var env := WorldEnvironment.new()
-var environment := Environment.new()
-environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-environment.ambient_light_color = Color(0.3, 0.3, 0.4)  # Subtle blue
-environment.ambient_light_energy = 0.5
-env.environment = environment
-add_child(env)
-```
+Minimum: one `DirectionalLight3D` + `WorldEnvironment` ambient so the scene is not black. **Do NOT Load** cascade/GI/bake tutorials in this skill — [godot-3d-lighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md).
 
 ---
 
@@ -261,36 +145,15 @@ add_child(env)
 
 ---
 
-## Performance Budgeting
+## Performance Budgeting (profiler gates)
 
-### 2D vs 3D Performance
+Speculative "2D vs 3D budget" tables lie. Gate on measured data:
 
-| Metric | 2D Budget | 3D Budget | Notes |
-|--------|-----------|-----------|-------|
-| Draw calls | 100-200 | 50-100 | Use fewer meshes |
-| Vertices | Unlimited | 100K-500K | LOD important |
-| Lights | N/A | 3-5 shadowed | Expensive |
-| Transparent objects | Many | <10 | Sorting overhead |
-| Particle systems | Many | 2-3 max | GPU godot-particles only |
-
-### Optimization Checklist
-
-```gdscript
-# 1. Use LOD for distant objects
-var mesh_instance := MeshInstance3D.new()
-mesh_instance.lod_bias = 1.0  # Lower detail sooner
-
-# 2. Occlusion culling
-# Use OccluderInstance3D for large walls/buildings
-
-# 3. Reduce shadow distance
-var sun := DirectionalLight3D.new()
-sun.directional_shadow_max_distance = 50.0  # Don't render far shadows
-
-# 4. Use unlit materials for distant objects
-var material := StandardMaterial3D.new()
-material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-```
+1. **Open Profiler / Debugger → Monitors** after the port runs on target hardware.
+2. **Draw calls / primitives** — if MeshInstance count explodes, add Mesh LOD / Visibility Ranges before guessing vertex caps.
+3. **Shadow cost** — lower `directional_shadow_max_distance` and shadowed Omni/Spot count until frame time recovers (tune in godot-3d-lighting).
+4. **LOD procedure** — set `visibility_range_*` on distant GeometryInstance3D; unlit/simplified materials past the near band.
+5. **Fail gate** — ship only when 95th-percentile frame time meets the platform target (e.g. ≤16.6 ms for 60 FPS), not when a spreadsheet says "50–100 draw calls".
 
 ---
 
@@ -338,11 +201,7 @@ body.collision_mask = 0b0110   # What do I DETECT?
 
 ### Camera Clipping Through Walls
 
-```gdscript
-# SpringArm3D automatically pulls camera forward when obstructed
-spring_arm.spring_length = 10.0
-spring_arm.collision_mask = 0b0100  # Layer 3: World
-```
+Use **MANDATORY** [`spring_arm_camera_setup.gd`](../scripts/adapt_2d_to_3d_spring_arm_camera_setup.gd) — set `spring_arm.collision_mask` to the World layer so the boom retracts instead of clipping.
 
 ### Player Falling Through Floor
 
@@ -429,39 +288,49 @@ func _ready() -> void:
         multimesh.set_instance_transform(i, Transform3D(Basis(), pos))
 ```
 
-### 5. Lighting Migration Tool (2D to 3D Converter)
-A robust `EditorScript` for mapping `PointLight2D` properties to `OmniLight3D`. Uses `EditorInterface.get_edited_scene_root()` to ensure changes are tracked by the editor.
+### 5. Lighting Migration
 
-```gdscript
-@tool
-class_name LightMigrationTool extends EditorScript
-## Converts PointLight2D nodes in the active scene to OmniLight3D.
-
-func _run() -> void:
-    var root := EditorInterface.get_edited_scene_root()
-    if not root: return
-    _migrate_node(root)
-
-func _migrate_node(node: Node) -> void:
-    if node is PointLight2D:
-        var l3d := OmniLight3D.new()
-        l3d.light_color = node.color
-        l3d.light_energy = node.energy
-        # Approximate 3D range from 2D texture radius * scale
-        var radius := 128.0 # Default fallback
-        if node.texture: radius = node.texture.get_width() / 2.0
-        l3d.omni_range = radius * node.texture_scale
-        
-        # Mapping 2D (x, y) to 3D (x, y, height)
-        l3d.position = Vector3(node.position.x, node.position.y, node.height)
-        
-        node.get_parent().add_child(l3d)
-        l3d.owner = EditorInterface.get_edited_scene_root()
-        l3d.name = node.name + "_3D"
-        
-    for child in node.get_children():
-        _migrate_node(child)
-```
+PointLight2D→OmniLight3D conversion is one-shot editor work — keep a project tool if needed. Ongoing lighting quality belongs in godot-3d-lighting.
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
+
+### Official Documentation
+- [Introduction to 3D](https://docs.godotengine.org/en/stable/tutorials/3d/introduction_to_3d.html) — Coordinate system, Node3D, and camera basics you must adopt when leaving the CanvasItem/Y-down 2D world.
+- [Using transforms](https://docs.godotengine.org/en/stable/tutorials/3d/using_transforms.html) — `Basis`/`Transform3D`/`Quaternion` patterns that replace Euler-angle Camera2D follow and 2D rotation habits.
+- [CharacterBody3D](https://docs.godotengine.org/en/stable/classes/class_characterbody3d.html) — Destination `move_and_slide` API after CharacterBody2D → CharacterBody3D conversion (no dedicated 3D tutorial page).
+- [Physics introduction](https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html) — Separate 2D/3D layer systems, units (1 unit ≈ 1 m), and gravity vectors that invalidate copied 2D masks.
+- [Collision shapes (3D)](https://docs.godotengine.org/en/stable/tutorials/physics/collision_shapes_3d.html) — Shape3D equivalents for BoxShape2D/CapsuleShape2D when rebuilding CollisionShape3D stacks.
+- [SpringArm3D](https://docs.godotengine.org/en/stable/tutorials/3d/spring_arm.html) — Third-person boom + occlusion pull-in that must replace direct Camera2D position copying.
+- [3D lights and shadows](https://docs.godotengine.org/en/stable/tutorials/3d/lights_and_shadows.html) — Minimum DirectionalLight3D/OmniLight3D setup; 3D scenes are black without lights or unlit materials.
+- [Environment and post-processing](https://docs.godotengine.org/en/stable/tutorials/3d/environment_and_post_processing.html) — WorldEnvironment ambient fill so ports are not pitch-black between key lights.
+- [Standard Material 3D](https://docs.godotengine.org/en/stable/tutorials/3d/standard_material_3d.html) — Billboard, transparency, and shading modes for Sprite3D/QuadMesh sprite→plane art paths.
+- [Using GridMaps](https://docs.godotengine.org/en/stable/tutorials/3d/using_gridmaps.html) — MeshLibrary/GridMap replacement for TileMapLayer-style level layouts in 3D.
+- [Importing 3D scenes](https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_3d_scenes/index.html) — GLB/FBX scale and animation import when leaving the sprite pipeline for real meshes.
+- [Physics interpolation introduction](https://docs.godotengine.org/en/stable/tutorials/physics/interpolation/physics_interpolation_introduction.html) — Why camera follow in `_process` needs interpolated transforms after physics-step movement.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed Vector2/Vector3 and Transform3D fluency before applying Y→Z mapping helpers.
+- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — Source platformer/top-down movement semantics you are lifting into CharacterBody3D.
+- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — Existing 2D layer/mask design that must be recreated under the separate 3D physics layer table.
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — `Input.get_vector` plus mouse-capture look so 2D left/right maps become camera-relative XZ.
+
+#### Complements
+- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — SpringArm3D / orbit / first-person rigs that replace Camera2D follow after the port.
+- [godot-3d-lighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md) — DirectionalLight3D, shadows, and ambient environments required once sprites become lit meshes.
+- [godot-3d-materials](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md) — PBR/billboard/alpha materials for QuadMesh and Sprite3D art migration.
+- [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md) — GridMap, collision generation, and LOD after TileMapLayer worlds move to 3D.
+- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — Mouse→world `PhysicsRayQueryParameters3D` picks used by point-and-click 3D ports.
+- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — CanvasLayer HUD that stays 2D while world content becomes Node3D.
+- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — NavigationServer3D paths for 2.5D bridges that still project to screen or gameplay planes.
+- [godot-adapt-3d-to-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-3d-to-2d/SKILL.md) — Inverse adaptation lattice when deciding to flatten back or keep hybrid 2.5D.
+
+#### Downstream / consumers
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Escalate when the 3D port blows the old 2D draw-call/vertex budget.
+- [godot-platform-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md) — Shipping target that forces LOD, shadow distance, and resolution tradeoffs after going 3D.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting 2D/3D concern.

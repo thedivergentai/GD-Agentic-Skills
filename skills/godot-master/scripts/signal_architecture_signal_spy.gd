@@ -83,3 +83,12 @@ func print_report() -> void:
 ##   spy.observe(player, "died")
 ##   player.health = 0
 ##   assert(spy.was_emitted(player, "died"))
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_signal.html
+# - https://docs.godotengine.org/en/stable/classes/class_object.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-testing-patterns/SKILL.md — observe/emit_count without full mock frameworks
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md
+# =============================================================================

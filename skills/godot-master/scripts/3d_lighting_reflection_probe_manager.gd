@@ -13,3 +13,15 @@ func refresh_reflections() -> void:
 	# instead of one massive one for better parallax accuracy.
 	box_projection = true
 	enable_shadows = false # Shadows in reflections are extremely expensive
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/global_illumination/reflection_probes.html
+# - https://docs.godotengine.org/en/stable/classes/class_reflectionprobe.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/environment_and_post_processing.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md — metallic/roughness need probes
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md — probe placement per room
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — Update Once vs Always
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md
+# =============================================================================

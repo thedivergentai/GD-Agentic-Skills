@@ -2,24 +2,36 @@
 extends Node
 class_name RhythmConductor
 
-# High-Precision BPM Tracking using AudioServer
-# Accounts for output latency and mix offsets to ensure perfect sync.
+## Canonical audio clock: playback_position + mix offset + output latency.
+## Do NOT use Time.get_ticks_* for song position. Drive highway/judging from get_song_time().
 
 @export var bpm := 120.0
-@export var offset := 0.0 # Manual calibration offset
+@export var offset := 0.0 # Manual calibration (seconds)
+@export var audio_player: AudioStreamPlayer
 
-var time_begin := 0.0
-var time_delay := 0.0
-
-func _ready() -> void:
-    time_begin = Time.get_ticks_usec()
-    time_delay = AudioServer.get_time_to_next_mix() + AudioServer.get_output_latency()
-
-func get_current_time() -> float:
-    # Pattern: Use AudioServer-derived time for exact rhythm sync.
-    var current_time = (Time.get_ticks_usec() - time_begin) / 1000000.0
-    current_time -= time_delay
-    return max(0.0, current_time + offset)
+func get_song_time() -> float:
+	if audio_player == null or not audio_player.playing:
+		return 0.0
+	var t := audio_player.get_playback_position()
+	t += AudioServer.get_time_since_last_mix()
+	t -= AudioServer.get_output_latency()
+	return maxf(0.0, t + offset)
 
 func get_current_beat() -> float:
-    return get_current_time() * (bpm / 60.0)
+	return get_song_time() * (bpm / 60.0)
+
+func beats_to_seconds(beats: float) -> float:
+	return beats * (60.0 / bpm)
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/audio/sync_with_audio.html
+# - https://docs.godotengine.org/en/stable/classes/class_audioserver.html
+# - https://docs.godotengine.org/en/stable/classes/class_audiostreamplayer.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md — mix latency and stream clock helpers
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — typical Autoload home for the conductor
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — beat/measure signal ownership
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rhythm/SKILL.md
+# =============================================================================

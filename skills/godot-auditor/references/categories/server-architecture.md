@@ -10,3 +10,13 @@
 - **NEVER leave `SceneTree.multiplayer_poll` set to false without manually calling `poll()`** — Disabling auto-polling without manual polling freezes all network traffic [35].
 - **NEVER attempt to connect Godot clients and servers running different engine versions** — The high-level multiplayer API protocol is version-specific and breaking [36].
 - **NEVER forget to unbind or free RIDs** — `PhysicsServer3D.body_create()` without `free_rid()` causes massive server-side memory leaks over time.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/performance/using_multiple_threads.html
+- https://docs.godotengine.org/en/stable/tutorials/performance/cpu_optimization.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-server-architecture/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

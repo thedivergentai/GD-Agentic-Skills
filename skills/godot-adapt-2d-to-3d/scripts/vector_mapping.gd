@@ -38,3 +38,13 @@ static func angle_2d_to_rotation_y(angle_radians: float) -> float:
 
 ## EXPERT USAGE:
 ## var move_3d = VectorMapping.v2_to_v3_xz(input_vector)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/introduction_to_3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/using_transforms.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — Vector2/Vector3 conventions before mapping helpers
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — get_vector input remapped onto XZ movement
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-2d-to-3d/SKILL.md
+# =============================================================================

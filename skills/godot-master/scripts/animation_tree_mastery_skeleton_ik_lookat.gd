@@ -29,3 +29,14 @@ func _update_ik_bone_pose(_pos: Vector3, _weight: float) -> void:
 ## NEVER LIST:
 ## - NEVER hardcode the parameter string; if the tree structure changes,
 ##   the script will break. Use @onready var paths or constants.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_lookatmodifier3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_skeletonmodifier3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_animationtree.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md — head/weapon look-at beside locomotion tree
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — look targets from camera aim
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-tree-mastery/SKILL.md
+# =============================================================================

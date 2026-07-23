@@ -14,3 +14,14 @@ Score for scaling. Can a designer add 50 new abilities without touching a core s
 
 ---
 *Analyst & Auditor update v0.0.7*
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+- https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

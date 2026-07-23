@@ -20,3 +20,14 @@ func _process(delta: float) -> void:
         var screen_pos: Vector2 = camera.unproject_position(target_3d.global_position)
         # Position the Control node on the 2D canvas
         global_position = screen_pos
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_camera3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/2d/canvas_layers.html
+# - https://docs.godotengine.org/en/stable/tutorials/rendering/viewports.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — Control layout for projected 2D HUD widgets
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — active Camera3D selection for unproject_position
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-2d-to-3d/SKILL.md
+# =============================================================================

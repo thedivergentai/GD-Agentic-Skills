@@ -112,3 +112,13 @@ func _draw() -> void:
 ## EXPERT USAGE:
 ## Add units to "selectable" group. Implement set_selected(bool) and move_to(pos) on units.
 ## For 3D, replace PhysicsPointQueryParameters2D with Raycast logic.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/mouse_and_input_coordinates.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — drag-box and shift-add selection input
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — broadcast commands to selected units
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rts/SKILL.md
+# =============================================================================

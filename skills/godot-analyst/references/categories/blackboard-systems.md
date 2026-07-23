@@ -22,3 +22,14 @@ The memory of intent. This rubric assesses how the project centralizes and manag
 
 ## 🌟 Visionary's Final Decree
 To reach **Elite** status, the Blackboard must be 'Reactive'. It shouldn't just store data; it should trigger the vision's response. A visionary blackboard is a bridge where the soul's data meets the machine's logic. If it is only a dictionary, it is **Slop**.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_styleguide.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

@@ -51,3 +51,14 @@ func force_refresh_layout() -> void:
 ## NEVER use 'position' or 'size' properties directly on children 
 ## of a Container; always use 'custom_minimum_size' and 'size_flags'. 
 ## Manual offsets are the #1 cause of broken UI on different resolutions.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/ui/gui_containers.html
+# - https://docs.godotengine.org/en/stable/classes/class_gridcontainer.html
+# - https://docs.godotengine.org/en/stable/classes/class_control.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md — shop/inventory panels this builder populates
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md — PanelContainer theme chrome
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md
+# =============================================================================

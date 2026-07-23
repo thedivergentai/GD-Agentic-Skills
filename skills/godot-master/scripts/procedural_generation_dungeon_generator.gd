@@ -87,3 +87,15 @@ func get_noise_value_at(pos: Vector2i) -> float:
 ##     for x in range(room.position.x, room.end.x):
 ##         for y in range(room.position.y, room.end.y):
 ##             tilemap.set_cell(0, Vector2i(x, y), 0, Vector2i.ZERO)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_fastnoiselite.html
+# - https://docs.godotengine.org/en/stable/tutorials/2d/using_tilemaps.html
+# - https://docs.godotengine.org/en/stable/classes/class_astar2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md — place BSP rooms then batch hallways
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md — room_count / size exports feed run floors
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md — same partitions can drive GridMap cells
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md
+# =============================================================================

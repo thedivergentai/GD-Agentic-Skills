@@ -28,3 +28,14 @@ func _tune_deadzones() -> void:
 	for action in InputMap.get_actions():
 		# Expert: Apply specific deadzones to joypad axes
 		pass
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/controllers_gamepads_joysticks.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/input_examples.html
+# - https://docs.godotengine.org/en/stable/tutorials/export/feature_tags.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — InputMap profiles and deadzone policy beyond template stubs
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md — touch/click action remaps on mobile feature tags
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-templates/SKILL.md
+# =============================================================================

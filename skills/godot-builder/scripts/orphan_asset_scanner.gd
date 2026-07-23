@@ -58,3 +58,16 @@ func _catalog_res(path: String) -> void:
 
 ## [SKILL NOTICE]: ResourceLoader.get_dependencies() uses C++ parsers 
 ## to identify links without loading heavy textures into VRAM.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_resourceloader.html
+# - https://docs.godotengine.org/en/stable/classes/class_projectsettings.html
+# - https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/import_process.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — export size after slop removal
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md — keep export filters aligned with used deps
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — main_scene must be set for tracing
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-builder/SKILL.md
+# =============================================================================

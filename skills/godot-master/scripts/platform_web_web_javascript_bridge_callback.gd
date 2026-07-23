@@ -20,3 +20,14 @@ func _on_js_called(args: Array) -> void:
 	print("Web: Received message from JavaScript: ", message)
 
 ## Rule: Always keep a reference to 'js_callback' to prevent garbage collection.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/platform/web/javascript_bridge.html
+# - https://docs.godotengine.org/en/stable/classes/class_javascriptbridge.html
+# - https://docs.godotengine.org/en/stable/classes/class_javascriptobject.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — keep create_callback refs on Autoload
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md — browser message bridges for online hooks
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-web/SKILL.md
+# =============================================================================

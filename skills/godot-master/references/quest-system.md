@@ -11,269 +11,88 @@ description: "Expert blueprint for quest  tracking systems (objectives, progress
 
 # Quest System
 
-Resource-based data, signal-driven updates, and AutoLoad coordination define scalable quest architectures.
+Resource-based quests + Autoload manager. **Single source of truth:** [quest_resource.gd](../scripts/quest_system_quest_resource.gd) + [quest_manager_singleton.gd](../scripts/quest_system_quest_manager_singleton.gd) — no inline Quest/Objective/Manager/UI dumps.
 
-## Available Scripts
+## MANDATORY loads
 
-### [quest_resource.gd](../scripts/quest_system_quest_resource.gd)
-Data-driven quest definition using Resources for modular objectives and branching rewards.
+1. [quest_resource.gd](../scripts/quest_system_quest_resource.gd) — `StringName` ids, status, objectives/rewards  
+2. [quest_manager_singleton.gd](../scripts/quest_system_quest_manager_singleton.gd) — accept / progress / complete / chain  
 
-### [quest_manager_singleton.gd](../scripts/quest_system_quest_manager_singleton.gd)
-Centralized AutoLoad orchestrator for tracking active quests and broadcasting status updates.
+Supporting: [kill_objective_trigger.gd](../scripts/quest_system_kill_objective_trigger.gd), [quest_ui_tracker.gd](../scripts/quest_system_quest_ui_tracker.gd), [branching_quest_data.gd](../scripts/quest_system_branching_quest_data.gd), [quest_giver_dialogue_hook.gd](../scripts/quest_system_quest_giver_dialogue_hook.gd), [quest_persistence_loader.gd](../scripts/quest_system_quest_persistence_loader.gd), [timed_quest_challenge.gd](../scripts/quest_system_timed_quest_challenge.gd), [hidden_objective_logic.gd](../scripts/quest_system_hidden_objective_logic.gd), [localized_quest_description.gd](../scripts/quest_system_localized_quest_description.gd), [quest_graph_manager.gd](../scripts/quest_system_quest_graph_manager.gd), [quest_manager.gd](../scripts/quest_system_quest_manager.gd) (alt helper — prefer singleton).
 
-### [kill_objective_trigger.gd](../scripts/quest_system_kill_objective_trigger.gd)
-Decoupled trigger logic that bridges game events (enemies dying) to the Quest System.
+## Golden path
 
-### [quest_ui_tracker.gd](../scripts/quest_system_quest_ui_tracker.gd)
-Reactive VBox UI that dynamically adds and removes objective labels based on manager signals.
+```
+accept → event trigger → progress → complete → persist
+```
 
-### [branching_quest_data.gd](../scripts/quest_system_branching_quest_data.gd)
-Extended quest logic for handling multiple outcomes and player-driven narrative paths.
-
-### [ quest_giver_dialogue_hook.gd](../scripts/quest_system_quest_giver_dialogue_hook.gd)
-Hook for integrating NPCs with the quest system, allowing for conditional dialogue branches.
-
-### [quest_persistence_loader.gd](../scripts/quest_system_quest_persistence_loader.gd)
-Expert patterns for serializing quest IDs and progress counts for persistent save states.
-
-### [timed_quest_challenge.gd](../scripts/quest_system_timed_quest_challenge.gd)
-Template for time-limited challenges with automatic failure conditions and UI signals.
-
-### [hidden_objective_logic.gd](../scripts/quest_system_hidden_objective_logic.gd)
-Background objective tracker for secret achievements or non-visible quest progress.
-
-### [localized_quest_description.gd](../scripts/quest_system_localized_quest_description.gd)
-Strategy for supporting multi-language quest text using `tr()` keys instead of hardcoded strings.
+| Checkpoint | Action |
+|---|---|
+| **Accept** | `QuestManager.accept_quest(quest)` — duplicate Resource if runtime mutation; connect `quest_completed` once |
+| **Event trigger** | Kill/collect/talk via trigger nodes / bus — **not** hardcoded in enemy scripts ([kill_objective_trigger.gd](../scripts/quest_system_kill_objective_trigger.gd)) |
+| **Progress** | `update_objective(quest_id: StringName, …)` — interned ids only |
+| **Complete** | Manager erases active, emits `quest_completed`, grants via inventory/economy signals |
+| **Disconnect** | Disconnect completion Callables when quest leaves active set — prevent double rewards |
+| **Persist** | Save active/completed id maps + counts ([quest_persistence_loader.gd](../scripts/quest_system_quest_persistence_loader.gd)) — not live Resource graphs |
 
 ## NEVER Do in Quest Systems
 
-- **NEVER store active quest data directly in the Player node** — If the player dies or the scene reloads, quest progress is lost. Use an AutoLoad or a persistent Data Resource [20].
-- **NEVER use hardcoded string IDs for objectives without validation** — Typos in `update_objective("kill_slimes")` will fail silently. Use StringNames or a central ID registry [21].
-- **NEVER forget to disconnect completion signals** — If a quest signal isn't cleared after completion, it might trigger multiple times, awarding double rewards [22].
-- **NEVER poll for mission completion in `_process()`** — Checking objectives 60 times a second is wasteful. Use a signal-driven approach (e.g. `on_enemy_died`) [23].
-- **NEVER skip save/load logic for quests** — Resetting a 10-hour quest line because of a game restart is a player-ending bug. Always persist quest states [24].
-- **NEVER use `all()` on objective arrays without null/type checks** — Attempting to check completion on a null objective entry will crash the entire system [25].
-- **NEVER hardcode quest logic inside enemy or item scripts** — Use a generic `EventBus` or `QuestTrigger` node to bridge the encounter to the QuestManager.
-- **NEVER allow multiple instances of the same Quest Resource to be active** — Ensure you're tracking unique Quest IDs to prevent accidental duplication of missions.
-- **NEVER use complex UI logic to calculate progress** — The UI should only display what the `Quest` resource provides. Keep formulas in the `QuestManager`.
-- **NEVER award rewards directly inside the quest script** — Delegate reward distribution to the `InventoryManager` or `EconomyManager` via signals for decoupling.
+- **NEVER store active quests only on the Player node** — Autoload / persistent data.
+- **NEVER use unverified plain string ids** — `StringName` / registry (`&"kill_slimes"`).
+- **NEVER forget to disconnect completion signals** — double rewards.
+- **NEVER poll objectives in `_process`** — signal-driven.
+- **NEVER skip save/load for quest state**.
+- **NEVER hardcode quest logic inside enemy/item scripts** — triggers/bus.
+- **NEVER award loot inside the Quest Resource** — emit; inventory/economy grant.
+- **NEVER allow duplicate active instances of the same quest id**.
 
----
+## Field alignment (`StringName`)
 
-```gdscript
-# quest.gd
-class_name Quest
-extends Resource
+Across body + scripts use:
 
-signal progress_updated(objective_id: String, progress: int)signal completed
-
-@export var quest_id: String
-@export var quest_name: String
-@export_multiline var description: String
-@export var objectives: Array[QuestObjective] = []
-@export var rewards: Array[QuestReward] = []
-@export var required_level: int = 1
-
-func is_complete() -> bool:
-    return objectives.all(func(obj): return obj.is_complete())
-
-func check_completion() -> void:
-    if is_complete():
-        completed.emit()
-```
-
-## Quest Objectives
-
-```gdscript
-# quest_objective.gd
-class_name QuestObjective
-extends Resource
-
-enum Type { KILL, COLLECT, TALK, REACH }
-
-@export var objective_id: String
-@export var type: Type
-@export var target: String  # Enemy name, item ID, NPC name, location
-@export var required_amount: int = 1
-@export var current_amount: int = 0
-
-func progress(amount: int = 1) -> void:
-    current_amount += amount
-    current_amount = mini(current_amount, required_amount)
-
-func is_complete() -> bool:
-    return current_amount >= required_amount
-```
-
-## Quest Manager
-
-```gdscript
-# quest_manager.gd (AutoLoad)
-extends Node
-
-signal quest_accepted(quest: Quest)
-signal quest_completed(quest: Quest)
-signal objective_updated(quest: Quest, objective: QuestObjective)
-
-var active_quests: Array[Quest] = []
-var completed_quests: Array[String] = []
-
-func accept_quest(quest: Quest) -> void:
-    if quest.quest_id in completed_quests:
-        return
-    
-    active_quests.append(quest)
-    quest.completed.connect(func(): _on_quest_completed(quest))
-    quest_accepted.emit(quest)
-
-func _on_quest_completed(quest: Quest) -> void:
-    active_quests.erase(quest)
-    completed_quests.append(quest.quest_id)
-    
-    # Give rewards
-    for reward in quest.rewards:
-        reward.grant()
-    
-    quest_completed.emit(quest)
-
-func update_objective(quest_id: String, objective_id: String, amount: int = 1) -> void:
-    for quest in active_quests:
-        if quest.quest_id == quest_id:
-            for obj in quest.objectives:
-                if obj.objective_id == objective_id:
-                    obj.progress(amount)
-                    objective_updated.emit(quest, obj)
-                    quest.check_completion()
-                    return
-
-func get_active_quest(quest_id: String) -> Quest:
-    for quest in active_quests:
-        if quest.quest_id == quest_id:
-            return quest
-    return null
-```
-
-## Quest Triggers
-
-```gdscript
-# Example: Kill quest integration
-# enemy.gd
-func _on_died() -> void:
-    QuestManager.update_objective("kill_bandits", "kill_bandit", 1)
-
-# Example: Collection integration
-# item_pickup.gd
-func _on_collected() -> void:
-    QuestManager.update_objective("gather_herbs", "collect_herb", 1)
-
-# Example: Talk integration
-# npc.gd
-func interact() -> void:
-    DialogueManager.start_dialogue(dialogue_id)
-    QuestManager.update_objective("find_elder", "talk_to_elder", 1)
-```
-
-## Quest UI
-
-```gdscript
-# quest_ui.gd
-extends Control
-
-@onready var quest_list := $QuestList
-
-func _ready() -> void:
-    QuestManager.quest_accepted.connect(_on_quest_accepted)
-    QuestManager.objective_updated.connect(_on_objective_updated)
-    refresh_ui()
-
-func refresh_ui() -> void:
-    for child in quest_list.get_children():
-        child.queue_free()
-    
-    for quest in QuestManager.active_quests:
-        var quest_entry := create_quest_entry(quest)
-        quest_list.add_child(quest_entry)
-
-func create_quest_entry(quest: Quest) -> Control:
-    var entry := VBoxContainer.new()
-    
-    var title := Label.new()
-    title.text = quest.quest_name
-    entry.add_child(title)
-    
-    for obj in quest.objectives:
-        var obj_label := Label.new()
-        obj_label.text = "%s: %d/%d" % [obj.target, obj.current_amount, obj.required_amount]
-        entry.add_child(obj_label)
-    
-    return entry
-```
-
-## Best Practices
-
-1. **Signal-Driven** - Emit events, systems listen
-2. **Save Progress** - Track completed quests
-3. **Validation** - Check prerequisites before accepting
-
----
-
-## Elite Godot 4.x Patterns
-
-### 1. Auto-Navigation Waypoint Helper
-Dynamically guide players to objectives using `NavigationAgent3D`. Update the `target_position` only when objectives change to optimize pathfinding queries.
-
-```gdscript
-# quest_waypoint_helper.gd
-class_name QuestWaypointHelper extends Node3D
-
-@export var navigation_agent: NavigationAgent3D
-
-func set_objective_pos(target_pos: Vector3) -> void:
-    navigation_agent.target_position = target_pos
-
-func _physics_process(_delta: float) -> void:
-    if navigation_agent.is_navigation_finished(): return
-    
-    var next_pos := navigation_agent.get_next_path_position()
-    # Logic to point compass or draw 3D UI towards next_pos
-```
-
-### 2. Resource-Based Quest Prerequisites
-Avoid hardcoded unlock logic. Use `Resource` references to define quest dependencies that can be visually linked in the Inspector.
-
-```gdscript
-# quest_data.gd
-class_name QuestData extends Resource
-
-@export var quest_id: StringName
-@export var prerequisites: Array[QuestData] = []
-@export var is_completed: bool = false
-
-func can_unlock() -> bool:
-    for prereq in prerequisites:
-        if not prereq.is_completed: return false
-    return true
-```
-
-### 3. Thread-Safe Quest Conflict Resolver
-In complex games with concurrent updates (e.g., background networking or parallel combat logic), use a `Mutex` to prevent race conditions when updating shared quest progress.
-
-```gdscript
-# quest_conflict_resolver.gd
-class_name QuestConflictResolver extends Node
-
-var _mutex := Mutex.new()
-var _progress_map := {}
-
-func safely_add_progress(id: StringName, amount: int) -> void:
-    _mutex.lock()
-    _progress_map[id] = _progress_map.get(id, 0) + amount
-    var current := _progress_map[id]
-    _mutex.unlock()
-    
-    # Defer signals/UI to main thread
-    call_deferred("_notify_update", id, current)
-```
+- `quest.id: StringName`
+- `objective_id: StringName`
+- Manager dictionaries keyed by `StringName`
+- Dialogue/quest-giver hooks compare `StringName`, not free strings
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
+
+### Official Documentation
+- [Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html) — Why quest definitions, objectives, and reward tables belong in reusable `Resource` assets instead of scene-local scripts.
+- [Resource](https://docs.godotengine.org/en/stable/classes/class_resource.html) — `@export`, nested Resources, and duplication rules for Inspector-authored quest data and branching chains.
+- [Singletons (Autoload)](https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html) — How to register a typed QuestManager that survives scene changes without living on the Player node.
+- [Autoloads versus regular nodes](https://docs.godotengine.org/en/stable/tutorials/best_practices/autoloads_versus_regular_nodes.html) — When global quest state is justified vs keeping progress on a scene-owned data Resource.
+- [Using signals](https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html) — Emit/connect model for `quest_accepted` / `objective_updated` without polling in `_process()`.
+- [Instancing with signals](https://docs.godotengine.org/en/stable/tutorials/scripting/instancing_with_signals.html) — Wire kill/collect/talk triggers from spawned actors into the manager without hardcoded node paths.
+- [Saving games](https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html) — Persist quest IDs and progress counts as dictionaries — never serialize live Quest Resource instances.
+- [Internationalizing games](https://docs.godotengine.org/en/stable/tutorials/i18n/internationalizing_games.html) — Store `tr()` keys on quest Resources so titles/descriptions localize without forked `.tres` files.
+- [Timer](https://docs.godotengine.org/en/stable/classes/class_timer.html) — Time-limited challenge fail paths via `Timer` / `SceneTree.create_timer` timeout signals.
+- [Using Containers](https://docs.godotengine.org/en/stable/tutorials/ui/gui_containers.html) — Reactive `VBoxContainer` quest trackers that rebuild Labels from manager signals only.
+- [StringName](https://docs.godotengine.org/en/stable/classes/class_stringname.html) — Prefer interned IDs for objectives/quests to avoid silent typo failures from plain strings.
+- [Scene organization](https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html) — Signal-up / call-down ownership so NPCs and enemies never own quest completion math.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Custom Resources, duplication, and Inspector authoring patterns that quest definitions and objective graphs depend on.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Typed emit/connect, disconnect hygiene, and EventBus routing for kill/collect triggers without ghost listeners.
+- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Boot order and ownership rules for a singleton QuestManager that outlives scene swaps.
+
+#### Complements
+- [godot-dialogue-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-dialogue-system/SKILL.md) — Quest-giver offer/reminder/thanks branches should query quest status and emit accept/complete through dialogue choices.
+- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — Collect objectives and reward grants should delegate item mutations to inventory, not embed stacks in quest scripts.
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Slot/versioned save pipelines that serialize active/completed quest dictionaries beside player state.
+- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Layout and rebuild patterns for objective trackers and journal panels driven only by manager signals.
+- [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md) — Currency/XP reward sinks after quest completion; keep grant logic out of the Quest Resource itself.
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Simulate reward curves, timed-fail rates, and objective difficulty before locking quest economy numbers.
+
+#### Downstream / consumers
+- [godot-rpg-stats](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md) — Level gates, XP rewards, and stat prerequisites that unlock or complete quest acceptance checks.
+- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Death/defeat events feed kill objectives through a bus instead of enemy scripts calling QuestManager directly.
+- [godot-genre-action-rpg](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md) — Genre composition that consumes quest tracking, dialogue hooks, and reward distribution as one RPG loop.
+- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — Objective waypoints and compass helpers update `NavigationAgent` targets when objectives change.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns quests vs dialogue, inventory, or save.

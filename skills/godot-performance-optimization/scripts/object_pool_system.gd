@@ -34,3 +34,13 @@ func _deactivate_node(node):
 	node.visible = false
 	node.set_process(false)
 	node.set_physics_process(false)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/performance/cpu_optimization.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/general_optimization.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — node lifecycle before reuse/hide pooling
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — disconnect pooled emitters to avoid leaks
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md
+# =============================================================================

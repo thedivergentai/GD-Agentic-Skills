@@ -40,3 +40,15 @@ func bake_csg_hierarchy() -> void:
 ## WHY BAKE?
 ## CSG nodes are expensive to calculate at runtime. 
 ## Baking to MeshInstance3D allows for Occlusion Culling, Baked Lightmaps, and LODs.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/csg_tools.html
+# - https://docs.godotengine.org/en/stable/classes/class_csgshape3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_meshinstance3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md — materials preserved or reassigned on bake
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — StaticBody collision after CSG → mesh conversion
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md
+# =============================================================================

@@ -30,3 +30,15 @@ func _spawn_unit(scene: PackedScene) -> void:
 
 ## [SKILL NOTICE]: Instantiate enemies as children of 'PathFollow3D' 
 ## and update the 'progress' property to move them along the track.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_path3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_pathfollow3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — WaveData .tres spawn sequences
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-game-loop-waves/SKILL.md — interval spawning without switch spam
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — interval/count bands vs leak rate
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-tower-defense/SKILL.md
+# =============================================================================

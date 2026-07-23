@@ -16,3 +16,16 @@ func _physics_process(delta: float) -> void:
 	global_position = global_position.lerp(target_pos, delta * spring_stiffness)
 	
 	look_at(target.global_position)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_camera3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/spring_arm.html
+# - https://docs.godotengine.org/en/stable/classes/class_springarm3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/math/interpolation.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — follow CharacterBody3D / collision context
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md — custom occlusion if not using SpringArm
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — prove follow jitter vs physics tick
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md
+# =============================================================================

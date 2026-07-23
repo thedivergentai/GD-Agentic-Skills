@@ -19,3 +19,14 @@ func setup_batch(mesh: Mesh, transforms: Array[Transform3D]) -> void:
         
     # Pattern: Enable visibility range to cull entire batches based on distance.
     visibility_range_end = 500.0
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/performance/using_multimesh.html
+# - https://docs.godotengine.org/en/stable/classes/class_multimesh.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/visibility_ranges.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — partition MultiMesh for frustum culling
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md — landscape prop density without Node storms
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md
+# =============================================================================

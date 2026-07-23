@@ -19,3 +19,14 @@ void fragment() {
 	
 	ALBEDO = x_project * blending.x + y_project * blending.y + z_project * blending.z;
 }
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/spatial_shader.html
+# - https://docs.godotengine.org/en/stable/tutorials/shaders/your_first_shader/your_first_3d_shader.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/standard_material_3d.html
+# Related skills:
+# - ../godot-3d-materials/SKILL.md — triplanar when StandardMaterial3D flags suffice first
+# - ../godot-procedural-generation/SKILL.md — UV-less procedural cliffs/rocks
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md
+# =============================================================================

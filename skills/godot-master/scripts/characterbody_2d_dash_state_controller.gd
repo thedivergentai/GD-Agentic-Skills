@@ -27,3 +27,14 @@ func _start_dash():
 	_dash_timer = dash_duration
 	velocity.x = Input.get_axis("left", "right") * dash_speed
 	velocity.y = 0 # No vertical movement during dash
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/using_character_body_2d.html
+# - https://docs.godotengine.org/en/stable/classes/class_characterbody2d.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md — dash as a timed state
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — I-frames during dash
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md
+# =============================================================================

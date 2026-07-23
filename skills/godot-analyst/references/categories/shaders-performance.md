@@ -22,3 +22,14 @@ The high-speed artistic expression of the vision. This rubric measures the proje
 
 ## 🌟 Visionary's Final Decree
 To reach **Elite** status, your shaders must be 'Surgical'. Every pixel's cost must be calculated. Implement 'Shader Pre-caching' to eliminate runtime compilation stutters. A visionary shader doesn't just look good; it runs so fast that its complexity remains an invisible miracle.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/performance/gpu_optimization.html
+- https://docs.godotengine.org/en/stable/tutorials/3d/using_multi_mesh_instance.html
+- https://docs.godotengine.org/en/stable/classes/class_performance.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

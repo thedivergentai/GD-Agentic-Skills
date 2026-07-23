@@ -81,3 +81,19 @@ func _apply_boost() -> void:
 @export var steering_damp_curve: Curve
 func get_steer_damp(speed_ratio: float) -> float:
     return steering_damp_curve.sample_baked(speed_ratio)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_time.html
+# - https://docs.godotengine.org/en/stable/classes/class_area3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html
+# - https://docs.godotengine.org/en/stable/classes/class_input.html
+# - https://docs.godotengine.org/en/stable/classes/class_navigationserver3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_physicsmaterial.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md — server-authoritative validate_checkpoint RPCs
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — flush_buffered_events before boost application
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — tune rubber-band distance→speed factors
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md — NavigationServer3D.agent_set_max_speed pacing
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-game-loop-time-trial/SKILL.md
+# =============================================================================

@@ -25,3 +25,14 @@ func get_room_connections(id: int) -> PackedInt64Array:
 ## Returns the spatial distance between two connected rooms.
 func get_hallway_length(id_a: int, id_b: int) -> float:
 	return layout_graph.get_point_position(id_a).distance_to(layout_graph.get_point_position(id_b))
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_astar2d.html
+# - https://docs.godotengine.org/en/stable/classes/class_astar3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_introduction_3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md — validate reachability before geometry spawn
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md — room graph drives floor progression
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md
+# =============================================================================

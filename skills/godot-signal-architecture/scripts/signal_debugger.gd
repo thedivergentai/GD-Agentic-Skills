@@ -55,3 +55,13 @@ func _analyze_node_signals(node: Node, depth: int) -> void:
 ## This shows ALL signal connections in a scene at edit time.
 ## For runtime debugging, use signal_spy observer pattern.
 ## CRITICAL: Unused signals = code smell, remove or document why not connected.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_object.html
+# - https://docs.godotengine.org/en/stable/classes/class_signal.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — editor-time connection graph dumps
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-testing-patterns/SKILL.md — unused signals as smell for coverage gaps
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md
+# =============================================================================

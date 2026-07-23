@@ -55,3 +55,14 @@ func _update_ghost_transform() -> void:
 func _get_buffer_duration() -> float:
 	if _incoming_buffer.size() < 2: return 0.0
 	return _incoming_buffer[-1].t - _incoming_buffer[0].t
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_transform3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html
+# - https://docs.godotengine.org/en/stable/classes/class_multiplayerpeer.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md — unreliable streamed frames that need a jitter buffer
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md — snapshot/interpolation patterns for remote ghosts
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-game-loop-time-trial/SKILL.md
+# =============================================================================

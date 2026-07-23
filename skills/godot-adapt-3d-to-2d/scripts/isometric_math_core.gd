@@ -27,3 +27,13 @@ static func iso_to_cartesian(iso_pos: Vector2) -> Vector2:
 static func get_iso_z_index(cart_pos: Vector2) -> int:
     # We multiply by 10 to ensure granular sorting for sub-pixel precise games
     return int(cart_pos.y * 10.0)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/2d/2d_transforms.html
+# - https://docs.godotengine.org/en/stable/classes/class_transform2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md — iso tile placement coords
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — pure math helpers
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-3d-to-2d/SKILL.md
+# =============================================================================

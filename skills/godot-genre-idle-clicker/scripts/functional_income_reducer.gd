@@ -8,3 +8,13 @@ func get_total_income(generator_counts: Array[int], income_per_unit: Array[float
     # reduce(func(accumulator, value), initial_value)
     return generator_counts.reduce(func(total, current_count): 
         return total + (current_count * income_per_unit[generator_counts.find(current_count)]), 0.0)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/performance/cpu_optimization.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — reduce hot income loops
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — Array.reduce functional patterns
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-idle-clicker/SKILL.md
+# =============================================================================

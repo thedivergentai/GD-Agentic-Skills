@@ -67,3 +67,13 @@ func _end_turn() -> void:
 ## EXPERT USAGE:
 ## atb.turn_ready.connect(func(u): show_menu(u))
 ## atb.submit_action(func(): await u.attack(target))
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — turn bus events
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — actions inside a turn
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-turn-system/SKILL.md
+# =============================================================================

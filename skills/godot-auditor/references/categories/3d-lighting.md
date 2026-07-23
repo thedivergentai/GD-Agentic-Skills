@@ -11,3 +11,13 @@
 - **NEVER bake LightmapGI without a Denoiser** — Godot's baked lightmaps are noisy by default. Use OIDN or JNLM (in Project Settings) for professional results.
 - **NEVER use real-time SDFGI on Mobile/Compatibility renderers** — It is a Forward+ exclusive feature. Use fake GI bounce lights for lower-end platforms.
 - **NEVER use 'Update Continuity' in ReflectionProbes for performance** — Keep ReflectionProbes on 'Update Once' and trigger manual updates only when necessary.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

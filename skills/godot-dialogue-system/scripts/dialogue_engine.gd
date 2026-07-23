@@ -36,3 +36,15 @@ func load_dialogue_graph(file_path: String) -> Dictionary:
 ## EXPERT NOTE:
 ## Use Godot's 'RichTextLabel' for dialogue. It natively supports 
 ## BBCode and custom 'RichTextEffect' objects for 'wavy' or 'shaking' text.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html
+# - https://docs.godotengine.org/en/stable/classes/class_json.html
+# - https://docs.godotengine.org/en/stable/classes/class_fileaccess.html
+# - https://docs.godotengine.org/en/stable/classes/class_regex.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md — BBCode / custom tags
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — narrative_event fan-out
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-dialogue-system/SKILL.md
+# =============================================================================

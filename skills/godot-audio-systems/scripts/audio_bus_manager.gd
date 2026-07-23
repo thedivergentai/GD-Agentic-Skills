@@ -75,3 +75,16 @@ func restore_music_volume(duration := 1.0) -> void:
 ## EXPERT USAGE:
 ## AudioBusManager.play_sfx(preload("res://boom.wav"), 1.2)
 ## AudioBusManager.duck_music_for_voice()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/audio/audio_buses.html
+# - https://docs.godotengine.org/en/stable/classes/class_audioserver.html
+# - https://docs.godotengine.org/en/stable/classes/class_audiobuslayout.html
+# - https://docs.godotengine.org/en/stable/tutorials/audio/audio_effects.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — author Bus Layout resource
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — central bus/pool owner
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — restore mute/volume per bus
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md
+# =============================================================================

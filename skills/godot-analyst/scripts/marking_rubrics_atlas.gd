@@ -43,3 +43,14 @@ static func validate_project_config(genre: String, current_config: Dictionary) -
 		"passed": issues.is_empty(),
 		"issues": issues
 	}
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/autoloads_versus_regular_nodes.html
+# - https://docs.godotengine.org/en/stable/classes/class_performance.html
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — Autoload/layout caps per genre rubric
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — FPS/memory budgets in atlas entries
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+# =============================================================================

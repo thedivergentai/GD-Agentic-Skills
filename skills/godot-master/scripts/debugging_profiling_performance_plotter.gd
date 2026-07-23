@@ -33,3 +33,14 @@ func capture_error_state(context: String) -> String:
 ## Use 'push_error()' and 'push_warning()' instead of 'print()' for logic errors.
 ## These appear in the Debugger tab with red/yellow icons and stack traces, 
 ## making them impossible to miss compared to standard console output.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_performance.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/debug/the_profiler.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/debug/custom_performance_monitors.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — plot then optimize bottlenecks
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md — plot release exports not editor debug
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md
+# =============================================================================

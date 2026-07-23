@@ -51,3 +51,15 @@ func _update_navigation_deferred() -> void:
 
 ## EXPERT USAGE:
 ## Attach to GridMap node. Use snap_to_grid() for building preview.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/using_gridmaps.html
+# - https://docs.godotengine.org/en/stable/classes/class_meshlibrary.html
+# - https://docs.godotengine.org/en/stable/classes/class_navigationregion3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md — deferred nav updates after place/remove
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md — owning GridMap scenes in streamed levels
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md
+# =============================================================================

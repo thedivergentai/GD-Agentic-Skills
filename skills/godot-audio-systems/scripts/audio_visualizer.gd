@@ -26,3 +26,15 @@ func _update_world_lighting(power: float) -> void:
 ## WHY THIS WAY?
 ## Spectral analysis allows for organic, rhythm-synced gameplay 
 ## (e.g. lights flashing on the beat) without manual keyframing.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_audioeffectspectrumanalyzer.html
+# - https://docs.godotengine.org/en/stable/classes/class_audioeffectspectrumanalyzerinstance.html
+# - https://docs.godotengine.org/en/stable/classes/class_audioserver.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md — FFT bands → material params
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md — reactive particle bursts
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md — world light pulse from energy
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md
+# =============================================================================

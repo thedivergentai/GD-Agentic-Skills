@@ -26,3 +26,15 @@ static func apply_battery_saver_profile() -> void:
 	
 	ProjectSettings.set_setting("application/run/max_fps", 30)
 	ProjectSettings.save_custom("user://override.cfg")
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_projectsettings.html
+# - https://docs.godotengine.org/en/stable/classes/class_engine.html
+# - https://docs.godotengine.org/en/stable/classes/class_configfile.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/data_paths.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — tick/FPS profiles feed deeper tuning
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md — override.cfg vs export preset settings
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md
+# =============================================================================

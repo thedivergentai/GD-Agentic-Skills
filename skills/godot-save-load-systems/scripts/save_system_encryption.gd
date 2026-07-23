@@ -69,3 +69,17 @@ func load_encrypted() -> Dictionary:
 ## - Use CryptoKey for better key management  
 ## - This prevents casual save editing, NOT determined attackers
 ## - For multiplayer/leaderboards, validate server-side
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_aescontext.html
+# - https://docs.godotengine.org/en/stable/classes/class_fileaccess.html
+# - https://docs.godotengine.org/en/stable/classes/class_json.html
+# - https://docs.godotengine.org/en/stable/classes/class_crypto.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/data_paths.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md — local encryption ≠ server trust
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md — authoritative validation of progress
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — key/path ownership on SaveManager
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md
+# =============================================================================

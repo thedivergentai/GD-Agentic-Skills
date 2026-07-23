@@ -19,3 +19,14 @@ func swap_shoulder(to_right: bool) -> void:
 
 ## [SKILL NOTICE]: Use 'h_offset' on the Camera3D child of a SpringArm3D 
 ## for shoulder swapping. This keeps the collision ray centered on the player.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/spring_arm.html
+# - https://docs.godotengine.org/en/stable/classes/class_springarm3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_camera3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — SpringArm boom, exclusions, shoulder swap
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — look input driving arm rotation
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md
+# =============================================================================

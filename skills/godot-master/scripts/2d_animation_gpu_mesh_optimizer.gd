@@ -17,3 +17,14 @@ func convert_sprite_to_optimized_mesh(sprite: Sprite2D) -> MeshInstance2D:
 	# In your master scene, prefer MeshInstance2D over Sprite2D for static
 	# environmental animations (like swaying trees) to protect your GPU budget.
 	return mesh_node
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_meshinstance2d.html
+# - https://docs.godotengine.org/en/stable/classes/class_sprite2d.html
+# - https://docs.godotengine.org/en/stable/tutorials/2d/introduction_to_2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md — mesh materials for swaying props
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-3d-to-2d/SKILL.md — dense 2D scenery fill-rate pressure
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md
+# =============================================================================

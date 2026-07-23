@@ -25,3 +25,14 @@ func _process(delta: float) -> void:
         # Deeper layers (higher index) move slower, causing a parallax effect without using ParallaxBackground
         var depth_factor = 1.0 - (float(i) / depth_layers.size()) * 0.5
         layer.offset = global_position * (1.0 - depth_factor)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/2d/2d_parallax.html
+# - https://docs.godotengine.org/en/stable/tutorials/2d/canvas_layers.html
+# - https://docs.godotengine.org/en/stable/classes/class_parallax2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — Camera2D-driven layer offsets
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md — optional depth warp FX
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-3d-to-2d/SKILL.md
+# =============================================================================

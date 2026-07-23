@@ -10,3 +10,14 @@
 - **NEVER hardcode stat names in logic** — Use StringNames or an Enum for attributes to prevent typos and facilitate refactoring (e.g., `get_attribute("strength")`).
 - **NEVER store temporary "Runtime Only" buffs in a permanent Save Resource** — Clear short-duration modifiers before serializing player progress to disk.
 - **NEVER calculate damage directly in the Character script** — Centralize combat math in a `DamageFormula` class to ensure consistency across Players and NPCs.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — simulate balance impact of structural fixes
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

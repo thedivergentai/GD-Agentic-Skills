@@ -19,3 +19,13 @@ func _physics_process(_delta: float) -> void:
     anim_tree.set("parameters/conditions/is_idle", not is_moving)
     anim_tree.set("parameters/conditions/is_airborne", is_in_air)
     anim_tree.set("parameters/conditions/is_on_ground", not is_in_air)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/animation/animation_tree.html
+# - https://docs.godotengine.org/en/stable/classes/class_animationtree.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-tree-mastery/SKILL.md — boolean conditions from physics state
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md — run/idle/air visual sync
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md
+# =============================================================================

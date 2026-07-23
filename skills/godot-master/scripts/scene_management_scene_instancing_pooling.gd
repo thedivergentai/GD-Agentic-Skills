@@ -23,3 +23,14 @@ func spawn(pos: Vector2):
 			i.process_mode = Node.PROCESS_MODE_INHERIT
 			return i
 	return null # Pool exhausted
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_packedscene.html
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/instancing.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/general_optimization.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — prewarm pools to avoid instantiate spikes
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md — pooled component scenes with process_mode disable/enable
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md
+# =============================================================================

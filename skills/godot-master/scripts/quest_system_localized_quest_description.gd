@@ -13,3 +13,14 @@ func get_title() -> String:
 
 func get_desc() -> String:
 	return tr(desc_key)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/i18n/internationalizing_games.html
+# - https://docs.godotengine.org/en/stable/tutorials/i18n/localization_using_spreadsheets.html
+# - https://docs.godotengine.org/en/stable/classes/class_translationserver.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — store translation keys on Resources, not hardcoded strings
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — journal UI calls get_title()/get_desc() after locale change
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-quest-system/SKILL.md
+# =============================================================================

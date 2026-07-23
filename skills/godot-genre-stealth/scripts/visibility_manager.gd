@@ -23,3 +23,16 @@ func _update_global_mult() -> void:
 
 ## [SKILL NOTICE]: Use a centralized manager to calculate 
 ## the player's detection susceptibility based on their environment.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/lights_and_shadows.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/visibility_ranges.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/groups.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md — shadow/cover modifiers that scale detection
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-horror/SKILL.md — hiding-spot multipliers shared with stalker AI
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — bush/locker multiplier fairness sims
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-stealth/SKILL.md
+# =============================================================================

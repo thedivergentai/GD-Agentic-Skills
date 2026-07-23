@@ -15,3 +15,14 @@ func _do_heavy_work(data: Array):
 	for i in data:
 		# Process locally without touching the SceneTree directly
 		pass
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/performance/using_multiple_threads.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/thread_safe_apis.html
+# - https://docs.godotengine.org/en/stable/classes/class_workerthreadpool.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — Callable.bind and task completion waits
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md — keep heavy loads off the main thread during transitions
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md
+# =============================================================================

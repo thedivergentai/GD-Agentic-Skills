@@ -88,3 +88,13 @@ func _physics_process(delta: float) -> void:
 ## EXPERT USAGE:
 ## Adjust 'Jump Height' and 'Time To Peak' in inspector to tune feel.
 ## Gravity is calculated automatically from these values.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/using_character_body_2d.html
+# - https://docs.godotengine.org/en/stable/classes/class_characterbody2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md — coyote/buffer/variable jump on CharacterBody2D
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — jump apex and assist timing knobs
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md
+# =============================================================================

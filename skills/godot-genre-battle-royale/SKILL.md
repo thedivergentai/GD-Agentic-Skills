@@ -29,11 +29,16 @@ Expert blueprint for Battle Royale games with zone mechanics, large-scale networ
 - NEVER spawn loot without **Object Pooling**; strictly pre-instantiate and toggle visibility/collision to avoid GC spikes during dense spawns.
 - NEVER ignore `VisibilityNotifier3D`; strictly disable `AnimationPlayer`, `_process()`, and heavy AI logic for players that are not visible to the observer.
 - NEVER print in tight server loops; strictly avoid `print()` as console I/O is blocking and will tank server performance in high-player-count matches.
+
 ---
 
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
+
+### Zone / Storm
+### [storm_system.gd](scripts/storm_system.gd)
+**MANDATORY for any zone/storm work** — phase radii, contained next-center selection, distance-to-center damage (anti-tunneling). Do not paste inline zone_manager tutorials.
 
 ### Networking & Multiplayer
 ### [kill_feed_bus.gd](scripts/kill_feed_bus.gd)
@@ -72,213 +77,116 @@ Offloading server-side bot behavior and pathfinding logic to the `WorkerThreadPo
 
 ## NEVER Do in Battle Royale
 
-- **NEVER export mobile clients without the INTERNET permission** — Communication will silently fail on Android/iOS if the manifest is missing the networking permission [37].
-- **NEVER use `get_var(true)` on untrusted data** — Deserializing arbitrary objects allows attackers to execute remote code on the server or other clients [31].
-- **NEVER synchronize `Object` or `Resource` types over network** — Use the `MultiplayerSynchronizer` strictly for base types (int, float, vec) [39].
-- **NEVER assume `UNRELIABLE` packets arrive in order** — Design state interpolation carefully to handle missing or out-of-order ticks [28].
-- **NEVER leave `multiplayer_poll` false without manual calling** — If using custom threads, failing to call `multiplayer.poll()` freezes all traffic [40].
+- **NEVER export mobile clients without the INTERNET permission** — Communication will silently fail on Android/iOS if the manifest is missing the networking permission.
+- **NEVER use `get_var(true)` on untrusted data** — Deserializing arbitrary objects allows attackers to execute remote code on the server or other clients.
+- **NEVER synchronize `Object` or `Resource` types over network** — Use the `MultiplayerSynchronizer` strictly for base types (int, float, vec).
+- **NEVER assume `UNRELIABLE` packets arrive in order** — Design state interpolation carefully to handle missing or out-of-order ticks.
+- **NEVER leave `multiplayer_poll` false without manual calling** — If using custom threads, failing to call `multiplayer.poll()` freezes all traffic.
 
 ---
 
 ## Core Loop
-1.  **Deploy**: Player chooses a landing spot from an air vehicle.
-2.  **Loot**: Player scavenges weapons and armor.
-3.  **Move**: Player runs to the safe zone to avoid taking damage.
-4.  **Engage**: Player fights others they encounter.
-5.  **Survive**: Player attempts to be the last one standing.
+Deploy → Loot → Move with storm → Engage → Last standing.
 
-## Skill Chain
+## Skill Chain (GDSkills peers only)
 
 | Phase | Skills | Purpose |
 |-------|--------|---------|
-| 1. Net | `godot-multiplayer-networking` | Authoritative server, lag compensation |
-| 2. Map | `godot-3d-world-building`, `level-of-detail` | Large terrain, chunking, distant trees |
-| 3. Items | `godot-inventory-system` | Managing backpack, attachments, armor |
-| 4. Combat | `shooter-mechanics`, `ballistics` | Projectile physics, damage calculation |
-| 5. Logic | `game-manager` | Managing the Storm/Zone state |
+| 1. Net | [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) | Authoritative server, relevancy, RPCs |
+| 2. Map | [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md), [godot-genre-open-world](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md) | Terrain scale, streaming, HLOD |
+| 3. Items | [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) | Backpack / attachments / armor |
+| 4. Combat | [godot-genre-shooter](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md), [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) | Hitscan/projectile + damage validation |
+| 5. Zone | **MANDATORY** [storm_system.gd](scripts/storm_system.gd) | Storm phases / DPS / contained centers |
+| 6. Balance | [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) | Zone DPS, loot rarity, TTK bands |
 
-## Architecture Overview
+---
 
-### 1. The Zone Manager (The Storm)
-Manages the shrinking safe area.
+## Decision Trees (strip inline deploy/loot/zone tutorials)
 
-```gdscript
-# zone_manager.gd
-extends Node
+### Zone / Storm
+| Need | Action |
+|------|--------|
+| Phase shrink, contained centers, distance DPS | **MANDATORY** [storm_system.gd](scripts/storm_system.gd) |
+| Storm wall VFX | Inverted SphereMesh + unshaded `cull_disabled` shader driven by storm radius |
 
-@export var phases: Array[ZonePhase]
-var current_phase_index: int = 0
-var current_radius: float = 2000.0
-var target_radius: float = 2000.0
-var center: Vector2 = Vector2.ZERO
-var target_center: Vector2 = Vector2.ZERO
-var shrink_speed: float = 0.0
+### Loot
+| Need | Action |
+|------|--------|
+| Dense drops | [rid_loot_spawner.gd](scripts/rid_loot_spawner.gd) + pooling |
+| Anti-cheat pickup | **MANDATORY** [authoritative_looting.gd](scripts/authoritative_looting.gd) |
+| Tables / rarity | Data Resources + peer inventory — not `instantiate()` loops in SKILL.md |
 
-func start_next_phase() -> void:
-    var phase = phases[current_phase_index]
-    target_radius = phase.end_radius
-    # Pick new center WITHIN current circle but respecting new radius
-    var random_angle = randf() * TAU
-    var max_offset = current_radius - target_radius
-    var offset = Vector2.RIGHT.rotated(random_angle) * (randf() * max_offset)
-    target_center = center + offset
-    
-    shrink_speed = (current_radius - target_radius) / phase.shrink_time
+### Deploy
+| Need | Action |
+|------|--------|
+| Plane → freefall → parachute → grounded | Finite state on player controller; server validates landing inventory |
+| Map sectors | [async_map_loader.gd](scripts/async_map_loader.gd) |
 
-func _process(delta: float) -> void:
-    if current_radius > target_radius:
-        current_radius -= shrink_speed * delta
-        center = center.move_toward(target_center, (shrink_speed * delta) * (center.distance_to(target_center) / (current_radius - target_radius)))
-```
+### Networking
+| Need | Action |
+|------|--------|
+| 100+ peers | [enet_br_server.gd](scripts/enet_br_server.gd) + [headless_branch_logic.gd](scripts/headless_branch_logic.gd) |
+| Movement | [state_replication_unreliable.gd](scripts/state_replication_unreliable.gd) |
+| Relevancy | Near ~20Hz+, far ~5Hz; `replication_interval` / interest management |
+| Targeted messages | [targeted_rpc_relay.gd](scripts/targeted_rpc_relay.gd) |
+| Jitter buffer | [server_state_buffer.gd](scripts/server_state_buffer.gd) |
 
-### 2. Loot Spawner
-Efficiently populating the world.
+---
 
-```gdscript
-# loot_manager.gd
-func spawn_loot() -> void:
-    for spawn_point in get_tree().get_nodes_in_group("loot_spawns"):
-        if randf() < spawn_point.spawn_chance:
-            var item_id = loot_table.roll_item()
-            var loot_instance = loot_scene.instantiate()
-            loot_instance.setup(item_id)
-            add_child(loot_instance)
-```
+## Advanced (keep elite, no deploy/loot re-tutorials)
 
-### 3. Deployment System
-Transitioning from plane to ground.
+### Lag Compensation
+Server keeps transform history; validate client hit timestamps against rewound poses (authoritative). Pair with shooter/combat peers.
 
-```gdscript
-# player_controller.gd
-enum State { IN_PLANE, FREEFALL, PARACHUTE, GROUNDED }
+### Delta-Patching
+`MultiplayerSynchronizer` + `REPLICATION_MODE_ON_CHANGE` for health/inventory; `ALWAYS` only for hot transforms. Cap with `delta_interval`.
 
-func _physics_process(delta: float) -> void:
-    match current_state:
-        State.FREEFALL:
-            velocity.y = move_toward(velocity.y, -50.0, gravity * delta)
-            move_and_slide()
-            if position.y < auto_deploy_height:
-                deploy_parachute()
-```
-
-## Key Mechanics Implementation
-
-### Zone Damage
-Checking if player is outside the circle.
-
-```gdscript
-func check_zone_damage() -> void:
-    var dist = Vector2(global_position.x, global_position.z).distance_to(ZoneManager.center)
-    if dist > ZoneManager.current_radius:
-        take_damage(ZoneManager.dps * delta)
-```
-
-### Networking Optimization
-You cannot sync 100 players every frame.
-*   **Relevancy**: Only send updates for players within visual range.
-*   **Frequency**: Update far-away players at 4Hz, nearby at 20Hz+ (Server Tick).
-*   **Snapshot Interpolation**: Client buffers headers to play them back smoothly.
-
-## Godot-Specific Tips
-
-*   **MultiplayerSynchronizer**: Use `replication_interval` to lower bandwidth for distant objects.
-*   **VisibilityNotifier3D**: Critical. Disable `_process` and AnimationPlayer for players behind you or far away.
-*   **Occlusion Culling**: Essential for large maps with buildings. Bake occlusion data.
-*   **HLOD**: Use Hierarchical Level of Detail for terrain and large structures.
+### Zone Visualizer
+Unshaded, `cull_disabled` spatial shader on inverted sphere scaled by [storm_system.gd](scripts/storm_system.gd).
 
 ## Common Pitfalls
 
-1.  **Too Main Loot**: Too much loot causes lag. **Fix**: Use object pooling for loot pickups.
-2.  **Camping**: Players hide forever. **Fix**: The Zone forces movement. Also, anti-camping mechanics like "scan reveals" (optional).
-3.  **Cheating**: Client-side hit detection. **Fix**: Authoritative server logic. Client says "I shot at direction X", Server calculates "Did it hit?".
-
-
-## Advanced Battle Royale Systems
-
-Elite patterns for handling massive scale, low-latency networking, and high-performance visuals.
-
-### 1. Lag Compensation (Hit Validation Backtracking)
-The server maintains a history of entity transforms. When a client reports a hit with a timestamp, the server "rewinds" the target to that moment for authoritative validation.
-
-```gdscript
-class_name LagCompensator extends Node
-
-var _position_history: Dictionary = {} # Timestamp -> Transform3D
-const MAX_HISTORY_MS: int = 1000 # Keep 1 second of history
-
-func _physics_process(_delta: float) -> void:
-    if multiplayer.is_server():
-        var current_time := Time.get_ticks_msec()
-        _position_history[current_time] = owner.global_transform
-        
-        # Cleanup old entries
-        for t in _position_history.keys():
-            if t < current_time - MAX_HISTORY_MS:
-                _position_history.erase(t)
-
-@rpc("any_peer", "call_remote", "reliable")
-func server_validate_hit(client_hit_pos: Vector3, client_timestamp: int) -> void:
-    if not multiplayer.is_server(): return
-    
-    # 1. Backtrack to find the transform at the time the client saw it
-    var historical_transform := _get_closest_transform(client_timestamp)
-    
-    # 2. Validate hit against historical state
-    var distance := historical_transform.origin.distance_to(client_hit_pos)
-    if distance < 2.0: # Tolerance
-        apply_damage_authoritative()
-
-func _get_closest_transform(timestamp: int) -> Transform3D:
-    # Logic to find exact or interpolated historical transform
-    return _position_history.get(timestamp, owner.global_transform)
-```
-
-### 2. Delta-Patching (MultiplayerSynchronizer Optimization)
-Godot 4.x natively supports delta-patching via `MultiplayerSynchronizer`. Set replication to `ON_CHANGE` to strictly transmit modified data.
-
-```gdscript
-class_name MonsterSynchronizer extends Node
-
-func setup_replication(monster: CharacterBody3D) -> void:
-    var sync := MultiplayerSynchronizer.new()
-    add_child(sync)
-    
-    var config := SceneReplicationConfig.new()
-    
-    # Position: High frequency sync
-    var pos_path := NodePath(str(monster.get_path()) + ":position")
-    config.add_property(pos_path)
-    config.property_set_replication_mode(pos_path, SceneReplicationConfig.REPLICATION_MODE_ALWAYS)
-    
-    # Health: Delta-patch (only sync when changed)
-    var health_path := NodePath(str(monster.get_path()) + ":current_health")
-    config.add_property(health_path)
-    config.property_set_replication_mode(health_path, SceneReplicationConfig.REPLICATION_MODE_ON_CHANGE)
-    
-    sync.replication_config = config
-    sync.delta_interval = 0.05 # Limit sync to 20Hz for bandwidth efficiency
-```
-
-### 3. Zone Visualizer (Storm Perimeter Shader)
-Use a custom spatial shader with `unshaded` and `cull_disabled` render modes for high-performance, massive-scale zone effects.
-
-*zone_shield.gdshader*
-```glsl
-shader_type spatial;
-render_mode unshaded, cull_disabled;
-
-uniform vec4 storm_color : source_color = vec4(0.6, 0.1, 1.0, 1.0);
-uniform float storm_opacity : hint_range(0.0, 1.0) = 0.5;
-
-void fragment() {
-    ALBEDO = storm_color.rgb;
-    ALPHA = storm_opacity;
-    EMISSION = storm_color.rgb * 2.0; # Glow visibility at distance
-}
-```
-
-**Expert Tip**: For the "Zone Wall", use an inverted `SphereMesh` with its scale controlled by the `ZoneManager`. This ensures the player is always "inside" the mesh, rendering the back-faces (cull_disabled) correctly.
-
+1. Too much loot → pool + RID spawner
+2. Camping → storm forces movement ([storm_system.gd](scripts/storm_system.gd))
+3. Client hit authority → server validate with history
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
+
+### Official Documentation
+- [High-level multiplayer](https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html) — RPC authority, peer lifecycle, and visibility-aware sync patterns for 100-player relevancy instead of full-mesh broadcasts.
+- [ENetMultiplayerPeer](https://docs.godotengine.org/en/stable/classes/class_enetmultiplayerpeer.html) — UDP host/client peer sized for high concurrent match populations without TCP head-of-line blocking.
+- [MultiplayerPeer](https://docs.godotengine.org/en/stable/classes/class_multiplayerpeer.html) — Reliable vs unreliable/unordered transfer modes so movement snapshots never back up the channel.
+- [MultiplayerSynchronizer](https://docs.godotengine.org/en/stable/classes/class_multiplayersynchronizer.html) — Property replication, `replication_interval` / on-change deltas, and per-peer visibility filters for interest management.
+- [MultiplayerSpawner](https://docs.godotengine.org/en/stable/classes/class_multiplayerspawner.html) — Spawn/despawn replication for players, loot drops, and late-join scene graph consistency.
+- [Command line tutorial](https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html) — `--headless` and multi-instance CLI launches for dedicated match servers.
+- [Exporting for dedicated servers](https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_dedicated_servers.html) — Server export presets and feature tags that strip client-only rendering/input paths.
+- [Occlusion culling](https://docs.godotengine.org/en/stable/tutorials/3d/occlusion_culling.html) — Bake occlusion for dense building clusters so large BR maps stay GPU-viable.
+- [Mesh level of detail (LOD)](https://docs.godotengine.org/en/stable/tutorials/3d/mesh_lod.html) — Distance LODs for terrain props and structures that dominate draw cost at drop-zone scale.
+- [Optimization using MultiMeshes](https://docs.godotengine.org/en/stable/tutorials/performance/using_multimesh.html) — Batch foliage/debris into MultiMesh draw calls instead of per-instance nodes.
+- [Optimization using Servers](https://docs.godotengine.org/en/stable/tutorials/performance/using_servers.html) — RenderingServer RID paths for dense loot visuals without SceneTree node overhead.
+- [Background loading](https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html) — Threaded `ResourceLoader` sector streaming for non-blocking open-world map loads.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — Authoritative server RPCs, transfer modes, and lobby/peer lifecycle that BR relevancy and lag compensation build on.
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Autoloads, export feature flags, and project layout for headless dedicated vs client builds.
+- [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md) — Large terrain chunking, collision generation, and world streaming prerequisites for storm-scale maps.
+
+#### Complements
+- [godot-adapt-single-to-multiplayer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md) — Authority split, prediction shells, and snapshot interpolation before applying BR-scale interest management.
+- [godot-server-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-server-architecture/SKILL.md) — Headless host scaffolding and PhysicsServer/RID patterns used by authoritative match simulation.
+- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — Dedicated-server presets, INTERNET permissions, and CLI packaging for multi-instance match tests.
+- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — Backpacks, attachments, and armor state that authoritative looting must validate server-side.
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — LOD, pooling, and CPU budgets when loot density and peer count stress the match server/clients.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Kill-feed and match-event buses that stay local while RPCs carry cross-peer eliminations.
+- [godot-genre-shooter](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md) — Hitscan/projectile combat patterns and lag-compensated validation used inside the BR engagement loop.
+
+#### Downstream / consumers
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Simulate zone DPS phases, loot rarity tables, and TTK bands so storm/loot pacing stays fair across 100-player matches.
+- [godot-ai-navigation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ai-navigation/SKILL.md) — Bot pathfinding and interest-culled AI when filling lobbies with threaded server-side bots.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting BR concern.

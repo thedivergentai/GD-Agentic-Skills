@@ -20,3 +20,13 @@ func get_scaled_damage(multiplier: float) -> float:
 func get_mitigated_damage(incoming_damage: float, element: StringName) -> float:
     var res = elemental_resistances.get(element, 0.0)
     return incoming_damage * (1.0 - res)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html — modular RPG attributes
+# - https://docs.godotengine.org/en/stable/classes/class_resource.html — typed Dictionary resistances
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md — scaling and mitigation formulas
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — sim resistance vs DPS curves
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md
+# =============================================================================

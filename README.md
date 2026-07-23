@@ -44,18 +44,26 @@
 ## 📜 Updates
 
 <div align="center">
-  <img src="assets/banner_0_0_8.webp" alt="The Director's Cut Update - v0.0.8" width="100%" />
+  <img src="assets/banner_0_0_9.webp" alt="The Reference Lattice Update - v0.0.9" width="100%" />
 </div>
 
-- **Godot 4.7 Director's Cut**: Full library upgrade to Godot 4.7+ — AreaLight3D, HDR output, Asset Store, built-in virtual joystick, and migration digest for 4.6→4.7 projects.
-- **Domain Skills**: Renamed "Micro-Skills" to **Domain Skills** — 92 modular topic skills, each with 4.7 baseline and targeted migration deltas.
-- **godot-master**: Full mirror sync of domain skill references and bundled scripts for 4.7.
-- **Persona Squad**: Anara, Aurelius, and Builder updated for 4.7 scoring, never-lists, and `GODOT_PATH` CLI overrides.
+- **The Reference Lattice**: Every Domain Skill now ends with a curated Official Documentation lattice (`docs.godotengine.org/en/stable/…`) plus detailed Related Skills (Prerequisites / Complements / Downstream / Master), so agents can research deeper without leaving the skill graph.
+- **Script & reference footers**: Research-link comment blocks on Domain Skill scripts and phase docs (marker `GDSkills research links (agents)`) — non-executing, file-specific, progressive disclosure.
+- **SPECIAL MENTION — [@DedInc](https://github.com/DedInc)**: First external Domain Skill — [godot-monte-carlo-balancer](skills/godot-monte-carlo-balancer/SKILL.md) — source-driven Monte Carlo balance lab (Rust + rayon), Resource-first extract, playstyle CI bands, economy careers, and headless Godot calibration. Thank you!
 
 ---
 
 <details>
 <summary><b>📜 Update Archive</b></summary>
+
+<div align="center">
+  <img src="assets/banner_0_0_8.webp" alt="The Director's Cut Update - v0.0.8" width="100%" />
+</div>
+
+#### v0.0.8 — The Director's Cut Update
+- **Godot 4.7 Director's Cut**: Full library upgrade to Godot 4.7+ — AreaLight3D, HDR output, Asset Store, built-in virtual joystick, and migration digest for 4.6→4.7 projects.
+- **Domain Skills**: Renamed "Micro-Skills" to **Domain Skills** — 92 modular topic skills, each with 4.7 baseline and targeted migration deltas.
+- **Persona Squad**: Anara, Aurelius, and Builder updated for 4.7 scoring, never-lists, and `GODOT_PATH` CLI overrides.
 
 <div align="center">
   <img src="assets/banner_0_0_7.webp" alt="The Analyze, Audit, Build! Update - v0.0.7" width="100%" />

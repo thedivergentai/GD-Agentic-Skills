@@ -15,3 +15,13 @@
 - **NEVER use the "allow_objects" flag in store_var/get_var for untrusted data** — Setting this to `true` allows full object decoding, which is a major security risk for saves downloaded from the web.
 - **NEVER use JSON for data requiring strict type preservation** — JSON converts `Vector3` to a string or dictionary. For strict data types, use `var_to_bytes()` or a binary format.
 - **NEVER leave internal metadata (set_meta) in persistent dictionaries** — This unnecessarily inflates save file size. Clean your dictionaries before serialization.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+- https://docs.godotengine.org/en/stable/classes/class_fileaccess.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

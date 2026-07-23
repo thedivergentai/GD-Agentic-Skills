@@ -20,6 +20,8 @@ Expert guidance for realistic 3D lighting with shadows and global illumination.
 - **NEVER bake LightmapGI without a Denoiser** — Godot's baked lightmaps are noisy by default. Use OIDN or JNLM (in Project Settings) for professional results.
 - **NEVER use real-time SDFGI on Mobile/Compatibility renderers** — It is a Forward+ exclusive feature. Use fake GI bounce lights for lower-end platforms.
 - **NEVER use 'Update Continuity' in ReflectionProbes for performance** — Keep ReflectionProbes on 'Update Once' and trigger manual updates only when necessary.
+- **NEVER overflow the clustered shadow atlas** — WHY: Forward+ packs Omni/Spot shadows into a shared atlas. Too many shadowed positional lights → atlas thrash, flickering, or silent quality collapse. Cap shadowed Omni (~3–5) and Spot (~2–4); use `light_lod_optimizer.gd` / distance fade before raising atlas size.
+- **NEVER stack dozens of overlapping shadowed Omni/Spot in one cluster cell** — WHY: Clustered light iteration cost scales with overlapping lights per tile. Prefer non-shadowed fills, tighter `omni_range`/`spot_range`, and `distance_fade_*` so far lights leave the cluster.
 
 ---
 
@@ -32,6 +34,17 @@ Expert guidance for realistic 3D lighting with shadows and global illumination.
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
+
+### Golden path (pick one — Do NOT Load peers)
+| Scene | Load | Do NOT Load |
+|-------|------|-------------|
+| **Outdoor** Forward+ | `shadow_cascade_tuner.gd` + `sdfgi_probe_manager.gd` (+ `day_night_cycle.gd` if time-of-day) | `fake_gi_bounce.gd`, indoor VoxelGI bake unless hybrid; `environment_blender.gd` / fog unless atmosphere task |
+| **Indoor** sealed geometry | **MANDATORY** VoxelGI via `light_probe_manager.gd` + `lighting_manager.gd` + ReflectionProbes | SDFGI on tiny interiors; Mobile fake GI unless targeting Mobile; sky/fog scripts unless zone blend |
+| **Mobile / Compatibility** | **MANDATORY** `fake_gi_bounce.gd` + light budgets in `light_lod_optimizer.gd` | Real-time SDFGI (Forward+ only); HDR sky/volumetric body recipes |
+| **Lightmap bake / hybrid static** | **MANDATORY** `lightmap_bake_helper.gd` (+ Shadowmasking for outdoor) | Runtime SDFGI as bake substitute; disabling lights via Visible |
+| **Sky / Environment blend only** | `environment_blender.gd` | Cascade/GI managers when only tonemap/ambient/sky changes |
+| **Volumetric fog / shafts** | `volumetric_fx.gd` (+ `volumetric_fog_zones.gd` for localized density) | Pure light-budget / shadow-atlas tuning tasks |
+| **Pure light budget / shadow LOD** | `light_lod_optimizer.gd`, `shadow_bias_tuner.gd` | **Do NOT Load** `environment_blender.gd`, `volumetric_fx.gd`, day-night unless required |
 
 ### [day_night_cycle.gd](scripts/day_night_cycle.gd)
 Dynamic sun position and color based on time-of-day. Handles DirectionalLight3D rotation, color temperature, and intensity curves. Use for outdoor day/night systems.
@@ -103,223 +116,43 @@ func _ready() -> void:
 
 ### Day/Night Cycle
 
-```gdscript
-# sun_controller.gd
-extends DirectionalLight3D
+**MANDATORY** [`day_night_cycle.gd`](scripts/day_night_cycle.gd) — do not re-inline sun energy/color recipes here.
 
-@export var time_of_day := 12.0  # 0-24 hours
-@export var rotation_speed := 0.1  # Hours per second
-
-func _process(delta: float) -> void:
-    time_of_day += rotation_speed * delta
-    if time_of_day >= 24.0:
-        time_of_day -= 24.0
-    
-    # Rotate sun (0° = noon, 180° = midnight)
-    var angle := (time_of_day - 12.0) * 15.0  # 15° per hour
-    rotation_degrees.x = -angle
-    
-    # Adjust intensity
-    if time_of_day < 6.0 or time_of_day > 18.0:
-        light_energy = 0.0  # Night
-    elif time_of_day < 7.0:
-        light_energy = remap(time_of_day, 6.0, 7.0, 0.0, 1.0)  # Sunrise
-    elif time_of_day > 17.0:
-        light_energy = remap(time_of_day, 17.0, 18.0, 1.0, 0.0)  # Sunset
-    else:
-        light_energy = 1.0  # Day
-    
-    # Color shift
-    if time_of_day < 8.0 or time_of_day > 16.0:
-        light_color = Color(1.0, 0.7, 0.4)  # Orange (dawn/dusk)
-    else:
-        light_color = Color(1.0, 1.0, 0.9)  # Neutral white
-```
 
 ---
 
 ## OmniLight3D (Point Light)
 
-### Attenuation Tuning
-
-```gdscript
-# torch.gd
-extends OmniLight3D
-
-func _ready() -> void:
-    omni_range = 10.0  # Maximum reach
-    omni_attenuation = 2.0  # Falloff curve (1.0 = linear, 2.0 = quadratic/realistic)
-    
-    # For "magical" lights, reduce attenuation
-    omni_attenuation = 0.5  # Flatter falloff, reaches farther
-```
-
-### Flickering Effect
-
-```gdscript
-#  campfire.gd
-extends OmniLight3D
-
-@export var base_energy := 1.0
-@export var flicker_strength := 0.3
-@export var flicker_speed := 5.0
-
-func _process(delta: float) -> void:
-    var flicker := sin(Time.get_ticks_msec() * 0.001 * flicker_speed) * flicker_strength
-    light_energy = base_energy + flicker
-```
+Keep `omni_range` tight; prefer quadratic attenuation. Flicker/campfire loops belong in scene scripts — not this body. Shadowed Omni count is a hard budget (see NEVER).
 
 ---
 
 ## SpotLight3D (Flashlight/Headlights)
 
-### Setup
-
-```gdscript
-# flashlight.gd
-extends SpotLight3D
-
-func _ready() -> void:
-    spot_range = 20.0
-    spot_angle = 45.0  # Cone angle (degrees)
-    spot_angle_attenuation = 2.0  # Edge softness
-    
-    shadow_enabled = true
-    
-    # Projector texture (optional - cookie/gobo)
-    light_projector = load("res://textures/flashlight_mask.png")
-```
-
-### Follow Camera
-
-```gdscript
-# player_flashlight.gd
-extends SpotLight3D
-
-@onready var camera: Camera3D = get_viewport().get_camera_3d()
-
-func _process(delta: float) -> void:
-    if camera:
-        global_transform = camera.global_transform
-```
+**MANDATORY** [`spotlight_projector_setup.gd`](scripts/spotlight_projector_setup.gd) for range/angle/projector cookies and camera-follow flashlights. Do not paste Spot setup here.
 
 ---
 
-## Global Illumination: VoxelGI vs SDFGI
+## Global Illumination (script-first)
 
-### Decision Matrix
+Use the golden-path table above. Body decision only:
 
-| Feature | VoxelGI | SDFGI |
-|---------|---------|-------|
-| Setup | Manual bounds per room | Automatic, scene-wide |
-| Dynamic objects | Fully supported | Partially supported |
-| Performance | Moderate | Higher cost |
-| Use case | Indoor, small-medium scenes | Large outdoor scenes |
-| Godot version | 4.0+ | 4.0+ |
+| Path | Script | When |
+|------|--------|------|
+| Indoor / sealed | **MANDATORY** [`light_probe_manager.gd`](scripts/light_probe_manager.gd) (+ [`lighting_manager.gd`](scripts/lighting_manager.gd)) | Tight VoxelGI extents per room; never paper-thin walls |
+| Outdoor Forward+ | **MANDATORY** [`sdfgi_probe_manager.gd`](scripts/sdfgi_probe_manager.gd) | Real-time GI; **Do NOT Load** on Mobile/Compatibility |
+| Static / Mobile bake | **MANDATORY** [`lightmap_bake_helper.gd`](scripts/lightmap_bake_helper.gd) | LightmapGI + Shadowmasking; bake mode ≠ Visible hide |
+| No GI budget | **MANDATORY** [`fake_gi_bounce.gd`](scripts/fake_gi_bounce.gd) | Fill lights only |
 
-### VoxelGI Setup
-
-```gdscript
-# room_gi.gd - Place one VoxelGI per room/area
-extends VoxelGI
-
-func _ready() -> void:
-    # Tightly fit the room
-    size = Vector3(20, 10, 20)
-    
-    # Quality settings
-    subdiv = VoxelGI.SUBDIV_128  # Higher = better quality, slower
-    
-    # Bake GI data
-    bake()
-```
-
-### SDFGI Setup
-
-```gdscript
-# world_environment.gd
-extends WorldEnvironment
-
-func _ready() -> void:
-    var env := environment
-    
-    # Enable SDFGI
-    env.sdfgi_enabled = true
-    env.sdfgi_use_occlusion = true
-    env.sdfgi_read_sky_light = true
-    
-    # Cascades (auto-scale based on camera)
-    env.sdfgi_min_cell_size = 0.2  # Detail level
-    env.sdfgi_max_distance = 200.0
-```
-
----
-
-## LightmapGI (Baked Static Lighting)
-
-### When to Use
-
-- Static architecture (buildings, dungeons)
-- Mobile/low-end targets
-- No  dynamic geometry
-
-### Setup
-
-```gdscript
-# Scene structure:
-# - LightmapGI node
-# - StaticBody3D meshes with GeometryInstance3D.gi_mode = STATIC
-
-# lightmap_baker.gd
-extends LightmapGI
-
-func _ready() -> void:
-    # Quality settings
-    quality = LightmapGI.BAKE_QUALITY_HIGH
-    bounces = 3  # Indirect light bounces
-    
-    # Bake (editor only, not runtime)
-    # Click "Bake Lightmaps" button in editor
-```
+Do not re-inline VoxelGI/SDFGI/Lightmap property setup here.
 
 ---
 
 ## Environment & Sky
 
-### HDR Skybox
+Sky/ambient/tonemap transitions → **MANDATORY** [`environment_blender.gd`](scripts/environment_blender.gd). Volumetric fog / shafts → **MANDATORY** [`volumetric_fx.gd`](scripts/volumetric_fx.gd) (+ [`volumetric_fog_zones.gd`](scripts/volumetric_fog_zones.gd) for caves/forests).
 
-```gdscript
-# world_env.gd
-extends WorldEnvironment
-
-func _ready() -> void:
-    var env := environment
-    
-    env.background_mode = Environment.BG_SKY
-    var sky := Sky.new()
-    var sky_material := PanoramaSkyMaterial.new()
-    sky_material.panorama = load("res://hdri/sky.hdr")
-    sky.sky_material = sky_material
-    env.sky = sky
-    
-    # Sky contribution to GI
-    env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-    env.ambient_light_sky_contribution = 1.0
-```
-
-### Volumetric Fog
-
-```gdscript
-extends WorldEnvironment
-
-func _ready() -> void:
-    var env := environment
-    
-    env.volumetric_fog_enabled = true
-    env.volumetric_fog_density = 0.01
-    env.volumetric_fog_albedo = Color(0.9, 0.9, 1.0)  # Blueish
-    env.volumetric_fog_emission = Color.BLACK
-```
+**Do NOT Load** these for pure light-budget / shadow-atlas / cascade tuning — stay on `light_lod_optimizer.gd` / `shadow_cascade_tuner.gd`.
 
 ---
 
@@ -467,8 +300,20 @@ func _on_body_entered(body: Node3D) -> void:
         tween.tween_property(camera.environment, "ambient_light_energy", interior_environment.ambient_light_energy, transition_duration)
 
 func _on_body_exited(body: Node3D) -> void:
-    # Reverse tween or clear camera environment to return to WorldEnvironment
-    pass
+    if not body.is_in_group("player"):
+        return
+    var camera := get_viewport().get_camera_3d()
+    if camera == null or camera.environment == null:
+        return
+    var world_env := get_tree().get_first_node_in_group("world_environment") as WorldEnvironment
+    var target := world_env.environment if world_env and world_env.environment else Environment.new()
+    var tween := create_tween().set_parallel(true)
+    tween.tween_property(camera.environment, "tonemap_exposure", target.tonemap_exposure, transition_duration)
+    tween.tween_property(camera.environment, "ambient_light_energy", target.ambient_light_energy, transition_duration)
+    tween.chain().tween_callback(func():
+        # Return to WorldEnvironment ownership when blend completes
+        camera.environment = null
+    )
 ```
 
 > [!TIP]
@@ -478,30 +323,7 @@ func _on_body_exited(body: Node3D) -> void:
 
 ## Expert Pattern: Interior-Mapping (Fake-Rooms)
 
-Use shaders to create the illusion of 3D rooms inside flat window planes. This is significantly more performant than rendering actual geometry for every building interior.
-
-```glsl
-shader_type spatial;
-
-// Texture array containing wall/floor/ceiling layers
-uniform sampler2DArray room_textures;
-uniform vec3 room_dimensions = vec3(1.0, 1.0, 1.0);
-
-void fragment() {
-    // 1. Transform view vector into object space
-    vec3 view_dir = normalize(VIEW * mat3(INV_VIEW_MATRIX * MODEL_MATRIX));
-    
-    // 2. Ray-box intersection (Simplified logic)
-    // Calculate the 'depth' of the fake room based on view angle
-    vec3 pos = vec3(UV * 2.0 - 1.0, 0.0);
-    vec3 id = 1.0 / view_dir;
-    // ... complex ray-casting math ...
-    
-    // 3. Sample the texture array
-    // Z component selects the specific room variation or wall type
-    ALBEDO = texture(room_textures, vec3(UV, 0.0)).rgb;
-}
-```
+Fake interior depth on window quads is a custom spatial-shader specialty — implement in a project shader or route to `godot-shaders-basics`. Do not keep incomplete ray-box stubs in this skill body.
 
 ---
 
@@ -532,4 +354,44 @@ func apply_low_quality_profile(env_rid: RID) -> void:
 ```
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
+
+### Official Documentation
+- [Introduction to lights and shadows](https://docs.godotengine.org/en/stable/tutorials/3d/lights_and_shadows.html) — Directional/Omni/Spot roles, shadow atlas budgets, cascades, projectors, and bias tradeoffs.
+- [Introduction to global illumination](https://docs.godotengine.org/en/stable/tutorials/3d/global_illumination/introduction_to_global_illumination.html) — Decision matrix for LightmapGI vs VoxelGI vs SDFGI vs probes before committing bake or runtime cost.
+- [Using SDFGI](https://docs.godotengine.org/en/stable/tutorials/3d/global_illumination/using_sdfgi.html) — Forward+-only real-time GI cascades, occlusion, and quality knobs used by outdoor/open scenes.
+- [Using VoxelGI](https://docs.godotengine.org/en/stable/tutorials/3d/global_illumination/using_voxel_gi.html) — Bounded indoor GI, subdivision, leak causes (thin walls), and per-room bake workflow.
+- [Using LightmapGI](https://docs.godotengine.org/en/stable/tutorials/3d/global_illumination/using_lightmap_gi.html) — Static bake modes, denoiser, shadowmasks, and when baked lighting cannot serve dynamic geometry.
+- [Reflection probes](https://docs.godotengine.org/en/stable/tutorials/3d/global_illumination/reflection_probes.html) — Localized specular capture, Update Once vs Always, and interior blending with environments.
+- [Faking global illumination](https://docs.godotengine.org/en/stable/tutorials/3d/global_illumination/faking_global_illumination.html) — Fill-light / bounce approximations for Mobile and Compatibility when SDFGI is unavailable.
+- [Environment and post-processing](https://docs.godotengine.org/en/stable/tutorials/3d/environment_and_post_processing.html) — WorldEnvironment sky, ambient, tonemap, and camera overrides for light-volume transitions.
+- [Volumetric fog and fog volumes](https://docs.godotengine.org/en/stable/tutorials/3d/volumetric_fog.html) — Global volumetric fog plus FogVolume density zones for shafts and localized atmosphere.
+- [Physical light and camera units](https://docs.godotengine.org/en/stable/tutorials/3d/physical_light_and_camera_units.html) — Lux/EV-style energy when matching real-world day/night and exposure chains.
+- [Optimizing 3D performance](https://docs.godotengine.org/en/stable/tutorials/performance/optimizing_3d_performance.html) — Shadow/GI/light-count budgets after local LOD and cascade tuning still miss frame time.
+- [AreaLight3D](https://docs.godotengine.org/en/stable/classes/class_arealight3d.html) — Rectangular soft area lights for panels/screens instead of emissive-only fakes in Forward+.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Renderer choice (Forward+/Mobile/Compatibility), shadow atlas, and GI project settings gate which lighting features exist.
+- [godot-3d-materials](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md) — Albedo/roughness/metallic/emission and `gi_mode` decide how surfaces receive bounced and baked light.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed node scripts, Tweens, and Resource ownership patterns used by managers and environment blends.
+
+#### Complements
+- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — Custom spatial/fog/sky shaders and interior-mapping tricks that extend Environment lighting without more real lights.
+- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — Camera `environment` overrides and exposure pairing for cave/interior light-volume transitions.
+- [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md) — Scene scale, sealed interiors, and GridMap/static layout that make VoxelGI/LightmapGI bake cleanly.
+- [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — Dust/smoke/embers read correctly only when fog density and light energy are co-authored.
+- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Smooth Environment, fog, and light-energy transitions instead of hard cuts at Area3D boundaries.
+- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — Area3D body enter/exit triggers that drive light-volume and fog-zone blends.
+- [godot-adapt-desktop-to-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md) — Strip SDFGI/heavy shadows and swap to fake bounce GI when targeting Mobile/Compatibility.
+
+#### Downstream / consumers
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Escalate here when cascade splits, probe counts, or volumetric fog still dominate the profiler.
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Simulate visibility/readability under day-night or darkness budgets when lighting changes combat, stealth, or horror difficulty.
+- [godot-genre-horror](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-horror/SKILL.md) — Consumes sparse lights, fog, and ReflectionProbe interiors for tension-first atmospheres.
+- [godot-debugging-profiling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md) — Use debugger/monitor views to prove shadow atlas and GI cost before cutting features blindly.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting lighting concern.

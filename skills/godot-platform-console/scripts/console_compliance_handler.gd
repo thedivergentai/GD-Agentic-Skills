@@ -63,3 +63,15 @@ func notify_save_end() -> void:
 
 ## EXPERT USAGE:
 ## ComplianceHandler.notify_save_start() -> await save() -> notify_save_end()
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/custom_mouse_cursor.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/handling_quit_requests.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — mouse mode hidden for controller-only
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — save icon / overlay Control visibility
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-console/SKILL.md
+# =============================================================================

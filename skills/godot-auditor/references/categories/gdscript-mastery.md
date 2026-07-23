@@ -11,3 +11,14 @@
 - **NEVER pre-load huge resources in `_ready()`** — This causes frame stutters. Use `ResourceLoader.load_threaded_request()` for async loading.
 - **NEVER use global variables in Autoloads when `static var` is sufficient** — Static variables offer better encapsulation and less project pollution [24].
 - **Pattern**: "Signal Up, Call Down". Children should never call methods on parents; they should emit signals instead.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/warning_system.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_styleguide.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

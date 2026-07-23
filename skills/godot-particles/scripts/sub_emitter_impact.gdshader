@@ -20,3 +20,14 @@ void process() {
 		ACTIVE = false;
 	}
 }
+// =============================================================================
+// GDSkills research links (agents) — does not affect runtime
+// Official docs:
+// - https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/particle_shader.html
+// - https://docs.godotengine.org/en/stable/tutorials/3d/particles/subemitters.html
+// - https://docs.godotengine.org/en/stable/tutorials/3d/particles/collision.html
+// Related skills:
+// - ../godot-combat-system/SKILL.md — splash/debris sub-emitters on impact
+// - ../godot-audio-systems/SKILL.md — GPU collision limits vs looped impact SFX
+// Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md
+// =============================================================================

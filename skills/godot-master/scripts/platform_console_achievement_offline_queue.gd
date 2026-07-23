@@ -33,3 +33,14 @@ func _load_queue() -> void:
 	if FileAccess.file_exists(_queue_path):
 		var f = FileAccess.open(_queue_path, FileAccess.READ)
 		_pending_ids = f.get_var()
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/runtime_file_loading_and_saving.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — durable user:// queues across sessions
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md — online flush when platform services return
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-console/SKILL.md
+# =============================================================================

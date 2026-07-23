@@ -23,3 +23,13 @@ func restore_property(target: Node, property: String, target_value: float) -> vo
 func full_revive(actor: Node, max_hp: float, max_mp: float) -> void:
 	restore_property(actor, "health", max_hp)
 	restore_property(actor, "mana", max_mp)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_tween.html — TRANS_SINE property restore
+# - https://docs.godotengine.org/en/stable/classes/class_node.html — bind_node so tweens die with restorer
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md — tween lifecycle for organic recovery
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md — health/mana property names
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-mechanic-revival/SKILL.md
+# =============================================================================

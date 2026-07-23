@@ -55,3 +55,16 @@ func _exit_tree() -> void:
 ## the OS window and Vulkan/OpenGL context for pure low-latency servers.
 ## NEVER instantiate Nodes for pure data or invisible calculation; 
 ## use RIDs or plain Objects to save 90% memory overhead.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/performance/using_servers.html
+# - https://docs.godotengine.org/en/stable/classes/class_renderingserver.html
+# - https://docs.godotengine.org/en/stable/classes/class_physicsserver3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_rid.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — RID instance pools vs MultiMesh/node budgets
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md — consumer of mass RID spawn/despawn
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-server-architecture/SKILL.md
+# =============================================================================

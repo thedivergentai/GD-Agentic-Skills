@@ -24,3 +24,14 @@ func set_ignore_player(node: CollisionObject2D, ignore: bool):
 		node.collision_mask &= ~Layer.PLAYER # Bitwise NOT and AND to remove
 	else:
 		node.collision_mask |= Layer.PLAYER # Bitwise OR to add
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html
+# - https://docs.godotengine.org/en/stable/classes/class_collisionobject2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — named layers before runtime bit math
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md — world/tile layers must match body masks
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md
+# =============================================================================

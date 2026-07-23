@@ -43,3 +43,15 @@ func _handle_two_finger_gesture() -> void:
 	
 	_last_distance = current_dist
 	_last_angle = current_angle
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/input_examples.html
+# - https://docs.godotengine.org/en/stable/classes/class_inputeventscreentouch.html
+# - https://docs.godotengine.org/en/stable/classes/class_inputeventscreendrag.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — multi-touch index buffers
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-puzzle/SKILL.md — pinch/swipe consumers
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md
+# =============================================================================

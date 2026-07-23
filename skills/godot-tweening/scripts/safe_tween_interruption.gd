@@ -15,3 +15,13 @@ func animate_safe_hover():
 	_active_tween = create_tween().bind_node(self)
 	_active_tween.tween_property(self, "scale", Vector2(1.2, 1.2), 0.2)
 	_active_tween.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_tween.html
+# - https://docs.godotengine.org/en/stable/classes/class_propertytweener.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — finished cleanup after kill/recreate
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — hover scale on Controls without flicker
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md
+# =============================================================================

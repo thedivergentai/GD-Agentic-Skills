@@ -21,3 +21,14 @@ func pong_client(t: int) -> void:
 	rtt_msec = Time.get_ticks_msec() - t
 
 ## Tip: Display Jitter (variation in RTT) alongside Ping to help players diagnose bad connections.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_multiplayerapi.html
+# - https://docs.godotengine.org/en/stable/classes/class_multiplayerpeer.html
+# - https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — RTT/jitter overlays for players
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — adapt sync when latency spikes
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md
+# =============================================================================

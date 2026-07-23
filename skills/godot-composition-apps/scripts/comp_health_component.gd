@@ -18,3 +18,14 @@ func damage(amount: float) -> void:
 		health_depleted.emit()
 
 ## Rule: This component knows nothing about 'Player' or 'Enemies', only 'Health'.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/godot_interfaces.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md — context-agnostic health data component
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — health_changed / depleted emit contracts
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition-apps/SKILL.md
+# =============================================================================

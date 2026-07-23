@@ -22,3 +22,15 @@ func _on_visibility_changed(args: Array) -> void:
 	AudioServer.set_bus_mute(0, is_hidden)
 
 ## Rule: Always pause audio on visibility change to respect browser user experience.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/handling_quit_requests.html
+# - https://docs.godotengine.org/en/stable/tutorials/platform/web/javascript_bridge.html
+# - https://docs.godotengine.org/en/stable/classes/class_audioserver.html
+# - https://docs.godotengine.org/en/stable/classes/class_engine.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md — mute/pause buses on tab hide
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — PROCESS_MODE_ALWAYS visibility guard
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-web/SKILL.md
+# =============================================================================

@@ -19,3 +19,13 @@ func apply_video_settings(use_vsync: bool, max_fps: int = 0) -> void:
         Engine.max_fps = max_fps if max_fps > 0 else 0
         
     print("Framerate adjusted. VSync: ", use_vsync, " Max FPS: ", Engine.max_fps)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_displayserver.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/general_optimization.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — FPS budgets after VSync unlock
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-desktop/SKILL.md — high-refresh display expectations
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-mobile-to-desktop/SKILL.md
+# =============================================================================

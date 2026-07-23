@@ -63,3 +63,13 @@ func _on_mouse_exited(node: Control) -> void:
 ## EXPERT USAGE:
 ## Add "hoverable" group to your UI buttons. AutoLoad this script.
 ## Instantly gives Desktop feel to Mobile-first UI.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/mouse_and_input_coordinates.html
+# - https://docs.godotengine.org/en/stable/tutorials/ui/gui_containers.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md — hover visual states absent on touch
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — Control mouse_entered/exited targets
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-mobile-to-desktop/SKILL.md
+# =============================================================================

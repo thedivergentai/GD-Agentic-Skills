@@ -23,3 +23,14 @@ func unpack_player_state(data: PackedByteArray) -> Dictionary:
 	}
 
 ## Tip: Quantize rotations/angles to 1 byte (`put_8`) to save 3 bytes per packet compared to floats.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_packedbytearray.html
+# - https://docs.godotengine.org/en/stable/classes/class_multiplayerpeer.html
+# - https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — PackedByteArray encode/decode
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — keep payloads under MTU
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md
+# =============================================================================

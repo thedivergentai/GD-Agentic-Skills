@@ -21,3 +21,13 @@ func unlock_achievement(id: String) -> void:
 		_steam_api.storeStats()
 
 ## Expert: Always check 'Engine.has_singleton' before any SDK call.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_engine.html
+# - https://docs.godotengine.org/en/stable/tutorials/export/feature_tags.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md — store builds with Steam/Epic plugins
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — SDK wrapper as autoload
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-desktop/SKILL.md
+# =============================================================================

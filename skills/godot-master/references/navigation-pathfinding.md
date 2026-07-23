@@ -2,7 +2,6 @@
 name: godot-navigation-pathfinding
 description: "Expert blueprint for AI pathfinding (tower defense, RTS, stealth) using NavigationAgent2D/3D, NavigationServer, avoidance, and dynamic navigation mesh generation. Use when implementing enemy AI, NPC movement, or obstacle avoidance. Keywords NavigationAgent2D, NavigationRegion2D, pathfinding, NavigationServer, avoidance, baking, NavigationObstacle."
 ---
-
 ## Godot 4.7 Baseline
 
 - Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
@@ -11,42 +10,7 @@ description: "Expert blueprint for AI pathfinding (tower defense, RTS, stealth) 
 
 # Navigation & Pathfinding
 
-NavigationServer-powered pathfinding with avoidance and dynamic obstacles define robust AI movement.
-
-## Available Scripts
-
-### [dynamic_nav_manager.gd](../scripts/navigation_pathfinding_dynamic_nav_manager.gd)
-Expert runtime navigation mesh updates for moving platforms.
-
-### [server_navigation_setup.gd](../scripts/navigation_pathfinding_server_navigation_setup.gd)
-Low-level `NavigationServer3D` usage (bypassing nodes). Creates maps, regions, and registers navmeshes entirely via RID for maximum performance.
-
-### [async_dynamic_baking.gd](../scripts/navigation_pathfinding_async_dynamic_baking.gd)
-Expert logic for `bake_from_source_geometry_data_async`. Parses geometry on main thread then bakes in background to prevent procedural-gen stutters.
-
-### [memory_optimized_queries.gd](../scripts/navigation_pathfinding_memory_optimized_queries.gd)
-Pattern for reusing `NavigationPathQueryParameters3D` and `NavigationPathQueryResult3D` objects to prevent frame-by-frame GC allocations.
-
-### [terrain_cost_manager.gd](../scripts/navigation_pathfinding_terrain_cost_manager.gd)
-Controlling pathfinding logic using `region_set_enter_cost` and `region_set_travel_cost` to define high-penalty areas (mud, fire, water).
-
-### [low_level_avoidance.gd](../scripts/navigation_pathfinding_low_level_avoidance.gd)
-Direct RVO (Reciprocal Velocity Obstacles) registration using server-side agents. Uses `NavigationServer3D.agent_set_avoidance_callback` for high-performance avoidance.
-
-### [moving_obstacle_server.gd](../scripts/navigation_pathfinding_moving_obstacle_server.gd)
-Dynamic obstacle registration (e.g. for projectiles or rolling hazards) that push RVO agents away without full navmesh baking.
-
-### [nav_link_traversal.gd](../scripts/navigation_pathfinding_nav_link_traversal.gd)
-Advanced handling of `NavigationLink3D` for jumps, teleports, and elevators. Detects link traversal and overrides standard movement.
-
-### [layer_mask_navigation.gd](../scripts/navigation_pathfinding_layer_mask_navigation.gd)
-Architecture for multi-type navigation (e.g. Flying vs Walking vs Swimming) using 32-bit navigation layers and bitmasks.
-
-### [agent_stuck_detection.gd](../scripts/navigation_pathfinding_agent_stuck_detection.gd)
-Robust AI recovery logic. Detects distance-over-time stalls and triggers jitter recovery or path recalculation.
-
-### [group_avoidance_formations.gd](../scripts/navigation_pathfinding_group_avoidance_formations.gd)
-Coordinating crowd behavior. Strategies for avoiding individual agent clumping by using leader-relative target offsets.
+NavigationServer pathfinding, async bake, RVO avoidance, and stuck recovery — not editor intro recipes.
 
 ## NEVER Do in Navigation & Pathfinding
 
@@ -61,317 +25,129 @@ Coordinating crowd behavior. Strategies for avoiding individual agent clumping b
 - **NEVER leave 'enter_cost' at 0 for high-penalty areas** — Use costs to make AI prefer logical paths (roads over water) instead of just shortest geometric distance.
 - **NEVER ignore `agent_set_avoidance_callback`** — Always use the callback for safe velocity computation to avoid synchronization issues and "jittery" movement.
 
----
 
-### 2D Navigation
+## Decision Tree → Scripts
 
-```gdscript
-# Scene structure:
-# Node2D (Level)
-#   ├─ NavigationRegion2D
-#   │    └─ Polygon2D (draw walkable area)
-#   └─ CharacterBody2D (Enemy)
-#        └─ NavigationAgent2D
-```
+> **MANDATORY** for the chosen path. **Do NOT Load** editor-intro / Official Docs bootstrap recipes from this skill body (use Reference links when you need first-time region setup).
 
-**Setup NavigationRegion2D:**
-1. Add `NavigationRegion2D` node
-2. Create **New NavigationPolygon**
-3. Click "Edit" → Draw walkable area
-4. Bake navigation mesh
+| Need | Script |
+|------|--------|
+| Runtime / procedural bake without hitch | **MANDATORY** [async_dynamic_baking.gd](../scripts/navigation_pathfinding_async_dynamic_baking.gd) |
+| Agent stuck / jitter recovery | **MANDATORY** [agent_stuck_detection.gd](../scripts/navigation_pathfinding_agent_stuck_detection.gd) |
+| High-count RVO without nodes | **MANDATORY** [low_level_avoidance.gd](../scripts/navigation_pathfinding_low_level_avoidance.gd) |
+| Moving platforms / dynamic regions | [dynamic_nav_manager.gd](../scripts/navigation_pathfinding_dynamic_nav_manager.gd) |
+| RID-only maps/regions | [server_navigation_setup.gd](../scripts/navigation_pathfinding_server_navigation_setup.gd) |
+| Reused path query objects | [memory_optimized_queries.gd](../scripts/navigation_pathfinding_memory_optimized_queries.gd) |
+| Terrain enter/travel costs | [terrain_cost_manager.gd](../scripts/navigation_pathfinding_terrain_cost_manager.gd) |
+| Projectiles as RVO obstacles | [moving_obstacle_server.gd](../scripts/navigation_pathfinding_moving_obstacle_server.gd) |
+| Links (jump/teleport/elevator) | [nav_link_traversal.gd](../scripts/navigation_pathfinding_nav_link_traversal.gd) |
+| Walk / fly / swim layers | [layer_mask_navigation.gd](../scripts/navigation_pathfinding_layer_mask_navigation.gd) |
+| Crowd formation offsets | [group_avoidance_formations.gd](../scripts/navigation_pathfinding_group_avoidance_formations.gd) |
+| Smart agent wrapper | [smart_navigation_agent.gd](../scripts/navigation_pathfinding_smart_navigation_agent.gd) |
 
-### Basic AI Movement
+## Chase / Retarget Rule (never contradict NEVER)
 
-```gdscript
-extends CharacterBody2D
-
-@onready var nav_agent := $NavigationAgent2D
-@export var speed := 200.0
-
-var target_position: Vector2
-
-func _ready() -> void:
-    # Wait for navigation to be ready
-    call_deferred("setup_navigation")
-
-func setup_navigation() -> void:
-    await get_tree().physics_frame
-    nav_agent.target_position = target_position
-
-func _physics_process(delta: float) -> void:
-    if nav_agent.is_navigation_finished():
-        return
-    
-    var next_position := nav_agent.get_next_path_position()
-    var direction := (next_position - global_position).normalized()
-    
-    velocity = direction * speed
-    move_and_slide()
-
-func set_target(pos: Vector2) -> void:
-    target_position = pos
-    nav_agent.target_position = pos
-```
-
-## NavigationAgent Properties
+Do **not** assign `target_position` every physics frame. Retarget on a timer (~0.2s) or when the chased body moves beyond a distance threshold:
 
 ```gdscript
-# Path recalculation
-nav_agent.path_desired_distance = 10.0
-nav_agent.target_desired_distance = 10.0
-
-# Avoidance
-nav_agent.radius = 20.0
-nav_agent.avoidance_enabled = true
-
-# Performance
-nav_agent.path_max_distance = 500.0
-```
-
-## Advanced Patterns
-
-### Chase Player
-
-```gdscript
-extends CharacterBody2D
-
-@onready var nav_agent := $NavigationAgent2D
-@export var speed := 150.0
-@export var chase_range := 300.0
-
-var player: Node2D
-
-func _physics_process(delta: float) -> void:
-    if not player:
-        return
-    
-    var distance := global_position.distance_to(player.global_position)
-    
-    if distance <= chase_range:
-        nav_agent.target_position = player.global_position
-        
-        if not nav_agent.is_navigation_finished():
-            var next_pos := nav_agent.get_next_path_position()
-            var direction := (next_pos - global_position).normalized()
-            velocity = direction * speed
-            move_and_slide()
-```
-
-### Patrol Points
-
-```gdscript
-extends CharacterBody2D
-
-@onready var nav_agent := $NavigationAgent2D
-@export var patrol_points: Array[Vector2] = []
-@export var speed := 100.0
-
-var current_point_index := 0
-
-func _ready() -> void:
-    if patrol_points.size() > 0:
-        nav_agent.target_position = patrol_points[0]
-
-func _physics_process(delta: float) -> void:
-    if nav_agent.is_navigation_finished():
-        _go_to_next_patrol_point()
-        return
-    
-    var next_pos := nav_agent.get_next_path_position()
-    var direction := (next_pos - global_position).normalized()
-    velocity = direction * speed
-    move_and_slide()
-
-func _go_to_next_patrol_point() -> void:
-    current_point_index = (current_point_index + 1) % patrol_points.size()
-    nav_agent.target_position = patrol_points[current_point_index]
-```
-
-## 3D Navigation
-
-```gdscript
-extends CharacterBody3D
-
-@onready var nav_agent := $NavigationAgent3D
-@export var speed := 5.0
-
-func _physics_process(delta: float) -> void:
-    if nav_agent.is_navigation_finished():
-        return
-    
-    var next_position := nav_agent.get_next_path_position()
-    var direction := (next_position - global_position).normalized()
-    
-    velocity = direction * speed
-    move_and_slide()
-```
-
-## Dynamic Obstacles
-
-```gdscript
-# Add NavigationObstacle2D to moving objects
-# Scene:
-# CharacterBody2D (MovingPlatform)
-#   └─ NavigationObstacle2D
-
-# Navigation automatically updates around it
-```
-
-## Signals
-
-```gdscript
-func _ready() -> void:
-    nav_agent.velocity_computed.connect(_on_velocity_computed)
-    nav_agent.navigation_finished.connect(_on_navigation_finished)
-
-func _on_velocity_computed(safe_velocity: Vector2) -> void:
-    velocity = safe_velocity
-    move_and_slide()
-
-func _on_navigation_finished() -> void:
-    print("Reached destination")
-```
-
-## Best Practices
-
-### 1. Defer Navigation Setup
-
-```gdscript
-# ✅ Good - wait for navigation to initialize
-func _ready() -> void:
-    call_deferred("setup_nav")
-
-func setup_nav() -> void:
-    await get_tree().physics_frame
-    nav_agent.target_position = target
-```
-
-### 2. Check if Path Exists
-
-```gdscript
-if not nav_agent.is_target_reachable():
-    print("Target unreachable!")
-```
-
-### 3. Use Avoidance for Crowds
-
-```gdscript
-nav_agent.avoidance_enabled = true
-nav_agent.radius = 20.0
-nav_agent.max_neighbors = 10
-```
-
-## Expert Navigation Architectures
-
-### 1. Crowd Collision (Server-Side Avoidance)
-For massive crowds, bypass node-based overhead by communicating directly with `NavigationServer3D`. Configure native server-side agents with RVO (Reciprocal Velocity Obstacle) parameters like `neighbor_distance` and `max_neighbors`.
-
-```gdscript
-class_name CrowdAgent3D extends CharacterBody3D
-## A completely node-less avoidance agent using the NavigationServer3D API.
-
-@export var max_speed: float = 4.0
-var _server_agent_rid: RID
-
-func _ready() -> void:
-    # Create the agent on the server and assign it to the default map.
-    _server_agent_rid = NavigationServer3D.agent_create()
-    NavigationServer3D.agent_set_map(_server_agent_rid, get_world_3d().get_navigation_map())
-    
-    # Enable avoidance and set physical dimensions.
-    NavigationServer3D.agent_set_avoidance_enabled(_server_agent_rid, true)
-    NavigationServer3D.agent_set_radius(_server_agent_rid, 0.5)
-    NavigationServer3D.agent_set_max_speed(_server_agent_rid, max_speed)
-    
-    # Crowd Tuning: Configure neighbor detection.
-    NavigationServer3D.agent_set_neighbor_distance(_server_agent_rid, 50.0)
-    NavigationServer3D.agent_set_max_neighbors(_server_agent_rid, 20)
-    
-    # Time horizons: How far ahead to predict agent/obstacle collisions.
-    NavigationServer3D.agent_set_time_horizon_agents(_server_agent_rid, 1.0)
-    NavigationServer3D.agent_set_time_horizon_obstacles(_server_agent_rid, 0.5)
-    
-    # Bind callback to safely receive computed velocity.
-    NavigationServer3D.agent_set_avoidance_callback(_server_agent_rid, _on_velocity_computed)
+# Threshold retarget — not per-frame path spam
+const RETARGET_DIST := 1.5
+var _last_target: Vector3
 
 func _physics_process(_delta: float) -> void:
-    # Determine desired velocity towards target.
-    var preferred_velocity: Vector3 = Vector3.FORWARD * max_speed 
-    NavigationServer3D.agent_set_velocity(_server_agent_rid, preferred_velocity)
-
-func _on_velocity_computed(safe_velocity: Vector3) -> void:
-    velocity = safe_velocity
+    var desired := prey.global_position
+    if desired.distance_to(_last_target) >= RETARGET_DIST:
+        nav_agent.target_position = desired
+        _last_target = desired
+    if nav_agent.is_navigation_finished():
+        return
+    var next := nav_agent.get_next_path_position()
+    velocity = (next - global_position).normalized() * speed
     move_and_slide()
-
-func _exit_tree() -> void:
-    if _server_agent_rid.is_valid():
-        NavigationServer3D.free_rid(_server_agent_rid)
 ```
 
-### 2. Projected Obstacles (Dynamic NavMesh Carving)
-To remove areas from the navigation mesh dynamically (e.g., impact craters), inject a "Projected Obstruction" into the `NavigationMeshSourceGeometryData3D`. Setting `carve` to `true` cuts a hole precisely matching the geometry.
+## Available Scripts
 
-```gdscript
-class_name NavMeshCarver3D extends Node3D
-## Dynamically carves holes into the NavMesh for permanent environmental changes.
+### [async_dynamic_baking.gd](../scripts/navigation_pathfinding_async_dynamic_baking.gd)
+`bake_from_source_geometry_data_async` — parse on main, bake off-thread.
 
-@export var nav_region: NavigationRegion3D
+### [agent_stuck_detection.gd](../scripts/navigation_pathfinding_agent_stuck_detection.gd)
+Distance-over-time stall detection and recovery.
 
-var _source_geometry := NavigationMeshSourceGeometryData3D.new()
-var _is_baking: bool = false
+### [low_level_avoidance.gd](../scripts/navigation_pathfinding_low_level_avoidance.gd)
+Server-side RVO agents + avoidance callbacks.
 
-func carve_projectile_impact(impact_pos: Vector3, radius: float) -> void:
-    if _is_baking: return
-    _is_baking = true
-    _source_geometry.clear()
-    
-    # Parse existing geometry and add a carved obstruction.
-    NavigationServer3D.parse_source_geometry_data(nav_region.navigation_mesh, _source_geometry, nav_region)
-    
-    var outline := PackedVector3Array([
-        impact_pos + Vector3(-radius, 0, -radius),
-        impact_pos + Vector3(radius, 0, -radius),
-        impact_pos + Vector3(radius, 0, radius),
-        impact_pos + Vector3(-radius, 0, radius)
-    ])
-    
-    _source_geometry.add_projected_obstruction(outline, impact_pos.y, 10.0, true)
-    
-    # Bake asynchronously to prevent frame stuttering.
-    NavigationServer3D.bake_from_source_geometry_data_async(
-        nav_region.navigation_mesh, 
-        _source_geometry, 
-        _on_bake_finished
-    )
+### [dynamic_nav_manager.gd](../scripts/navigation_pathfinding_dynamic_nav_manager.gd)
+Runtime navmesh updates for moving platforms.
 
-func _on_bake_finished() -> void:
-    NavigationServer3D.region_set_navigation_mesh(nav_region.get_rid(), nav_region.navigation_mesh)
-    _is_baking = false
-```
+### [server_navigation_setup.gd](../scripts/navigation_pathfinding_server_navigation_setup.gd)
+Node-less maps/regions via NavigationServer RIDs.
 
-### 3. NavMesh Performance Profiler (Bake-Time Benchmarks)
-Benchmark bake times and topological complexity (polygon/edge counts) using `Time.get_ticks_usec()` and `NavigationServer3D.get_process_info()`.
+### [memory_optimized_queries.gd](../scripts/navigation_pathfinding_memory_optimized_queries.gd)
+Reuse path query parameter/result objects.
 
-```gdscript
-class_name NavMeshProfiler extends Node
-## A benchmarking tool to validate NavMesh complexity and bake times.
+### [terrain_cost_manager.gd](../scripts/navigation_pathfinding_terrain_cost_manager.gd)
+`enter_cost` / `travel_cost` for preferred routes.
 
-func run_benchmark(nav_mesh: NavigationMesh, source_geometry: NavigationMeshSourceGeometryData3D) -> void:
-    var start_time_usec: float = Time.get_ticks_usec()
-    
-    # Synchronous bake for linear benchmarking (main thread stall expected).
-    NavigationServer3D.bake_from_source_geometry_data(nav_mesh, source_geometry)
-    
-    var elapsed_ms: float = (Time.get_ticks_usec() - start_time_usec) / 1000.0
-    var poly_count: int = NavigationServer3D.get_process_info(NavigationServer3D.INFO_POLYGON_COUNT)
-    var edge_count: int = NavigationServer3D.get_process_info(NavigationServer3D.INFO_EDGE_COUNT)
-    
-    print("Bake Time: %f ms | Polygons: %d | Edges: %d" % [elapsed_ms, poly_count, edge_count])
-```
+### [moving_obstacle_server.gd](../scripts/navigation_pathfinding_moving_obstacle_server.gd)
+Dynamic RVO obstacles without full rebake.
+
+### [nav_link_traversal.gd](../scripts/navigation_pathfinding_nav_link_traversal.gd)
+NavigationLink jump/teleport/elevator handling.
+
+### [layer_mask_navigation.gd](../scripts/navigation_pathfinding_layer_mask_navigation.gd)
+Multi-domain navigation layers (walk/fly/swim).
+
+### [group_avoidance_formations.gd](../scripts/navigation_pathfinding_group_avoidance_formations.gd)
+Leader-relative offsets to reduce clumping.
+
+### [smart_navigation_agent.gd](../scripts/navigation_pathfinding_smart_navigation_agent.gd)
+Production NavigationAgent wrapper patterns.
+
+## Expert Pointers
+
+- Prefer Official Docs intros for first NavigationRegion bake UI; this skill owns async bake, server RVO, costs, and stuck recovery.
+- Thousands of simple agents → RID server path ([server_navigation_setup.gd](../scripts/navigation_pathfinding_server_navigation_setup.gd) + [low_level_avoidance.gd](../scripts/navigation_pathfinding_low_level_avoidance.gd)), not one NavigationAgent node each.
 
 ## Reference
-- [Godot Docs: Navigation](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_introduction_2d.html)
 
+> Progressive disclosure: open Official Documentation links only when researching a specific API;
+> load Related Skills when routing work to a peer domain — do not preload the whole lattice.
 
-### Related
-- Master Skill: [godot-master](../SKILL.md)
+### Official Documentation
+- [Navigation introduction (2D)](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_introduction_2d.html) — Minimal NavigationRegion2D + NavigationAgent2D setup, baking walkable polygons, and first-frame readiness.
+- [Navigation introduction (3D)](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_introduction_3d.html) — Parallel 3D bootstrap with NavigationRegion3D / NavigationAgent3D and mesh baking expectations.
+- [Using NavigationAgents](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationagents.html) — target_position, get_next_path_position, avoidance radius, and velocity_computed safe-velocity flow.
+- [Using NavigationServers](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationservers.html) — RID maps/regions/agents for node-less crowds and custom server setups.
+- [Using navigation meshes](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationmeshes.html) — Parse/bake source geometry, async baking, and projected obstructions for dynamic carving.
+- [Using NavigationRegions](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationregions.html) — Region ownership, enter/travel costs, and chunked/runtime region updates.
+- [Using NavigationObstacles](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationobstacles.html) — RVO push obstacles vs bake-time carving without full remesh every frame.
+- [Using NavigationLinks](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationlinks.html) — Jump/teleport/elevator edges and manual link traversal on agents.
+- [Using navigation layers](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationlayers.html) — 32-bit layer bitmasks for walk/fly/swim (or faction) path filters.
+- [Using navigation path query objects](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationpathqueryobjects.html) — Reuse NavigationPathQueryParameters/Result to avoid per-frame GC in crowds.
+- [Optimizing navigation performance](https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_optimizing_performance.html) — Bake cost, agent/obstacle counts, and server query budgets for large AI populations.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — Path corners become CharacterBody velocity via move_and_slide; agent scripts assume a body parent.
+- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — Collision layers/shapes still block bodies; navmesh is not a physics substitute for walls and triggers.
+- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — 3D agents share the same split: NavigationServer paths vs RigidBody/CharacterBody collision and slopes.
+
+#### Complements
+- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — Line-of-sight, aim cones, and hit prediction sit beside pathfinding for chase/stealth AI.
+- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — Patrol/chase/search states own when to retarget NavigationAgent and when to stop.
+- [godot-tilemap-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md) — TileMap/TileSet geometry often feeds NavigationPolygon baking in 2D levels.
+- [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md) — Static meshes and GridMaps are the usual NavigationMesh source geometry for baked regions.
+- [godot-procedural-generation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md) — Runtime layouts require parse + bake_from_source_geometry_data_async after generation.
+- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Crowds push toward server RIDs, query reuse, and avoidance tuning called out in this skill.
+
+#### Downstream / consumers
+- [godot-genre-rts](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rts/SKILL.md) — Unit move commands and RVO crowds consume NavigationAgent/Server patterns directly.
+- [godot-genre-tower-defense](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-tower-defense/SKILL.md) — Lane/path enemies and dynamic blockers depend on regions, costs, and obstacle updates.
+- [godot-genre-stealth](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-stealth/SKILL.md) — Guard patrols and investigate points are NavigationAgent routes gated by detection state.
+- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Engage/kite/flank movement issues new targets and stuck recovery on top of paths.
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Simulate chase reachability, travel-time bands, and crowd pressure when tuning AI difficulty.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for this Domain Skill.

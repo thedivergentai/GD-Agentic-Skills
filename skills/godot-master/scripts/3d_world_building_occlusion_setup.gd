@@ -21,3 +21,15 @@ func setup_room_occlusion(room_node: Node3D) -> void:
 ## Don't over-use complex occluders. Occlusion culling itself has a CPU cost.
 ## Best practice: Only occlusion-cull Large, Opaque objects (Walls, Ground, Big Rocks)
 ## that are guaranteed to hide many smaller objects behind them.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/occlusion_culling.html
+# - https://docs.godotengine.org/en/stable/classes/class_occluderinstance3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_quadoccluder3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — occlusion CPU cost vs draw-call wins
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md — opaque occluders vs thin emissive/transparent walls
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md
+# =============================================================================

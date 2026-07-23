@@ -65,3 +65,14 @@ func execute_wall_jump(body: CharacterBody2D, input_direction: float) -> bool:
 ##   if Input.is_action_just_pressed("jump"):
 ##     if not wall_jump.execute_wall_jump(self, input_direction):
 ##       # Regular jump
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_characterbody2d.html
+# - https://docs.godotengine.org/en/stable/classes/class_kinematiccollision2d.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/using_character_body_2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-metroidvania/SKILL.md — directional wall jump abilities
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — wall jump input windows
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md
+# =============================================================================

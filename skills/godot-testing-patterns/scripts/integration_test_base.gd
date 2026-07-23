@@ -21,7 +21,7 @@ func after_all() -> void:
 func before_each() -> void:
 	# Setup clean environment
 	_level_instance = Node2D.new()
-	add_child_autofree(_level_instance) # GUT helper to free on teardown
+	add_child_autofree(_level_instance) # GdUnit4 autofree helper on teardown
 	
 	# Mock or Real Player
 	_player = CharacterBody2D.new()
@@ -44,3 +44,14 @@ func simulate_frames(frames: int) -> void:
 ## EXPERT USAGE:
 ## extends IntegrationTestBase
 ## func test_combat(): ...
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/nodes_and_scene_instances.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/scene_tree.html
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md — clean scene fixtures per test
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md — test/unit vs integration layout
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-testing-patterns/SKILL.md
+# =============================================================================

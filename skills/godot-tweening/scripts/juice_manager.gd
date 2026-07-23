@@ -50,3 +50,14 @@ func curve_animate(target: Node2D, destination: Vector2) -> void:
 ## a 'Death' fade) to prevent property flickering.
 ## Use 'set_parallel()' to trigger multi-property 'Juice' (Scale, 
 ## Rotation, and Color) in a single rhythmic burst.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_methodtweener.html
+# - https://docs.godotengine.org/en/stable/classes/class_curve.html
+# - https://docs.godotengine.org/en/stable/tutorials/math/interpolation.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md — tween_method driving shader distortion
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — Curve/JuiceConfig resource ownership
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md
+# =============================================================================

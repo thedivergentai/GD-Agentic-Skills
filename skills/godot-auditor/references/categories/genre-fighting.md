@@ -16,3 +16,14 @@
 - NEVER use client-side hit detection for netplay; strictly use **rollback netcode** or server validation to prevent desyncs.
 - NEVER use standard TCP for multiplayer; strictly use **UDP/ENet** to avoid head-of-line blocking during latency spikes.
 - NEVER rely on the SceneTree for fighter transforms in netplay; strictly manage positions in a **serializable data buffer**.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-fighting/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — simulate balance impact of structural fixes
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

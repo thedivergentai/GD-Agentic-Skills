@@ -17,3 +17,14 @@ func tweak_jump_height(new_height: float) -> void:
 		# If you need immediate visual feedback while paused:
 		if not is_playing():
 			seek(current_animation_position, true)
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_animation.html
+# - https://docs.godotengine.org/en/stable/classes/class_animationplayer.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — safe runtime track_set_key_value edits
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md — jump-height retarget without new clips
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md
+# =============================================================================

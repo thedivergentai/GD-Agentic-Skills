@@ -10,3 +10,14 @@
 - **NEVER use floating point math for exact currency counts** — `0.1 + 0.2` might equal `0.30000000000000004`, leading to discrepancies. Use `int` for cents/smallest units.
 - **NEVER ignore "Transaction Logs" in serious RPGs** — If money disappears, you need a history of events to debug whether it was a bug or a legitimate game event.
 - **NEVER give rewards without checking "Max Limit"** — If a player is capped at 999,999 gold, adding 1,000 should result in 999,999, not a wrapped negative number.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — simulate balance impact of structural fixes
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

@@ -39,3 +39,13 @@ func _physics_process(delta: float) -> void:
 ## EXPERT USAGE:
 ## Assign Player to 'target'. Ensure Camera2D is NOT child of player 
 ## (or use RemoteTransform2D) to avoid jitter.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_camera2d.html
+# - https://docs.godotengine.org/en/stable/tutorials/2d/2d_movement.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — look-ahead and smoothing for platformers
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md — velocity-driven camera offset
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md
+# =============================================================================

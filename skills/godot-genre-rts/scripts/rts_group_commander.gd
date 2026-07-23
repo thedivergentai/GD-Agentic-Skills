@@ -15,3 +15,12 @@ func order_move_group(group_id: StringName, target_pos: Vector3) -> void:
         &"move_to",    # Target method in unit script
         target_pos     # Arg
     )
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/groups.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/using_servers.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — decoupled group command broadcast
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rts/SKILL.md
+# =============================================================================

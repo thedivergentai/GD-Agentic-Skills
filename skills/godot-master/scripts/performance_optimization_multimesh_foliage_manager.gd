@@ -40,3 +40,14 @@ func _get_standard_grass_mesh() -> Mesh:
 ## hide the entire MultiMesh node when off-screen.
 ## NEVER call 'get_node()' or 'find_child()' in '_process'; always 
 ## cache references in '@onready' or unique instance IDs.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/performance/using_multimesh.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/visibility_ranges.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/gpu_optimization.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md — outdoor foliage budgets and LOD handoff
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md — wind/sway shaders on MultiMesh instances
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md
+# =============================================================================

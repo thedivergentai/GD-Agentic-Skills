@@ -60,3 +60,14 @@ func set_blend_amount(blend_var: String, amount: float) -> void:
 ## 
 ## # Blend space control
 ## travel_mgr.set_blend_position("MovementBlend", Vector2(velocity.x, velocity.y))
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_animationnodestatemachineplayback.html
+# - https://docs.godotengine.org/en/stable/classes/class_animationnodestatemachinetransition.html
+# - https://docs.godotengine.org/en/stable/classes/class_animationtree.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md — cache playback; separate gameplay FSM
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — condition flags from events
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-tree-mastery/SKILL.md
+# =============================================================================

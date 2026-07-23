@@ -10,3 +10,13 @@
 - **NEVER rely on `TileMap.set_cell()` for large-scale updates** — Updating 10,000 cells individually is slow. Prepare a `TileMapPattern` and use `set_pattern()` or `set_cells_terrain_connect()` for batch updates.
 - **NEVER forget to bake Navigation at the end** — Procedurally generated worlds need their navmeshes rebaked at runtime or the AI will walk into walls.
 - **NEVER ignore data serialization** — If you generate a world, you must be able to save the *seed* and any *player modifications*. Don't try to save the entire raw chunk state if avoidable.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

@@ -43,3 +43,15 @@ static func build_triplanar(albedo: Texture2D, normal: Texture2D = null) -> Stan
 ## EXPERT USAGE:
 ## var mat = PBRMaterialBuilder.build(load("grass_c.png"), load("grass_n.png"))
 ## $MeshInstance.material_override = mat
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/standard_material_3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_standardmaterial3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_ormmaterial3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_images.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — share built materials as Resources
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md — triplanar/custom paths beyond StandardMaterial3D
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md
+# =============================================================================

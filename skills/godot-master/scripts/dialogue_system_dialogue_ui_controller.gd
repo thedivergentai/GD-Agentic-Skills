@@ -20,3 +20,14 @@ func _on_line_started(node: DialogueNode):
 func _clear_options():
 	for child in options_container.get_children():
 		child.queue_free()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_control.html
+# - https://docs.godotengine.org/en/stable/classes/class_button.html
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — options container layout
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — listen to manager signals
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-dialogue-system/SKILL.md
+# =============================================================================

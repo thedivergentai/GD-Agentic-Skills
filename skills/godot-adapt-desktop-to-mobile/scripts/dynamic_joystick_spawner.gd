@@ -41,3 +41,14 @@ func _input(event: InputEvent) -> void:
         handle.position = clamped_drag
         var normalized_direction = clamped_drag / max_radius
         joystick_updated.emit(normalized_direction)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/input_examples.html
+# - https://docs.godotengine.org/en/stable/classes/class_inputeventscreentouch.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/mouse_and_input_coordinates.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — left-half touch zones
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — dynamic Control spawn anchors
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md
+# =============================================================================

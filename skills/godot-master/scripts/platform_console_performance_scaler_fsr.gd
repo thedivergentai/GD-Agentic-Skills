@@ -20,3 +20,14 @@ func apply_performance_profile(viewport: Viewport, profile: StringName = &"balan
 			viewport.fsr_sharpness = 0.1
 
 ## Expert: Lower mipmap bias automatically follows scaling_3d_scale in Godot 4.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/resolution_scaling.html
+# - https://docs.godotengine.org/en/stable/tutorials/rendering/multiple_resolutions.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — when FSR2 beats lowering effects
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — validating locked FPS after scale changes
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-console/SKILL.md
+# =============================================================================

@@ -20,3 +20,15 @@ func spawn_server_body(xform: Transform3D) -> RID:
 func _exit_tree():
 	for rid in server_bodies:
 		PhysicsServer3D.free_rid(rid)
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/performance/using_servers.html
+# - https://docs.godotengine.org/en/stable/classes/class_physicsserver3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_rid.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — node physics baseline before RID body_create
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — when SceneTree bodies become too expensive
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-server-architecture/SKILL.md
+# =============================================================================

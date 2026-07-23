@@ -26,3 +26,13 @@ func setup_focus_routing() -> void:
             
     if not buttons.is_empty():
         (buttons[0] as Control).grab_focus()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/ui/gui_navigation.html
+# - https://docs.godotengine.org/en/stable/classes/class_gridcontainer.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — FOCUS_ALL + focus neighbors for pads
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — D-pad ui_* actions reach Controls
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-party/SKILL.md
+# =============================================================================

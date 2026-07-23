@@ -6,6 +6,9 @@ extends Node
 
 class_name DesktopInputAdapter
 
+## Emitted on PC when FPS/orbit look needs MouseCaptureLook — connect in Player/Orchestrator.
+signal mouse_look_bridge_requested
+
 # Configuration -> Action Map
 # Maps "mobile_action_name": [Keycodes]
 var key_map = {
@@ -33,11 +36,9 @@ func _inject_input_map() -> void:
                 InputMap.action_add_event(action, ev)
 
 func _enable_mouse_look() -> void:
-    # If the game uses virtual joystick aiming on mobile,
-    # we want mouse aiming on desktop.
-    
-    # This is often handled in the Player script, but we can emit signals
-    pass
+    # Top-down aim: use get_aim_vector() — no capture needed.
+    # FPS/orbit: listen for this signal and attach MouseCaptureLook on the camera rig.
+    mouse_look_bridge_requested.emit()
 
 func get_aim_vector(current_pos: Vector2) -> Vector2:
     if OS.has_feature("pc") or OS.has_feature("web_pc"):
@@ -50,3 +51,15 @@ func get_aim_vector(current_pos: Vector2) -> Vector2:
 ## EXPERT USAGE:
 ## AutoLoad this script. Use `DesktopInputAdapter.get_aim_vector()` in player code
 ## to support both Joystick (mobile) and Mouse (desktop) seamlessly.
+## Connect `mouse_look_bridge_requested` → enable `MouseCaptureLook` when relative motion is required.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_inputmap.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/input_examples.html
+# - https://docs.godotengine.org/en/stable/tutorials/export/feature_tags.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — injecting PC events onto mobile actions
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md — action names shared with touch controls
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-mobile-to-desktop/SKILL.md
+# =============================================================================

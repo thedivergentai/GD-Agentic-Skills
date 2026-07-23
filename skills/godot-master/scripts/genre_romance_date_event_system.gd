@@ -77,3 +77,15 @@ func _apply_outcome_rewards(char_id: String, outcome: Outcome) -> void:
 		Outcome.DISASTER:
 			AffectionManager.add_stat(char_id, AffectionManager.RelationStat.TRUST, -5)
 			AffectionManager.add_stat(char_id, AffectionManager.RelationStat.ATTRACTION, -2)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/groups.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — DateLocation preference weights
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — repetition penalty / success thresholds
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-dialogue-system/SKILL.md — date interaction dialogue keys
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-romance/SKILL.md
+# =============================================================================

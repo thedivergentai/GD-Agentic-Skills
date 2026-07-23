@@ -72,3 +72,14 @@ func clear_pool(scene_path: String = "") -> void:
 ##
 ## # Return to pool
 ## pool.release(bullet)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_packedscene.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/nodes_and_scene_instances.html
+# - https://docs.godotengine.org/en/stable/classes/class_resourceloader.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — acquire/release budgets for bullets/VFX
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — scene_path keys as Resource registry entries
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md
+# =============================================================================

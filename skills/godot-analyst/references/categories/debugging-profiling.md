@@ -14,3 +14,15 @@ Benchmark for 'Health'. A visionary project is always transparent.
 
 ---
 *Analyst & Auditor update v0.0.7*
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/scripting/debug/overview_of_debugging_tools.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/debug/the_profiler.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/debug/custom_performance_monitors.html
+- https://docs.godotengine.org/en/stable/classes/class_performance.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

@@ -16,3 +16,13 @@ func _export_end() -> void:
 	pass
 
 ## Rule: Use EditorExportPlugin to unify export workflows for all team members.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_editorexportplugin.html
+# - https://docs.godotengine.org/en/stable/tutorials/export/exporting_projects.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — EditorPlugin / export plugin APIs
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — manifest/zip payload layout
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md
+# =============================================================================

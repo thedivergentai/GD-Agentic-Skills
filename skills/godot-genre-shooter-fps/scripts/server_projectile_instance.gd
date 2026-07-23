@@ -21,3 +21,13 @@ func update_visual(xform: Transform3D) -> void:
 func _exit_tree() -> void:
     if _bullet_rid.is_valid():
         RenderingServer.free_rid(_bullet_rid)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/performance/using_servers.html
+# - https://docs.godotengine.org/en/stable/classes/class_renderingserver.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md - RID visual bullets without nodes
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md - server-authoritative spawn, client visuals only
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md
+# =============================================================================

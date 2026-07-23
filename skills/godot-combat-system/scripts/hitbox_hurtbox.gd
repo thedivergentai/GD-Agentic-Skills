@@ -31,3 +31,16 @@ func _apply_hit_stop() -> void:
 ## EXPERT NOTE:
 ## Time-scale manipulation for hit-stop must use a SceneTreeTimer 
 ## with 'ignore_time_scale' set to true, or the timer itself will freeze!
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/using_area_2d.html — Area2D hit/hurt overlap pattern
+# - https://docs.godotengine.org/en/stable/classes/class_area2d.html — area_entered damage delivery
+# - https://docs.godotengine.org/en/stable/classes/class_scenetreetimer.html — hit-stop timer with ignore_time_scale
+# - https://docs.godotengine.org/en/stable/classes/class_engine.html — Engine.time_scale for hit-stop
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md — layers/masks for hit vs hurt volumes
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — surface hit events without UI coupling
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — validate hit-stop/i-frame TTK impact
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md
+# =============================================================================

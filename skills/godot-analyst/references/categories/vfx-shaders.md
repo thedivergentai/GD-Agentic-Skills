@@ -22,3 +22,14 @@ The light-bending spirit of the vision. This rubric assesses the project's use o
 
 ## 🌟 Visionary's Final Decree
 To reach **Elite** status, your VFX must be 'Generative'. They should not rely on pre-baked textures alone. Use **VisualShader** or code to create beauty from nothing but math. If an effect doesn't react to the world's light, it is **Slop**. A visionary effect is a bridge between art and math.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_styleguide.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

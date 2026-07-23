@@ -30,3 +30,13 @@ func _process(delta: float) -> void:
     # Smoothlerp the actual camera zoom towards the target scroll wheel tick
     zoom.x = lerpf(zoom.x, target_zoom, delta * interpolation_speed)
     zoom.y = zoom.x
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/input_examples.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — Camera2D/3D zoom contracts
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — mouse wheel as discrete InputEvents
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-mobile-to-desktop/SKILL.md
+# =============================================================================

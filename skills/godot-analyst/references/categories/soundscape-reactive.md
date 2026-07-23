@@ -22,3 +22,13 @@ The atmosphere's pulse. This rubric measures how the project's audio environment
 
 ## 🌟 Visionary's Final Decree
 A visionary soundscape is 'Adaptive'. It should breathe with the player. To reach **Elite** status, use **AudioEffectPlayback** to manipulate the soundscape procedurally. If I hear the 'Loop' in your music, you have **Slop**. The vision should be an infinite song.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/classes/class_performance.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/debug/custom_performance_monitors.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

@@ -22,3 +22,13 @@ func _on_tick_timer_timeout() -> void:
 ## [SKILL NOTICE]: Use a dedicated 'Timer' for simulation steps. 
 ## This allows the game to run at 2x or 5x speed without affecting 
 ## visual frame rates or audio.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_timer.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — sim_tick consumers without polling
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — speed multipliers vs visual FPS
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-simulation/SKILL.md
+# =============================================================================

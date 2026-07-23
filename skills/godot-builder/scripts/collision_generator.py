@@ -28,3 +28,16 @@ func _init():
     os.remove(script)
 
 if __name__ == "__main__": main()
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_concavepolygonshape3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_mesh.html
+# - https://docs.godotengine.org/en/stable/classes/class_staticbody3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_resourcesaver.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — trimesh vs convex tradeoffs and layers
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md — attach generated bodies to level scenes
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-builder/SKILL.md
+# =============================================================================

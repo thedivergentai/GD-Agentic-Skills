@@ -42,3 +42,15 @@ func _on_request_completed(result: int, response_code: int, _headers: PackedStri
 		match_found.emit(data.ip, int(data.port))
 	else:
 		match_failed.emit("Malformed matchmaker response")
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/networking/http_client_class.html
+# - https://docs.godotengine.org/en/stable/classes/class_httprequest.html
+# - https://docs.godotengine.org/en/stable/tutorials/networking/ssl_certificates.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md — connect ENet/WebSocket after matchmaker handoff
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-web/SKILL.md — HTTPS matchmaker from browser builds
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-server-architecture/SKILL.md
+# =============================================================================

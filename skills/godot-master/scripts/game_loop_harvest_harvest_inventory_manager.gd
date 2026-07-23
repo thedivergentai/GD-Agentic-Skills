@@ -30,3 +30,15 @@ func consume_resource(resource_name: String, amount: int) -> bool:
 	inventory[resource_name] -= amount
 	inventory_updated.emit(resource_name, inventory[resource_name])
 	return true
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html — inventory_updated for UI decoupling
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html — hub receives harvested; UI listens
+# - https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html — inventory dict belongs in save payload
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md — replace dict hub with full stacking inventory
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — inventory_updated bus patterns
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md — consume_resource for sinks/crafting
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-game-loop-harvest/SKILL.md
+# =============================================================================

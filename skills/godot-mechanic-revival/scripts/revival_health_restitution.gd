@@ -19,3 +19,14 @@ func apply_revive(target: Node) -> void:
 		target.set_invincible(false)
 
 ## Rule: Invincibility frames (I-frames) are mandatory after revival to prevent 'Death Loops'.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_tween.html — I-frame modulate pulse loops
+# - https://docs.godotengine.org/en/stable/classes/class_scenetreetimer.html — i_frame_duration timeout
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md — set_invincible / health restore through stats
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md — interruptible revive VFX tweens
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — prove I-frame TTK impact
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-mechanic-revival/SKILL.md
+# =============================================================================

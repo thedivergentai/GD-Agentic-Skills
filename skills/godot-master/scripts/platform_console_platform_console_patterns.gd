@@ -57,3 +57,15 @@ func process_combat_frame() -> void:
 # EXPERT NOTE: Map inputs to specific players in local coop or split-screen.
 func setup_player_authority(player_node: Node, device_id: int) -> void:
     player_node.set_multiplayer_authority(device_id)
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/controllers_gamepads_joysticks.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/controller_features.html
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — get_vector deadzones and joypad slots
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-party/SKILL.md — multi-pad active player polling
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-console/SKILL.md
+# =============================================================================

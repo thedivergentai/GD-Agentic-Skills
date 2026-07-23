@@ -38,227 +38,127 @@ Resource scarcity, needs management, and progression through crafting define sur
 
 ---
 
-## 🛠 Expert Components (scripts/)
+## Expert Components (scripts/)
 
-### Original Expert Patterns
-- [inventory_slot_resource.gd](../scripts/genre_survival_inventory_slot_resource.gd) - Data-driven inventory slot model using Resources for seamless serialization and durability tracking.
-- [survival_patterns.gd](../scripts/genre_survival_survival_patterns.gd) - 10 Essential Survival Expert Patterns (Decay scaling, Environment tweens, MultiMesh optimization).
+> **MANDATORY**: Prefer these scripts over inline stubs. Do not paste `pass` architectures into scenes.
 
-### Modular Components
-- [interactable.gd](../scripts/genre_survival_interactable.gd) - Universal interface for harvesting, picking up items, and world triggers.
-- [inventory_data.gd](../scripts/genre_survival_inventory_data.gd) - Core business logic for grid-based inventories and stacking.
-- [inventory_slot_data.gd](../scripts/genre_survival_inventory_slot_data.gd) - Lightweight data container for UI-to-Logic inventory communication.
-- [inventory_data.gd](../scripts/genre_survival_inventory_data.gd) - High-performance Resource-based storage with stack limits and metadata support.
-- [inventory_data.gd](../scripts/genre_survival_inventory_data.gd) - Master item definition for weight, stack-size, and consumption effects (Resource-based).
+### [survival_patterns.gd](../scripts/genre_survival_survival_patterns.gd)
+**MANDATORY first read** — Activity-scaled vitals, MultiMesh populate, threaded chunk load, WorkerThreadPool noise chunks (`generate_noise_chunk_async`), GridMap snap/place, Persist collect, deep `duplicate(true)`.
+
+### [status_depletion_manager.gd](../scripts/genre_survival_status_depletion_manager.gd)
+**MANDATORY for needs** — Activity-scaled hunger/thirst in `_physics_process` (aligns with NEVER: no constant decay).
+
+### [inventory_data.gd](../scripts/genre_survival_inventory_data.gd)
+Core Resource-based grid inventory: stack limits, metadata, add/remove.
+
+### [inventory_slot_data.gd](../scripts/genre_survival_inventory_slot_data.gd)
+Lightweight UI↔logic slot DTO.
+
+### [inventory_slot_resource.gd](../scripts/genre_survival_inventory_slot_resource.gd)
+Serializable slot Resource with durability tracking.
+
+### [modular_inventory_controller.gd](../scripts/genre_survival_modular_inventory_controller.gd)
+Controller wiring inventory data to UI signals.
+
+### [interactable.gd](../scripts/genre_survival_interactable.gd)
+Universal harvest / pickup / world-trigger interface.
+
+### [crafting_recipe_processor.gd](../scripts/genre_survival_crafting_recipe_processor.gd)
+Ingredient check → consume → grant result (discovery-friendly).
 
 ---
 
-| Phase | Skills | Purpose |
-|-------|--------|---------|
-| 1. Data | `resources`, `custom-resources` | Item data (weight, stack size), Recipes |
-| 2. UI | `grid-containers`, `drag-and-drop` | Inventory management, crafting menu |
-| 3. World | `tilemaps`, `noise-generation` | Procedural terrain, resource spawning |
-| 4. Logic | `state-machines`, `signals` | Player stats (Needs), Interaction system |
-| 5. Save | `file-system`, `json-serialization` | Saving world state, inventory, player stats |
+## Decision Tree — Survival Systems
 
-## Architecture Overview
+| Need | Route |
+|------|-------|
+| Item / recipe / durability data | Custom **Resource** + [inventory_slot_resource.gd](../scripts/genre_survival_inventory_slot_resource.gd) |
+| Bag / stack / weight | [inventory_data.gd](../scripts/genre_survival_inventory_data.gd) + [modular_inventory_controller.gd](../scripts/genre_survival_modular_inventory_controller.gd) — weight caps / drag-drop UI → **godot-inventory-system** (Do NOT re-teach grid UI here) |
+| Hunger / thirst | [status_depletion_manager.gd](../scripts/genre_survival_status_depletion_manager.gd) — set `sprinting` from movement |
+| Harvest / open / pickup | [interactable.gd](../scripts/genre_survival_interactable.gd) |
+| Craft | [crafting_recipe_processor.gd](../scripts/genre_survival_crafting_recipe_processor.gd) |
+| Base build snap | [survival_patterns.gd](../scripts/genre_survival_survival_patterns.gd) `place_if_empty` / GridMap |
+| Forest foliage | MultiMesh via `populate_nature` — never 10k MeshInstance3D |
+| Chunk stream | `load_world_chunk` threaded path in survival_patterns |
+| Procedural noise / biomes at scale | `generate_noise_chunk_async` in survival_patterns — or **MANDATORY** [godot-procedural-generation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md) when terrain exceeds chunk helpers |
 
-### 1. Item Data (Resource-based)
-Everything in the inventory is an Item.
+| Phase | Peer skills | Purpose |
+|-------|-------------|---------|
+| 1. Data | godot-resource-data-patterns | Item/recipe Resources |
+| 2. UI | godot-ui-containers, godot-inventory-system | Grid + drag/drop |
+| 3. World | godot-procedural-generation, godot-3d-world-building | Noise, GridMap |
+| 4. Logic | godot-signal-architecture, godot-state-machine-advanced | Needs + interaction |
+| 5. Save | godot-save-load-systems | World + inventory + recipes |
 
-```gdscript
-# item_data.gd
-extends Resource
-class_name ItemData
+## Key Mechanics (pointers, not tutorials)
 
-@export var id: String
-@export var name: String
-@export var icon: Texture2D
-@export var max_stack: int = 64
-@export var weight: float = 1.0
-@export var consumables: Dictionary # { "hunger": 10, "health": 5 }
-```
+### Needs (activity-scaled)
+Wire movement → `StatusDepletionManager.sprinting`. Empty vitals → gradual HP drain + warnings (never instant death). See script — do not reintroduce constant `decay_rate` in `_process`.
 
-### 2. Inventory System
-A grid-based data structure.
+### Tiered Tool Scaling
+Stone Axe 1 yield / Steel Axe 5 yield / proximity Auto-Saw — encode as item Resource metadata, not hardcoded harvest scripts.
 
-```gdscript
-# inventory.gd
-extends Node
-
-signal inventory_updated
-
-var slots: Array[ItemSlot] = [] # Array of Resources or Dictionaries
-@export var size: int = 20
-
-func add_item(item: ItemData, amount: int) -> int:
-    # 1. Check for existing stacks
-    # 2. Add to empty slots
-    # 3. Return amount remaining (that couldn't fit)
-    pass
-```
-
-### 3. Interaction System
-A universal way to harvest, pickup, or open things.
-
-```gdscript
-# interactable.gd
-extends Area2D
-class_name Interactable
-
-@export var prompt: String = "Interact"
-
-func interact(player: Player) -> void:
-    _on_interact(player)
-
-func _on_interact(player: Player) -> void:
-    pass # Override this
-```
-
-## Key Mechanics Implementation
-
-### Needs System
-Simple float values that deplete over time.
-
-```gdscript
-# needs_manager.gd
-var hunger: float = 100.0
-var thirst: float = 100.0
-var decay_rate: float = 1.0
-
-func _process(delta: float) -> void:
-    hunger -= decay_rate * delta
-    thirst -= decay_rate * 1.5 * delta
-    
-    if hunger <= 0:
-        take_damage(delta)
-```
-
-### Crafting Logic
-Check if player has ingredients -> Remove ingredients -> Add result.
-
-```gdscript
-func craft(recipe: Recipe) -> bool:
-    if not has_ingredients(recipe.ingredients):
-        return false
-        
-    remove_ingredients(recipe.ingredients)
-    inventory.add_item(recipe.result_item, recipe.result_amount)
-    return true
-
-### 4. Tiered Tool Scaling
-Scaling resource yield with tool quality (`item_data.gd` metadata):
-- **Stone Axe**: 1 yield per hit, 3s harvest time.
-- **Steel Axe**: 5 yield per hit, 1.5s harvest time.
-- **Auto-Saw**: Constant yield stream while within proximity.
-
-### 5. Spawn Safe Zones
-Preventing "Spawn Camping" via check:
-```gdscript
-func get_spawn_point() -> Vector3:
-    var point = find_random_point()
-    for bed in get_tree().get_nodes_in_group("player_beds"):
-        if point.distance_to(bed.global_position) < safe_radius:
-            return get_spawn_point() # Re-roll
-    return point
-```
-```
+### Spawn Safe Zones
+Re-roll spawn points outside bed/`player_beds` radius before enabling threat spawners.
 
 ## Godot-Specific Tips
 
-*   **TileMaps**: Use `TileMap` (Godot 3) or `TileMapLayer` (Godot 4) for the world.
-*   **FastNoiseLite**: Built-in noise generator for procedural terrain (trees, rocks, biomes).
-*   **ResourceSaver**: Save the `Inventory` resource directly to disk if it's set up correctly with `export` vars.
-*   **Y-Sort**: Essential for top-down 2D games so player sorts behind/in-front of trees correctly.
+* **TileMapLayer** (Godot 4) for 2D worlds — do not use Godot 3 `TileMap` APIs.
+* **FastNoiseLite** for biome/resource density (off main thread via WorkerThreadPool for heavy maps).
+* **ResourceSaver** / binary serialization for large inventories and chunk dicts.
+* **Y-Sort** for top-down 2D occlusion with trees/props.
 
 ## Common Pitfalls
 
-1.  **Tedium**: Harvesting takes too long. **Fix**: Scale resource gathering with tool tier (Stone Axe = 1 wood, Steel Axe = 5 wood).
-2.  **Inventory Clutter**: Too many unique items that don't stack. **Fix**: Be generous with stack sizes and storage options.
-3.  **No Goals**: Player survives but gets bored. **Fix**: Add a tech tree or a "boss" to work towards.
-
+1. **Tedium** — Scale gather yield with tool tier.
+2. **Inventory clutter** — Generous stacks + storage sinks.
+3. **No goals** — Tech tree / boss pressure beyond pure survive.
 
 ---
 
-## 🚀 Elite Technical Implementations (Batch 09)
+## Elite Technical Implementations
 
-### 1. Grid-Map-Snap Pattern (Base-Building)
-For performant base-building in 3D, use the `GridMap` node. It uses octant-based optimization to handle thousands of structure pieces with minimal CPU overhead compared to standard `MeshInstance3D` nodes.
+> **MANDATORY** when starting base-building snap or biome/noise work: read [survival-elite-implementations.md](genre-survival-survival-elite-implementations.md). **Do NOT Load** for first-pass needs/inventory/crafting — use the script catalog above.
 
-```gdscript
-class_name BaseBuilder extends Node3D
+## Reference
 
-@export var grid_map: GridMap
-@export var wooden_wall_item_id: int = 1
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
 
-## Snaps a global 3D coordinate to the grid and places a structure.
-func build_structure(hit_position: Vector3) -> void:
-    # 1. Convert global space to grid map coordinate.
-    var grid_pos: Vector3i = grid_map.local_to_map(hit_position)
-    
-    # 2. Verify the target cell is empty.
-    if grid_map.get_cell_item(grid_pos) == GridMap.INVALID_CELL_ITEM:
-        # 3. Place the structure item at the snapped coordinates.
-        grid_map.set_cell_item(grid_pos, wooden_wall_item_id)
-        print("Structure successfully snapped and built!")
-    else:
-        push_warning("Cannot build here: Cell is already occupied.")
-```
+### Official Documentation
+- [Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html) — Item definitions, recipe tables, and inventory slots belong as Resources so designers retune weight, stack limits, and durability without code changes.
+- [Idle and physics processing](https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html) — Hunger/thirst decay must multiply by `delta` in `_physics_process` (or `_process`) so vital drain stays frame-rate independent.
+- [Singletons (Autoload)](https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html) — World time, day/night, and global needs state belong in Autoloads so UI scripts never own the clock.
+- [Using signals](https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html) — Inventory and crafting should emit change signals so HUD grids update without polling every frame.
+- [Saving games](https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html) — Persist inventory, unlocked recipes, base GridMap cells, and player vitals across sessions.
+- [Binary serialization API](https://docs.godotengine.org/en/stable/tutorials/io/binary_serialization_api.html) — Large world/chunk dictionaries should use binary packs instead of bulky text dumps.
+- [Background loading](https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html) — Stream world chunks with `ResourceLoader.load_threaded_request()` to avoid hitching while exploring.
+- [Using GridMaps](https://docs.godotengine.org/en/stable/tutorials/3d/using_gridmaps.html) — Base-building snaps and octant-batched structure pieces use `GridMap.local_to_map` / `set_cell_item`.
+- [Using MultiMesh](https://docs.godotengine.org/en/stable/tutorials/performance/using_multimesh.html) — Forests, rocks, and harvestable foliage must batch via MultiMesh instead of thousands of MeshInstance3D nodes.
+- [Using multiple threads](https://docs.godotengine.org/en/stable/tutorials/performance/using_multiple_threads.html) — Procedural noise/terrain generation belongs on WorkerThreadPool, never the main thread.
+- [FastNoiseLite](https://docs.godotengine.org/en/stable/classes/class_fastnoiselite.html) — Biome and resource density maps sample FastNoiseLite gradients for organic world layout.
+- [AStarGrid2D](https://docs.godotengine.org/en/stable/classes/class_astargrid2d.html) — When players place structures, mark cells solid so AI reroutes around new bases immediately.
 
-### 2. AStar-Path-Avoidance (Dynamic AI Routing)
-When players build structures, AI must immediately find new paths. `AStarGrid2D` provides an efficient way to update the pathfinding graph in real-time by flagging specific cells as solid.
+### Related Skills
 
-```gdscript
-class_name AIPathingSystem extends Node
+#### Prerequisites
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — `is_equal_approx`, Resource `duplicate(true)`, and delta-scaled timers are foundational before vital and inventory logic.
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Items, recipes, and slot payloads must be Resource-first so durability and stack metadata serialize cleanly.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Inventory/crafting buses should signal UI and interaction systems without tight Node coupling.
+- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Day cycles and global needs managers that survive scene swaps follow Autoload ownership rules.
 
-var _astar_grid: AStarGrid2D
+#### Complements
+- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — Grid stacking, weight capacity, and drag/drop UIs deepen the survival bag beyond genre sketches.
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Versioned world saves cover inventory Resources, base cells, and unlocked recipe lists.
+- [godot-procedural-generation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md) — Noise biomes and resource scatter compose with FastNoiseLite patterns in this skill.
+- [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md) — GridMap tooling, collision, and LOD practices support large player-built bases.
+- [godot-ai-navigation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ai-navigation/SKILL.md) — Threat AI that respects built walls needs NavigationAgent / AStar updates when structures change.
+- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Crafting menus and inventory grids are Control layout problems, not gameplay scripts.
+- [godot-game-loop-harvest](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-game-loop-harvest/SKILL.md) — Tiered tool yield and gather loops share harvest-loop patterns with survival gathering.
 
-func _ready() -> void:
-    _astar_grid = AStarGrid2D.new()
-    _astar_grid.region = Rect2i(-100, -100, 200, 200)
-    _astar_grid.cell_size = Vector2(1, 1)
-    _astar_grid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_ONLY_IF_NO_OBSTACLES
-    _astar_grid.update()
+#### Downstream / consumers
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — After recipe costs, tool tiers, and need decay rates are data-driven, Monte Carlo careers prove hours-to-tech and starvation risk bands before shipping balance sheets.
+- [godot-genre-open-world](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md) — Open-world survival consumes chunk streaming, safe-zone spawn, and scarcity loops defined here.
+- [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md) — Trading posts and crafted-good sinks extend survival crafting into soft-currency economies.
 
-## Called whenever a structure is placed in the world.
-func on_structure_built(grid_coords: Vector2i) -> void:
-    if _astar_grid.is_in_bounds(grid_coords.x, grid_coords.y):
-        # Mark the point as solid, instantly routing AI around the new structure.
-        _astar_grid.set_point_solid(grid_coords, true)
-
-## Queries the shortest path for an AI agent.
-func get_ai_path(start: Vector2i, target: Vector2i) -> Array[Vector2i]:
-    return _astar_grid.get_id_path(start, target)
-```
-
-### 3. FastNoiseLite Biome-Generation Pattern
-Procedural world generation requires organic transitions between ecosystems. Use `FastNoiseLite` to generate a noise map and map its gradients (-1.0 to 1.0) to specific biomes.
-
-```gdscript
-class_name BiomeGenerator extends Node
-
-var _biome_noise: FastNoiseLite
-
-func _ready() -> void:
-    _biome_noise = FastNoiseLite.new()
-    _biome_noise.seed = randi() 
-    _biome_noise.fractal_type = FastNoiseLite.FRACTAL_FBM
-    _biome_noise.fractal_octaves = 5
-    _biome_noise.frequency = 0.05
-
-## Samples the noise at a specific coordinate to determine the biome type.
-func get_biome_at_coordinate(x: float, y: float) -> String:
-    var noise_val: float = _biome_noise.get_noise_2d(x, y)
-    
-    if noise_val < -0.25:
-        return "Deep_Ocean"
-    elif noise_val < 0.0:
-        return "Shallow_Water"
-    elif noise_val < 0.4:
-        return "Forest"
-    else:
-        return "Mountain"
-```
-
-
-- Master Skill: [godot-master](../SKILL.md)
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.

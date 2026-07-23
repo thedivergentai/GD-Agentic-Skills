@@ -3,6 +3,12 @@ name: godot-genre-platformer
 description: "Expert blueprint for platformer games including precision movement (coyote time, jump buffering, variable jump height), game feel polish (squash/stretch, particle trails, camera shake), level design principles (difficulty curves, checkpoint placement), collectible systems (progression rewards), and accessibility options (assist mode, remappable controls). Based on Celeste/Hollow Knight design research. Trigger keywords: platformer, coyote_time, jump_buffer, game_feel, level_design, precision_movement."
 ---
 
+## Godot 4.7 Baseline
+
+- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
+- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
+- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
+
 # Genre: Platformer
 
 Expert blueprint for platformers emphasizing movement feel, level design, and player satisfaction.
@@ -40,23 +46,29 @@ Expert blueprint for platformers emphasizing movement feel, level design, and pl
 
 - One-way collision **direction** is shape-relative — tune `CollisionShape2D` direction for angled platforms.
 
-## 🛠 Expert Components (scripts/)
+## Available Scripts
 
-### Original Expert Patterns
-- [advanced_platformer_controller.gd](../scripts/genre_platformer_advanced_platformer_controller.gd) - Professional-grade `CharacterBody2D` controller with Coyote Time, Jump Buffering, and variable height.
+> **MANDATORY**: For movement feel, read the controller + modules — do not re-implement coyote/buffer/variable-jump inline.
 
-### Modular Components
-- [coyote_timer.gd](../scripts/genre_platformer_coyote_timer.gd) - Grace period logic for jumps after leaving a floor's edge.
-- [jump_buffer.gd](../scripts/genre_metroidvania_platformer_jump_buffer.gd) - Input queuing system for ultra-responsive landing jumps.
-- [player_ground_controller.gd](../scripts/genre_platformer_player_ground_controller.gd) - Advanced movement with floor constant speed and slope-aware snapping.
-- [variable_jump.gd](../scripts/genre_platformer_variable_jump.gd) - Scalable jump height using velocity cutoff on button release.
-- [wall_slide_sensor.gd](../scripts/genre_platformer_wall_slide_sensor.gd) - Nodeless wall detection using high-performance physics raycasts.
-- [ledge_grab_sensor.gd](../scripts/genre_platformer_ledge_grab_sensor.gd) - PhysicsShapeQuery-based ledge detection without Area2D nodes.
-- [custom_collision_slider.gd](../scripts/genre_platformer_custom_collision_slider.gd) - Manual sliding response for high-speed inter-frame precision.
-- [synchronized_platform.gd](../scripts/genre_platformer_synchronized_platform.gd) - `AnimatableBody2D` config for physics-synced movement.
-- [fast_projectile_ccd.gd](../scripts/genre_platformer_fast_projectile_ccd.gd) - Continuous Collision Detection setup to prevent tunneling.
-- [platformer_animation_sync.gd](../scripts/genre_platformer_platformer_animation_sync.gd) - Boolean-safe sync between physics states and AnimationTree.
-- [platformer_camera.gd](../scripts/genre_platformer_platformer_camera.gd) - Camera smoothing and look-ahead logic for platforming focus.
+### Controllers (golden path)
+- [advanced_platformer_controller.gd](../scripts/genre_platformer_advanced_platformer_controller.gd) — **MANDATORY** before any precision jump/run controller.
+- [platformer_controller_2d.gd](../scripts/genre_platformer_platformer_controller_2d.gd) — Leaner CharacterBody2D baseline when the advanced stack is overkill.
+- [player_ground_controller.gd](../scripts/genre_platformer_player_ground_controller.gd) — Floor constant speed + slope snap refinements.
+
+### Movement modules
+- [coyote_timer.gd](../scripts/genre_platformer_coyote_timer.gd) — **MANDATORY** with jump feel work (or use the integrated advanced controller).
+- [jump_buffer.gd](../scripts/genre_platformer_jump_buffer.gd) — **MANDATORY** with coyote for landing responsiveness.
+- [variable_jump.gd](../scripts/genre_platformer_variable_jump.gd) — **MANDATORY** for release-cutoff height expression.
+- [wall_slide_sensor.gd](../scripts/genre_platformer_wall_slide_sensor.gd) — Nodeless wall detection.
+- [ledge_grab_sensor.gd](../scripts/genre_platformer_ledge_grab_sensor.gd) — Shape-query ledge grabs.
+- [one_way_drop_handler.gd](../scripts/genre_platformer_one_way_drop_handler.gd) — **MANDATORY** before drop-through / one-way platform input.
+- [custom_collision_slider.gd](../scripts/genre_platformer_custom_collision_slider.gd) — High-speed inter-frame slide response.
+
+### World / camera / polish
+- [synchronized_platform.gd](../scripts/genre_platformer_synchronized_platform.gd) — AnimatableBody2D `sync_to_physics` platforms.
+- [fast_projectile_ccd.gd](../scripts/genre_platformer_fast_projectile_ccd.gd) — CCD to stop tunneling.
+- [platformer_animation_sync.gd](../scripts/genre_platformer_platformer_animation_sync.gd) — Boolean-safe AnimationTree sync.
+- [platformer_camera.gd](../scripts/genre_platformer_platformer_camera.gd) — Look-ahead / smoothing (pair with `godot-camera-systems`).
 
 ---
 
@@ -66,165 +78,49 @@ Expert blueprint for platformers emphasizing movement feel, level design, and pl
 
 ## Skill Chain
 
-`godot-project-foundations`, `godot-characterbody-2d`, `godot-input-handling`, `animation`, `sound-manager`, `tilemap-setup`, `camera-2d`, `godot-monte-carlo-balancer`
+`godot-project-foundations`, `godot-characterbody-2d`, `godot-input-handling`, `godot-2d-animation`, `godot-audio-systems`, `godot-tilemap-mastery`, `godot-camera-systems`, `godot-monte-carlo-balancer`
 
 ---
 
-## Movement Feel ("Game Feel")
+## Movement Feel — Decision Knobs (not tutorials)
 
-The most critical aspect of platformers. Players should feel **precise, responsive, and in control**.
+> **MANDATORY read**: [advanced_platformer_controller.gd](../scripts/genre_platformer_advanced_platformer_controller.gd) plus [coyote_timer.gd](../scripts/genre_platformer_coyote_timer.gd) / [jump_buffer.gd](../scripts/genre_platformer_jump_buffer.gd) / [variable_jump.gd](../scripts/genre_platformer_variable_jump.gd). Copy those modules; do not paste coyote/buffer recipes here.
 
-### Input Responsiveness
+Tune only these knobs in project code after reading the scripts:
 
-```gdscript
-# Instant direction changes - no acceleration on ground
-func _physics_process(delta: float) -> void:
-    var input_dir := Input.get_axis("move_left", "move_right")
-    
-    # Ground movement: instant response
-    if is_on_floor():
-        velocity.x = input_dir * MOVE_SPEED
-    else:
-        # Air movement: slightly reduced control
-        velocity.x = move_toward(velocity.x, input_dir * MOVE_SPEED, AIR_ACCEL * delta)
-```
+| Knob | Expert default / note |
+|------|------------------------|
+| Coyote window | ~0.1s — without it, ledge jumps feel broken |
+| Jump buffer | ~0.15s — early press must land as jump |
+| Variable jump | Cut upward velocity on release |
+| Apex / fall gravity | Higher fall multiplier after apex = snappier landings |
+| CCD | Enable cast-ray CCD for fast projectiles / dashes |
+| Moving platforms | `AnimatableBody2D` + `sync_to_physics`; set `platform_on_leave` |
+| One-ways | [one_way_drop_handler.gd](../scripts/genre_platformer_one_way_drop_handler.gd) — mask/layers, not ad-hoc disable |
 
-### Coyote Time (Grace Period)
-
-Allow jumping briefly after leaving a platform:
-
-```gdscript
-var coyote_timer: float = 0.0
-const COYOTE_TIME := 0.1  # 100ms grace period
-
-func _physics_process(delta: float) -> void:
-    if is_on_floor():
-        coyote_timer = COYOTE_TIME
-    else:
-        coyote_timer = max(0, coyote_timer - delta)
-    
-    # Can jump if on floor OR within coyote time
-    if Input.is_action_just_pressed("jump") and coyote_timer > 0:
-        velocity.y = JUMP_VELOCITY
-        coyote_timer = 0
-```
-
-### Jump Buffering
-
-Register jumps pressed slightly before landing:
-
-```gdscript
-var jump_buffer: float = 0.0
-const JUMP_BUFFER_TIME := 0.15
-
-func _physics_process(delta: float) -> void:
-    if Input.is_action_just_pressed("jump"):
-        jump_buffer = JUMP_BUFFER_TIME
-    else:
-        jump_buffer = max(0, jump_buffer - delta)
-    
-    if is_on_floor() and jump_buffer > 0:
-        velocity.y = JUMP_VELOCITY
-        jump_buffer = 0
-```
-
-### Variable Jump Height
-
-```gdscript
-const JUMP_VELOCITY := -400.0
-const JUMP_RELEASE_MULTIPLIER := 0.5
-
-func _physics_process(delta: float) -> void:
-    # Cut jump short when button released
-    if Input.is_action_just_released("jump") and velocity.y < 0:
-        velocity.y *= JUMP_RELEASE_MULTIPLIER
-```
-
-### Gravity Tuning
-
-```gdscript
-const GRAVITY := 980.0
-const FALL_GRAVITY_MULTIPLIER := 1.5  # Faster falls feel better
-const MAX_FALL_SPEED := 600.0
-
-func apply_gravity(delta: float) -> void:
-    var grav := GRAVITY
-    if velocity.y > 0:  # Falling
-        grav *= FALL_GRAVITY_MULTIPLIER
-    velocity.y = min(velocity.y + grav * delta, MAX_FALL_SPEED)
-```
+Ground: instant direction response. Air: slightly reduced accel. Gravity scaled by `delta`; never `velocity *= delta` before `move_and_slide()`.
 
 ---
 
 ## Level Design Principles
 
 ### The "Teaching Trilogy"
-
-1. **Introduction**: Safe environment to learn mechanic
-2. **Challenge**: Apply mechanic with moderate risk
-3. **Twist**: Combine with other mechanics or time pressure
-
-### Visual Language
-
-- **Safe platforms**: Distinct color/texture
-- **Hazards**: Red/orange tints, spikes, glow effects
-- **Collectibles**: Bright, animated, particle effects
-- **Secrets**: Subtle environmental hints
+1. **Introduction** — safe learn → 2. **Challenge** — moderate risk → 3. **Twist** — combine / time pressure
 
 ### Flow and Pacing
+`Easy → Easy → Medium → CHECKPOINT → Medium → Hard → CHECKPOINT → Boss`
 
-```
-Easy → Easy → Medium → CHECKPOINT → Medium → Hard → CHECKPOINT → Boss
-```
-
-### Camera Design
-
-```gdscript
-# Look-ahead camera for platformers
-extends Camera2D
-
-@export var look_ahead_distance := 100.0
-@export var look_ahead_speed := 3.0
-
-var target_offset := Vector2.ZERO
-
-func _process(delta: float) -> void:
-    var player_velocity: Vector2 = target.velocity
-    var desired_offset := player_velocity.normalized() * look_ahead_distance
-    target_offset = target_offset.lerp(desired_offset, look_ahead_speed * delta)
-    offset = target_offset
-```
+### Camera
+Use [platformer_camera.gd](../scripts/genre_platformer_platformer_camera.gd) / peer `godot-camera-systems` for look-ahead — never blind jumps.
 
 ---
 
 ## Platformer Sub-Genres
 
-### Precision Platformers (Celeste, Super Meat Boy)
-
-- Instant respawn on death
-- Very tight controls (no acceleration)
-- Checkpoints every few seconds of gameplay
-- Death is learning, not punishment
-
-### Collectathon (Mario 64, Banjo-Kazooie)
-
-- Large hub worlds with objectives
-- Multiple abilities unlocked over time
-- Backtracking encouraged
-- Stars/collectibles as progression gates
-
-### Puzzle Platformers (Limbo, Inside)
-
-- Slow, deliberate pacing
-- Environmental puzzles
-- Physics-based mechanics
-- Atmospheric storytelling
-
-### Metroidvania (Hollow Knight)
-
-- See `godot-genre-metroidvania` skill
-- Ability-gated exploration
-- Interconnected world map
+- **Precision** (Celeste / Super Meat Boy) — instant respawn, tight controls, frequent checkpoints
+- **Collectathon** — hub worlds, ability unlocks, backtracking
+- **Puzzle** — slow pacing, environmental physics
+- **Metroidvania** — route to `godot-genre-metroidvania`
 
 ---
 
@@ -232,97 +128,61 @@ func _process(delta: float) -> void:
 
 | Pitfall | Solution |
 |---------|----------|
-| Floaty jumps | Increase gravity, especially on descent |
-| Imprecise landings | Add coyote time and visual landing feedback |
-| Unfair deaths | Ensure hazards are clearly visible before encountered |
-| Blind jumps | Camera look-ahead or zoom out during falls |
-| Boring mid-game | Introduce new mechanics every 2-3 levels |
+| Floaty jumps | Increase fall gravity after apex |
+| Imprecise landings | Coyote + buffer modules + land juice |
+| Unfair deaths | Hazards telegraphed before contact |
+| Blind jumps | Look-ahead camera / zoom triggers |
+| Boring mid-game | New mechanic every 2–3 levels |
 
 ---
 
 ## Polish Checklist
 
-- [ ] Dust godot-particles on land/run
-- [ ] Screen shake on heavy landings
-- [ ] Squash/stretch animations
-- [ ] Sound effects for every action (jump, land, wall-slide)
-- [ ] Death and respawn animations
+- [ ] Dust particles on land/run
+- [ ] Screen shake on heavy landings (`godot-camera-systems` trauma)
+- [ ] Squash/stretch on jump/land (visual pivot at feet)
+- [ ] SFX for jump/land/wall-slide
 - [ ] Checkpoint visual/audio feedback
-- [ ] Accessible difficulty options (assist mode)
-
----
-
-## Godot-Specific Tips
-
-1. **CharacterBody2D vs RigidBody2D**: Always use `CharacterBody2D` for platformer characters - precise control is essential
-2. **Physics tick rate**: Consider 120Hz physics for smoother movement
-3. **One-way platforms**: Use `set_collision_mask_value()` or dedicated collision layers
-4. **Wall detection**: Use `is_on_wall()` and `get_wall_normal()` for wall jumps
-
----
-
-## Example Games for Reference
-
-- **Celeste** - Perfect game feel, assist mode accessibility
-- **Hollow Knight** - Combat + platforming integration
-- **Super Mario Bros. Wonder** - Visual polish and surprises
-- **Shovel Knight** - Retro mechanics with modern feel
-
-
-## Advanced Platformer Mechanics
-
-Elite implementation of competitive features, procedural world-building, and specialized physics.
-
-### 1. Squash and Stretch Helper (Visual Juice)
-To apply high-fidelity visual juice, modify the scale of the character's visual node using `Tween`. This provides non-linear interpolation for bouncy, responsive movement that makes actions like jumping and landing feel physically grounded.
-
-```gdscript
-class_name GameFeelHelper extends Node
-
-func apply_squash_and_stretch(visual_node: Node2D, target_scale: Vector2, duration: float) -> void:
-    var tween := visual_node.create_tween()
-    tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-    # Squash
-    tween.tween_property(visual_node, "scale", target_scale, duration)
-    # Return to normal
-    tween.tween_property(visual_node, "scale", Vector2.ONE, duration)
-```
-
-### 2. Particle-Trails
-Enable 3D or 2D particle trails by configuring `GPUParticles3D` with the `trail_enabled` property. This creates a procedural trail of meshes or sprites that follows the player, enhancing the sense of speed and direction.
-
-```gdscript
-class_name SpeedTrail extends GPUParticles3D
-
-func toggle_trail(active: bool) -> void:
-    emitting = active
-    trail_enabled = true
-    trail_lifetime = 0.5
-    # Configure via shader or process_material for color fading
-```
-
-### 3. Checkpoint-System
-Implement a reliable checkpoint system by recording the player's `global_position` upon entering a designated `Area2D` trigger. Store the checkpoint as a `Resource` to ensure it persists across scene transitions and game restarts.
-
-```gdscript
-class_name Checkpoint extends Area2D
-
-@export var checkpoint_id: StringName
-
-func _on_body_entered(body: Node2D) -> void:
-    if body.is_in_group("player"):
-        SaveManager.current_checkpoint_pos = global_position
-        SaveManager.last_checkpoint_id = checkpoint_id
-        # Play visual/audio feedback
-        play_activation_effects()
-```
-
-**Expert Tip**: For the "Squash and Stretch" effect, ensure the visual node's pivot point is at the character's feet (bottom center) so the scaling happens from the ground up.
-
+- [ ] Assist mode / remappable controls
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
 
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
 
-## Reference
-- Master Skill: [godot-master](../SKILL.md)
+### Official Documentation
+- [Using CharacterBody2D](https://docs.godotengine.org/en/stable/tutorials/physics/using_character_body_2d.html) — move_and_slide floor/wall/ceiling reports, slope snap, and platform_on_leave behavior that platformer feel depends on.
+- [CharacterBody2D](https://docs.godotengine.org/en/stable/classes/class_characterbody2d.html) — floor_constant_speed, floor_snap_length, recovery_as_collision, and motion-mode knobs for precision controllers.
+- [Physics introduction](https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html) — collision layers/masks for player, one-ways, hazards, and projectiles without accidental overlaps.
+- [Collision shapes (2D)](https://docs.godotengine.org/en/stable/tutorials/physics/collision_shapes_2d.html) — why capsule/rectangle player shapes stay stable vs concave geometry.
+- [2D movement overview](https://docs.godotengine.org/en/stable/tutorials/2d/2d_movement.html) — CharacterBody vs RigidBody tradeoffs and common input→velocity patterns.
+- [Using TileMaps](https://docs.godotengine.org/en/stable/tutorials/2d/using_tilemaps.html) — TileMapLayer collision for level geometry instead of per-sprite StaticBodies.
+- [Using TileSets](https://docs.godotengine.org/en/stable/tutorials/2d/using_tilesets.html) — one-way collision and physics layers authored in the tileset for drop-through platforms.
+- [AnimatableBody2D](https://docs.godotengine.org/en/stable/classes/class_animatablebody2d.html) — sync_to_physics moving platforms that riders must stick to without jitter.
+- [Camera2D](https://docs.godotengine.org/en/stable/classes/class_camera2d.html) — position smoothing, drag margins, and look-ahead offsets that prevent blind jumps and motion sickness.
+- [Using AnimationTree](https://docs.godotengine.org/en/stable/tutorials/animation/animation_tree.html) — boolean advance conditions for idle/run/air states without unsafe expression negation.
+- [Ray-casting](https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html) — nodeless wall-slide and ledge queries via PhysicsDirectSpaceState2D.
+- [Input examples](https://docs.godotengine.org/en/stable/tutorials/inputs/input_examples.html) — action just-pressed/released patterns behind jump buffer and variable jump cutoff.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — project settings, input map actions, and scene structure before wiring coyote/buffer timers.
+- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — move_and_slide grounding, slopes, and wall normals that every precision jump builds on.
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — remappable jump/move actions and unhandled-input buffering for assist-mode accessibility.
+
+#### Complements
+- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — layers, CCD, Area2D hazards, and AnimatableBody platforms beyond the controller core.
+- [godot-tilemap-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md) — TileMapLayer/TileSet one-ways and collision painting for teachable level geometry.
+- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — look-ahead, room cameras, and smoothing that reveal landings without blind jumps.
+- [godot-animation-tree-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-tree-mastery/SKILL.md) — AnimationTree conditions synced from is_on_floor / velocity for juice-safe state graphs.
+- [godot-2d-animation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md) — squash/stretch and land/run cycles that sell weight after physics resolves.
+- [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — dust trails and land puffs called from jump/land events.
+- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — jump/land/wall-slide SFX timing that reinforces responsive feel.
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — sample coyote/buffer/gravity/jump knobs and level difficulty curves before shipping assist defaults.
+
+#### Downstream / consumers
+- [godot-genre-metroidvania](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-metroidvania/SKILL.md) — ability-gated exploration that reuses precision movement and TileMap rooms.
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — checkpoint position persistence across deaths and scene reloads.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.

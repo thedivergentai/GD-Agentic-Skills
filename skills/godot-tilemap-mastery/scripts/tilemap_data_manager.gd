@@ -41,3 +41,14 @@ func update_navigation_region() -> void:
 ## 'get_custom_data()' to decouple visual assets from technical logic.
 ## Use 'set_cells_terrain_connect' instead of manual bitmasking 
 ## to allow for dynamic, runtime level destruction/creation.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_tilemaplayer.html
+# - https://docs.godotengine.org/en/stable/classes/class_tilemappattern.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md — serialize/deserialize chunk tile state with level scenes
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-sandbox/SKILL.md — persist diggable world diffs across sessions
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md
+# =============================================================================

@@ -17,3 +17,14 @@ func vibrate_failure() -> void:
 func vibrate_impact(intensity: float = 1.0) -> void:
 	# Variable intensity vibration
 	Input.vibrate_handheld(int(100 * intensity))
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_input.html
+# - https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_android.html
+# - https://docs.godotengine.org/en/stable/tutorials/platform/android/index.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md — haptic manager patterns on ports
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — shared vibration singleton
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md
+# =============================================================================

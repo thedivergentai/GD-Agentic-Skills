@@ -22,3 +22,14 @@ Data is the echo of the vision's intent. This rubric measures the sanity of info
 
 ## 🌟 Visionary's Final Decree
 To reach **Elite** status, you must treat your data like DNA. It must be structured, resilient, and capable of being sequenced by any part of the vision without error. A project that relies on manual dictionary lookups is **Functional** at best—the visionary uses the **Resource** as a bridge between reality and the machine.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+- https://docs.godotengine.org/en/stable/classes/class_resourceloader.html
+- https://docs.godotengine.org/en/stable/classes/class_configfile.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

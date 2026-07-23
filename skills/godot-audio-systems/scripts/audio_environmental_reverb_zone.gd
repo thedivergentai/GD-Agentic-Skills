@@ -17,3 +17,16 @@ func _on_body_entered(body: Node) -> void:
 		reverb.room_size = room_size
 
 ## Tip: Use multiple zones to smoothly transition a player between 'Cave' and 'Hall'.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_audioeffectreverb.html
+# - https://docs.godotengine.org/en/stable/tutorials/audio/audio_effects.html
+# - https://docs.godotengine.org/en/stable/classes/class_audioserver.html
+# - https://docs.godotengine.org/en/stable/tutorials/audio/audio_buses.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — Area3D enter/exit for zone triggers
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md — place reverb volumes in level art
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-horror/SKILL.md — cave/hall atmosphere routing
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md
+# =============================================================================

@@ -37,3 +37,14 @@ static func trigger(type: HapticType) -> void:
             var ios_haptics = Engine.get_singleton("iOSHaptics")
             # Usually plugins map to UI selection, impact, or notification haptics
             ios_haptics.impact(int(type))
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_input.html
+# - https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_android.html
+# - https://docs.godotengine.org/en/stable/tutorials/platform/android/index.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md — VIBRATE permission + iOS plugin hooks
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — central haptic singleton
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md
+# =============================================================================

@@ -7,13 +7,39 @@ description: "Expert patterns for input handling covering InputMap actions, Inpu
 
 Handle keyboard, mouse, gamepad, and touch input with proper buffering and accessibility support.
 
+## MANDATORY script triggers (by scenario)
+
+| Scenario | Load before coding |
+|----------|--------------------|
+| Jump/dash/coyote feel | [input_buffer.gd](scripts/input_buffer.gd) (physics-tied decay) + [advanced_input_buffer.gd](scripts/advanced_input_buffer.gd) for multi-action priority |
+| Settings remapping UI | [safe_runtime_rebind.gd](scripts/safe_runtime_rebind.gd) (`ConfigFile` persist to `user://`) |
+| Analog stick movement | [analog_deadzone_manager.gd](scripts/analog_deadzone_manager.gd) — never raw axis without radial deadzone |
+| "Press X / Press E" prompts | [glyph_prompt_manager.gd](scripts/glyph_prompt_manager.gd) |
+| UI nav vs gameplay confirm | [input_echo_filter.gd](scripts/input_echo_filter.gd) — echoes move menus, not Confirm/Back |
+| Gameplay vs menu clicks | [unhandled_input_priority.gd](scripts/unhandled_input_priority.gd) |
+
+
+## Do-NOT-Load (by scenario)
+
+| Scenario | Load | Do NOT load |
+|----------|------|-------------|
+| Settings remapping UI | `safe_runtime_rebind.gd` | `multi_touch_gestures.gd`, `mouse_capture_manager.gd`, combo/replay injectors |
+| Mobile / touch gestures | `multi_touch_gestures.gd` | `mouse_capture_manager.gd`, desktop remapper persistence |
+| Jump/dash buffer only | `input_buffer.gd` / `advanced_input_buffer.gd` | Remapper, multi-touch, replay, combo validator |
+| FPS mouse look | `mouse_capture_manager.gd` + deadzone/glyph as needed | `multi_touch_gestures.gd`, combo/replay |
+| Combo / fighting sequences | `combo_validator.gd` + buffers | Touch gestures, mouse capture |
+| Replay / virtual injection tests | `input_replay_buffer.gd` / `virtual_input_injector.gd` | Remapper UI, multi-touch |
+
 ## Available Scripts
 
 ### [advanced_input_buffer.gd](scripts/advanced_input_buffer.gd)
 Frame-perfect input buffering system for responsive jumps, dashes, and combo chains.
 
+### [input_buffer.gd](scripts/input_buffer.gd)
+Timed action buffer with **`_physics_process` decay** so windows match CharacterBody consumption, not render FPS.
+
 ### [safe_runtime_rebind.gd](scripts/safe_runtime_rebind.gd)
-Dynamic input rebinding with conflict detection, persistence, and multi-device support.
+Dynamic input rebinding with conflict detection and `user://input_rebinds.cfg` persistence.
 
 ### [analog_deadzone_manager.gd](scripts/analog_deadzone_manager.gd)
 Radial deadzone management for analog sticks to eliminate drift while maintaining natural follow-through.
@@ -39,7 +65,15 @@ Tracking the lifecycle of an action ('Just Pressed', 'Held', 'Released') for com
 ### [unhandled_input_priority.gd](scripts/unhandled_input_priority.gd)
 Demonstrating the correct use of `_unhandled_input` to prevent gameplay logic from leaking into UI.
 
-> **MANDATORY - For Responsive Controls**: Read input_buffer.gd before implementing jump/dash mechanics.
+
+### [virtual_input_injector.gd](scripts/virtual_input_injector.gd)
+`Input.parse_input_event` injection for CI tutorials / AI assistance — not physical hardware.
+
+### [combo_validator.gd](scripts/combo_validator.gd)
+Rolling timed sequence buffer for special-move validation (fighting / action RPG).
+
+### [input_replay_buffer.gd](scripts/input_replay_buffer.gd)
+Frame-tagged capture + deterministic replay via `parse_input_event`.
 
 ## NEVER Do in Input Handling
 
@@ -72,197 +106,69 @@ Godot propagates input events in a specific order. Understanding this is key to 
 Avoid physical key checks. Define semantic actions (e.g., `move_left`, `interact`) in **Project Settings > Input Map**.
 
 ### 1. Analog Deadzones
-Analog sticks suffer from drift. Use `Input.get_vector()` for mathematically correct **circular deadzones**.
-- **Bad**: Subtracting axis strengths manually creates "square" deadzones.
-- **Good**: `var input := Input.get_vector("left", "right", "up", "down")` applies a perfectly circular deadzone and clamps magnitude to 1.0.
+Analog sticks suffer from drift. **MANDATORY**: [analog_deadzone_manager.gd](scripts/analog_deadzone_manager.gd). Prefer `Input.get_vector()` for circular deadzones — never subtract axes into a square deadzone.
 
-### 2. Basic Polling
-
-```gdscript
-# Check if action pressed this frame
-if Input.is_action_just_pressed("jump"):
-    jump()
-
-# Check if action held
-if Input.is_action_pressed("fire"):
-    shoot()
-
-# Check if action released
-if Input.is_action_just_released("jump"):
-    release_jump()
-
-# Get axis (-1 to 1)
-var direction := Input.get_axis("move_left", "move_right")
-
-# Get vector
-var input_vector := Input.get_vector("left", "right", "up", "down")
-```
-
-## InputEvent Processing
-
-```gdscript
-func _input(event: InputEvent) -> void:
-    if event is InputEventKey:
-        if event.keycode == KEY_ESCAPE and event.pressed:
-            pause_game()
-    
-    if event is InputEventMouseButton:
-        if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-            click_position = event.position
-```
+### 2. Expert polling delta (no hardcoded keys)
+Gameplay samples **actions** in `_physics_process` / `_unhandled_input` — never `KEY_*` / `MOUSE_BUTTON_*` branches. Pause/cancel must be InputMap actions (e.g. `ui_cancel`) so rebinds and non-QWERTY layouts work. See [unhandled_input_priority.gd](scripts/unhandled_input_priority.gd).
 
 ## Multi-Modal Input & UI Glyphs
 Modern games must handle simultaneous Controller and Keyboard/Mouse input smoothly.
 
 ### 1. Handling Input Modes
-- **Mouse Aiming**: Process `InputEventMouseMotion` in `_unhandled_input()` for relative movement.
-- **Stick Movement**: Poll `Input.get_vector()` in `_physics_process()` for clamped state.
+- **Mouse Aiming**: Process `InputEventMouseMotion` in `_unhandled_input()` for relative movement ([mouse_capture_manager.gd](scripts/mouse_capture_manager.gd)).
+- **Stick Movement**: Poll vectors in `_physics_process()` after [analog_deadzone_manager.gd](scripts/analog_deadzone_manager.gd).
 
 ### 2. Dynamic Glyph Swapping
-To update UI prompts (e.g., "Press E" vs "Press X") in real-time:
-- **Autoload Strategy**: Create a singleton that monitors `_input(event)`.
-- **Detection**: Check `event is InputEventJoypadButton` or `InputEventJoypadMotion` to detect gamepad use.
-- **Broadcasting**: Emit a signal (e.g., `signal device_changed(is_gamepad: bool)`) when the hardware type shifts. All UI elements should listen to this signal to swap their prompt textures.
+**MANDATORY**: [glyph_prompt_manager.gd](scripts/glyph_prompt_manager.gd) for last-device prompt swaps. Do not hand-roll `event is InputEventJoypadButton` detectors in every HUD widget.
 
-## Expert Input Extensions
+## Expert Input Extensions (script sole-source)
 
-### 1. Input-Buffering (Action Queuing)
-Decouple input presses from physics execution to make controls feel "tight." Store the input in a timed buffer and consume it when a valid state (e.g., landing) is reached [1, 2].
-
-```gdscript
-var jump_buffer_timer: float = 0.0
-
-func _unhandled_input(event: InputEvent) -> void:
-    if event.is_action_pressed("jump"):
-        jump_buffer_timer = 0.15 # 150ms window
-
-func _physics_process(delta: float) -> void:
-    if jump_buffer_timer > 0.0:
-        jump_buffer_timer -= delta
-        if is_on_floor():
-            jump()
-            jump_buffer_timer = 0.0
-```
-
-### 2. Coyote-Time (Jump Leniency)
-Allow a jump for a few frames after the character leaves a ledge by tracking the time since last grounded [4].
-
-```gdscript
-var coyote_timer: float = 0.0
-
-func _physics_process(delta: float) -> void:
-    if is_on_floor():
-        coyote_timer = 0.1 # 100ms grace period
-    else:
-        coyote_timer -= delta
-    
-    if Input.is_action_just_pressed("jump") and coyote_timer > 0.0:
-        jump()
-        coyote_timer = 0.0
-```
-
-### 3. Multiplayer-Input-Synchronization
-Route local device input to the authoritative server using RPCs and `multiplayer.get_remote_sender_id()` for validation [7, 8].
-
-```gdscript
-@rpc("any_peer", "call_local", "unreliable")
-func sync_input(dir: Vector2) -> void:
-    var sender = multiplayer.get_remote_sender_id()
-    # Apply dir to the player body associated with sender...
-```
+- **Input buffering** — **MANDATORY**: [input_buffer.gd](scripts/input_buffer.gd) + [advanced_input_buffer.gd](scripts/advanced_input_buffer.gd). Do not paste jump-timer tutorials inline.
+- **Coyote time** — Owned by movement skills: [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) (`frame_perfect_coyote_time.gd`) and [godot-genre-platformer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md). Pair with buffers from this skill; do not re-implement coyote here.
+- **Multiplayer input sync** — **Do not RPC `sync_input` here.** Route to [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) for authoritative action snapshots / `get_remote_sender_id` validation.
+- **Virtual injection** — **MANDATORY**: [virtual_input_injector.gd](scripts/virtual_input_injector.gd) (`Input.parse_input_event`).
+- **Combo sequences** — **MANDATORY**: [combo_validator.gd](scripts/combo_validator.gd); fighting fiction stays in `godot-genre-fighting`.
+- **Deterministic replay** — **MANDATORY**: [input_replay_buffer.gd](scripts/input_replay_buffer.gd).
 
 ## Reference
-- [Godot Docs: InputEvent](https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html)
 
-## Expert Input Architectures
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
 
-### 1. Input-Event-Parsing (Virtual Injection)
-To simulate player input for automated testing or AI assistance, use `Input.parse_input_event()`. This injects raw `InputEvent` objects directly into the engine's processing pipeline, bypassing physical hardware. This is critical for building robust CI/CD test suites or deterministic tutorials.
+### Official Documentation
+- [Using InputEvent](https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html) — Event propagation order (`_input` → GUI → `_unhandled_input`) and why gameplay belongs after UI consumes events.
+- [Input examples](https://docs.godotengine.org/en/stable/tutorials/inputs/input_examples.html) — Practical `InputMap` action polling, mouse buttons, and keyboard patterns this skill builds on.
+- [Controllers, gamepads, and joysticks](https://docs.godotengine.org/en/stable/tutorials/inputs/controllers_gamepads_joysticks.html) — Joypad connection, button/axis events, and multi-device mapping for remappers and glyph swaps.
+- [Controller vibration and features](https://docs.godotengine.org/en/stable/tutorials/inputs/controller_features.html) — Extended pad capabilities beyond basic buttons when shipping console-style feedback.
+- [Mouse and input coordinates](https://docs.godotengine.org/en/stable/tutorials/inputs/mouse_and_input_coordinates.html) — Viewport vs screen coordinates for clicks, aim, and capture-relative motion.
+- [Customizing the mouse cursor](https://docs.godotengine.org/en/stable/tutorials/inputs/custom_mouse_cursor.html) — Cursor shapes alongside `Input.mouse_mode` capture/release flows.
+- [Handling quit requests](https://docs.godotengine.org/en/stable/tutorials/inputs/handling_quit_requests.html) — Safe ESC / back / quit paths so mouse capture never traps the player.
+- [Input](https://docs.godotengine.org/en/stable/classes/class_input.html) — Singleton API: `is_action_*`, `get_vector`, `mouse_mode`, `parse_input_event`, and joy connection signals.
+- [InputMap](https://docs.godotengine.org/en/stable/classes/class_inputmap.html) — Runtime `action_add_event` / erase / conflict checks for safe rebinding.
+- [InputEvent](https://docs.godotengine.org/en/stable/classes/class_inputevent.html) — Base event API including `is_echo()`, `is_action_pressed()`, and device IDs.
+- [Idle and Physics Processing](https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html) — Why hold/poll gameplay input in `_physics_process`, not frame-tied `_process`.
+- [Control](https://docs.godotengine.org/en/stable/classes/class_control.html) — `_gui_input` / `accept_event` so menus stop events before `_unhandled_input` gameplay.
 
-```gdscript
-class_name VirtualInputInjector extends Node
-## Injects virtual hardware events into the engine pipeline.
+### Related Skills
 
-func simulate_jump() -> void:
-    var event := InputEventAction.new()
-    event.action = &"jump"
-    event.pressed = true
-    
-    # 1. Dispatch the "Pressed" event.
-    Input.parse_input_event(event)
-    
-    # 2. Schedule the "Released" event.
-    await get_tree().create_timer(0.1).timeout
-    event.pressed = false
-    Input.parse_input_event(event)
-```
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Project Settings Input Map, scene boot, and Autoload registration that host remappers and glyph managers.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed `InputEvent` branches, `StringName` actions, and safe signal/`await` patterns used in buffers and device routers.
 
-### 2. Input-Combo-Validation (Sequence Buffering)
-Professional fighting games and action-RPGs utilize a rolling buffer to validate complex input sequences (e.g., "Down, Right, Punch"). Store semantic actions with their timestamps and check if the buffer ends with a specific pattern within a strict time window (e.g., 500ms).
+#### Complements
+- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Control focus and `_gui_input` ownership so menus consume clicks before gameplay `_unhandled_input`.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — `device_changed` and rebind events should signal up to HUD/prompt listeners without hard UI refs.
+- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Singleton ownership for InputBuffer / GlyphPrompt / Remapper services that survive scene changes.
+- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — Consumes buffered jump/dash and `get_vector` movement inside physics steps.
+- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — Mouse-look sensitivity and capture modes pair with FPS camera rigs.
+- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — Action just-pressed / held / released phases drive FSM transitions without polling spam.
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Persist `InputMap` rebinds and hold/toggle accessibility prefs to `user://` config.
+- [godot-adapt-desktop-to-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md) — Virtual joysticks and touch cameras extend this skill’s multi-touch gesture patterns.
 
-```gdscript
-class_name ComboValidator extends Node
-## Validates timed input sequences for special moves.
+#### Downstream / consumers
+- [godot-genre-platformer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md) — Coyote time and jump buffers are the primary consumer of input buffering.
+- [godot-genre-shooter-fps](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md) — Captured mouse aim, fire just-pressed, and gamepad look rely on this skill’s capture/deadzone stack.
+- [godot-genre-fighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-fighting/SKILL.md) — Combo sequence validators and frame-perfect buffers feed special-move detection.
+- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — Authoritative peers need sanitized action snapshots / RPC’d input, not raw local keycodes.
 
-var _input_buffer: Array[Dictionary] = []
-@export var combo_timeout: float = 0.5
-
-func add_input(action: StringName) -> void:
-    _input_buffer.append({"action": action, "time": Time.get_ticks_msec()})
-    _cleanup_buffer()
-    
-    # Example: Fireball (Down, Right, Attack)
-    if _check_sequence(["move_down", "move_right", "attack"]):
-        _execute_special_move("fireball")
-
-func _cleanup_buffer() -> void:
-    var now := Time.get_ticks_msec()
-    _input_buffer = _input_buffer.filter(func(i): return now - i.time < (combo_timeout * 1000))
-
-func _check_sequence(sequence: Array[StringName]) -> bool:
-    if _input_buffer.size() < sequence.size(): return false
-    
-    for i in range(sequence.size()):
-        var buffer_idx := _input_buffer.size() - sequence.size() + i
-        if _input_buffer[buffer_idx].action != sequence[i]:
-            return false
-    return true
-```
-
-### 3. Input-Replay-Buffer (Deterministic Playback)
-Deterministic replay is essential for debugging high-speed physics or creating "Ghost" racing data. Capture every `InputEvent` in `_unhandled_input()`, serializing the data with the current `multiplayer.get_unique_id()` or frame count.
-
-```gdscript
-class_name InputReplayBuffer extends Node
-## Captures and replays deterministic input streams.
-
-var _recorded_events: Array[Dictionary] = []
-var _is_replaying: bool = false
-
-func _unhandled_input(event: InputEvent) -> void:
-    if _is_replaying: return
-    
-    # Capture the duplicate event and current engine frame.
-    _recorded_events.append({
-        "frame": Engine.get_frames_drawn(),
-        "event": event.duplicate()
-    })
-
-func start_replay() -> void:
-    _is_replaying = true
-    var start_frame := Engine.get_frames_drawn()
-    
-    for entry in _recorded_events:
-        var target_frame: int = entry.frame
-        while Engine.get_frames_drawn() < start_frame + target_frame:
-            await get_tree().process_frame
-        
-        Input.parse_input_event(entry.event)
-```
-
-## Reference
-- [Godot Docs: InputEvent](https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html)
-
-
-### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting input concern.

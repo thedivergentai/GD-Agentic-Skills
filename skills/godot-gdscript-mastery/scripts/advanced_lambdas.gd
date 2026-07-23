@@ -31,3 +31,13 @@ func process_entities(entities: Array[Node2D], processor: Callable) -> void:
 ## This allows the engine to call them without allocating object memory.
 static func calculate_distance_sq(a: Vector2, b: Vector2) -> float:
     return a.distance_squared_to(b)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_advanced.html
+# - https://docs.godotengine.org/en/stable/classes/class_callable.html
+# - https://docs.godotengine.org/en/stable/classes/class_array.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — lambdas as short-lived signal handlers
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md
+# =============================================================================

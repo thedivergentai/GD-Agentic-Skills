@@ -108,3 +108,14 @@ func _print_violations(violations: Array[Dictionary]) -> void:
 ## Enable UNTYPED_DECLARATION warning in Project Settings for real-time checks.
 ## This script is for batch auditing before releases.
 ## CRITICAL: 20-40% performance gain with full static typing in hot paths.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/warning_system.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_styleguide.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — project-wide typing gates
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-testing-patterns/SKILL.md — fail CI on untyped public APIs
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md
+# =============================================================================

@@ -33,3 +33,14 @@ func format_value(value: float) -> String:
 ## and only re-calculate if the value has changed by > 1%.
 ## Use 'ColorRect' or 'Shader' for 'Damage Number' popups to avoid 
 ## Label-instance overhead during "Click Storms".
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_format_string.html
+# - https://docs.godotengine.org/en/stable/classes/class_string.html
+# - https://docs.godotengine.org/en/stable/classes/class_label.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md — suffix/scientific HUD strings
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — bind formatted values to labels
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-idle-clicker/SKILL.md
+# =============================================================================

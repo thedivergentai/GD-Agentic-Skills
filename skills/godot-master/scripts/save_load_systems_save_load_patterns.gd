@@ -50,10 +50,14 @@ func check_save_data_integrity(path: String) -> bool:
     return FileAccess.file_exists("user://" + path)
 
 # 7. Generating Unique IDs
-# EXPERT NOTE: Create persistent IDs for nodes so they reconnect cleanly after load.
+# EXPERT NOTE: NEVER use get_instance_id() for cross-session IDs — mint a stable String once.
 func get_persist_id(node: Node) -> String:
-    # Uses scene unique ID if available, or custom logic
-    return str(node.get_instance_id())
+    var existing := str(node.get_meta(&"persist_id", ""))
+    if not existing.is_empty():
+        return existing
+    var minted := "%s-%d-%d" % [node.name, Time.get_ticks_usec(), randi()]
+    node.set_meta(&"persist_id", minted)
+    return minted
 
 # 8. Safely Destroying Old State before Load
 # EXPERT NOTE: Delete old persistent objects before loading new ones to prevent duplication.
@@ -71,3 +75,21 @@ func save_stat_resource(res: Resource, path: String) -> void:
 # EXPERT NOTE: Push heavy scene loading or resource parsing to background cores.
 func load_level_async(scene_path: String) -> void:
     ResourceLoader.load_threaded_request(scene_path)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/data_paths.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/binary_serialization_api.html
+# - https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/groups.html
+# - https://docs.godotengine.org/en/stable/classes/class_fileaccess.html
+# - https://docs.godotengine.org/en/stable/classes/class_json.html
+# - https://docs.godotengine.org/en/stable/classes/class_configfile.html
+# - https://docs.godotengine.org/en/stable/classes/class_resourcesaver.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md — SaveManager Autoload home
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md — wipe Persist + threaded scene restore
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — ResourceSaver typed stats
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md
+# =============================================================================

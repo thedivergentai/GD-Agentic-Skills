@@ -54,3 +54,13 @@ func _apply_scale(scale_factor: float) -> void:
 ## Autoload this script as 'UIManager'.
 ## UIManager.set_theme("res://themes/dark_mode.tres")
 ## Connect to scale_changed for custom widget adjustments.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/ui/gui_skinning.html
+# - https://docs.godotengine.org/en/stable/classes/class_theme.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — layout before skin polish
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-theme-easter/SKILL.md — seasonal Theme overlays
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md
+# =============================================================================

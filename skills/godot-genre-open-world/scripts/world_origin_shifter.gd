@@ -28,3 +28,14 @@ func _perform_shift() -> void:
 
 ## [SKILL NOTICE]: Use 'reset_physics_interpolation()' during 
 ## origin shifts to prevent 1-frame visual 'streaking' or 'warping'.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/large_world_coordinates.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/interpolation/physics_interpolation_introduction.html
+# - https://docs.godotengine.org/en/stable/classes/class_renderingserver.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — reset_physics_interpolation after origin snap
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md — global shader world_offset uniform sync
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md
+# =============================================================================

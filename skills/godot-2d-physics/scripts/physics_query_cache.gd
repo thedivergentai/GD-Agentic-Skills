@@ -54,3 +54,14 @@ func get_closest() -> Node2D:
 ## EXPERT USAGE:
 ## Attach to player/AI. Connect to 'results_updated' or poll 'get_results()'.
 ## Vastly cheaper than calling intersect_shape every frame.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_physicsdirectspacestate2d.html
+# - https://docs.godotengine.org/en/stable/classes/class_physicsshapequeryparameters2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — cache radar scans vs every-frame shapes
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md — shape query parameters reuse
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md
+# =============================================================================

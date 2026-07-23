@@ -16,3 +16,14 @@ func setup_isolated_attractor(attractor: GPUParticlesAttractorSphere3D) -> void:
 	# Enable interaction in the material
 	if process_material is ParticleProcessMaterial:
 		process_material.attractor_interaction_enabled = true
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/particles/attractors.html
+# - https://docs.godotengine.org/en/stable/classes/class_gpuparticlesattractor3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/particles/process_material_properties.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — cull_mask isolation vs global attractor cost
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md — layered environmental VFX zones
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md
+# =============================================================================

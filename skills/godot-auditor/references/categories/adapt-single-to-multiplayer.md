@@ -9,3 +9,13 @@
 - **NEVER sync 'Full Floats' if possible** — Quantize Vector3 data (truncating decimals) to save 50%+ bandwidth. Use `MultiplayerSynchronizer` with delta-sync enabled.
 - **NEVER ignore 'Late Joiners'** — Players who join mid-game won't see existing environmental changes. Broadcast a full world-state 'Snapshot' on peer connection.
 - **NEVER test on 0ms ping** — Everything works on localhost. Use a simulator (`net_latency_simulator.gd`) with 150ms ping to identify sync bugs.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

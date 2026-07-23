@@ -85,3 +85,14 @@ func stop_sequence() -> void:
 ##     {animation: "strike", callback: func(): deal_damage()},
 ##     {animation: "recovery", callback: Callable()}
 ## ])
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_animationplayer.html
+# - https://docs.godotengine.org/en/stable/tutorials/animation/introduction.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — sequence_completed / per-clip finished wiring
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md — gameplay FSM owning combo intent vs queue
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md
+# =============================================================================

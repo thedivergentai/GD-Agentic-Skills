@@ -57,3 +57,13 @@ func _draw_line(from: Vector3, to: Vector3, color: Color) -> void:
     _immediate_mesh.surface_add_vertex(from)
     _immediate_mesh.surface_add_vertex(to)
     _immediate_mesh.surface_end()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_raycast3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — in-game hit/normal visualization for query bugs
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md — deeper RayCast3D vs space-state diagnostics
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md
+# =============================================================================

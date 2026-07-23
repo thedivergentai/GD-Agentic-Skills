@@ -1,223 +1,196 @@
 ---
 name: godot-composition-apps
-description: "Expert architectural standards for building scalable Godot applications (Apps, Tools, UI, or Games) using the Composition pattern. Use when designing node structures, refactoring monolithic scripts, or implementing complex behaviors. Enforces \"Has-A\" relationships over \"Is-A\" inheritance."
+description: "Expert architectural standards for scalable Godot Apps, Tools, EditorPlugins, and Control-heavy UIs using Composition (Has-A Orchestrator + components). Use when building dashboards, tool windows, forms, settings panels, or EditorPlugin UIs. Do NOT use for gameplay entities (Player/Enemy/Weapon/Hitbox) — route those to godot-composition. Trigger keywords: Control, EditorPlugin, tool UI, Orchestrator, VLS, rock test, AuthComponent, ThemeManager, Saveable component, dependency injection."
 ---
 
 # Godot Composition & Architecture (Apps & UI)
 
-This skill enforces the **Single Responsibility Principle** within Godot's Node system. Whether building an RPG or a SaaS Dashboard, the rule remains: **One Script = One Job.**
+## Decision Gate — App vs Gameplay Entity
+
+| Root node / task | Route |
+|------------------|-------|
+| Control, EditorPlugin, tool window, settings dock, form UI | **Stay here** — Orchestrator + components |
+| Player, Enemy, Weapon, Hitbox, gameplay CharacterBody | **[godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md)** — not this skill |
+
+**App-only gate:** If the node is a gameplay actor (Player/Enemy/Weapon/Hitbox), use godot-composition. This skill owns **Control / EditorPlugin / tool** composition.
 
 ## The Core Philosophy
 
-### The Litmus Test
+### The Litmus Test (Rock Test)
 Before writing a script, ask: **"If I attached this script to a literal rock, would it still function?"**
 - **Pass:** An `AuthComponent` on a rock allows the rock to log in. (Context Agnostic)
 - **Fail:** A `LoginForm` script on a rock tries to grab text fields the rock doesn't have. (Coupled)
 
+**MANDATORY:** Validate new components with [comp_rock_test_boilerplate.gd](scripts/comp_rock_test_boilerplate.gd).
+
 ### The Backpack Model (Has-A > Is-A)
-Stop extending base classes to add functionality. Treat the Root Node as an empty **Backpack**.
-- **Wrong (Inheritance):** `SubmitButton` extends `AnimatedButton` extends `BaseButton`.
-- **Right (Composition):** `SubmitButton` (Root) **HAS-A** `AnimationComponent` and **HAS-A** `NetworkRequestComponent`.
+Treat the Root Node as an empty **Backpack**.
+- **Wrong:** `SubmitButton` extends `AnimatedButton` extends `BaseButton`.
+- **Right:** Root **HAS-A** `AnimationComponent` and **HAS-A** `NetworkRequestComponent`.
 
 ## The Hierarchy of Power (Communication Rules)
 
-Strictly enforce this communication flow to prevent "Spaghetti Code":
-
 | Direction | Source → Target | Method | Reason |
 |-----------|-----------------|--------|--------|
-| **Downward** | Orchestrator → Component | **Function Call** | Manager owns the workers; knows they exist. |
-| **Upward** | Component → Orchestrator | **Signals** | Workers are blind; they just yell "I'm done!" |
-| **Sideways** | Component A ↔ Component B | **FORBIDDEN** | Siblings must never talk directly. |
+| **Downward** | Orchestrator → Component | **Function Call** | Manager owns the workers. |
+| **Upward** | Component → Orchestrator | **Signals** | Workers are blind. |
+| **Sideways** | Component A ↔ Component B | **FORBIDDEN** | Siblings never talk directly. |
 
-**The Sideways Fix:** Component A signals the Orchestrator; Orchestrator calls function on Component B.
+**Sideways Fix:** Component A signals the Orchestrator; Orchestrator calls Component B.
+
+## Available Scripts
+
+> **MANDATORY**: Read the matching script before implementing the pattern. Do not reinvent Orchestrator wiring inline.
+
+### [comp_rock_test_boilerplate.gd](scripts/comp_rock_test_boilerplate.gd)
+**MANDATORY first read** — Attach-candidate-to-literal-rock harness that fails hard-coupled components early.
+
+### [comp_orchestrator_base.gd](scripts/comp_orchestrator_base.gd)
+**MANDATORY** when creating any App/UI root — Signal-up / call-down wiring skeleton (0% business math).
+
+### [comp_logic_visual_syncer.gd](scripts/comp_logic_visual_syncer.gd)
+**MANDATORY** for VLS — Logic emits `state_changed`; visuals/animations react without logic knowing `AnimationPlayer`/`Theme`.
+
+### [comp_base_component.gd](scripts/comp_base_component.gd)
+Shared component lifecycle + dependency validation for app workers.
+
+### [comp_dependency_injector.gd](scripts/comp_dependency_injector.gd)
+Typed export / registry injection so Orchestrators avoid brittle `$` paths.
+
+### [comp_data_driven_config.gd](scripts/comp_data_driven_config.gd)
+Resource-backed config for tool settings and form defaults.
+
+### [comp_persistence_component.gd](scripts/comp_persistence_component.gd)
+**MANDATORY for saveable UI/tool state** — Registers `Saveable` group + `get_save_data()` without putting I/O in visuals.
+
+### [comp_ability_sequencer.gd](scripts/comp_ability_sequencer.gd)
+Ordered multi-step tool workflows (wizard pages, export pipelines) as child steps.
+
+### [comp_health_component.gd](scripts/comp_health_component.gd) / [comp_hitbox_component.gd](scripts/comp_hitbox_component.gd)
+Only when an app/tool simulates entities; prefer godot-composition for real games.
 
 ## The Orchestrator Pattern
 
-The Root Node script (e.g., `LoginScreen.gd`, `UserProfile.gd`) is now an **Orchestrator**.
-- **Math/Logic:** 0%
-- **State Management:** 100%
-- **Job:** Wire components together. Listen to Component signals and trigger other Component functions.
+Root script (`LoginScreen.gd`, `UserProfile.gd`, EditorPlugin dock root) is an **Orchestrator**:
+- Math/Logic: 0% · State wiring: 100%
+- Job: listen to component signals → call other component methods
 
-### Example: App/UI Context
+**MANDATORY:** Extend patterns from [comp_orchestrator_base.gd](scripts/comp_orchestrator_base.gd).
 
 | Concept | App/UI Example |
 |---------|----------------|
-| **Orchestrator** | `UserProfile.gd` |
-| **Component 1** | `AuthValidator` (Logic) |
-| **Component 2** | `AuthVisualSyncer` (Visuals) |
-| **Component 3** | `ThemeManager` (Visuals) |
+| Orchestrator | `UserProfile.gd` / Editor dock root |
+| Logic component | `AuthValidator` |
+| VLS | `AuthVisualSyncer` via [comp_logic_visual_syncer.gd](scripts/comp_logic_visual_syncer.gd) |
+| Theme ownership | Separate theme component — never mutated inside form logic |
+| Focus ownership | Orchestrator grants/releases Control focus; components never steal siblings' focus |
 
 ## Implementation Standards
 
-### 1. Type Safety
-Define components globally. Never use dynamic typing for core architecture.
-```gdscript
-# auth_component.gd
-class_name AuthComponent extends Node
-```
-
-### 2. Dependency Injection
-**NEVER** use `get_node("Path/To/Child")`. Paths are brittle.
-**ALWAYS** use Typed Exports and drag-and-drop in the Inspector.
-```gdscript
-# Orchestrator script
-@export var auth: AuthComponent
-@export var form_ui: Control
-```
-
-### 3. Scene Unique Names
-If internal referencing within a scene is strictly necessary for the Orchestrator, use the `%` Unique Name feature.
-```gdscript
-@onready var submit_btn = %SubmitButton
-```
-
-### 4. Stateless Components
-Components should process the data given to them.
-- **Bad:** `NetworkComponent` finds the username text field itself.
-- **Good:** `NetworkComponent` has a function `login(username, password)`. The Orchestrator passes the text field data into that function.
+1. **Type Safety** — `class_name` on components; no untyped core architecture.
+2. **Dependency Injection** — `@export var auth: AuthComponent` (Inspector / `%UniqueNames`). **NEVER** `get_node("Path/To/Child")` for components.
+3. **Stateless workers** — Orchestrator passes data into functions; components do not scrape sibling Controls.
 
 ## NEVER Do (Expert Architectural Rules)
 
 ### Hierarchy & Dependencies
-- **NEVER use get_parent() to fetch data** — Components must be blind. If they need data, it must be injected via `@export` or passed into a function call.
-- **NEVER talk sideways** — `ComponentA` must never call functions on `ComponentB`. High-coupling makes refactoring impossible. Always signal up to the Orchestrator.
-- **NEVER use brittle Node Paths** — `get_node("Child/Subchild/Node")` breaks when you move a single node. Use `@export` and the Inspector.
+- **NEVER use get_parent() to fetch data** — Inject via `@export` or function args.
+- **NEVER talk sideways** — Signal up; Orchestrator calls down.
+- **NEVER use brittle Node Paths** — Prefer `@export` / `%`.
 
 ### Logic & State
-- **NEVER put business logic in the Orchestrator** — The Orchestrator should only have `_on_signal` methods that delegate to other components.
-- **NEVER store global state in individual components** — Use a shared `Context` Resource or the Global Autoload for cross-scene state.
-- **NEVER assume a component's parent is of a specific type** — If a `HealthComponent` requires its parent to be a `CharacterBody2D`, it fails the "Rock Test."
+- **NEVER put business logic in the Orchestrator** — Only `_on_signal` delegators.
+- **NEVER store global state in individual components** — Shared Context Resource or Autoload.
+- **NEVER assume a component's parent is a specific type** — Rock Test failure.
 
 ### Polish & Orchestration
-- **NEVER skip signal cleanup** — Connecting signals dynamically without disconnecting can lead to memory leaks or multiple execution bugs.
-- **NEVER let Logic know about Visuals** — A `CombatComponent` should never call `AnimationPlayer.play()`. It emits `attack_performed`, and a `Syncer` or `Orchestrator` handles the visual response.
+- **NEVER skip signal cleanup** — Disconnect on exit / use CONNECT_ONE_SHOT where appropriate.
+- **NEVER let Logic know about Visuals** — Emit; VLS / Orchestrator plays animations and applies Theme.
 
 ## Godot 4.7: App UI
 
 - **Control offset transform** for non-destructive visual tweaks in tool UIs.
 - Editor-style **searchable dropdowns** pattern applicable to in-app pickers.
 
-## Code Structure Example (General App)
+## Fragile App Workflow: Saveable + Theme Ownership
 
-### Component: `clipboard_copier.gd`
+Do **not** put save I/O or Theme mutation inside form Controls. Route through components:
+
+1. **MANDATORY** [comp_persistence_component.gd](scripts/comp_persistence_component.gd) on the Orchestrator (or a dedicated Saveable child) — `add_to_group("Saveable")` + `get_save_data()`.
+2. Theme / StyleBox changes belong in a theme component ([theme_manager.gd](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition-apps/resources/theme_manager.gd)) called **down** by the Orchestrator after logic signals success/failure.
+3. Focus: Orchestrator owns `grab_focus()` after validation failures so logic stays Control-agnostic.
+
 ```gdscript
-class_name ClipboardCopier extends Node
-
-signal copy_success
-signal copy_failed(reason)
-
-func copy_text(text: String) -> void:
-    if text.is_empty():
-        copy_failed.emit("Text empty")
-        return
-    DisplayServer.clipboard_set(text)
-    copy_success.emit()
-```
-
-### Orchestrator: `share_menu.gd`
-```gdscript
+# settings_dock_orchestrator.gd (pattern — wire via @export, not $)
 extends Control
+@export var persistence: CompPersistenceComponent
+@export var theme_mgr: Node  # theme_manager.gd API
+@export var form_logic: Node
 
-# Wired via Inspector
-@export var copier: ClipboardCopier
-@export var link_label: Label
+func _ready() -> void:
+    form_logic.settings_valid.connect(_on_settings_valid)
+    form_logic.settings_invalid.connect(_on_settings_invalid)
 
-func _ready():
-    # Downward communication
-    %CopyButton.pressed.connect(_on_copy_button_pressed)
-    # Upward communication listening
-    copier.copy_success.connect(_on_copy_success)
+func _on_settings_valid(payload: Dictionary) -> void:
+    theme_mgr.apply_user_theme(payload.get("theme_id"))
+    # Save systems collect via Saveable group — persistence component stays dumb
 
-func _on_copy_button_pressed():
-    # Orchestrator delegation
-    copier.copy_text(link_label.text)
-
-func _on_copy_success():
-    # Orchestrator managing UI state based on signal
-    %ToastNotification.show("Link Copied!")
+func _on_settings_invalid(field: StringName) -> void:
+    # Orchestrator owns focus; logic never touches sibling LineEdits
+    var target := get_node_or_null("%" + String(field))
+    if target is Control:
+        target.grab_focus()
 ```
-
 
 ## Expert Composition Patterns (Apps)
 
 ### 1. App-Level Service Locator
-Avoid polluting the Global Autoload list with dozens of Node-based singletons. Use `Engine.register_singleton()` for lightweight, non-node business logic services (Auth, Config, Networking) [6].
-
-```gdscript
-# AppServiceLocator.gd (Autoload)
-func _ready() -> void:
-    # Register a lightweight RefCounted object as a global singleton
-    if not Engine.has_singleton(&"AuthService"):
-        Engine.register_singleton(&"AuthService", AuthService.new())
-
-# Access from anywhere
-var auth = Engine.get_singleton(&"AuthService")
-```
+Prefer `Engine.register_singleton()` for lightweight non-Node services (Auth, Config) instead of dozens of Autoload Nodes [6].
 
 ### 2. Visual-Logic-Syncers (VLS)
-Strictly decouple UI animations and VFX from business logic. The Logic component emits signals, and the VLS component listens and triggers the `AnimationPlayer` [12, 13].
-
-```gdscript
-# AuthVisualSyncer.gd
-@export var logic: AuthFormLogic
-@export var anim: AnimationPlayer
-
-func _ready() -> void:
-    logic.login_failed.connect(_on_login_failed)
-
-func _on_login_failed(reason: String):
-    anim.play("shake_form")
-    # Procedural juice via Tweens
-    var t = create_tween()
-    t.tween_property(self, "modulate", Color.RED, 0.2)
-```
+**MANDATORY** [comp_logic_visual_syncer.gd](scripts/comp_logic_visual_syncer.gd) — logic never calls `AnimationPlayer.play()`.
 
 ### 3. O(1) Component Registry
-In complex dashboards, use a Dictionary in the Orchestrator to store sibling components for instant lookup, bypassing brittle `get_node()` paths [3, 13].
-
-```gdscript
-# DashboardOrchestrator.gd
-var _registry: Dictionary = {}
-
-func _ready() -> void:
-    for child in get_children():
-        _registry[child.name] = child
-        for group in child.get_groups():
-            _registry[group] = child
-
-func get_comp(key: StringName) -> Node:
-    return _registry.get(key)
-```
+Orchestrator Dictionary registry for dashboard modules — still no sideways calls; registry is Orchestrator-private lookup.
 
 ## Reference
-- Master Skill: [godot-master](../godot-master/SKILL.md)
 
-### [comp_orchestrator_base.gd](scripts/comp_orchestrator_base.gd)
-Central hub for signal delegation and component wiring. Logic-free manager.
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
 
-### [comp_base_component.gd](scripts/comp_base_component.gd)
-Foundational component with type-safe signals and auto-group registration.
+### Official Documentation
+- [Scene organization](https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html) — Canonical signal-up / call-down ownership so Orchestrators wire components without sibling coupling.
+- [When and how to avoid using nodes for everything](https://docs.godotengine.org/en/stable/tutorials/best_practices/node_alternatives.html) — Prefer Resources/RefCounted for pure data and logic services so components stay lean and rock-testable.
+- [Godot interfaces](https://docs.godotengine.org/en/stable/tutorials/best_practices/godot_interfaces.html) — Duck-typed method contracts (`has_method`) that let composition work without deep inheritance trees.
+- [What are Godot classes?](https://docs.godotengine.org/en/stable/tutorials/best_practices/what_are_godot_classes.html) — Why Godot favors scene composition (Has-A) over classical Is-A hierarchies for reusable behaviors.
+- [Using signals](https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html) — Upward component→Orchestrator events that keep workers blind to parents and siblings.
+- [GDScript exports](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_exports.html) — Typed `@export` dependency injection that replaces brittle `get_node` paths in the Inspector.
+- [Scene Unique Nodes](https://docs.godotengine.org/en/stable/tutorials/scripting/scene_unique_nodes.html) — `%UniqueName` for Orchestrator-local Control/Button wiring without string path fragility.
+- [Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html) — Data-driven `.tres` configs so values stay outside logic components.
+- [Groups](https://docs.godotengine.org/en/stable/tutorials/scripting/groups.html) — Mass registration (e.g. Saveable/Components) for Orchestrator registries without hard sibling refs.
+- [Autoloads versus regular nodes](https://docs.godotengine.org/en/stable/tutorials/best_practices/autoloads_versus_regular_nodes.html) — When a scene-local Orchestrator beats a global Autoload for app/UI composition.
+- [Singletons (Autoload)](https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html) — Safe registration of cross-scene services when a true app-level locator is justified.
+- [Saving games](https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html) — Persistence patterns that map cleanly onto modular saveable components.
 
-### [comp_health_component.gd](scripts/comp_health_component.gd)
-Context-agnostic health/damage logic that works on players, enemies, or barrels.
+### Related Skills
 
-### [comp_hitbox_component.gd](scripts/comp_hitbox_component.gd)
-Area-based collision interface that bridges physical hits to the HealthComponent.
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Project layout, Autoload registration, and scene ownership that Orchestrators and components plug into.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed exports, signals, and `class_name` fluency required before dependency injection and rock-testable components.
+- [godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md) — Core Has-A component model (game-focused sibling); this skill specializes the same rules for Apps/Tools/UI.
 
-### [comp_ability_sequencer.gd](scripts/comp_ability_sequencer.gd)
-Dynamic ability manager that executes child 'Ability' nodes via unified interfaces.
+#### Complements
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Connect flags, ghost cleanup, and EventBus patterns Orchestrators use for upward wiring.
+- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Boot order and ownership when composition needs a thin global service instead of scene-local state.
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Custom Resources and hot-swap `.tres` configs that feed data-driven components.
+- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Control trees that should signal intent upward while Orchestrators call down into layout.
+- [godot-ui-theming](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md) — Theme/visual syncers stay separate from auth/form logic under the VLS pattern.
+- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — Scene swaps must re-inject exports and reconnect Orchestrator wiring without sideways sibling links.
+- [godot-testing-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-testing-patterns/SKILL.md) — Rock-test and signal spies that prove components stay context-agnostic.
 
-### [comp_data_driven_config.gd](scripts/comp_data_driven_config.gd)
-Late-binding configuration loader for hot-swapping behavior via Resources (`.tres`).
+#### Downstream / consumers
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Consumes Saveable-group persistence components for modular app state.
+- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — Ability nodes as child components sequenced by an Orchestrator without inheritance trees.
+- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — State nodes compose beside logic/visual syncers; FSM owns transitions, not sibling chatter.
 
-### [comp_dependency_injector.gd](scripts/comp_dependency_injector.gd)
-Expert injection pattern for passing refs to dynamic components without `get_node`.
-
-### [comp_persistence_component.gd](scripts/comp_persistence_component.gd)
-Automated save/load registration for modular node persistence.
-
-### [comp_logic_visual_syncer.gd](scripts/comp_logic_visual_syncer.gd)
-Decoupling agent that syncs gameplay logic state to visual animations/VFX.
-
-### [comp_rock_test_boilerplate.gd](scripts/comp_rock_test_boilerplate.gd)
-Architectural validator to ensure components are truly decoupled.
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting architecture concern.

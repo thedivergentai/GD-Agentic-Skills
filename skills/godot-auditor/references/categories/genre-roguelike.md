@@ -21,3 +21,14 @@
 - NEVER clear procedural levels using `free()`; strictly use `queue_free()` to avoid mid-frame segmentation faults.
 - NEVER broadcast mass state changes to a grid immediately; strictly use `call_deferred()` or **`call_group_flags`** to avoid frame spikes during turn transitions.
 - NEVER use heavy TileMapLayer nodes for high-resolution Fog of War; strictly use a **GPU Shader Mask** via `ColorRect` and an `ImageTexture` updated via **`RenderingServer.texture_2d_update()`**.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/best_practices/project_organization.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md — domain skill owning this never-list sector
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md — measure alleged slop before rewrite
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md — simulate balance impact of structural fixes
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md
+-->

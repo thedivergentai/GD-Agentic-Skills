@@ -19,3 +19,12 @@ func apply_effect(base_effect: StatusEffectData) -> void:
 func _on_effect_added(_effect: StatusEffectData) -> void:
     # Trigger logic like slowing speed or initiating stuns.
     pass
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md — apply/cleanse lifecycle
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — effect-added listeners
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-moba/SKILL.md
+# =============================================================================

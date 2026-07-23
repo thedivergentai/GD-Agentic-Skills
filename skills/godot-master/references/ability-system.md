@@ -11,610 +11,100 @@ description: "Expert patterns for RPG/action ability systems including cooldown 
 
 # Ability System
 
-Expert guidance for building flexible, extensible ability systems.
+Resource abilities + scene-scoped managers — not AbilityManager / skill-tree novels.
+
+## Architecture Decision: Where Does the Manager Live?
+
+| Scope | Policy | Script |
+|-------|--------|--------|
+| Per character / enemy / turret | **Scene-scoped manager as child** (default) | [ability_manager.gd](../scripts/ability_system_ability_manager.gd) or composition [ability_container.gd](../scripts/ability_system_ability_container.gd) on the entity |
+| Shared unlock / loadout catalog across scenes | Autoload **catalog / progression only** (ranks, unlock flags) — not live cast state | Thin Autoload data; casts still go through the entity manager |
+| Global "cast any ability anywhere" Autoload | **Avoid** | Breaks encapsulation and multiplayer authority |
+
+**Resolved policy:** Live cooldowns, GCD, and `execute()` run on a **scene-scoped** AbilityManager / AbilityContainer under the caster. Autoloads may store unlock ranks; they must not be the combat cast oracle. Skill-tree UI reads/writes progression data, then calls into the caster’s manager — never `/root/AbilityManager.use_*` for combat.
 
 ## NEVER Do
 
-- **NEVER use _process() for cooldown tracking** — Use timers or manual delta tracking in _physics_process(). _process() has variable delta and causes cooldown desync in slow frames.
-- **NEVER forget global cooldown (GCD)** — Without GCD, players spam instant abilities. Add a small universal cooldown (0.5-1.5s) between all ability casts.
-- **NEVER hardcode ability effects in manager code** — Use the Strategy pattern. Each ability is a Resource with execute() method, not a giant switch statement.
-- **NEVER allow ability use during animation lock** — Check `is_casting` or `animation_playing` before allowing new casts. Interrupting animations breaks state machines.
-- **NEVER save cooldown state without time normalization** — Save "cooldown_end_time" (OS.get_unix_time() + remaining), not "remaining_time". Prevents exploits (change system clock, reload game).
-- **NEVER use Singletons (Autoloads) for combat managers** — Centralizing combat state in a global object makes tracking bugs difficult and breaks encapsulation. Keep abilities and stats scoped to the scenes that actually use them.
-- **NEVER use Object Pooling with GDScript** — GDScript uses reference counting memory management, so you generally do not need to pool instantiated abilities or projectiles. Simply instantiate and queue_free().
-- **NEVER rely on deep inheritance trees** — Avoid having a BaseAbility -> MagicAbility -> FireAbility inheritance hell. Use node composition instead.
+- **NEVER tick cooldowns / status durations in `_process()`** — Use `_physics_process(delta)` or one-shot Timers so cooldowns stay deterministic under frame spikes.
+- **NEVER forget global cooldown (GCD)** when design needs anti-spam — Small shared lock (0.5–1.5s) between casts when required.
+- **NEVER hardcode ability effects in the manager** — Strategy: each ability is a Resource / node with `execute()` ([ability_resource.gd](../scripts/ability_system_ability_resource.gd)).
+- **NEVER allow casts during animation lock** — Gate on `is_casting` / anim signals.
+- **NEVER save remaining cooldown floats without time normalization** — Persist absolute end timestamps (`Time.get_unix_time_from_system() + remaining`).
+- **NEVER put live combat cast state in a global Autoload** — Scene-scoped manager (see decision table). Progression Autoloads are fine.
+- **NEVER blindly ban or blindly require object pools** — GDScript refcounting makes pool-optional for light VFX; **do** pool when spawn/despawn of projectiles/AoE is high-frequency or allocation shows up in the profiler. Prefer instantiate/`queue_free` until measured otherwise.
+- **NEVER grow deep ability inheritance trees** — Compose Resources + containers ([godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md)).
 
 ---
+
+## Golden Path (MANDATORY)
+
+1. [ability_resource.gd](../scripts/ability_system_ability_resource.gd) — data + virtual `execute()`
+2. [ability_manager.gd](../scripts/ability_system_ability_manager.gd) **or** [ability_container.gd](../scripts/ability_system_ability_container.gd) — scene-scoped cast/cooldown
+3. [buff_stat.gd](../scripts/ability_system_buff_stat.gd) — when buffs/modifiers exist
+4. Damage resolution → [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md)
+
+**Do NOT** paste inline AbilityManager / ComboSystem / SkillTreeManager novels into scenes. Skill trees are progression UI + prerequisite graphs that grant Resources to the caster’s container.
 
 ## Available Scripts
 
-> **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
-
-### [ability_manager.gd](../scripts/ability_system_ability_manager.gd)
-Ability orchestration with cooldown registry, can_use checks, and visual cooldown progress. Decoupled from character logic for use on players, enemies, or turrets.
-
-### [ability_resource.gd](../scripts/ability_system_ability_resource.gd)
-Scriptable ability resource base class with metadata, stats, and effects array. Virtual execute() method for inheritance (ProjectileAbility, BuffAbility).
-
-### [buff_stat.gd](../scripts/ability_system_buff_stat.gd)
-Resource-Driven Buff System setup. Extends Resource and creates highly modular, drag-and-drop ability data.
-
----
-
-## Architecture Patterns
-
-### Resource-Based Abilities
-
-```gdscript
-# ability_base.gd - Base class for all abilities
-class_name Ability
-extends Resource
-
-@export var ability_id: String
-@export var display_name: String
-@export var icon: Texture2D
-@export var description: String
-
-@export_group("Costs")
-@export var mana_cost: int = 0
-@export var stamina_cost: int = 0
-@export var health_cost: int = 0  # Life tap abilities
-
-@export_group("Timing")
-@export var cooldown: float = 5.0
-@export var cast_time: float = 0.0  # 0 = instant
-@export var channel_time: float = 0.0  # Channeled abilities
-
-@export_group("Unlocking")
-@export var unlock_level: int = 1
-@export var prerequisites: Array[String] = []  # Other ability IDs
-
-## Override these
-func can_cast(caster: Node) -> bool:
-    return true  # Additional checks (range, target, etc.)
-
-func execute(caster: Node, target: Node = null) -> void:
-    pass  # Ability effect
-
-func on_cast_start(caster: Node) -> void:
-    pass  # Animation, effects
-
-func on_cast_complete(caster: Node) -> void:
-    execute(caster)
-
-func on_cancel(caster: Node) -> void:
-    pass  # Refund resources
-```
-
-### Concrete Ability Example
-
-```gdscript
-# fireball.gd
-class_name FireballAbility
-extends Ability
-
-@export var damage: int = 50
-@export var projectile_scene: PackedScene
-@export var range: float = 500.0
-
-func can_cast(caster: Node) -> bool:
-    var target = caster.get_target()
-    if not target:
-        return false
-    
-    var distance := caster.global_position.distance_to(target.global_position)
-    return distance <= range
-
-func execute(caster: Node, target: Node = null) -> void:
-    var projectile := projectile_scene.instantiate()
-    caster.get_parent().add_child(projectile)
-    projectile.global_position = caster.global_position
-    projectile.target = target
-    projectile.damage = damage
-```
-
----
-
-## Ability Manager (Centralized)
-
-### Core Manager
-
-```gdscript
-# ability_manager.gd
-class_name AbilityManager
-extends Node
-
-signal ability_cast(ability_id: String)
-signal ability_ready(ability_id: String)
-signal cooldown_started(ability_id: String, duration: float)
-
-var abilities: Dictionary = {}  # ability_id → Ability
-var cooldowns: Dictionary = {}  # ability_id → float (time remaining)
-var is_casting: bool = false
-var global_cooldown: float = 0.0  # GCD timer
-
-@export var gcd_duration: float = 1.0  # Global cooldown
-
-func register_ability(ability: Ability) -> void:
-    abilities[ability.ability_id] = ability
-    cooldowns[ability.ability_id] = 0.0
-
-func can_use_ability(ability_id: String, caster: Node) -> bool:
-    var ability := abilities.get(ability_id) as Ability
-    if not ability:
-        return false
-    
-    # Check GCD
-    if global_cooldown > 0.0:
-        return false
-    
-    # Check specific cooldown
-    if cooldowns.get(ability_id, 0.0) > 0.0:
-        return false
-    
-    # Check if already casting
-    if is_casting and ability.cast_time > 0.0:
-        return false
-    
-    # Check resources
-    if not has_resources(caster, ability):
-        return false
-    
-    # Ability-specific checks
-    return ability.can_cast(caster)
-
-func use_ability(ability_id: String, caster: Node, target: Node = null) -> bool:
-    if not can_use_ability(ability_id, caster):
-        return false
-    
-    var ability := abilities[ability_id]
-    
-    # Consume resources
-    consume_resources(caster, ability)
-    
-    # Start cast
-    if ability.cast_time > 0.0:
-        start_cast(ability, caster, target)
-    else:
-        # Instant cast
-        ability.execute(caster, target)
-        trigger_cooldown(ability_id, ability.cooldown)
-    
-    ability_cast.emit(ability_id)
-    return true
-
-func start_cast(ability: Ability, caster: Node, target: Node) -> void:
-    is_casting = true
-    ability.on_cast_start(caster)
-    
-    # Create timer for cast completion
-    var timer := get_tree().create_timer(ability.cast_time)
-    await timer.timeout
-    
-    if is_casting:  # Not interrupted
-        ability.on_cast_complete(caster)
-        trigger_cooldown(ability.ability_id, ability.cooldown)
-    
-    is_casting = false
-
-func interrupt_cast() -> void:
-    if is_casting:
-        is_casting = false
-        # Trigger ability.on_cancel() if needed
-
-func trigger_cooldown(ability_id: String, duration: float) -> void:
-    cooldowns[ability_id] = duration
-    global_cooldown = gcd_duration
-    cooldown_started.emit(ability_id, duration)
-
-func _physics_process(delta: float) -> void:
-    # Tick cooldowns
-    for ability_id in cooldowns.keys():
-        if cooldowns[ability_id] > 0.0:
-            cooldowns[ability_id] -= delta
-            if cooldowns[ability_id] <= 0.0:
-                ability_ready.emit(ability_id)
-    
-    # Tick GCD
-    if global_cooldown > 0.0:
-        global_cooldown -= delta
-
-func has_resources(caster: Node, ability: Ability) -> bool:
-    return (caster.mana >= ability.mana_cost and
-            caster.stamina >= ability.stamina_cost and
-            caster.health > ability.health_cost)
-
-func consume_resources(caster: Node, ability: Ability) -> void:
-    caster.mana -= ability.mana_cost
-    caster.stamina -= ability.stamina_cost
-    caster.health -= ability.health_cost
-```
-
----
-
-## Advanced Patterns
-
-### Combo System
-
-```gdscript
-# combo_tracker.gd
-extends Node
-
-var combo_chain: Array[String] = []
-var combo_window: float = 2.0  # Seconds to continue combo
-var last_ability_time: float = 0.0
-
-func register_ability_use(ability_id: String) -> void:
-    var current_time := Time.get_ticks_msec() * 0.001
-    
-    # Reset if too much time passed
-    if current_time - last_ability_time > combo_window:
-        combo_chain.clear()
-    
-    combo_chain.append(ability_id)
-    last_ability_time = current_time
-    
-    # Check for combo completion
-    check_combos()
-
-func check_combos() -> void:
-    # Example: "slash" → "slash" → "spin" = "whirlwind"
-    if combo_chain.size() >= 3:
-        var last_three := combo_chain.slice(-3)
-        if last_three == ["slash", "slash", "spin"]:
-            trigger_combo_ability("whirlwind")
-            combo_chain.clear()
-
-func trigger_combo_ability(combo_id: String) -> void:
-    # Execute powerful combo ability
-    pass
-```
-
-### Charge-Based Abilities
-
-```gdscript
-# charge_ability.gd - Abilities with multiple charges (like League of Legends Flash)
-class_name ChargeAbility
-extends Ability
-
-@export var max_charges: int = 2
-@export var charge_recharge_time: float = 20.0
-
-var current_charges: int = max_charges
-var recharge_timer: float = 0.0
-
-func can_cast(caster: Node) -> bool:
-    return current_charges > 0
-
-func execute(caster: Node, target: Node = null) -> void:
-    current_charges -= 1
-    
-    # Start recharging if not at max
-    if current_charges < max_charges and recharge_timer == 0.0:
-        recharge_timer = charge_recharge_time
-
-func tick(delta: float) -> void:
-    if recharge_timer > 0.0:
-        recharge_timer -= delta
-        if recharge_timer <= 0.0:
-            current_charges += 1
-            if current_charges < max_charges:
-                recharge_timer = charge_recharge_time  # Continue recharging
-            else:
-                recharge_timer = 0.0
-```
-
----
-
-## Skill Tree System
-
-### Skill Node
-
-```gdscript
-# skill_node.gd
-class_name SkillNode
-extends Resource
-
-@export var skill_id: String
-@export var display_name: String
-@export var description: String
-@export var icon: Texture2D
-
-@export_group("Requirements")
-@export var prerequisites: Array[String] = []  # Other skill_ids
-@export var character_level_required: int = 1
-@export var points_required: int = 1
-@export var mutually_exclusive_with: Array[String] = []  # Can't have both
-
-@export_group("Progression")
-@export var max_rank: int = 1
-@export var current_rank: int = 0
-
-@export_group("Effects")
-@export var unlocks_ability: String = ""  # Ability ID to grant
-@export var stat_bonuses: Dictionary = {}  # "strength": 5, "crit_chance": 0.05
-
-func can_unlock(player_skills: Dictionary, player_level: int, available_points: int) -> bool:
-    # Already maxed
-    if current_rank >= max_rank:
-        return false
-    
-    # Not enough points
-    if available_points < points_required:
-        return false
-    
-    # Level requirement
-    if player_level < character_level_required:
-        return false
-    
-    # Prerequisites
-    for prereq_id in prerequisites:
-        if not player_skills.has(prereq_id) or player_skills[prereq_id].current_rank == 0:
-            return false
-    
-    # Mutual exclusivity
-    for exclusive_id in mutually_exclusive_with:
-        if player_skills.has(exclusive_id) and player_skills[exclusive_id].current_rank > 0:
-            return false
-    
-    return true
-
-func unlock() -> void:
-    current_rank += 1
-```
-
-### Skill Tree Manager
-
-```gdscript
-# skill_tree.gd
-class_name SkillTree
-extends Node
-
-signal skill_unlocked(skill_id: String, rank: int)
-signal points_changed(new_total: int)
-
-var skills: Dictionary = {}  # skill_id → SkillNode
-var skill_points: int = 0
-
-func add_skill(skill: SkillNode) -> void:
-    skills[skill.skill_id] = skill
-
-func can_unlock_skill(skill_id: String, player_level: int) -> bool:
-    var skill := skills.get(skill_id) as SkillNode
-    if not skill:
-        return false
-    
-    return skill.can_unlock(skills, player_level, skill_points)
-
-func unlock_skill(skill_id: String, player_level: int) -> bool:
-    if not can_unlock_skill(skill_id, player_level):
-        return false
-    
-    var skill := skills[skill_id]
-    skill.unlock()
-    skill_points -= skill.points_required
-    
-    # Apply effects
-    apply_skill_effects(skill)
-    
-    skill_unlocked.emit(skill_id, skill.current_rank)
-    points_changed.emit(skill_points)
-    return true
-
-func apply_skill_effects(skill: SkillNode) -> void:
-    # Grant ability if specified
-    if skill.unlocks_ability != "":
-        var ability_manager := get_node("/root/AbilityManager")
-        # Register new ability
-    
-    # Apply stat bonuses
-    var player := get_tree().get_first_node_in_group("player")
-    for stat_name in skill.stat_bonuses.keys():
-        var bonus = skill.stat_bonuses[stat_name]
-        player.set(stat_name, player.get(stat_name) + bonus)
-
-func add_skill_points(amount: int) -> void:
-    skill_points += amount
-    points_changed.emit(skill_points)
-
-func reset_tree(refund_points: bool = true) -> void:
-    var total_spent := 0
-    for skill in skills.values():
-        total_spent += skill.current_rank * skill.points_required
-        skill.current_rank = 0
-    
-    if refund_points:
-        skill_points += total_spent
-        points_changed.emit(skill_points)
-```
-
----
-
-## Cooldown Strategies
-
-### Per-Ability Cooldown (Standard)
-
-```gdscript
-# Already shown in AbilityManager above
-# Each ability has independent cooldown
-```
-
-### Shared Cooldown (Hearthstone-style)
-
-```gdscript
-# All abilities of type "summon" share cooldown
-var summon_cooldown: float = 0.0
-
-func use_summon_ability(ability: Ability) -> void:
-    ability.execute()
-    summon_cooldown = 3.0  # All summons on 3s cooldown
-```
-
-### Charge System (Already shown above)
-
-Multiple uses, recharges over time.
-
----
-
-## Edge Cases
-
-### Cooldown Persistence
-
-```gdscript
-# save_system.gd
-func save_ability_cooldowns() -> Dictionary:
-    var data := {}
-    var current_time := Time.get_unix_time_from_system()
-    
-    for ability_id in ability_manager.cooldowns.keys():
-        var remaining := ability_manager.cooldowns[ability_id]
-        if remaining > 0.0:
-            data[ability_id] = current_time + remaining  # Absolute time
-    
-    return data
-
-func load_ability_cooldowns(data: Dictionary) -> void:
-    var current_time := Time.get_unix_time_from_system()
-    
-    for ability_id in data.keys():
-        var end_time: float = data[ability_id]
-        var remaining := max(0.0, end_time - current_time)
-        ability_manager.cooldowns[ability_id] = remaining
-```
-
-### Animation Lock
-
-```gdscript
-# Prevent ability spam during attack animations
-func _on_animation_player_animation_started(anim_name: String) -> void:
-    if anim_name.begins_with("attack_"):
-        ability_manager.is_casting = true
-
-func _on_animation_player_animation_finished(anim_name: String) -> void:
-    if anim_name.begins_with("attack_"):
-        ability_manager.is_casting = false
-```
-
-
-
----
-
-## Expert Techniques & Optimizations
-
-### 1. Dependency Injection for Loose Coupling
-Design your ability scenes so they have no hardcoded dependencies on the player context (e.g., getting parent nodes to reduce health). Instead, the parent context should inject itself or wire the signals. 
-
-### 2. Duck Typing for Hit Detection
-Do not enforce strict class checks. Rely on duck-typing: `if collision.get_collider().has_method("hit"): collision.get_collider().hit()`
-
-### 3. Group Broadcasting for AoE
-For Area-of-Effect abilities, assign entities to groups. Process damage efficiently by calling `get_tree().call_group("enemies", "apply_damage", 50)` instead of looping manually.
-
----
-
-## Elite Godot 4.x Patterns
-
-### 1. Advanced Status Effect System (Resource-Driven)
-Status effects should be represented as custom `Resource` scripts. This allows them to be data containers with logic, encapsulated methods, and signals for data changes.
-
-> [!CAUTION]
-> When applying a status effect template to a character at runtime, you MUST use `duplicate(true)` to create a deep copy. Modifying a shared resource instance will apply changes to EVERY character using that template globally.
-
-```gdscript
-# status_effect.gd
-class_name StatusEffect extends Resource
-
-@export var effect_name: String = "Unknown"
-@export var duration: float = 5.0
-@export var tick_rate: float = 1.0
-
-var _time_since_last_tick: float = 0.0
-var _elapsed_time: float = 0.0
-
-func apply_effect(target: Node) -> void:
-    # Logic to apply effect (e.g., damage, stat change)
-    pass
-
-func process_tick(target: Node, delta: float) -> bool:
-    _elapsed_time += delta
-    _time_since_last_tick += delta
-    
-    if _time_since_last_tick >= tick_rate:
-        apply_effect(target)
-        _time_since_last_tick = 0.0
-        
-    return _elapsed_time >= duration
-```
-
-```gdscript
-# status_effect_manager.gd
-class_name StatusEffectManager extends Node
-
-var active_effects: Array[StatusEffect] = []
-
-func add_effect(effect_template: StatusEffect) -> void:
-    # Essential: duplicate to avoid global state pollution
-    active_effects.append(effect_template.duplicate(true))
-
-func _process(delta: float) -> void:
-    # Backward iteration for safe removal
-    for i in range(active_effects.size() - 1, -1, -1):
-        var effect: StatusEffect = active_effects[i]
-        var is_finished: bool = effect.process_tick(get_parent(), delta)
-        
-        if is_finished:
-            active_effects.remove_at(i)
-```
-
-### 2. Networked Ability Prediction
-To eliminate perceived lag in multiplayer, use a combination of local prediction and authoritative server validation via RPCs.
-
-```gdscript
-# ability_caster.gd
-class_name AbilityCaster extends Node
-
-@rpc("any_peer", "call_remote", "reliable")
-func server_request_cast(target_pos: Vector3) -> void:
-    var sender_id := multiplayer.get_remote_sender_id()
-    # Authoritative check
-    if has_sufficient_resources():
-        consume_resources()
-        rpc("client_execute_cast", target_pos) # Confirm for everyone
-    else:
-        rpc_id(sender_id, "client_cancel_cast") # Reject prediction
-
-@rpc("authority", "call_remote", "reliable")
-func client_execute_cast(target_pos: Vector3) -> void:
-    if not is_multiplayer_authority():
-        _play_cast_animation() # Sync for observers
-    _spawn_projectile(target_pos)
-
-@rpc("authority", "call_remote", "reliable")
-func client_cancel_cast() -> void:
-    # Rollback local visuals/state
-    _cancel_animation()
-```
-
-### 3. Skill Tree Visualizer (Editor Tooling)
-Use `@tool` and `GraphEdit` to create visual auditing tools for skill dependencies and balance.
-
-```gdscript
-@tool
-class_name SkillTreeVisualizer extends GraphEdit
-
-@export var skill_database: Array[Resource] = []:
-    set(value):
-        skill_database = value
-        if Engine.is_editor_hint(): _rebuild_graph()
-
-func _rebuild_graph() -> void:
-    clear_connections()
-    for child in get_children(): if child is GraphNode: child.queue_free()
-    
-    # Instantiate GraphNodes and connect via connect_node(from, port, to, port)
-    # based on Resource dependency properties.
-```
+- [ability_resource.gd](../scripts/ability_system_ability_resource.gd) — **MANDATORY** before new abilities
+- [ability_manager.gd](../scripts/ability_system_ability_manager.gd) — **MANDATORY** Resource-driven cooldown registry (scene-scoped)
+- [ability_container.gd](../scripts/ability_system_ability_container.gd) — **MANDATORY** alternative: node/Timer composition per ability
+- [buff_stat.gd](../scripts/ability_system_buff_stat.gd) — modular buff stats (Do NOT Load if no buffs)
+
+## Cooldown & Status Timing Contract
+
+- Cooldown registry updates and status `process_tick` must use **physics-frame** delta (`_physics_process`) or `Timer` nodes owned by the container.
+- Hit detection from abilities stays on the physics tick when applying impulses / queries.
+- UI may read cooldown progress in `_process`; it must not own the truth.
+
+## Expert Techniques (short)
+
+- **Dependency injection:** parents inject caster context; abilities do not `get_node("/root/Player")`.
+- **Duck-typed hits:** `has_method(&"take_damage")` / combat DamageData — see combat skill.
+- **AoE:** `call_group` or space queries; do not scan the whole tree each cast.
+- **Networking:** predict locally, authority validates `can_use` + costs ([godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md)).
+- **Skill-tree visualizer:** `@tool` GraphEdit for design-time graphs; runtime still grants Resources to scene managers.
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
-- Related: After cooldowns/costs are Resource-tuned, validate loadouts with [godot-monte-carlo-balancer](../SKILL.md).
+
+> **Progressive disclosure:** Skim Official Documentation only for the APIs you are implementing (Resources, timers, signals, save, multiplayer). Open Related Skills when wiring adjacent systems—do not preload the whole lattice.
+
+### Official Documentation
+- [Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html) — Ability definitions, buffs, and status effects should be `Resource` data (not hardcoded manager switches) so designers can author and share assets.
+- [Resource](https://docs.godotengine.org/en/stable/classes/class_resource.html) — Use `duplicate(true)` when applying a status/buff template at runtime so one character’s ticking state cannot mutate the shared `.tres` for everyone.
+- [GDScript exports](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_exports.html) — `@export` / `@export_group` power Inspector-tuned costs, cooldowns, prerequisites, and effect arrays on ability Resources.
+- [Using signals](https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html) — Emit `ability_cast`, `ability_ready`, and cooldown lifecycle signals so UI and VFX subscribe without coupling to AbilityManager internals.
+- [Scene organization](https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html) — Keep “signals up, calls down”: parents/UI listen; managers call into ability Resources/nodes rather than reaching globally for combat state.
+- [Idle and Physics Processing](https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html) — Tick cooldowns and GCD in `_physics_process` (fixed delta); avoid `_process` for cooldown math that desyncs under frame spikes.
+- [Timer](https://docs.godotengine.org/en/stable/classes/class_timer.html) — One-shot `Timer` children are a clean composition pattern for per-ability cooldowns in container-style managers.
+- [SceneTreeTimer](https://docs.godotengine.org/en/stable/classes/class_scenetreetimer.html) — `create_timer()` / await patterns fit cast times and short buff durations without adding persistent Timer nodes for every cast.
+- [Groups](https://docs.godotengine.org/en/stable/tutorials/scripting/groups.html) — AoE abilities should `call_group` (or query groups) instead of hand-rolled scene scans for every hit target.
+- [Time](https://docs.godotengine.org/en/stable/classes/class_time.html) — Persist cooldown *end* timestamps (`get_unix_time_from_system()` + remaining), not raw remaining floats, across save/load.
+- [Saving games](https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html) — Serialize ability unlock ranks and absolute cooldown end times with the rest of player progression data.
+- [High-level multiplayer](https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html) — Authoritative cast validation + `@rpc` confirmation/cancel is the engine baseline for predicted ability casts.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Abilities, buffs, and skill-tree nodes are Resource-first; load this before inventing custom serialization or inheritance trees for ability data.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Cast/ready/cooldown signals and UI hooks depend on disciplined signal ownership so AbilityManager stays decoupled from characters and HUD.
+- [godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md) — Prefer AbilityContainer / component nodes over deep `BaseAbility → MagicAbility → FireAbility` inheritance for runtime behavior.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Virtual `execute()` / `can_cast()`, typed Resources, and await-on-timer cast flows assume solid GDScript patterns.
+
+#### Complements
+- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Damage, hit reactions, and targeting pipelines consume ability `execute()` results; keep DamageData separate from ability metadata.
+- [godot-rpg-stats](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md) — Mana/stamina costs, stat bonuses from skill ranks, and buff multipliers need a consistent stats/modifier layer.
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Hotbar / action-map input should call `can_use` / `use_ability` rather than embedding cooldown logic in input callbacks.
+- [godot-animation-player](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md) — Animation lock and cast telegraphs gate ability spam; wire AnimationPlayer start/finish into `is_casting`.
+- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — Cast, channel, and interrupt states belong in a character state machine that asks the ability manager, not the other way around.
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Skill ranks, unlock flags, and absolute cooldown end times must round-trip through the project save schema.
+
+#### Downstream / consumers
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — After cooldowns, costs, and damage/effect Resources are tunable, Monte Carlo loadout sims prove ability DPS/uptime bands before shipping curves.
+- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — Predicted casts, authority checks, and rollback of failed RPCs build on the ability manager’s can_use / execute split.
+- [godot-genre-action-rpg](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md) — Action-RPG skill bars, skill trees, and ability chaining assemble this skill with combat, stats, and progression genre glue.
+- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — Consumable scrolls, skill books, and equipment that grants abilities bridge inventory grants into AbilityManager registration.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.

@@ -22,3 +22,14 @@ The performance heart of the vision. This rubric assesses the project's adherenc
 
 ## 🌟 Visionary's Final Decree
 To reach **Elite** status, you must embrace the 'Static Manifest'. This means every object's shape is known to the compiler before the first frame. Avoid `Variant` like a plague unless you are building a universal handler. A visionary script reads like a declaration of architectural truth.
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_styleguide.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+- https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

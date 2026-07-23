@@ -1,6 +1,6 @@
 ---
 name: godot-mechanic-secrets
-description: Use when implementing cheat codes, hidden interactions, or unlockable content based on player input/behavior.
+description: "Implement cheat codes, hidden interactions, and unlockable meta-content via time-windowed input sequence buffers, spam thresholds, look-at (dot-product) detectors, progress-% unlocks, and meta persistence in user://secrets.cfg. Use when adding Konami-style codes, curiosity spam eggs, glimmer cues, lockout anti-brute-force, or gallery flags that must survive slot deletes. Keywords: Konami, sequence buffer, meta secrets.cfg, visibility detector, lockout, glimmer, spam threshold, progress unlock."
 ---
 
 ## Godot 4.7 Baseline
@@ -11,8 +11,20 @@ description: Use when implementing cheat codes, hidden interactions, or unlockab
 
 # Secrets & Easter Eggs (Mechanics)
 
-## Overview
-This skill provides reusable components for hiding content behind specific player actions (e.g., Konami code, repetitive interaction) and managing the persistence of these discoveries.
+## Decision Tree — Which Secret Trigger?
+
+| Player action / design goal | Choose | MANDATORY script |
+|----------------------------|--------|------------------|
+| Exact button combo / Konami | Time-windowed **input sequence** | [secret_sequence_combo_matcher.gd](../scripts/mechanic_secrets_secret_sequence_combo_matcher.gd) (+ [secret_konami_legacy_code.gd](../scripts/mechanic_secrets_secret_konami_legacy_code.gd) for classic mapping) |
+| Mash / click N times on a prop | **Spam threshold** | [secret_interaction_spam_tracker.gd](../scripts/mechanic_secrets_secret_interaction_spam_tracker.gd) |
+| Face a wall / look at a spot | **Dot-product look-at** (not ray spam) | [secret_visibility_detector.gd](../scripts/mechanic_secrets_secret_visibility_detector.gd) |
+| Clear X% of content / true ending | **Progress % unlock** | [secret_progress_threshold_unlocker.gd](../scripts/mechanic_secrets_secret_progress_threshold_unlocker.gd) |
+| Rare vendor / ghost encounter | Weighted **random encounter** | [secret_random_encounter_spawner.gd](../scripts/mechanic_secrets_secret_random_encounter_spawner.gd) |
+| Persist unlock across save slots | **Meta secrets.cfg** | [secret_meta_persistence.gd](../scripts/mechanic_secrets_secret_meta_persistence.gd) |
+| Stop macro brute-force | **Lockout guard** | [secret_lockout_cheat_guard.gd](../scripts/mechanic_secrets_secret_lockout_cheat_guard.gd) |
+| Secret grants stats/items in P2P | **Server/peer validation** | [godot-adapt-single-to-multiplayer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md) — validate unlock before applying combat/economy advantages |
+
+Do **NOT** invent a fourth custom detector until the table above fails.
 
 ## Core Components
 
@@ -23,7 +35,7 @@ Expert logic for saving global unlocks and discovery flags across all save profi
 View-dependent hidden wall detection using optimized Dot Product calculations.
 
 ### [secret_sequence_combo_matcher.gd](../scripts/mechanic_secrets_secret_sequence_combo_matcher.gd)
-Professional time-sensitive input buffer for detecting complex cheat combos and sequences.
+**MANDATORY for combos** — Time-sensitive input buffer with suffix/window match (not full-buffer equality).
 
 ### [secret_interaction_spam_tracker.gd](../scripts/mechanic_secrets_secret_interaction_spam_tracker.gd)
 Logic for tracking repetitive player actions to trigger curiosity-based Easter Eggs.
@@ -46,22 +58,26 @@ Subtle procedural visual cues for hinting at hidden interactables.
 ### [secret_konami_legacy_code.gd](../scripts/mechanic_secrets_secret_konami_legacy_code.gd)
 Specialized implementation of the iconic Konami code using the buffer matcher.
 
+### [secret_persistence_handler.gd](../scripts/mechanic_secrets_secret_persistence_handler.gd) / [input_sequence_watcher.gd](../scripts/mechanic_secrets_input_sequence_watcher.gd) / [interaction_threshold_trigger.gd](../scripts/mechanic_secrets_interaction_threshold_trigger.gd)
+**DEPRECATED** — legacy helpers superseded by `secret_*` scripts. Do not wire new scenes here; migrate to [secret_sequence_combo_matcher.gd](../scripts/mechanic_secrets_secret_sequence_combo_matcher.gd), [secret_interaction_spam_tracker.gd](../scripts/mechanic_secrets_secret_interaction_spam_tracker.gd), and [secret_meta_persistence.gd](../scripts/mechanic_secrets_secret_meta_persistence.gd).
+
 ## Usage Example (Cheat Code)
 
 ```gdscript
-# In your Game Manager or Player Controller
-@onready var cheat_watcher = $InputSequenceWatcher
+# Attach SecretSequenceComboMatcher (class_name) as a child of GameManager / Player
+@onready var combo: SecretSequenceComboMatcher = $SecretSequenceComboMatcher
 
-func _ready():
-    # Define UP, UP, DOWN, DOWN...
-    cheat_watcher.sequence = [
-        "ui_up", "ui_up", "ui_down", "ui_down"
-    ]
-    cheat_watcher.sequence_matched.connect(_on_cheat_unlocked)
+func _ready() -> void:
+    # Default sequences Dictionary already includes "Konami"; override or add:
+    combo.sequences = {
+        "GodMode": ["ui_up", "ui_up", "ui_down", "ui_down", "ui_left", "ui_right", "ui_left", "ui_right"]
+    }
+    combo.combo_achieved.connect(_on_cheat_unlocked)
 
-func _on_cheat_unlocked():
-    print("God Mode Enabled!")
-    SecretPersistence.unlock_secret("god_mode")
+func _on_cheat_unlocked(combo_name: String) -> void:
+    print("Unlocked: ", combo_name)
+    # Meta flag — NOT the per-slot SaveManager payload
+    SecretMetaPersistence.unlock_secret("god_mode")  # via secret_meta_persistence.gd API
 ```
 
 ## NEVER Do (Expert Secret Rules)
@@ -88,57 +104,49 @@ func _on_cheat_unlocked():
 
 ---
 
-## Elite Godot 4.x Patterns
+## Elite Meta Patterns (galleries / lore / ghosting)
 
-### 1. Secret Flag Tracker (Achievement Bridge)
-Use `Resource` objects to track discovery states and emit signals that bridge to your achievement system.
-
-```gdscript
-# secret_data.gd
-class_name SecretData extends Resource
-@export var id: StringName
-@export var is_found := false:
-    set(v):
-        is_found = v
-        emit_changed()
-
-# secret_manager.gd (AutoLoad)
-func _on_secret_changed(data: SecretData):
-    if data.is_found:
-        achievement_system.unlock(data.id)
-```
-
-### 2. Environmental Storytelling Lore History
-Extend secret resources to include lore snippets. Record a history of discovered items to populate a player journal using `RichTextLabel` with BBCode.
-
-```gdscript
-# lore_item.gd
-class_name LoreItem extends SecretData
-@export_multiline var description: String
-
-# lore_journal_ui.gd
-func add_entry(lore: LoreItem):
-    journal_label.text += "\n[b]Discovery:[/b] " + lore.description
-```
-
-### 3. Ghosting System (Collected Secret Visibility)
-Instead of deleting found secrets, render them with partial transparency and disable their collision. This informs players that the area has been "cleared."
-
-```gdscript
-# ghostable_secret.gd
-func _ready():
-    if secret_data.is_found:
-        _apply_ghost_visuals()
-
-func _apply_ghost_visuals():
-    # 2D: Use modulate alpha
-    modulate.a = 0.3
-    # 3D: Adjust GeometryInstance3D transparency
-    # transparency = 0.7
-    
-    # Disable monitoring safely
-    set_deferred("monitoring", false)
-```
+> **MANDATORY** when building achievement galleries, lore journals, or ghosted-secret visibility: read [secrets-meta-patterns.md](mechanic-secrets-secrets-meta-patterns.md). **Do NOT Load** for basic combo/spam/look-at triggers — use the decision tree scripts above.
 
 ## Reference
-- Master Skill: [godot-master](../SKILL.md)
+
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
+
+### Official Documentation
+- [Using InputEvent](https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html) — Event pipeline (`_input` / `_unhandled_input`), `is_action_pressed`, and echo filtering for cheat buffers.
+- [Input examples](https://docs.godotengine.org/en/stable/tutorials/inputs/input_examples.html) — Practical InputMap action patterns for multi-step sequences without `_process` polling.
+- [Controllers, gamepads, and joysticks](https://docs.godotengine.org/en/stable/tutorials/inputs/controllers_gamepads_joysticks.html) — Map classic Konami-style codes to pad D-pad/face buttons with consistent action names.
+- [InputMap](https://docs.godotengine.org/en/stable/classes/class_inputmap.html) — Runtime action enumeration used by sequence matchers (`get_actions` / `event.is_action_pressed`).
+- [Saving games](https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html) — Canonical persist loop; keep meta-unlocks out of per-slot save groups.
+- [File paths in Godot](https://docs.godotengine.org/en/stable/tutorials/io/data_paths.html) — `user://secrets.cfg` / `user://meta_secrets.cfg` placement across platforms.
+- [ConfigFile](https://docs.godotengine.org/en/stable/classes/class_configfile.html) — INI-style dedicated secret flags separate from Settings and main SaveManager payloads.
+- [Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html) — `SecretData` Resource patterns, `emit_changed`, and achievement bridges.
+- [Vector math](https://docs.godotengine.org/en/stable/tutorials/math/vector_math.html) — Dot-product look-at detection for hidden walls without per-frame raycasts.
+- [Random number generation](https://docs.godotengine.org/en/stable/tutorials/math/random_number_generation.html) — Weighted rare-encounter rolls and pity timers for secret vendors.
+- [Audio buses](https://docs.godotengine.org/en/stable/tutorials/audio/audio_buses.html) — Bus effects / occlusion when entering sealed secret areas.
+- [Singletons (Autoload)](https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html) — Host SecretPersistence / meta unlock managers across scene changes.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Action buffers, echo filtering, and InputMap remaps that cheat-sequence watchers must share with gameplay input.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — `sequence_matched` / `secret_spam_triggered` buses so UI, audio, and achievements react without hard-wiring detectors.
+- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — SecretPersistence and meta-unlock Autoloads need boot order and scene-change survival rules.
+
+#### Complements
+- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Keep gallery/meta flags in `user://meta_secrets.cfg` while run progress stays in versioned save slots.
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Typed `SecretData` / lore Resources with `emit_changed` for achievement and journal bridges.
+- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — Bus effects and stingers for sealed-room occlusion and the discovery “Aha!” cue.
+- [godot-ui-rich-text](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md) — BBCode lore journals that append discovered secret descriptions.
+- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Glimmer energy pulses and ghosted-secret fade tweens without AnimationPlayer overhead.
+- [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — Optional sparkle/dust layers that hint at interactables without spoiling the secret.
+- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — Subtle wall-glimmer / dissolve materials for look-at reveal transitions.
+
+#### Downstream / consumers
+- [godot-quest-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-quest-system/SKILL.md) — Route discovery flags into quest stages, journals, and true-ending gates.
+- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Simulate rare-encounter weights, spam thresholds, and completion-% unlock odds before shipping.
+- [godot-adapt-single-to-multiplayer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md) — Server/peer validation when a secret grants combat or economy advantages.
+- [godot-theme-easter](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-theme-easter/SKILL.md) — Seasonal/themed Easter content that consumes the same unlock and cue pipeline.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns secrets vs input, save, or audio.

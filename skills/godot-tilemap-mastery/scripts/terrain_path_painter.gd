@@ -13,3 +13,14 @@ func draw_road_path(points: Array[Vector2i], terrain_set: int, terrain_id: int) 
 	
 	# Force an immediate update if this is during a procedural gen step
 	# update_internals() # Usually not needed but keeps RAM/Editor in sync.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/2d/using_tilesets.html
+# - https://docs.godotengine.org/en/stable/classes/class_tilemaplayer.html
+# - https://docs.godotengine.org/en/stable/classes/class_tileset.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md — path/river strokes painted as terrain sets at runtime
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-sandbox/SKILL.md — player-drawn roads/rivers on editable tile terrain
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md
+# =============================================================================

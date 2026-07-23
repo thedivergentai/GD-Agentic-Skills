@@ -15,3 +15,14 @@ func enable_passthrough(enabled: bool) -> void:
 			get_viewport().transparent_bg = false
 
 ## Rule: Passthrough requires 'transparent_bg = true' on the main viewport.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/xr/ar_passthrough.html
+# - https://docs.godotengine.org/en/stable/classes/class_xrinterface.html
+# - https://docs.godotengine.org/en/stable/classes/class_viewport.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md — Quest MR passthrough on Android OpenXR
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md — lighting virtual content over real-world underlay
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-vr/SKILL.md
+# =============================================================================

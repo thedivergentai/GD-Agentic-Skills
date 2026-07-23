@@ -26,3 +26,14 @@ func _server_cast() -> void:
 		
 ## [SKILL NOTICE]: Always use 'MultiplayerSynchronizer' to 
 ## replicate 'current_cooldown' property from server to peers.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html
+# - https://docs.godotengine.org/en/stable/classes/class_multiplayersynchronizer.html
+# - https://docs.godotengine.org/en/stable/classes/class_scenereplicationconfig.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md — authoritative cast RPCs
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md — cooldown sync fields
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-moba/SKILL.md
+# =============================================================================

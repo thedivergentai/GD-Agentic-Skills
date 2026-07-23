@@ -57,3 +57,15 @@ func _get_index(pos: Vector3i) -> int:
 ## For 'genre-sandbox' games like Minecraft, use a custom MESH GENERATOR 
 ## (SurfaceTool) to create an optimized "Greedy Meshed" chunk instead of 
 ## individual meshes to reduce draw calls from thousands to one.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/performance/using_multimesh.html
+# - https://docs.godotengine.org/en/stable/classes/class_multimeshinstance3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_multimesh.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — MultiMesh buffer update discipline
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md — GridMap alternative for varied block meshes
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-sandbox/SKILL.md
+# =============================================================================

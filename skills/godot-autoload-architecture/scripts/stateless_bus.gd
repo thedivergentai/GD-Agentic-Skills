@@ -22,4 +22,16 @@ func notify_health(h: int, m: int) -> void:
 ## EXPERT NOTE:
 ## NEVER store state (e.g. current_health) in the Signal Bus.
 ## The bus is a 'Post Office' - it delivers messages (Signals),
-## it does not store packages (State). 
+## it does not store packages (State).
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+# - https://docs.godotengine.org/en/stable/tutorials/best_practices/logic_preferences.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — post-office bus, no stored packages
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md — health_changed listeners without bus state
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — HUD binds to bus signals
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md
+# =============================================================================

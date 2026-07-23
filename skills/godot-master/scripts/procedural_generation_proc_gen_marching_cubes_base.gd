@@ -19,4 +19,15 @@ func update_geometry(vertices: PackedVector3Array, normals: PackedVector3Array, 
 	self.mesh = arr_mesh
 	
 	# Optimization: Generate collision if needed
-	# create_trimesh_collision() 
+	# create_trimesh_collision()
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/procedural_geometry/arraymesh.html
+# - https://docs.godotengine.org/en/stable/classes/class_arraymesh.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/collision_shapes_3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — create_trimesh_collision only for active chunks
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md — hand off voxel meshes into level streaming
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md
+# =============================================================================

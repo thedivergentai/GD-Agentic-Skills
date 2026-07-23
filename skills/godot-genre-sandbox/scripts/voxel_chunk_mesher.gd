@@ -40,3 +40,16 @@ func _get_voxel(x, y, z) -> int:
 
 ## [SKILL NOTICE]: Use 'WorkerThreadPool' to generate voxel meshes. 
 ## This prevents frame drops when players modify large chunks of the world.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/procedural_geometry/surfacetool.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/procedural_geometry/arraymesh.html
+# - https://docs.godotengine.org/en/stable/classes/class_workerthreadpool.html
+# - https://docs.godotengine.org/en/stable/tutorials/performance/thread_safe_apis.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — off-thread meshing + call_deferred set_mesh
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md — WorkerThreadPool task discipline
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-sandbox/SKILL.md
+# =============================================================================

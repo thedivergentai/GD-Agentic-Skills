@@ -14,3 +14,14 @@ Score for 'Trust'. A broken save is a broken relationship.
 
 ---
 *Analyst & Auditor update v0.0.7*
+<!--
+GDSkills research links (agents)
+Official docs:
+- https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html
+- https://docs.godotengine.org/en/stable/classes/class_configfile.html
+- https://docs.godotengine.org/en/stable/tutorials/scripting/filesystem.html
+Related skills:
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md — domain remediation for this Anara rubric
+- https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md — compliance citations alongside Visionary scores
+Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-analyst/SKILL.md
+-->

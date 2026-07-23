@@ -22,3 +22,15 @@ func is_spot_clear(pos: Vector3) -> bool:
 
 ## [SKILL NOTICE]: Use 'intersect_shape()' on the physics space state 
 ## for instant placement validation. Avoid using Area3D signals for this.
+
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/ray-casting.html
+# - https://docs.godotengine.org/en/stable/classes/class_physicsdirectspacestate3d.html
+# - https://docs.godotengine.org/en/stable/classes/class_physicsshapequeryparameters3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — shape queries for obstruction checks
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md — direct space state picking patterns
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-sandbox/SKILL.md
+# =============================================================================

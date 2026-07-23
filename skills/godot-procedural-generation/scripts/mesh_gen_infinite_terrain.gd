@@ -20,3 +20,14 @@ func generate_plane(width: int, depth: int):
 	st.generate_normals()
 	am = st.commit()
 	mesh = am
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/3d/procedural_geometry/arraymesh.html
+# - https://docs.godotengine.org/en/stable/tutorials/3d/procedural_geometry/surfacetool.html
+# - https://docs.godotengine.org/en/stable/classes/class_fastnoiselite.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md — LOD / visibility ranges around generated chunks
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md — trimesh/convex collision after mesh commit
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md
+# =============================================================================

@@ -15,3 +15,12 @@ func _ready() -> void:
 func _on_ability_cast(cooldown_remaining: float, ability_index: int) -> void:
     # Logic to update cooldown radial progress bars.
     print("Ability ", ability_index, " cooldown started: ", cooldown_remaining)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — ability_cast bus wiring
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md — cooldown UI contracts
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-moba/SKILL.md
+# =============================================================================

@@ -21,3 +21,14 @@ func filter_dead_enemies() -> void:
 	for enemy: CharacterBody2D in active_enemies:
 		if enemy.is_queued_for_deletion():
 			active_enemies.erase(enemy)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/static_typing.html
+# - https://docs.godotengine.org/en/stable/classes/class_array.html
+# - https://docs.godotengine.org/en/stable/classes/class_dictionary.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — typed collections before broader CPU tactics
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md — typed Dictionaries over ad-hoc Variant bags
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md
+# =============================================================================

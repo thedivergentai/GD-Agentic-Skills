@@ -44,3 +44,14 @@ static func get_perspective_scale(camera: Camera3D, global_pos: Vector3, referen
 
 ## EXPERT USAGE:
 ## target_indicator.position = ProjectionUtils.get_clamped_screen_pos(cam, enemy.position)
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_camera3d.html
+# - https://docs.godotengine.org/en/stable/tutorials/rendering/viewports.html
+# - https://docs.godotengine.org/en/stable/classes/class_camera2d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — screen-space nameplates/UI anchors
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md — healthbar Control placement
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-3d-to-2d/SKILL.md
+# =============================================================================

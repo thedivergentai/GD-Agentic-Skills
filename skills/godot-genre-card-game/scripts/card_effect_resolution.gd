@@ -2,7 +2,7 @@
 extends Node
 
 ## Card Effect Resolution (Expert Pattern)
-## Implements a Command Pattern / Stack for resolving card effects.
+## Implements a LIFO Command stack for resolving card effects and nested reactions.
 ## Allows for complex chains, counter-play, and sequential animations.
 
 class_name CardEffectResolution
@@ -37,7 +37,7 @@ func _resolve_next() -> void:
         return
 
     is_resolving = true
-    var effect = effect_queue.pop_front() # BFS or FIFO. Use pop_back for LIFO (Stack)
+    var effect = effect_queue.pop_back() # LIFO stack (reactions resolve last-in-first-out)
     
     effect_started.emit(effect)
     
@@ -68,3 +68,15 @@ func _execute_effect_logic(effect: CardEffect) -> void:
 ## EXPERT USAGE:
 ## When playing a card, instantiate CardEffect and pass to add_effect().
 ## Listen to signals to block UI during resolution.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html
+# - https://docs.godotengine.org/en/stable/classes/class_array.html
+# - https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md — effect_started/finished UI locks
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md — keyword effects pushed as stack commands
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — damage/heal targets during resolve
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-card-game/SKILL.md
+# =============================================================================

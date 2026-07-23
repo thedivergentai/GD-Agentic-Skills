@@ -73,3 +73,14 @@ func _generate_walls(floor_tiles: Array[Vector2i]) -> void:
 
 ## EXPERT USAGE:
 ## Call generate(seed). Use generated floor_tiles to spawn enemies/loot.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/classes/class_randomnumbergenerator.html
+# - https://docs.godotengine.org/en/stable/classes/class_workerthreadpool.html
+# - https://docs.godotengine.org/en/stable/tutorials/2d/using_tilemaps.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md — walker/BSP orchestration patterns
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md — off-thread generate, main-thread apply
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md
+# =============================================================================

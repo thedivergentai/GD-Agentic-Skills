@@ -38,3 +38,13 @@ func _select_units(rect: Rect2) -> void:
 
 ## [SKILL NOTICE]: Project 3D positions to 2D for box selection. It is much 
 ## more performant than scaling a 3D Area3D or frustum-casting every frame.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/inputs/mouse_and_input_coordinates.html
+# - https://docs.godotengine.org/en/stable/classes/class_camera3d.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md — unproject/screen-space selection framing
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md — marquee drag input lifecycle
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rts/SKILL.md
+# =============================================================================

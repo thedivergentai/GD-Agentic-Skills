@@ -13,327 +13,162 @@ description: "Expert blueprint for programmatic animation using Tween for smooth
 
 Tween property animation, easing curves, chaining, and lifecycle management define smooth programmatic motion.
 
+## Decision Tree — Tween vs AnimationPlayer
+
+| Situation | Choose |
+|-----------|--------|
+| One-off UI juice, hover, popup, score count, recoil | **Tween** (`create_tween`) |
+| Authored multi-track clips, scrubbable timelines, blend trees | **AnimationPlayer** / AnimationTree |
+| Camera continuous follow behind a moving target | **Camera2D.position_smoothing** / spring follow — **not** a new Tween every `_process` |
+| Menu motion while `Engine.time_scale == 0` | Tween with `set_ignore_time_scale(true)` — **MANDATORY** [time_scale_ignored_ui.gd](scripts/time_scale_ignored_ui.gd) |
+| Retriggerable property (button spam, dodge cancel) | Kill-before-recreate — **MANDATORY** [safe_tween_interruption.gd](scripts/safe_tween_interruption.gd) |
+| Physics body / net correction motion | `TWEEN_PROCESS_PHYSICS` + `reset_physics_interpolation` |
+
 ## Available Scripts
 
+> **MANDATORY**: Read the script for the case above before writing tween glue.
+
 ### [safe_tween_interruption.gd](scripts/safe_tween_interruption.gd)
-Expert logic for killing active tweens before starting new ones to prevent property conflicts.
-
-### [parallel_popup_animation.gd](scripts/parallel_popup_animation.gd)
-Using `set_parallel(true)` and `chain()` for complex multi-property UI transitions.
-
-### [text_counter_method_tween.gd](scripts/text_counter_method_tween.gd)
-Animating non-property values (like score strings) using `tween_method`.
-
-### [custom_curve_tween.gd](scripts/custom_curve_tween.gd)
-Driving property interpolation using visual `Curve` resources for bespoke easing.
-
-### [camera_shake_tween_logic.gd](scripts/camera_shake_tween_logic.gd)
-Implementing procedural screen shake using randomized looping tweens.
+**MANDATORY** for any retriggerable tween — kill active tweens before starting new ones.
 
 ### [time_scale_ignored_ui.gd](scripts/time_scale_ignored_ui.gd)
-Ensuring menu animations continue playing when `Engine.time_scale` is set to 0.
+**MANDATORY** for pause-menu / `time_scale == 0` UI motion.
 
 ### [nested_subtween_cutscene.gd](scripts/nested_subtween_cutscene.gd)
-Hierarchical cutscene management using `tween_subtween` for composable timelines.
+**MANDATORY** for composable cutscene timelines via `tween_subtween`.
+
+### [parallel_popup_animation.gd](scripts/parallel_popup_animation.gd)
+`set_parallel(true)` + `chain()` for multi-property UI transitions.
+
+### [text_counter_method_tween.gd](scripts/text_counter_method_tween.gd)
+`tween_method` for non-property values (score strings).
+
+### [custom_curve_tween.gd](scripts/custom_curve_tween.gd)
+`Curve` resources for bespoke easing.
+
+### [camera_shake_tween_logic.gd](scripts/camera_shake_tween_logic.gd)
+Procedural screen shake with looping tweens (offset, not follow).
 
 ### [relative_recoil_tween.gd](scripts/relative_recoil_tween.gd)
-Using `as_relative()` and `from_current()` for dynamic movement offsets (recoil/nudges).
+`as_relative()` / `from_current()` for recoil nudges.
 
 ### [staggered_inventory_entry.gd](scripts/staggered_inventory_entry.gd)
-Animating collections of items sequentially using a single Tween object.
+Sequential collection entry on one Tween.
 
 ### [looped_hover_vfx.gd](scripts/looped_hover_vfx.gd)
-Creating infinite ping-pong ambient effects to replace heavy AnimationPlayers.
+Infinite ping-pong ambient juice.
+
+### [juice_manager.gd](scripts/juice_manager.gd) / [tween_builder.gd](scripts/tween_builder.gd)
+Central juice dispatch / builder helpers when many systems share feel presets.
 
 ## NEVER Do in Tweening
 
-- **NEVER instantiate a Tween using `Tween.new()`** — Tweens created manually are invalid. Always use `create_tween()` or `get_tree().create_tween()` [3, 4].
-- **NEVER attempt to reuse a finished Tween** — Tweens are single-use objects. To replay an animation, you must create a new one [4].
-- **NEVER manually instantiate `PropertyTweener` or `CallbackTweener`** — These must be generated only by the parent Tween methods like `tween_property` [5].
-- **NEVER create an infinite loop containing only 0-duration animations** — This will freeze the engine. Always include at least one step with duration [10].
-- **NEVER use multiple Tweens to animate the same property simultaneously** — The last one created takes priority, causing flicker. Use `kill()` on the old reference first [11, 12].
-- **NEVER use linear interpolation for UI/Juice** — `TRANS_LINEAR` feels robotic. Use `EASE_OUT + TRANS_QUAD` or `EASE_IN_OUT + TRANS_CUBIC` for organic motion [22].
-- **NEVER create tweens in `_process` without guards** — Creating 60 tweens per second will crash the app. Use a state check or kill the running one.
-- **NEVER skip `bind_node(self)` for non-global tweens** — If the node is freed while a tween is running, it can cause errors. Binding ensures it dies with the node [13].
-- **NEVER use 0-duration tweens for state changes** — If you want an instant change, just set the property directly (`position = goal`) to save overhead [20].
-- **NEVER forget to call `chain()` when returning from `set_parallel(true)`** — If you want a sequence after a parallel block, you must explicitly chain it [15].
+- **NEVER instantiate a Tween using `Tween.new()`** — Always use `create_tween()` or `get_tree().create_tween()` [3, 4].
+- **NEVER attempt to reuse a finished Tween** — Single-use; recreate to replay [4].
+- **NEVER manually instantiate `PropertyTweener` or `CallbackTweener`** — Only via parent Tween methods [5].
+- **NEVER create an infinite loop containing only 0-duration animations** — Freezes the engine [10].
+- **NEVER use multiple Tweens to animate the same property simultaneously** — `kill()` the old reference first [11, 12].
+- **NEVER use linear interpolation for UI/Juice** — Prefer `EASE_OUT + TRANS_QUAD` or `EASE_IN_OUT + TRANS_CUBIC` [22].
+- **NEVER create tweens in `_process` without guards** — Creating 60 tweens per second will crash the app.
+- **NEVER skip `bind_node(self)` for non-global tweens** — Binding ensures death with the node [13].
+- **NEVER use 0-duration tweens for state changes** — Set the property directly [20].
+- **NEVER forget to call `chain()` when returning from `set_parallel(true)`** [15].
 
 ---
 
-```gdscript
-extends Sprite2D
-
-func _ready() -> void:
-    # Create tween
-    var tween := create_tween()
-    
-    # Animate position over 2 seconds
-    tween.tween_property(self, "position", Vector2(100, 100), 2.0)
-```
-
-## Tween Methods
-
-### Property Animation
+## Lifecycle Golden Path
 
 ```gdscript
-# Tween single property
-var tween := create_tween()
-tween.tween_property($Sprite, "modulate:a", 0.0, 1.0)  # Fade out
+var _tween: Tween
 
-# Chain multiple tweens
-tween.tween_property($Sprite, "position:x", 200, 1.0)
-tween.tween_property($Sprite, "position:y", 100, 0.5)
+func animate_to(pos: Vector2) -> void:
+    if _tween and _tween.is_valid():
+        _tween.kill()
+    _tween = create_tween().bind_node(self)
+    _tween.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+    _tween.tween_property(self, "position", pos, 0.35)
 ```
 
-### Callbacks
+**MANDATORY pattern source:** [safe_tween_interruption.gd](scripts/safe_tween_interruption.gd).
 
-```gdscript
-var tween := create_tween()
-tween.tween_property($Sprite, "position", Vector2(100, 0), 1.0)
-tween.tween_callback(func(): print("Animation done!"))
-tween.tween_callback(queue_free)  # Delete after animation
-```
+## Camera Follow (Correct)
 
-### Intervals
-
-```gdscript
-var tween := create_tween()
-tween.tween_property($Label, "modulate:a", 0.0, 0.5)
-tween.tween_interval(1.0)  # Wait 1 second
-tween.tween_property($Label, "modulate:a", 1.0, 0.5)
-```
-
-## Easing Functions
-
-```gdscript
-var tween := create_tween()
-tween.set_ease(Tween.EASE_IN_OUT)  # Smooth start and end
-tween.set_trans(Tween.TRANS_CUBIC)  # Cubic curve
-tween.tween_property($Sprite, "position:x", 200, 1.0)
-```
-
-**Common Combinations:**
-- `EASE_IN + TRANS_QUAD`: Accelerating
-- `EASE_OUT + TRANS_QUAD`: Decelerating
-- `EASE_IN_OUT + TRANS_CUBIC`: Smooth S-curve
-- `EASE_OUT + TRANS_BOUNCE`: Bouncy effect
-
-## Advanced Patterns
-
-### Looping Animation
-
-```gdscript
-var tween := create_tween()
-tween.set_loops()  # Infinite loop
-tween.tween_property($Sprite, "rotation", TAU, 2.0)
-```
-
-### Parallel Tweens
-
-```gdscript
-var tween := create_tween()
-tween.set_parallel(true)
-
-# Both happen simultaneously
-tween.tween_property($Sprite, "position", Vector2(100, 100), 1.0)
-tween.tween_property($Sprite, "scale", Vector2(2, 2), 1.0)
-```
-
-### UI Button Hover Effect
-
-```gdscript
-extends Button
-
-func _ready() -> void:
-    mouse_entered.connect(_on_mouse_entered)
-    mouse_exited.connect(_on_mouse_exited)
-
-func _on_mouse_entered() -> void:
-    var tween := create_tween()
-    tween.tween_property(self, "scale", Vector2(1.1, 1.1), 0.2)
-
-func _on_mouse_exited() -> void:
-    var tween := create_tween()
-    tween.tween_property(self, "scale", Vector2.ONE, 0.2)
-```
-
-### Number Counter
-
-```gdscript
-extends Label
-
-func count_to(target: int, duration: float = 1.0) -> void:
-    var current := int(text)
-    var tween := create_tween()
-    
-    tween.tween_method(
-        func(value: int): text = str(value),
-        current,
-        target,
-        duration
-    )
-```
-
-### Camera Smooth Follow
+Continuous follow is **not** a Tween job:
 
 ```gdscript
 extends Camera2D
+@export var target: Node2D
 
-@export var follow_speed := 5.0
-var target: Node2D
+func _ready() -> void:
+    position_smoothing_enabled = true
+    position_smoothing_speed = 5.0
 
-func _process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
     if target:
-        var tween := create_tween()
-        tween.tween_property(
-            self,
-            "global_position",
-            target.global_position,
-            1.0 / follow_speed
-        )
+        global_position = target.global_position
 ```
 
-## Best Practices
+If you must tween a one-shot camera punch/return, keep **one** Tween reference and kill before recreate — never `create_tween()` inside unguarded `_process`.
 
-### 1. Kill Previous Tweens
+## Expert Patterns (keep)
 
+### Physics-Sync-Tweening
 ```gdscript
-var current_tween: Tween = null
-
-func animate_to(pos: Vector2) -> void:
-    if current_tween:
-        current_tween.kill()  # Stop previous animation
-    
-    current_tween = create_tween()
-    current_tween.tween_property(self, "position", pos, 1.0)
-```
-
-### 2. Use Signals for Completion
-
-```gdscript
-var tween := create_tween()
-tween.tween_property($Sprite, "position", Vector2(100, 0), 1.0)
-tween.finished.connect(_on_tween_finished)
-
-func _on_tween_finished() -> void:
-    print("Animation complete!")
-```
-
-### 3. Chaining for Sequences
-
-```gdscript
-var tween := create_tween()
-
-# Fade out
-tween.tween_property($Sprite, "modulate:a", 0.0, 0.5)
-# Move while invisible
-tween.tween_property($Sprite, "position", Vector2(200, 0), 0.0)
-# Fade in at new position
-tween.tween_property($Sprite, "modulate:a", 1.0, 0.5)
-```
-
-## Common Gotchas
-
-**Issue**: Tween stops when node is removed
-```gdscript
-# Solution: Bind tween to SceneTree
-var tween := get_tree().create_tween()
-tween.tween_property($Sprite, "position", Vector2(100, 0), 1.0)
-```
-
-**Issue**: Multiple conflicting tweens
-```gdscript
-# Solution: Use single tween or kill previous
-# Always store reference to kill old tween
-```
-
----
-
-## Expert Pattern: Bezier-Path-Tween
-
-Animate objects along complex, curved trajectories using `Path2D` and `PathFollow2D` instead of calculating math manually.
-
-```gdscript
-func play_curved_motion(follow_node: PathFollow2D, duration: float):
-    # 1. Ensure path starts at 0
-    follow_node.progress_ratio = 0.0
-    
-    # 2. Tween the sampler progress
-    var tween := create_tween().bind_node(follow_node)
-    tween.tween_property(follow_node, "progress_ratio", 1.0, duration) \
-        .set_trans(Tween.TRANS_CUBIC) \
-        .set_ease(Tween.EASE_IN_OUT)
-```
-
----
-
-## Expert Pattern: Physics-Sync-Tweening
-
-Prevent jitter and visual "streaking" when animating physics bodies or handling network corrections.
-
-```gdscript
-func apply_physics_tween(target: Node3D, goal: Vector3):
-    # 1. Prevent 'visual streak' if teleporting to a start position
+func apply_physics_tween(target: Node3D, start_pos: Vector3, goal: Vector3) -> void:
     target.global_position = start_pos
     target.reset_physics_interpolation()
-    
-    # 2. Sync tween steps with physics frames
     var tween := create_tween().bind_node(target)
     tween.set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
-    
     tween.tween_property(target, "global_position", goal, 0.5)
 ```
 
----
+### Juice-Config-Resource
+Store duration/trans/ease in a `Resource` (see juice scripts) so feel is data-driven.
 
-## Expert Pattern: Juice-Config-Resource
+### Tween-Event-Sequencing
+Parallel block → `chain()` → interval/callback → exit. Prefer [nested_subtween_cutscene.gd](scripts/nested_subtween_cutscene.gd) for nested modules.
 
-Decouple animation "feel" from logic by storing tween parameters in external resources for global balancing.
-
-```gdscript
-# juice_config.gd
-class_name JuiceConfig extends Resource
-@export var duration: float = 0.3
-@export var trans: Tween.TransitionType = Tween.TRANS_ELASTIC
-@export var ease: Tween.EaseType = Tween.EASE_OUT
-
-# gameplay_object.gd
-@export var juice: JuiceConfig
-
-func play_bounce():
-    var tween := create_tween()
-    tween.set_trans(juice.trans)
-    tween.set_ease(juice.ease)
-    tween.tween_property(self, "scale", Vector2(1.2, 1.2), juice.duration)
-```
-
----
-
-## Expert Pattern: Tween-Event-Sequencing
-
-Orchestrate complex mini-cutscenes by chaining property interpolations, delays, and callbacks into a single controlled sequence.
-
-```gdscript
-func play_mini_cutscene(actor: Sprite2D):
-    var tween := create_tween().bind_node(self)
-    
-    # 1. Step 1: Move and fade in (Parallel)
-    tween.set_parallel(true)
-    tween.tween_property(actor, "position:x", 500.0, 1.0)
-    tween.tween_property(actor, "modulate:a", 1.0, 0.5)
-    
-    # 2. Step 2: Wait then call logic (Chained)
-    tween.chain().tween_interval(0.5)
-    tween.tween_callback(func(): _play_vfx(actor.position))
-    
-    # 3. Step 3: Shrink and exit
-    tween.tween_property(actor, "scale", Vector2.ZERO, 0.5).set_trans(Tween.TRANS_BACK)
-    tween.tween_callback(actor.queue_free)
-```
+### Bezier-Path-Tween
+Tween `PathFollow2D.progress_ratio` instead of hand-rolled Bezier math.
 
 ## Reference
-- [Godot Docs: Tween](https://docs.godotengine.org/en/stable/classes/class_tween.html)
 
+> Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
 
-### Related
-- Master Skill: [godot-master](../godot-master/SKILL.md)
+### Official Documentation
+- [Tween](https://docs.godotengine.org/en/stable/classes/class_tween.html) — create_tween, parallel/chain, loops, process mode, ignore_time_scale, and kill/lifecycle rules.
+- [PropertyTweener](https://docs.godotengine.org/en/stable/classes/class_propertytweener.html) — tween_property details: as_relative, from_current, custom interpolators, and per-step ease/trans.
+- [MethodTweener](https://docs.godotengine.org/en/stable/classes/class_methodtweener.html) — tween_method for non-property values (score counters, shader params, Curve-sampled motion).
+- [CallbackTweener](https://docs.godotengine.org/en/stable/classes/class_callbacktweener.html) — tween_callback for sequenced side effects without inventing fake 0-duration property steps.
+- [IntervalTweener](https://docs.godotengine.org/en/stable/classes/class_intervaltweener.html) — tween_interval delays inside a single Tween timeline.
+- [SubtweenTweener](https://docs.godotengine.org/en/stable/classes/class_subtweentweener.html) — tween_subtween for nested cutscene modules under one parent timeline.
+- [Interpolation](https://docs.godotengine.org/en/stable/tutorials/math/interpolation.html) — lerp/smoothstep foundations behind easing choices and custom interpolators.
+- [Beziers, curves and paths](https://docs.godotengine.org/en/stable/tutorials/math/beziers_and_curves.html) — Curve/PathFollow patterns used when property tweens alone cannot describe the path.
+- [Introduction to the animation features](https://docs.godotengine.org/en/stable/tutorials/animation/introduction.html) — when Tween juice is enough versus AnimationPlayer/AnimationTree authored tracks.
+- [Using SceneTree](https://docs.godotengine.org/en/stable/tutorials/scripting/scene_tree.html) — SceneTree.create_tween and node lifetime when bind_node is not enough.
+- [Idle and Physics Processing](https://docs.godotengine.org/en/stable/tutorials/scripting/idle_and_physics_processing.html) — idle vs physics process modes for TWEEN_PROCESS_PHYSICS sync.
+- [Physics interpolation quick start guide](https://docs.godotengine.org/en/stable/tutorials/physics/interpolation/physics_interpolation_quick_start_guide.html) — reset_physics_interpolation when tweening transforms on interpolated bodies.
+
+### Related Skills
+
+#### Prerequisites
+- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, Node ownership, and resource basics before create_tween/bind_node lifecycle patterns.
+- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed callables, lambdas, and await/signal idioms used in tween_method and finished handlers.
+
+#### Complements
+- [godot-2d-animation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md) — sprite/skeleton motion that often coexists with Tween juice and needs shared kill/lifecycle discipline.
+- [godot-animation-player](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md) — authored clips for complex timelines; Tweens stay for runtime/procedural UI and one-off juice.
+- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Control size/pivot/layout context for popup scale-fade and staggered inventory entry tweens.
+- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — finished/callback wiring without dangling connections when Tweens are killed and recreated.
+- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — camera follow, shake offsets, and look targets driven by procedural Tweens.
+- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — JuiceConfig-style Resources that store duration/trans/ease outside gameplay scripts.
+- [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — burst timing and one-shot VFX that should start from tween_callback steps, not parallel ad-hoc timers.
+- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — shader params animated via tween_method / set when property paths are not enough.
+
+#### Downstream / consumers
+- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — slot/item entry, drag feedback, and equip juice built on staggered and interruptible Tweens.
+- [godot-genre-card-game](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-card-game/SKILL.md) — hand arcs, draw/discard flights, and resolve polish that depend on Tween chaining.
+- [godot-ui-theming](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md) — theme-driven hover/focus motion that still needs safe Tween interruption under the same Control.
+
+#### Master
+- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.

@@ -46,3 +46,13 @@ func _process_hit(hurtbox: HitboxComponent) -> void:
 ## EXPERT USAGE:
 ## Attach to Fighter bone/sprite. Use AnimationPlayer to toggle 'monitoring'.
 ## When Hitbox enters Hurtbox, signals fire carrying 'attack_data'.
+# =============================================================================
+# GDSkills research links (agents) — does not affect runtime
+# Official docs:
+# - https://docs.godotengine.org/en/stable/tutorials/physics/using_area_2d.html
+# - https://docs.godotengine.org/en/stable/tutorials/physics/physics_introduction.html
+# Related skills:
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md — hitbox/hurtbox DamageData contracts
+# - https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md — layers/masks for High/Low/Throw
+# Parent skill: https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-fighting/SKILL.md
+# =============================================================================
