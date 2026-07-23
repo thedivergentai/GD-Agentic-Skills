@@ -49,7 +49,7 @@
 
 - **The Reference Lattice**: Every Domain Skill now ends with a curated Official Documentation lattice (`docs.godotengine.org/en/stable/…`) plus detailed Related Skills (Prerequisites / Complements / Downstream / Master), so agents can research deeper without leaving the skill graph.
 - **Script & reference footers**: Research-link comment blocks on Domain Skill scripts and phase docs (marker `GDSkills research links (agents)`) — non-executing, file-specific, progressive disclosure.
-- **SPECIAL MENTION — [@DedInc](https://github.com/DedInc)**: First external Domain Skill — [godot-monte-carlo-balancer](skills/godot-monte-carlo-balancer/SKILL.md) — source-driven Monte Carlo balance lab (Rust + rayon), Resource-first extract, playstyle CI bands, economy careers, and headless Godot calibration. Thank you!
+- **SPECIAL MENTION —** <a href="https://github.com/DedInc"><img src="https://github.com/DedInc.png?size=64" width="22" height="22" alt="@DedInc" style="border-radius:50%; vertical-align:middle;" /></a> [**@DedInc**](https://github.com/DedInc): First external Domain Skill — [godot-monte-carlo-balancer](skills/godot-monte-carlo-balancer/SKILL.md) — source-driven Monte Carlo balance lab (Rust + rayon), Resource-first extract, playstyle CI bands, economy careers, and headless Godot calibration. Thank you!
 
 ---
 
@@ -377,7 +377,7 @@ Think of Domain Skills as your **component library**: Drop them into your projec
 - **[godot-inventory-system](skills/godot-inventory-system/SKILL.md)**: Slot-based containers, stacking logic, drag-drop UI
 - **[godot-mechanic-revival](skills/godot-mechanic-revival/SKILL.md)**: Souls-like mortality, corpse runs, revival charges, consequence tracking
 - **[godot-mechanic-secrets](skills/godot-mechanic-secrets/SKILL.md)**: Input sequence buffering (Konami code), interaction thresholds, secret persistence
-- **[godot-monte-carlo-balancer](skills/godot-monte-carlo-balancer/SKILL.md)**: Source-driven Monte Carlo balance lab, playstyle win-rate bands, economy careers, CI snapshots — co-authored by [@DedInc](https://github.com/DedInc)
+- **[godot-monte-carlo-balancer](skills/godot-monte-carlo-balancer/SKILL.md)**: Source-driven Monte Carlo balance lab, playstyle win-rate bands, economy careers, CI snapshots — co-authored by <a href="https://github.com/DedInc"><img src="https://github.com/DedInc.png?size=48" width="18" height="18" alt="@DedInc" style="border-radius:50%; vertical-align:middle;" /></a> [@DedInc](https://github.com/DedInc)
 - **[godot-quest-system](skills/godot-quest-system/SKILL.md)**: Quest graphs, prerequisites, state tracking
 - **[godot-rpg-stats](skills/godot-rpg-stats/SKILL.md)**: Stat modifiers, attribute scaling, damage formulas
 - **[godot-save-load-systems](skills/godot-save-load-systems/SKILL.md)**: Dictionary serialization, delta-save patterns, encryption
@@ -595,7 +595,8 @@ We chose this license because it strikes the perfect balance for an open ecosyst
 
 <div align="center">
 
-**Authored by [Divergent AI](https://github.com/thedivergentai)**  
+<a href="https://github.com/thedivergentai"><img src="https://github.com/thedivergentai.png?size=96" width="36" height="36" alt="Divergent AI" style="border-radius:50%; vertical-align:middle;" /></a>
+&nbsp;**Authored by [Divergent AI](https://github.com/thedivergentai)**  
 **Maintained by the Agents**
 
 ---
