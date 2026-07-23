@@ -106,6 +106,15 @@ Expert blueprint for digital card games with data-driven design and juicy UI.
 - Holographic foil: UV scroll shader on card Control — not required for stack correctness.
 - Card history: signal bus logger for replay/debug; keep off the hot resolve path.
 
+## Expert knowledge (on demand)
+
+> **LLM-ignorance rule:** If a general agent would not know it before reading, load the reference — never delete expert deltas.
+
+- [expert-card-patterns.md](genre-card-game-expert-card-patterns.md) — restored baseline pedagogy (architecture, WHY, implementation depth)
+- [card_history_logger.gd](../scripts/genre_card_game_card_history_logger.gd)
+- [hand_manager.gd](../scripts/genre_card_game_hand_manager.gd)
+
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

@@ -89,11 +89,26 @@ Validated VFX shader template.
 ### [shader_parameter_animator.gd](../scripts/shaders_basics_shader_parameter_animator.gd)
 Tween/runtime uniform animation without AnimationPlayer.
 
+### [shader_warmup_loader.gd](../scripts/shaders_basics_shader_warmup_loader.gd)
+Pre-warm shader pipelines during loading screens to avoid first-frame stutter.
+
 ## Expert Pointers
 
 - Move invariant math to `vertex()`; pass via `varying`.
 - Color uniforms need `hint_source_color`.
 - Prefer Official Docs for shading-language builtins; this skill owns batching, scissor, screenspace, and depth routing.
+
+
+## Deep recipes (on demand)
+
+> LLM-ignorance rule: if a general agent would not know it before reading, it lives here or in `scripts/` — never delete, only move.
+
+| Topic | Reference |
+|-------|-----------|
+| 2D dissolve/wave/outline | [2d-effect-recipes.md](shaders-basics-2d-effect-recipes.md) |
+| 3D toon + vignette | [3d-and-postfx-recipes.md](shaders-basics-3d-and-postfx-recipes.md) |
+| Uniforms / built-ins | [uniforms-and-builtins.md](shaders-basics-uniforms-and-builtins.md) |
+| Fog, compute, warmup | [expert-advanced-patterns.md](shaders-basics-expert-advanced-patterns.md) |
 
 ## Reference
 

@@ -109,13 +109,17 @@ func _unhandled_input(event: InputEvent) -> void:
 | Frame time spikes / TRC perf fail | [performance_scaler_fsr.gd](../scripts/platform_console_performance_scaler_fsr.gd) + RAM guard | [Resolution scaling](https://docs.godotengine.org/en/stable/tutorials/3d/resolution_scaling.html) |
 
 ### 1. Platform-Overlay-Manager (Native UI Dialogs)
-Prefer [platform_dialog_invoker.gd](../scripts/platform_console_platform_dialog_invoker.gd) / `DisplayServer.dialog_show()` for TRC system messages over custom modal stacks.
+Prefer [platform_dialog_invoker.gd](../scripts/platform_console_platform_dialog_invoker.gd) / [platform_overlay_manager.gd](../scripts/platform_console_platform_overlay_manager.gd) / `DisplayServer.dialog_show()` for TRC system messages over custom modal stacks.
 
 ### 2. Shader-Binary-Caching (RenderingDevice)
-Enable shader/pipeline cache on fixed console GPUs; see Official Docs pipeline compilation guidance in Reference.
+Enable shader/pipeline cache on fixed console GPUs; see [console_shader_manager.gd](../scripts/platform_console_console_shader_manager.gd) and Official Docs pipeline compilation guidance in Reference.
 
 ### 3. Controller-Battery-Telemetry Hook
-Use `Input.joy_connection_changed` + `Input.get_joy_info()` for hardware metadata; battery often needs a platform GDExtension under NDA.
+Use `Input.joy_connection_changed` + `Input.get_joy_info()` via [controller_telemetry.gd](../scripts/platform_console_controller_telemetry.gd); battery level often needs a platform GDExtension under NDA.
+
+## Deep dives (on demand)
+
+- Joypad snippets, native overlay dialogs, shader cache UUID, controller telemetry → [console-cert-patterns.md](platform-console-console-cert-patterns.md)
 
 ## Reference
 

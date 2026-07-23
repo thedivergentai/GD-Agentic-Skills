@@ -46,6 +46,23 @@ JSON serialization, version migration, and PERSIST group patterns define robust 
 ### [save_system_encryption.gd](../scripts/save_load_systems_save_system_encryption.gd)
 **MANDATORY** before encrypted slots — password from secure storage / user secret, never hardcoded in examples.
 
+### [save_integrity_validator.gd](../scripts/save_load_systems_save_integrity_validator.gd)
+Rolling `.bak` + SHA-256 verify before trusting a slot; fall back to backup on mismatch.
+
+---
+
+## Deep dive (load on demand)
+
+**MANDATORY** for JSON/PERSIST walkthroughs, binary examples, gotchas, and elite encrypted paths — [references/save-patterns-deep.md](save-load-systems-save-patterns-deep.md). Do **not** paste Step 1–3 Autoload tutorials into scenes.
+
+## Expert WHY (critical)
+
+> **CAUTION:** Baseline tutorials used `store_var(data, true)`. Untrusted `user://` saves must **`allow_objects=false`** — RCE risk on modded/workshop files.
+
+- **Vectors in JSON** — store `{x,y,z}` components; JSON does not round-trip `Vector3` faithfully.
+- **Rolling backup** — crash mid-write corrupts primary; copy to `.bak` before overwrite ([save_integrity_validator.gd](../scripts/save_load_systems_save_integrity_validator.gd)).
+- **When to save** — menu/checkpoint/level complete only — never per physics frame.
+
 ---
 
 ## Decision Tree: Pick a Persistence Shape

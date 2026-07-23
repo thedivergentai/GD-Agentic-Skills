@@ -63,6 +63,9 @@ Expert blueprint for party games balancing accessibility, variety, and social fu
 - [minigame_player_controller.gd](../scripts/genre_party_minigame_player_controller.gd) - Per-player pawn bound to routed actions.
 - [player_haptic_feedback.gd](../scripts/genre_party_player_haptic_feedback.gd) - Per-device rumble.
 - [shared_party_camera.gd](../scripts/genre_party_shared_party_camera.gd) - Shared-camera minigames (non-split).
+- [minigame_data.gd](../scripts/genre_party_minigame_data.gd) - `MinigameData` Resource (scene path, rules, duration).
+- [party_manager.gd](../scripts/genre_party_party_manager.gd) - Round/score orchestration + minigame scene handoff.
+- [impact_camera_shake.gd](../scripts/genre_party_impact_camera_shake.gd) - Global screen-shake observer for party impacts.
 
 ---
 
@@ -109,6 +112,21 @@ Expert blueprint for party games balancing accessibility, variety, and social fu
 2. Bind devices through [party_input_router.gd](../scripts/genre_party_party_input_router.gd) before the minigame starts.
 3. Keep [connection_monitor.gd](../scripts/genre_party_connection_monitor.gd) alive as Autoload; on disconnect pause and `call_group("ui_overlays", "show_reconnect", device)`.
 4. On reconnect, re-bind the same `player_id` → new `device_id` then unpause — do not remap other players.
+
+> **MANDATORY** for depth beyond decision trees and script catalog: [party-elite-implementations.md](genre-party-party-elite-implementations.md). **Do NOT Load** on first-pass wiring — use bundled `scripts/` first.
+
+## Architecture Overview
+
+### 1. Minigame Definition
+Using Resources to define what a minigame is.
+
+```gdscript
+
+## Godot-Specific Tips
+
+*   **SubViewport**: Powerful for 4-player split-screen. Each player gets a camera, all rendering the same world (or different worlds!).
+*   **InputEventJoypadButton**: Use `Input.get_connected_joypads()` to auto-detect controllers on the Lobby screen.
+*   **Remapping**: Godot's `InputMap` system can be modified at runtime using `InputMap.action_add_event()`. Creating "p1_jump", "p2_jump" dynamically is a common pattern.
 
 ## Reference
 

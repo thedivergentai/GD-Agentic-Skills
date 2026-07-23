@@ -90,6 +90,13 @@ If the sibling skill is unavailable, use this minimal stuck-recovery checklist �
 4. Avoidance: set `radius > 0` when `avoidance_enabled`.
 5. Re-install [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) before shipping async bake or RID crowds.
 
+## Expert insights (WHY — keep in body)
+
+- **Deferred first target** — WHY: NavigationAgent maps/regions are not ready in `_ready()`. `call_deferred` + `await physics_frame` prevents first-path failure.
+- **Retarget policy** — WHY: per-frame `target_position` rebakes paths and spikes CPU. Timer (~0.2 s) or distance threshold only.
+- **Unreachable waypoints** — WHY: patrol loops stall forever without `is_target_reachable()` + skip/repath policy.
+- **Avoidance radius 0** — WHY: enabled avoidance with zero radius disables separation; agents stack.
+
 ## Golden Path
 
 1. Classify the AI need with the decision trees above.
@@ -97,6 +104,11 @@ If the sibling skill is unavailable, use this minimal stuck-recovery checklist �
 3. Wire retarget/state policy here (timer/threshold + state machine), movement via CharacterBody.
 4. **Do NOT Load** Official Docs intro recipes unless first-time region bake UI is required (use Reference links).
 
+## Deep recipes (on demand)
+
+| Topic | Reference / script |
+|-------|-------------------|
+| Chase / patrol / crowd AI recipes | [ai-movement-recipes.md](ai-navigation-ai-movement-recipes.md) |
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

@@ -24,6 +24,8 @@ Stable collectible IDs → manager → compass → save. Not generic game-loop b
 - **NEVER scale collectible collision shapes non-uniformly** — Breaks overlap math; edit shape resources.
 - **NEVER hardcode spawn positions in code** — Use Marker3D / designer points with [hidden_item_spawner.gd](../scripts/game_loop_collection_hidden_item_spawner.gd).
 - **NEVER drive collection truth from UI silhouettes** — Archive UI mirrors manager state; manager is authoritative.
+- **NEVER load massive levels synchronously on hunt complete** — use threaded `ResourceLoader` (see references).
+- **NEVER manipulate SceneTree from worker threads** — `call_deferred` only.
 
 ---
 
@@ -51,6 +53,8 @@ Serialize the manager’s collected `item_id` set per `collection_id` (`PackedSt
 
 ### 2. Collection Archive UI (Silhouettes)
 Grid of icons: uncollected `modulate` silhouette; reveal when manager signals that ID. UI never invents collected state.
+
+> **MANDATORY** for threaded loads, MainLoop helpers, and archive/save depth: [collection-loop-advanced.md](game-loop-collection-collection-loop-advanced.md). **Do NOT Load** for simple fixed-ID scavenger hunts.
 
 ## Reference
 

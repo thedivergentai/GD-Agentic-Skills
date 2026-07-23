@@ -93,6 +93,10 @@ Staggered path updates for crowds.
 - VRAM: S3TC/BPTC desktop, ETC2 mobile; skip compression for pixel art.
 - AStar/path budgets belong in [navigation_agent_optimization.gd](scripts/navigation_agent_optimization.gd) — do not paste thrashy queue snippets as the golden path.
 
+## Deep dives (on demand)
+
+- Path time-slicing, Compatibility shader pre-warm, VRAM codec table → [profiler-budgets-and-prewarm.md](references/profiler-budgets-and-prewarm.md)
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

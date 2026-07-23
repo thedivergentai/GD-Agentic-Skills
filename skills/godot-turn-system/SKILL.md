@@ -53,6 +53,8 @@ Turn order calculation, action points, phase management, and timeline systems de
 - [turn_system_patterns.gd](scripts/turn_system_patterns.gd) — Match-based phase machines, UndoRedo, `AStarGrid2D` board helpers.
 - [active_time_battle.gd](scripts/active_time_battle.gd) — ATB gauges, pause-on-ready, async action handoff.
 - [timeline_turn_manager.gd](scripts/timeline_turn_manager.gd) — Timeline / CTB with interrupts and pre-visualization.
+- [turn_predictor.gd](scripts/turn_predictor.gd) — Simulate ATB gauges for timeline UI preview.
+- [combat_stats_resource.gd](scripts/combat_stats_resource.gd) — Deterministic damage preview Resource for hover UI.
 
 ## TurnManager Autoload — Interface Contract Only
 
@@ -95,6 +97,15 @@ func perform_action(cost: int) -> bool:
 
 Phases: prefer `enum Phase { DRAW, MAIN, END }` + `match`, or route to [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md). Full ATB / timeline math lives in the MANDATORY scripts — do not duplicate Elite snippets here.
 
+
+
+## Deep recipes (on demand)
+
+> LLM-ignorance rule: if a general agent would not know it before reading, it lives here or in `scripts/` — never delete, only move.
+
+| Topic | Reference |
+|-------|-----------|
+| ATB / prediction / previews | [elite-turn-patterns.md](references/elite-turn-patterns.md) |
 
 ## Reference
 

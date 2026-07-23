@@ -66,6 +66,8 @@ Expert blueprint for RTS games balancing strategy, micromanagement, and performa
 - [building_grid_astar.gd](scripts/building_grid_astar.gd) — Grid placement pathing.
 - [fog_of_war_tile_mask.gd](scripts/fog_of_war_tile_mask.gd) — **MANDATORY** TileMapLayer fog clear (2D/grid).
 - [rendering_ghost_spawner.gd](scripts/rendering_ghost_spawner.gd) — Placement ghosts via RenderingServer RIDs.
+- [rts_formation_manager.gd](scripts/rts_formation_manager.gd) — Center-of-mass group path + per-unit formation offsets.
+- [rts_massive_unit_renderer.gd](scripts/rts_massive_unit_renderer.gd) — MultiMeshInstance3D army renderer synced from unit transforms.
 
 ---
 
@@ -160,6 +162,9 @@ Pre-allocate `instance_count`, drive `visible_instance_count`, push transforms (
 
 ### 3. Fog — script first
 Prefer [fog_of_war_tile_mask.gd](scripts/fog_of_war_tile_mask.gd). SubViewport vision masks: docs + `godot-shaders-basics` (do not duplicate long shader bodies here).
+
+> **MANDATORY** for depth beyond decision trees and script catalog: [rts-mass-army-deep.md](references/rts-mass-army-deep.md). **Do NOT Load** on first-pass wiring — use bundled `scripts/` first.
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API;

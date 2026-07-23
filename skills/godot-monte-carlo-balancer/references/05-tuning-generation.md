@@ -4,17 +4,36 @@
 
 ## Bruteforce (`bruteforce`, `mode-bruteforce`)
 
+```rust
+pub struct LevelBruteforceOptions<'a> { /* level id, which fields to vary, ranges/steps, styles, input_models, runs, seed */ }
+pub fn bruteforce_level(data: &GameData, options: LevelBruteforceOptions)
+```
+
+Design rules:
+
 1. Vary **1–3** parameters at a time; coarse grid then refine.
-2. Score vs **all** style bands (distance from band centers) + penalties: grade degeneracy, downtime dominance, single-kind failure concentration, economy drift (clear-time → currency/minute).
-3. Simulate all styles every candidate — fixing `average` while zeroing `afk` fails.
+2. Score vs **all** `style × input_model` bands (distance from band centers) + penalties: grade degeneracy, downtime dominance, single-kind failure concentration, economy drift (clear-time → currency/minute), and **platform gap penalty** (`max(0, mouse_win_rate - touch_win_rate - 0.12)`). A candidate that fixes desktop but widens the mouse-vs-touch gap fails.
+3. Simulate all styles and shipped input models for every candidate — fixing `average@mouse` while dropping `average@touch` to 30% fails.
 4. Search at 100–300 runs; re-validate winner at ≥1000 before recommend.
 5. Print ranked shortlist as **exact source edits** in the project's truth format (Resource field / `.tres` / GDScript assignment).
 
+`tune_mode_progression(...)` follows the same pattern for mode curves — search so each level's mode win rates stay in band across all shipped input models.
+
 ## Content generation
 
-Fit curves to existing catalog (regress balance fields vs progression index). New content starts on-curve, then identity via deliberate trade-offs. Respect influence graph: unlock-gated pools, one new element per session when designing levels.
+```rust
+pub struct GeneratedLevel { /* candidate + LevelValidation */ }
+pub fn generate_level(data, /* id, target profile, constraints */) -> GeneratedLevel
+pub fn generate_weapon(...) -> GeneratedWeapon
+pub fn generate_trap(data, id, name, unlock) -> (Trap, String)
+```
 
-Validate with full style matrix; bounded retries; report aggregates with the candidate.
+### Generation procedure
+
+1. Fit curves to existing catalog (regress balance fields vs progression index). New content starts on-curve, then identity via deliberate trade-offs.
+2. Respect influence graph & platform limits: unlock-gated pools, one new element per session when designing levels. Generated mechanics must respect the touch tap-rate cap (`taps_per_second_cap` e.g. 7.0/sec) and support `simultaneous_actions = 1` for one-hand play.
+3. Validate with full `style × input_model` matrix; bounded retries; report aggregates with the candidate.
+4. Emit the project's data shape (see table below).
 
 ### Emit the project's data shape
 
@@ -29,16 +48,17 @@ Validate with full style matrix; bounded retries; report aggregates with the can
 ## Recalibration (content changed)
 
 1. `inspect` — extractor sees the change; nothing else moved unexpectedly.
-2. `simulate --runs 1000` + diff snapshot (`compare_balance_snapshots.py`).
-3. Triage intended vs collateral.
-4. `bruteforce` collateral cells without reverting the new content.
-5. Modes + `career` for casual & average.
-6. Phase 7 spot-check if physics/AI-heavy systems moved.
-7. Save new snapshot; summarize before/after.
+2. `simulate --runs 1000` full matrix across all shipped input models + diff snapshot (`compare_balance_snapshots.py`).
+3. If the change touches any input-sensitive mechanic (tap minigame, drag placement, target sizes), re-run touch cells at 1000+ runs even if desktop cells look unchanged.
+4. Triage intended vs collateral; classify: intended vs collateral (shared constants, curve interactions, platform gap widening).
+5. `bruteforce` collateral cells without reverting the new content or widening the mouse-vs-touch platform gap.
+6. Modes + `career` for casual & average — verify economy, session length caps, and grind targets still hold.
+7. Phase 7 spot-check if physics/AI-heavy systems moved.
+8. Save new snapshot; summarize before/after win rates per cell across input models.
 
 ## Level-from-scratch
 
-Define role on interest curve + target bands → generate → review texture metrics (not just band OK) → write source → `inspect` → full matrix including neighbors → `career`.
+Define role on interest curve + target bands → generate → review texture metrics (leaks by kind, downtime, time-to-first-fault, touch platform gap) — not just band OK → write source → `inspect` → full matrix including neighbors → `career` to confirm progression pacing and session caps.
 <!--
 GDSkills research links (agents)
 Official docs:

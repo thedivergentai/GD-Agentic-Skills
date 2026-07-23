@@ -20,7 +20,7 @@ First-person movement, look, viewmodel, and hitscan feel. Shared TPS/cover/soft-
 3. [hitscan_weapon_query.gd](../scripts/genre_shooter_fps_hitscan_weapon_query.gd) — space-state hitscan  
 4. [weapon_bobbing_system.gd](../scripts/genre_shooter_fps_weapon_bobbing_system.gd) — viewmodel bob/sway  
 
-Also: [procedural_recoil_handler.gd](../scripts/genre_shooter_fps_procedural_recoil_handler.gd), [hitscan_weapon_logic.gd](../scripts/genre_shooter_fps_hitscan_weapon_logic.gd), [advanced_fps_controller.gd](../scripts/genre_shooter_fps_advanced_fps_controller.gd), [weapon_state_machine.gd](../scripts/genre_shooter_fps_weapon_state_machine.gd), [frame_perfect_input.gd](../scripts/genre_shooter_fps_frame_perfect_input.gd), [bullet_decal_spawner.gd](../scripts/genre_shooter_fps_bullet_decal_spawner.gd), [weapon_spread_calc.gd](../scripts/genre_shooter_fps_weapon_spread_calc.gd), [server_projectile_instance.gd](../scripts/genre_shooter_fps_server_projectile_instance.gd), [player_anim_bridge.gd](../scripts/genre_shooter_fps_player_anim_bridge.gd).  
+Also: [procedural_recoil_handler.gd](../scripts/genre_shooter_fps_procedural_recoil_handler.gd), [hitscan_weapon_logic.gd](../scripts/genre_shooter_fps_hitscan_weapon_logic.gd), [advanced_fps_controller.gd](../scripts/genre_shooter_fps_advanced_fps_controller.gd), [weapon_state_machine.gd](../scripts/genre_shooter_fps_weapon_state_machine.gd), [frame_perfect_input.gd](../scripts/genre_shooter_fps_frame_perfect_input.gd), [bullet_decal_spawner.gd](../scripts/genre_shooter_fps_bullet_decal_spawner.gd), [weapon_spread_calc.gd](../scripts/genre_shooter_fps_weapon_spread_calc.gd), [server_projectile_instance.gd](../scripts/genre_shooter_fps_server_projectile_instance.gd), [player_anim_bridge.gd](../scripts/genre_shooter_fps_player_anim_bridge.gd), [recoil_system.gd](../scripts/genre_shooter_fps_recoil_system.gd) (pattern + bloom), [aim_assist.gd](../scripts/genre_shooter_fps_aim_assist.gd) (controller friction/magnetism).  
 `advanced_weapon_controller.gd` is shared theory — keep FPS feel in the scripts above; genre routing for TPS → sibling skill.
 
 ## Core Loop
@@ -61,7 +61,9 @@ Roll camera Z + local X offset from `Input.get_axis("lean_left","lean_right")` w
 
 ## Shared weapon theory
 
-Hitscan vs projectile, spray patterns, and net prediction details that are not FPS-rig specific → [godot-genre-shooter](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md) + combat/multiplayer complements. Implement FPS fire path via [hitscan_weapon_query.gd](../scripts/genre_shooter_fps_hitscan_weapon_query.gd) + [procedural_recoil_handler.gd](../scripts/genre_shooter_fps_procedural_recoil_handler.gd).
+Hitscan vs projectile, spray patterns, and net prediction details that are not FPS-rig specific → [godot-genre-shooter](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md) + combat/multiplayer complements. Implement FPS fire path via [hitscan_weapon_query.gd](../scripts/genre_shooter_fps_hitscan_weapon_query.gd) + [procedural_recoil_handler.gd](../scripts/genre_shooter_fps_procedural_recoil_handler.gd) + [recoil_system.gd](../scripts/genre_shooter_fps_recoil_system.gd).
+
+> **MANDATORY** for hitscan/projectile tradeoffs, three-layer recoil, aim assist, weapon balance matrices, and client prediction: [fps-weapon-theory.md](genre-shooter-fps-fps-weapon-theory.md). **Do NOT Load** after MANDATORY script reads unless extending beyond bob/step/lean.
 
 ## Reference
 

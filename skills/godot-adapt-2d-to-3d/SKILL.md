@@ -51,6 +51,12 @@ Diegetic / projected UI sharpness patterns.
 ### [adapt_2d_to_3d_patterns.gd](scripts/adapt_2d_to_3d_patterns.gd)
 Billboards, mouse→3D rays, CanvasLayer overlay helpers.
 
+### [navigation_bridge_2d5d.gd](scripts/navigation_bridge_2d5d.gd)
+Projects NavigationServer3D paths to 2D screen/gameplay plane for 2.5D sprite actors.
+
+### [massive_crowd_manager.gd](scripts/massive_crowd_manager.gd)
+MultiMesh + billboard shader crowd (GPU orientation; not per-node Sprite3D).
+
 > **Do NOT Load** lighting deep-dives here — route to [godot-3d-lighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md). Add a DirectionalLight3D + ambient only; GI/cascades live there.
 
 ---
@@ -292,6 +298,12 @@ func _ready() -> void:
 
 PointLight2D→OmniLight3D conversion is one-shot editor work — keep a project tool if needed. Ongoing lighting quality belongs in godot-3d-lighting.
 
+## Deep recipes (on demand)
+
+| Topic | Reference / script |
+|-------|-------------------|
+| Step-by-step migration / perf gates | [migration-recipes.md](references/migration-recipes.md) |
+| 2.5D nav bridge / crowd billboards | inline Expert Techniques + bundled scripts |
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

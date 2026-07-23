@@ -115,6 +115,15 @@ func _apply_spring_env(env: Environment) -> void:
     tween.tween_property(env, "fog_light_color", EasterPastelColorPalette.BLUE, 2.0)
 ```
 
+
+## Deep recipes (on demand)
+
+> LLM-ignorance rule: if a general agent would not know it before reading, it lives here or in `scripts/` — never delete, only move.
+
+| Topic | Reference |
+|-------|-----------|
+| Cursor / audio / env recipes | [seasonal-implementation-recipes.md](references/seasonal-implementation-recipes.md) |
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API;

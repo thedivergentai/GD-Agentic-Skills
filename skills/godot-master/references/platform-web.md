@@ -78,6 +78,19 @@ VRAM/draw stats to JS console.
 ### Also in `scripts/`
 - [platform_web_patterns.gd](../scripts/platform_web_platform_web_patterns.gd) — Misc web feature gates.
 - [web_bridge_sync.gd](../scripts/platform_web_web_bridge_sync.gd) — Structured bridge sync helper.
+- [web_json_rpc_bridge.gd](../scripts/platform_web_web_json_rpc_bridge.gd) — JSON-RPC `create_callback` bridge (keep refs alive).
+
+## Expert WHY (critical)
+
+> **CAUTION:** Never persist via `JavaScriptBridge.eval("localStorage.setItem('%s')" % data)` — injection/escaping bugs. Use [web_local_storage_wrapper.gd](../scripts/platform_web_web_local_storage_wrapper.gd).
+
+- **PWA updates** — `pwa_update_available` → `pwa_update()` when `pwa_needs_update()`.
+- **WebGPU** — not a Godot 4.x web renderer; ship Compatibility (WebGL 2.0).
+- **JSON-RPC host page** — structured bidirectional bridge: [web_json_rpc_bridge.gd](../scripts/platform_web_web_json_rpc_bridge.gd).
+
+## Deep dive (load on demand)
+
+PWA lifecycle, JSON-RPC bridge, localStorage anti-patterns, size knobs — [references/web-elite-patterns.md](platform-web-web-elite-patterns.md).
 
 ## Loading shell (custom HTML)
 

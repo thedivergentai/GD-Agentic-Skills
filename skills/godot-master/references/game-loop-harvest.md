@@ -62,6 +62,8 @@ Use `FastNoiseLite` thresholds for organic clusters; spawn `HarvestableNode` ins
 
 Keep durability on `HarvestToolData` (Resource), not the player node. Emit durability/break signals from the tool Resource after successful hits.
 
+> **MANDATORY** for offline UNIX math, worker-thread batching, popup pools, and vein proc-gen depth: [harvest-elite-patterns.md](game-loop-harvest-harvest-elite-patterns.md). **Do NOT Load** when hit path + respawn manager suffice.
+
 ## Reference
 
 > **Progressive disclosure:** Skim Official Documentation only for the APIs you are implementing (Resources, StaticBody3D hits, signals, timers, save/offline time). Open Related Skills when wiring inventory, autoloads, raycasts, or economy balance—do not preload the whole lattice.

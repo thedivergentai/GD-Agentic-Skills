@@ -93,6 +93,10 @@ Map each template piece to a consumer skill before writing gameplay code:
 
 **Usage:** pick genre row → load scripts → rename project → register locator/bootstrap → configure Input Map → open genre skill for systems — do not paste stock FPS/inventory recipes from this skill.
 
+## Deep dive (load on demand)
+
+Platformer/RPG/FPS directory trees, input map template, CI export YAML, PCK mount, bootstrap priority — [references/genre-template-scaffolds.md](references/genre-template-scaffolds.md).
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

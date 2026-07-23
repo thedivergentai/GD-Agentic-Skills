@@ -100,6 +100,10 @@ For new foundations projects: **Project Settings → Debug → GDScript → Unty
 ### Project Metadata
 Use [`build_metadata_provider.gd`](scripts/build_metadata_provider.gd) / [`base_data_resource.gd`](scripts/base_data_resource.gd) for version/build flags instead of ad-hoc JSON.
 
+## Deep dive (load on demand)
+
+Full naming table, typed-GDScript migration, EventBus/SceneManager/metadata samples — [references/foundations-deep.md](references/foundations-deep.md).
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

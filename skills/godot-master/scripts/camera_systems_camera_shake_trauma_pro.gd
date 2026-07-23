@@ -20,6 +20,9 @@ func _ready() -> void:
 func add_trauma(amount: float) -> void:
 	trauma = clamp(trauma + amount, 0.0, 1.0)
 
+func get_trauma() -> float:
+	return trauma
+
 func _process(delta: float) -> void:
 	if trauma > 0:
 		trauma = max(trauma - trauma_reduction_rate * delta, 0)

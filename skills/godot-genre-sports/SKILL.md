@@ -241,6 +241,14 @@ func _on_ball_entered(ball: RigidBody3D) -> void:
 
 **Expert Tip**: For the "Root Motion" system, ensure the `AnimationTree` property `deterministic` is set to true to ensure consistent displacement across different hardware.
 
+
+## Deep recipes (on demand)
+
+| Topic | Reference / script |
+|-------|-------------------|
+| Skill chain & phase routing | [skill-chain.md](references/skill-chain.md) |
+
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

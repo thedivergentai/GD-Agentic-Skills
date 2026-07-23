@@ -72,12 +72,21 @@ Hitboxes must pass `DamageData` (or equivalent AttackData built from the same fl
 - [hitbox_hurtbox.gd](scripts/hitbox_hurtbox.gd) — **MANDATORY** before Area combat wiring.
 - [hitbox_component.gd](scripts/hitbox_component.gd) — 3D Area hitbox companion (flags-aligned).
 - [combat_system_patterns.gd](scripts/combat_system_patterns.gd) — **MANDATORY** for AoE / hit-stop / duck-typing.
+- [combo_system.gd](scripts/combo_system.gd) — windowed combo buffer (Do NOT Load if no combos).
+- [combat_state.gd](scripts/combat_state.gd) — lightweight combat FSM gate.
+- [damage_popup.gd](scripts/damage_popup.gd) — floating damage label tween (pool in production).
+- [combat_logger.gd](scripts/combat_logger.gd) — batched combat telemetry JSON.
+- [networked_damage_manager.gd](scripts/networked_damage_manager.gd) — server-validate damage RPC shell.
+- [hitbox_visualizer.gd](scripts/hitbox_visualizer.gd) — toggle collision debug colors.
 
 ## Elite Deltas (keep short)
 
-- **Combat telemetry:** batch JSON flushes of DamageData events to `user://` for balance (source, target, flags, amount).
-- **Authoritative damage:** clients request; server validates distance/team then applies `take_damage` ([godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md)).
-- **Hitbox debug:** `SceneTree.debug_collisions_hint` + distinct debug colors for attack vs hurt volumes.
+- **Combat telemetry:** batch JSON flushes via [combat_logger.gd](scripts/combat_logger.gd).
+- **Authoritative damage:** [networked_damage_manager.gd](scripts/networked_damage_manager.gd) — clients request; server validates.
+- **Hitbox debug:** [hitbox_visualizer.gd](scripts/hitbox_visualizer.gd) + `SceneTree.debug_collisions_hint`.
+- **Combos / popups / FSM:** [combo_system.gd](scripts/combo_system.gd), [damage_popup.gd](scripts/damage_popup.gd), [combat_state.gd](scripts/combat_state.gd).
+
+> **MANDATORY** for telemetry, networked hits, combos, and moved inline tutorials: [elite-combat-patterns.md](references/elite-combat-patterns.md). **Do NOT Load** for first DamageData + HealthComponent pass.
 
 ## Reference
 

@@ -61,6 +61,10 @@ Romance games are built on the "Affection Economy"—the management of player ti
 - [dialogue_expression_parser.gd](../scripts/genre_romance_dialogue_expression_parser.gd) - Expression / emotion tags for portrait swaps.
 - [global_affection_tracker.gd](../scripts/genre_romance_global_affection_tracker.gd) - Cross-scene Autoload snapshot of all axes.
 - [romance_patterns.gd](../scripts/genre_romance_romance_patterns.gd) - Typewriter tweens and heart-burst juice helpers.
+- [ui_feedback.gd](../scripts/genre_romance_ui_feedback.gd) - Heart-burst Tween juice at affection milestones.
+- [npc_schedule.gd](../scripts/genre_romance_npc_schedule.gd) - `NPCSchedule` Resource + hour_changed routing.
+- [seasonal_dialogue.gd](../scripts/genre_romance_seasonal_dialogue.gd) - Season/festival dialogue key overrides.
+- [player_romance_manager.gd](../scripts/genre_romance_player_romance_manager.gd) - `call_group` jealousy broadcast on date start.
 
 ---
 
@@ -104,6 +108,21 @@ Do **not** re-inline affection/date/route class stubs — load the scripts above
 | Vending-machine romance | Multi-axis + repetition penalty on dates |
 | Opaque stats | Surface Attraction/Trust/Comfort deltas in UI |
 | Garbled script index | Use filenames above (no broken path fragments) |
+
+> **MANDATORY** for depth beyond decision trees and script catalog: [romance-systems-deep.md](genre-romance-romance-systems-deep.md). **Do NOT Load** on first-pass wiring — use bundled `scripts/` first.
+
+## Architecture Overview
+
+### 1. Affection Manager (The Heart)
+Handles complex relationship stats and gift preferences for all characters.
+
+```gdscript
+
+## Godot-Specific Tips
+
+*   **Resources for Characters**: Use `CharacterProfile` resources to store base stats, sprites, and gift preferences.
+*   **RichTextLabel Animations**: Use custom BBCode for "blushing" text (pulsing pink) or "nervous" text (shaking).
+*   **Dialogic Integration**: While this skill focuses on the *systems*, pairing it with Godot's **Dialogic** plugin is highly recommended for handling the actual dialogue boxes.
 
 ## Reference
 

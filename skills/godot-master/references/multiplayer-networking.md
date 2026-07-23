@@ -85,6 +85,11 @@ Server authority, prediction/reconcile, secure RPCs, and interest culling — no
 - Clients suggest; server validates and broadcasts results.
 - Large worlds: cull with visibility grid before adding more sync Hz.
 
+## Deep dives (on demand)
+
+- RPC modes, lobby handshake, puppet interpolation → [rpc-lobby-and-sync.md](multiplayer-networking-rpc-lobby-and-sync.md)
+- Delta-compression + network simulator concepts live in that reference (LLM-ignorance: unreliable vs reliable HoL blocking is NOT generic knowledge).
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

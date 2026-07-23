@@ -51,6 +51,9 @@ Expert CharacterBody2D feel systems — not beginner `move_and_slide` tutorials.
 | Pixel-art visuals | [subpixel_movement_rounding.gd](scripts/subpixel_movement_rounding.gd) | — | Rounding `global_position` in physics |
 | Many AI bodies | [performance_character_pooling.gd](scripts/performance_character_pooling.gd) | — | — |
 | One-way platforms | Tile/StaticBody one-way + layers/masks | [godot-tilemap-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md) / [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) | `position.y += 1` drop-through hacks |
+| Top-down / tank locomotion | [movement-recipes.md](references/movement-recipes.md) | — | Inline 8-way tutorials |
+| Jump arc debug tuning | [game_feel_profiler.gd](scripts/game_feel_profiler.gd) | — | — |
+| Animation root motion | [root_motion_controller.gd](scripts/root_motion_controller.gd) | [godot-2d-animation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md) | — |
 
 **Golden path:** Read **expert_physics_2d.gd** first. Add dash/wall/jump scripts only after that controller is in place. Do not re-inline coyote/buffer/accel loops in the scene when the script already owns them.
 
@@ -70,7 +73,9 @@ Monitor `is_on_wall()` while falling; scale `velocity.y` by a friction factor (o
 Pull `AnimationTree.get_root_motion_position()`, convert to 2D, assign `velocity = motion / delta`, then `move_and_slide()`. Keeps feet locked to authored clips; pair with [godot-2d-animation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md).
 
 ### 3. Game-Feel Profiler (Jump Arcs)
-Debug-draw historical positions + current velocity in `_draw()` to visualize apex, coyote, and buffer windows while tuning exports on **expert_physics_2d.gd**.
+Debug-draw historical positions + current velocity in `_draw()` to visualize apex, coyote, and buffer windows while tuning exports on **expert_physics_2d.gd** — [game_feel_profiler.gd](scripts/game_feel_profiler.gd).
+
+> **MANDATORY** for top-down/tank recipes, moving platforms, slide-collision response, and gotcha tables: [movement-recipes.md](references/movement-recipes.md). **Do NOT Load** when expert_physics_2d.gd already covers your platformer scope.
 
 ## Reference
 

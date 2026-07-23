@@ -32,6 +32,18 @@ Fill Threat / Defense / Fault / Resource / Economy / Session / Grade in Phase 0.
 - **Platformer / action:** simulate at encounter grain; calibrate from playtests or headless bots (Phase 7).
 - **Fighting / PvP:** NEVER use PvE AFK→pro bands as the sole truth.
 
+## Platform & Input Adaptation
+
+Parallel to genre adaptation, map the game's target platform onto interaction and session models:
+
+| Platform | Input model | Session model | Key risks to simulate |
+|---|---|---|---|
+| Desktop | mouse+kb | long uninterrupted | twitch ceiling too low (boring) |
+| Mobile two-thumb | touch | 3–7 min, interruptions | tap-rate caps, fat-finger, occlusion |
+| Mobile one-hand | touch (1 point) | 1–5 min, heavy interruptions | simultaneous-action mechanics impossible |
+| Tablet | touch, larger targets | medium | between desktop and phone |
+| Gamepad/console | gamepad | long | cursor-precision mechanics need snap/assist |
+
 ## Engine adaptation (extraction only)
 
 `model` / `sim` / `analysis` / `generate` stay engine-agnostic.
@@ -47,7 +59,7 @@ Root marker: `project.godot` / `.uproject` / `Assets/` / `package.json` + `BALAN
 
 ## What never changes
 
-Source extraction + `inspect`; behavioral `PlayStyle`; seeded determinism; CI-aware bands; careers; band-scored bruteforce; Phase 7 calibration for Godot projects.
+Source extraction + `inspect`; behavioral `PlayStyle`; the `PlayStyle × InputModel` decomposition — skill and platform are always independent axes; seeded determinism; CI-aware bands per style × input model; careers; band-scored bruteforce with platform-gap penalty; Phase 7 calibration for Godot projects.
 <!--
 GDSkills research links (agents)
 Official docs:

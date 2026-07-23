@@ -77,6 +77,8 @@ Automatic programmatic generation of `CanvasTexture` combining base albedo and b
 ### [model_to_sprite_bake.gd](../scripts/adapt_3d_to_2d_model_to_sprite_bake.gd)
 **MANDATORY** for automated 3D→sprite angle baking via SubViewport. Keep body as strategy router.
 
+### [grid_nav_bridge.gd](../scripts/adapt_3d_to_2d_grid_nav_bridge.gd)
+Flatten 3D nav intent onto `AStarGrid2D` for grid-based 2D ports (XZ → cell indices).
 
 ---
 
@@ -271,6 +273,11 @@ func _run() -> void:
     print(result)
 ```
 
+## Deep recipes (on demand)
+
+| Topic | Reference / script |
+|-------|-------------------|
+| True 2D / bake / camera conversion | [dimension-reduction.md](adapt-3d-to-2d-dimension-reduction.md) |
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

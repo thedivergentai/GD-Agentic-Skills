@@ -95,6 +95,16 @@ When count > ~500:
 **MANDATORY**: [tower.gd](scripts/tower.gd) for idle → acquire → windup → fire. Targeting stays in [tower_targeting_system.gd](scripts/tower_targeting_system.gd).
 
 
+
+## Deep recipes (on demand)
+
+| Topic | Reference / script |
+|-------|-------------------|
+| Waves / towers / paths | [architecture-overview.md](references/architecture-overview.md) |
+| Projectile lead & targeting | [key-mechanics.md](references/key-mechanics.md) |
+| Maze validation & burst search | [elite-technical-patterns.md](references/elite-technical-patterns.md) + [grid_path_validator.gd](scripts/grid_path_validator.gd) |
+
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

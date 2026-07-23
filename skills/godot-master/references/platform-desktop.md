@@ -93,6 +93,10 @@ On `NOTIFICATION_APPLICATION_FOCUS_OUT`, pause and `Input.action_release` held m
 ### 2. Desktop launcher note
 Lightweight launcher projects may `OS.create_process` the main pack after writing `user://settings.cfg`; pair with [low_processor_eco_mode.gd](../scripts/platform_desktop_low_processor_eco_mode.gd) while idle in menus.
 
+## Deep dives (on demand)
+
+- Settings menu, rebind, Steam, alt-tab guard, launcher → [desktop-expert-patterns.md](platform-desktop-desktop-expert-patterns.md)
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API;

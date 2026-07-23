@@ -56,7 +56,7 @@ Genre, win/fail, modes, catalog, influence graph, economy, styles + **primary me
 Resource-first decision tree; `inspect` before any simulate.
 
 ### Phase 2 — Sim → [references/02-simulation-engine.md](references/02-simulation-engine.md)
-Behavioral `PlayStyle`, seeded `SmallRng`, rayon over independent jobs.
+Behavioral `PlayStyle` × `InputModel` (mouse/touch/gamepad), `SessionModel` for mobile, seeded `SmallRng`, rayon over independent jobs.
 
 ### Phase 3 — Analyze → [references/03-analysis-reporting.md](references/03-analysis-reporting.md)
 Wilson/bootstrap CI verdicts; secondary agency checks; stable JSON.
@@ -111,21 +111,31 @@ balance-lab --seed 42 <any command>
 
 ## Target Bands (default; Phase 0 overrides)
 
-| Style   | Win-rate target | Below → | Above → |
-|---------|-----------------|---------|---------|
-| afk     | 5% – 55%        | TOO HARD | TOO EASY |
-| casual  | 55% – 90%       | TOO HARD | TOO EASY |
-| average | 70% – 95%       | TOO HARD | TOO EASY |
-| pro     | 90% – 100%      | TOO HARD | — |
+Bands are defined per `style × input_model` cell. Default input model is `mouse`.
+
+| Style   | Input | Win-rate target | Below → | Above → |
+|---------|-------|-----------------|---------|---------|
+| afk     | mouse | 5% – 55%        | TOO HARD | TOO EASY |
+| casual  | mouse | 55% – 90%       | TOO HARD | TOO EASY |
+| average | mouse | 70% – 95%       | TOO HARD | TOO EASY |
+| pro     | mouse | 90% – 100%      | TOO HARD | — |
+| afk     | touch | 5% – 55%        | TOO HARD | TOO EASY |
+| casual  | touch | 55% – 90%       | TOO HARD | TOO EASY |
+| average | touch | 65% – 92%       | TOO HARD | TOO EASY |
+| pro     | touch | 85% – 100%      | TOO HARD | — |
+
+A level is only OK when every simulated `style × input_model` cell lands inside its band. Difficulty must come from the level curve, not from punishing input speed alone.
+
+> **Platform Rule**: If the game ships on mobile, the matrix MUST include touch input models. A level that is OK on mouse but TOO HARD on touch is TOO HARD.
 
 ### CI verdict law (single source of truth)
 
 | Mode | Runs/cell | `OK` rule |
 |------|-----------|-----------|
 | Search / working | 100–300 | 95% CI **overlaps** band; else TOO_HARD / TOO_EASY / INCONCLUSIVE |
-| Sign-off / DoD / snapshot | ≥1000 | 95% CI **fully ⊆** band for **every** style |
+| Sign-off / DoD / snapshot | ≥1000 | 95% CI **fully ⊆** band for **every** style × shipped input model |
 
-Fighting / educational / idle often replace win% — set primary metric in Phase 0. Difficulty from content curve, not input-speed punishment alone.
+Fighting / educational / idle often replace win% — set primary metric in Phase 0.
 
 ## NEVER Do
 
@@ -136,6 +146,9 @@ Fighting / educational / idle often replace win% — set primary metric in Phase
 ### Simulation Fidelity
 - **NEVER simulate only optimal play** — a pro-only PASS ships an unplayable floor; AFK/casual failures are the bug players feel.
 - **NEVER model humans as instantaneous** — zero-delay agents clear jam/fault windows real players miss; difficulty collapses into twitch gates.
+- **NEVER reuse desktop reaction/tap parameters for mobile** — touch has lower taps/sec, higher miss chance, and occlusion; balancing against mouse numbers ships an unplayable mobile game.
+- **NEVER assume uninterrupted sessions on mobile** — model interruptions (notifications, app switching) and session-length caps; a level requiring 12 minutes of unbroken attention fails the platform.
+- **NEVER let precision-dependent mechanics go untested on touch** — any mechanic requiring accurate/fast pointing must be simulated with the touch accuracy model before sign-off.
 - **NEVER skip meta-game** — omit shop/upgrades/modes/replay → “balanced” sessions with broken careers.
 - **NEVER use unseeded or `HashMap`-hashed seed paths** — default hasher is process-randomized → false CI diffs across machines/rayon schedules; use `seed_for` + stable hash; unit-test determinism.
 - **NEVER share `RunState`/RNG across rayon jobs** — cross-talk masquerades as balance noise and breaks reproducibility.
@@ -169,7 +182,7 @@ Fighting / educational / idle often replace win% — set primary metric in Phase
 1. `inspect` verified; no unexpected `(default!)`.
 2. Seed-determinism test passes.
 3. Phase 7 PASS (or Phase 0 waiver recorded).
-4. Full matrix ≥1000 runs/cell — every style **CI ⊆ band** (sign-off law).
+4. Full matrix (all levels × all styles × all shipped input models, ≥1000 runs/cell) — every cell **CI ⊆ band** (sign-off law).
 5. Modes + career: currency/minute OK; no dominant farm; shop reachable.
 6. Interest curve + reward-cadence checkpoints PASS.
 7. Regression JSON snapshot committed for CI.

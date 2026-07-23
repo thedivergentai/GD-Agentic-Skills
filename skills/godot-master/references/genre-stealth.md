@@ -103,6 +103,19 @@ Do **not** paste long vision/alert/ability tutorials into the skill body — kee
 | `distance_to` hearing | Navigation path length |
 | Off-screen CPU | `VisibleOnScreenNotifier` suspend |
 
+
+## Deep recipes (on demand)
+
+| Topic | Reference / script |
+|-------|-------------------|
+| Design pillars | [design-principles.md](genre-stealth-design-principles.md) |
+| Vision / sound / light | [ai-detection-system.md](genre-stealth-ai-detection-system.md) + [stealth_ai_controller.gd](../scripts/genre_stealth_stealth_ai_controller.gd) |
+| Alert FSM & UI feedback | [alert-states.md](genre-stealth-alert-states.md) + [visibility_manager.gd](../scripts/genre_stealth_visibility_manager.gd) |
+| Player tools (lean, gadgets) | [player-abilities.md](genre-stealth-player-abilities.md) |
+| Cover & encounter layout | [level-design.md](genre-stealth-level-design.md) |
+| UI communication | [ui-communication.md](genre-stealth-ui-communication.md) |
+
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

@@ -60,13 +60,18 @@ Async loading, transitions, instance pooling, and caching define smooth scene wo
 | Quick respawn | Reset state + teleport — **not** `change_scene` | — |
 | DLC / hot patch scenes | `ProjectSettings.load_resource_pack` then load path | (PCK) see Official Docs |
 
-## Expert Patterns (staging / integrity)
+## Expert WHY (staging / integrity)
 
-- **Pool pre-fill** during loading screens (`PROCESS_MODE_DISABLED` + hide) — absorb instantiate cost up front via `scene_pool.gd`.
-- **Background staging** — `load_threaded_request` mid-gameplay; transition only when loaded (`background_resource_loader.gd`).
+- **Pool pre-fill** during loading screens (`PROCESS_MODE_DISABLED` + hide) — absorb instantiate cost up front via [scene_pool.gd](scripts/scene_pool.gd).
+- **Background staging** — `load_threaded_request` mid-gameplay; transition only when loaded ([background_resource_loader.gd](scripts/background_resource_loader.gd)).
 - **PCK overrides** — mount pack, then `change_scene`/`load` the same `res://` path for patched content.
-- **Orphan audit** — after swaps, check `Performance.OBJECT_ORPHAN_NODE_COUNT` / `Node.print_orphan_nodes()`.
-- **Cleanup** — `queue_free()` on a root is recursive; no manual child loops.
+- **Orphan audit** — after swaps, `Performance.OBJECT_ORPHAN_NODE_COUNT > 0` means leaked refs still hold freed nodes.
+- **Cleanup** — `queue_free()` on a root is recursive in Godot 4; no manual child loops.
+- **Quick respawn** — reset state + teleport; **NEVER** `change_scene` just to restart a level.
+
+## Deep dive (load on demand)
+
+Fade Autoloads, loading screens, spawn tracking, persistence holders, PCK patch — [references/scene-patterns-deep.md](references/scene-patterns-deep.md).
 
 ## Reference
 

@@ -86,6 +86,8 @@ Symptom → monitor/API → script routing for leaks, GPU, and CI — Official D
 - Prefer structured logs over `print_stack()` in anything that might ship.
 - Escalate sustained FPS issues to `godot-performance-optimization` after the symptom tree identifies the bottleneck class.
 
+> **MANDATORY** for print/breakpoint workflow depth, profiler interpretation, and expert CI/GPU/thread patterns: [debug-workflows.md](references/debug-workflows.md). **Do NOT Load** when the symptom → script table above already routes you.
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

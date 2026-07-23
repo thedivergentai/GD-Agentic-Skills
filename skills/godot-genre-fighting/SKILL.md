@@ -62,6 +62,15 @@ Expert blueprint for 2D/3D fighters emphasizing frame-perfect combat and competi
 - [string_name_optimization.gd](scripts/string_name_optimization.gd) - Pattern for using pointer-level `StringName` comparisons in AI states.
 - [round_timer_logic.gd](scripts/round_timer_logic.gd) - Logic for frame-synced match timers and timeout triggers.
 
+### Restored from baseline (load on demand)
+- [attack_resource.gd](scripts/attack_resource.gd) - `.tres` frame-data Resource (startup/active/recovery, advantage).
+- [combo_tracker.gd](scripts/combo_tracker.gd) - Damage scaling (~10%/hit) and combo state.
+- [fighter_state_machine.gd](scripts/fighter_state_machine.gd) - IDLE/ATTACKING/HITSTUN with integer `state_frame`.
+- [fight_game_state.gd](scripts/fight_game_state.gd) - Serializable rollback snapshot shell (pair with [rollback_state_serializer.gd](scripts/rollback_state_serializer.gd)).
+- [move_set_loader.gd](scripts/move_set_loader.gd) - JSON move-list loader for designer iteration.
+- [frame_advancer.gd](scripts/frame_advancer.gd) - `@tool` editor frame scrubber for hitbox alignment.
+- [fighter_balance_profile.gd](scripts/fighter_balance_profile.gd) - Per-roster damage/movement/defense scaling Resource.
+
 ---
 
 ## Core Loop
@@ -125,6 +134,20 @@ For roster / matchup simulation, use [godot-monte-carlo-balancer](https://github
 | Area2D signal hits | Replace with [direct_hitbox_query.gd](scripts/direct_hitbox_query.gd) |
 | Lag input drops | Buffer 8+ frames |
 | Desync | Deterministic loop + rollback serializer |
+
+## Expert knowledge (on demand)
+
+> **LLM-ignorance rule:** If a general agent would not know it before reading, load the reference — never delete expert deltas.
+
+- [expert-fighting-patterns.md](references/expert-fighting-patterns.md) — restored baseline pedagogy (architecture, WHY, implementation depth)
+- [attack_resource.gd](scripts/attack_resource.gd)
+- [combo_tracker.gd](scripts/combo_tracker.gd)
+- [fighter_state_machine.gd](scripts/fighter_state_machine.gd)
+- [fight_game_state.gd](scripts/fight_game_state.gd)
+- [move_set_loader.gd](scripts/move_set_loader.gd)
+- [frame_advancer.gd](scripts/frame_advancer.gd)
+- [fighter_balance_profile.gd](scripts/fighter_balance_profile.gd)
+
 
 ## Reference
 

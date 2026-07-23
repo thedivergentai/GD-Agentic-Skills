@@ -270,6 +270,16 @@ static func import_blueprint_from_clipboard() -> Dictionary:
 ```
 
 
+
+## Deep recipes (on demand)
+
+| Topic | Reference / script |
+|-------|-------------------|
+| Elite meshing & blueprint sharing | [elite-technical-patterns.md](genre-sandbox-elite-technical-patterns.md) + [voxel_chunk_mesher.gd](../scripts/genre_sandbox_voxel_chunk_mesher.gd) |
+| Element / CA grids | Architecture Patterns §1–3 in SKILL.md + [cellular_automata_liquid.gd](../scripts/genre_sandbox_cellular_automata_liquid.gd) |
+| Chunk RLE persistence | Save System § in SKILL.md + [sandbox_world_serializer.gd](../scripts/genre_sandbox_sandbox_world_serializer.gd) |
+
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

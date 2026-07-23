@@ -70,6 +70,11 @@ Expert blueprint for roguelikes balancing challenge, progression, and replayabil
 - [meta_progression_resource.gd](../scripts/genre_roguelike_meta_progression_resource.gd) - Data separation for permanent game unlocks and skill trees.
 - [move_command_object.gd](../scripts/genre_roguelike_move_command_object.gd) - Command pattern implementation for reversible turn-based actions.
 - [dungeon_generator.gd](../scripts/genre_roguelike_dungeon_generator.gd) - High-level procedural orchestrator for room-and-hallway layout generation.
+- [run_manager.gd](../scripts/genre_roguelike_run_manager.gd) - Autoload run seed/floor/inventory lifecycle (`start_run` / `end_run`).
+- [director_ai.gd](../scripts/genre_roguelike_director_ai.gd) - Pacing manager — spawn intensity from player power + time-in-run.
+- [room_assembler.gd](../scripts/genre_roguelike_room_assembler.gd) - Marker-based procedural room stitching from prefab scenes.
+- [synergy_manager.gd](../scripts/genre_roguelike_synergy_manager.gd) - Relic tag synergy detection and stacked modifier application.
+- [example_relic_vampirism.gd](../scripts/genre_roguelike_example_relic_vampirism.gd) - Sample `Relic` Resource hook (`on_damage_dealt`).
 
 ## Core Loop
 1.  **Preparation**: Select character, equip meta-upgrades (see `meta_progression_resource.gd`).
@@ -131,6 +136,7 @@ Roguelikes require a strict separation between **Run State** (temporary) and **M
 -   **Synergy System**: Tag items (`fire`, `projectile`, `companion`) and check for tag combinations to create emergent power-ups.
 -   **Director AI**: An invisible "Director" system that tracks player health/stress and adjusts spawn rates dynamically (like *Left 4 Dead*).
 
+> **MANDATORY** for depth beyond decision trees and script catalog: [roguelike-meta-systems-deep.md](genre-roguelike-roguelike-meta-systems-deep.md). **Do NOT Load** on first-pass wiring — use bundled `scripts/` first.
 
 ## Reference
 

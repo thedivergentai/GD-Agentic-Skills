@@ -36,7 +36,7 @@ description: "Expert blueprint for TPS/hybrid shooters: soft-lock aim assist, co
 2. [cover_validator_rays.gd](scripts/cover_validator_rays.gd) — cover / peek validity rays  
 3. [tps_camera_spring_arm.gd](scripts/tps_camera_spring_arm.gd) — SpringArm3D TPS camera collision  
 
-Also available: [advanced_weapon_controller.gd](scripts/advanced_weapon_controller.gd) (shared weapon controller — prefer FPS skill for FPS feel), [shooter_patterns.gd](scripts/shooter_patterns.gd), [projectile.gd](scripts/projectile.gd).
+Also available: [advanced_weapon_controller.gd](scripts/advanced_weapon_controller.gd) (shared weapon controller — prefer FPS skill for FPS feel), [shooter_patterns.gd](scripts/shooter_patterns.gd), [projectile.gd](scripts/projectile.gd), [weapon_recoil_pattern.gd](scripts/weapon_recoil_pattern.gd) (spray Resource), [lag_compensator.gd](scripts/lag_compensator.gd) (server rewind).
 
 ## Decision trees
 
@@ -60,10 +60,29 @@ Also available: [advanced_weapon_controller.gd](scripts/advanced_weapon_controll
 |---|---|
 | Client juice | Predict tracers locally |
 | Damage | Server authoritative; show no-reg on mismatch |
+| Net rewind / lag comp | [lag_compensator.gd](scripts/lag_compensator.gd) + [advanced-meta-systems.md](references/advanced-meta-systems.md) |
+| Learnable spray | [weapon_recoil_pattern.gd](scripts/weapon_recoil_pattern.gd) |
 
 ## Weapon selection (short)
 
-Hitscan for hitscan rifles/SMGs; physical projectiles for rockets/arrows; Resource archetypes for balance — tune in `.tres`, not node scripts.
+Hitscan for rifles/SMGs; physical projectiles for rockets/arrows; balance in **`WeaponData` Resources** (`.tres`), never hardcoded on nodes.
+
+| Archetype | ROF | Damage | Implementation |
+|-----------|-----|--------|----------------|
+| SMG | High | Low | Hitscan + tight vertical spray |
+| Sniper | Low | High | Hitscan + tracer |
+| Shotgun | Burst | Medium | Multi-pellet spread, <10m |
+| Rocket | Slow | High | [projectile.gd](scripts/projectile.gd) + shape AoE |
+
+Gunplay theory → [tps-gunplay-core.md](references/tps-gunplay-core.md). Net rewind → [advanced-meta-systems.md](references/advanced-meta-systems.md).
+
+## Recoil and feel (WHY)
+
+Apply kick to **camera rotation** and **spread bloom**, not weapon mesh alone. Learnable spray via [weapon_recoil_pattern.gd](scripts/weapon_recoil_pattern.gd). Layer gunfire: mechanical + shot + reverb tail on separate 3D players.
+
+## Multiplayer (short)
+
+Client predicts VFX/tracers; server validates hits (`rpc` + rewind). Never trust client damage. ENet/UDP, not TCP. Server wins on mismatch — show no-reg feedback.
 
 ## Reference
 

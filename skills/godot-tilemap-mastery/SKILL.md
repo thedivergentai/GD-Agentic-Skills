@@ -63,6 +63,17 @@ Editor atlas/physics paint setup: Official Documentation in Reference — **Do N
 - **Procgen:** stamp patterns or batch terrain; avoid per-cell `set_cell` storms — [tile_pattern_stamper.gd](scripts/tile_pattern_stamper.gd) / [procedural_chunk_batcher.gd](scripts/procedural_chunk_batcher.gd).
 - **Diff / save deltas:** compare `get_used_cells()` source_id/atlas between layers; persist deltas via [tilemap_data_manager.gd](scripts/tilemap_data_manager.gd) rather than full maps when possible.
 
+
+## Deep recipes (on demand)
+
+> LLM-ignorance rule: if a general agent would not know it before reading, it lives here or in `scripts/` — never delete, only move.
+
+| Topic | Reference |
+|-------|-----------|
+| TileSet editor steps | [tileset-editor-setup.md](references/tileset-editor-setup.md) |
+| Runtime APIs + flood/terrain | [runtime-tile-patterns.md](references/runtime-tile-patterns.md) |
+| Iso / patterns / diff | [expert-tilemap-architectures.md](references/expert-tilemap-architectures.md) |
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

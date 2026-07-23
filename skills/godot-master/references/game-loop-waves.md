@@ -109,6 +109,12 @@ Decouple your wave data from the UI using a `CanvasLayer` and signals.
 - **Wave Counter**: Display current/total waves.
 - **Health Bars**: Use a `TextureProgressBar` on a `CanvasLayer` for bosses, or `Sprite3D` with a viewport texture for individual enemy health bars.
 
+## Expert knowledge (on demand)
+
+> **LLM-ignorance rule:** If a general agent would not know it before reading, load the reference — never delete expert deltas.
+
+- [wave-expert-patterns.md](game-loop-waves-wave-expert-patterns.md) — restored baseline pedagogy (architecture, WHY, implementation depth)
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

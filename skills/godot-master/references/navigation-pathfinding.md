@@ -43,6 +43,9 @@ NavigationServer pathfinding, async bake, RVO avoidance, and stuck recovery — 
 | Links (jump/teleport/elevator) | [nav_link_traversal.gd](../scripts/navigation_pathfinding_nav_link_traversal.gd) |
 | Walk / fly / swim layers | [layer_mask_navigation.gd](../scripts/navigation_pathfinding_layer_mask_navigation.gd) |
 | Crowd formation offsets | [group_avoidance_formations.gd](../scripts/navigation_pathfinding_group_avoidance_formations.gd) |
+| Server RVO crowd agent (node-less) | [crowd_agent_3d.gd](../scripts/navigation_pathfinding_crowd_agent_3d.gd) |
+| Dynamic navmesh carve (impact holes) | [nav_mesh_carver_3d.gd](../scripts/navigation_pathfinding_nav_mesh_carver_3d.gd) |
+| Bake-time benchmark | [navmesh_profiler.gd](../scripts/navigation_pathfinding_navmesh_profiler.gd) |
 | Smart agent wrapper | [smart_navigation_agent.gd](../scripts/navigation_pathfinding_smart_navigation_agent.gd) |
 
 ## Chase / Retarget Rule (never contradict NEVER)
@@ -108,6 +111,12 @@ Production NavigationAgent wrapper patterns.
 
 - Prefer Official Docs intros for first NavigationRegion bake UI; this skill owns async bake, server RVO, costs, and stuck recovery.
 - Thousands of simple agents → RID server path ([server_navigation_setup.gd](../scripts/navigation_pathfinding_server_navigation_setup.gd) + [low_level_avoidance.gd](../scripts/navigation_pathfinding_low_level_avoidance.gd)), not one NavigationAgent node each.
+- Crowd RVO / carve / bake benchmark samples → [crowd_agent_3d.gd](../scripts/navigation_pathfinding_crowd_agent_3d.gd), [nav_mesh_carver_3d.gd](../scripts/navigation_pathfinding_nav_mesh_carver_3d.gd), [navmesh_profiler.gd](../scripts/navigation_pathfinding_navmesh_profiler.gd)
+
+## Deep dives (on demand)
+
+- 2D/3D chase, patrol, avoidance signals → [agent-movement-patterns.md](navigation-pathfinding-agent-movement-patterns.md)
+- Server RVO crowds, projected carving, bake benchmarks → [expert-nav-architectures.md](navigation-pathfinding-expert-nav-architectures.md)
 
 ## Reference
 

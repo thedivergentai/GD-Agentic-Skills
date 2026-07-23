@@ -51,6 +51,15 @@ Managing the serialization of character progression to `.tres` files.
 ### [level_up_system.gd](scripts/level_up_system.gd)
 Logic for awarding experience and triggering level-up benefits.
 
+### [rpg_stat_resource.gd](scripts/rpg_stat_resource.gd)
+Capped base stat Resource with setter clamps + `stat_changed` signal.
+
+### [derived_stat_resource.gd](scripts/derived_stat_resource.gd)
+Derived stat that recalculates when base stat dependencies change.
+
+### [equipment_tooltip_helper.gd](scripts/equipment_tooltip_helper.gd)
+BBCode equipment comparison tooltips (`_make_custom_tooltip`).
+
 ## NEVER Do in RPG Stats
 
 - **NEVER use integers for percentages** — Always use `float` (0.0–1.0 or 0.0–100.0) to avoid truncation.
@@ -110,9 +119,13 @@ Stacking / refresh / unique-vs-stackable behavior: **MANDATORY** [stat_modifier_
 
 ## Elite reminders (script-backed)
 
-1. **Caps** — Clamp on setters; never allow overflow attributes.
-2. **Dependency graphs** — Derived stats recalc from signals when bases change (reactive component), never `_process`.
-3. **Equipment** — Register/remove modifier IDs on equip/unequip via the stacking API (peer inventory skill for item ownership).
+1. **Caps** — [rpg_stat_resource.gd](scripts/rpg_stat_resource.gd); clamp on setters; never allow overflow attributes.
+2. **Dependency graphs** — [derived_stat_resource.gd](scripts/derived_stat_resource.gd); derived stats recalc from signals when bases change — never `_process`.
+3. **Equipment** — Register/remove modifier IDs on equip/unequip via stacking API; tooltips via [equipment_tooltip_helper.gd](scripts/equipment_tooltip_helper.gd).
+
+## Deep dive (load on demand)
+
+Equipment hooks, damage formula, skill gates, elite cap/derived/tooltip patterns — [references/elite-stat-patterns.md](references/elite-stat-patterns.md).
 
 ## Reference
 

@@ -95,6 +95,12 @@ Custom shader integration helpers for particle materials.
 - Trails: `local_coords = false` or the trail sticks to the projectile.
 - Do not invent explosion/smoke/sparkle material recipes here — Official Docs cover material UI; this skill owns lifecycle, coords, LOD, and swarm routing.
 
+## Deep dives (on demand)
+
+- Collision sub-emitters, fluid shaders, VFX pools → [expert-vfx-patterns.md](references/expert-vfx-patterns.md)
+- VFX pool recycle pattern → [vfx_pool_manager.gd](scripts/vfx_pool_manager.gd)
+- **WHY** GPU particles cannot drive per-collision SFX — CPU has no collision callbacks; sub-emitters or looping impact beds only.
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

@@ -130,6 +130,16 @@ Modern games must handle simultaneous Controller and Keyboard/Mouse input smooth
 - **Combo sequences** — **MANDATORY**: [combo_validator.gd](scripts/combo_validator.gd); fighting fiction stays in `godot-genre-fighting`.
 - **Deterministic replay** — **MANDATORY**: [input_replay_buffer.gd](scripts/input_replay_buffer.gd).
 
+
+## Deep recipes (on demand)
+
+| Topic | Reference / script |
+|-------|-------------------|
+| Buffering / coyote / MP sync | [input-event-processing.md](references/input-event-processing.md) |
+| Virtual injection / combos / replay | [expert-input-extensions.md](references/expert-input-extensions.md) |
+| InputMap & device IDs | [inputmap-best-practices.md](references/inputmap-best-practices.md) |
+
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

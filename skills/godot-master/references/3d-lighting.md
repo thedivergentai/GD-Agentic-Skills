@@ -88,6 +88,12 @@ Performance-aware ReflectionProbe handling using manual 'Update Once' triggers f
 ### [spotlight_projector_setup.gd](../scripts/3d_lighting_spotlight_projector_setup.gd)
 High-detail lighting using Projector textures to fake complex shadow patterns (grates, glass ripples).
 
+### [light_volume_trigger.gd](../scripts/3d_lighting_light_volume_trigger.gd)
+Area3D-driven camera `Environment` blend for cave/desert transitions (duplicate env resource; tween exposure/ambient).
+
+### [lighting_quality_manager.gd](../scripts/3d_lighting_lighting_quality_manager.gd)
+Runtime `RenderingServer` profile: half-res SDFGI, shadow atlas size, volumetric fog density.
+
 ---
 
 ## DirectionalLight3D (Sun/Moon)
@@ -353,6 +359,12 @@ func apply_low_quality_profile(env_rid: RID) -> void:
     RenderingServer.environment_set_volumetric_fog(env_rid, false, 0.01, Color.WHITE, Color.BLACK, 0.0, 0.2, 64.0, 2.0, 1.0, true, 0.9, 0.0, 1.0)
 ```
 
+## Deep recipes (on demand)
+
+| Topic | Reference / script |
+|-------|-------------------|
+| VoxelGI / SDFGI / LightmapGI setup | [gi-and-bake-recipes.md](3d-lighting-gi-and-bake-recipes.md) |
+| Sky / fog / HDR environment | [environment-and-fog.md](3d-lighting-environment-and-fog.md) |
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

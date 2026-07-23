@@ -74,6 +74,9 @@ Expert blueprint for action RPGs emphasizing real-time combat, character builds,
 - [high_speed_aggro_broadcaster.gd](../scripts/genre_action_rpg_high_speed_aggro_broadcaster.gd) — Localized aggro via groups.
 - [threaded_inventory_loader.gd](../scripts/genre_action_rpg_threaded_inventory_loader.gd) — **MANDATORY** WorkerThreadPool inventory parse.
 - [typed_inventory_storage.gd](../scripts/genre_action_rpg_typed_inventory_storage.gd) — Typed item dictionary storage.
+- [combat_damage_calculator.gd](../scripts/genre_action_rpg_combat_damage_calculator.gd) — diminishing-returns damage + crit roll.
+- [loot_generator.gd](../scripts/genre_action_rpg_loot_generator.gd) — weighted rarity + affix count by tier.
+- [enemy_area_scaler.gd](../scripts/genre_action_rpg_enemy_area_scaler.gd) — area-level stat/XP multiplier at spawn.
 
 ---
 
@@ -108,6 +111,8 @@ Prefer Health/Hitbox child components (godot-composition) over `BaseEnemy` inher
 - Floaty combat → add hit recovery/stagger.
 - Identical loot → rarity beams + SFX (RenderingServer per-instance params OK).
 - Frame-rate combat → `_physics_process` only for hit resolve.
+
+> **MANDATORY** for combat/loot/equipment/area-scaling depth beyond decision trees: [arpg-subsystems-deep.md](genre-action-rpg-arpg-subsystems-deep.md). **Do NOT Load** for first-pass hitbox + stats wiring — use scripts above.
 
 ## Advanced ARPG Meta-Systems
 

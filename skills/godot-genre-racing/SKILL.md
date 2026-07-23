@@ -116,6 +116,28 @@ Do **not** paste inline DriftBoost/Ghost samples — extend the scripts:
 2. **Tire-Smoke / skids** — **MANDATORY**: [skid_mark_emitter.gd](scripts/skid_mark_emitter.gd) gated by `get_skidinfo()`; pair with [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — never spawn particles every physics frame.
 3. **Replay-Ghost binary** — **MANDATORY**: [ghost_recorder.gd](scripts/ghost_recorder.gd) for transform serialization; persist via [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md).
 
+> **MANDATORY** for depth beyond decision trees and script catalog: [racing-systems-deep.md](references/racing-systems-deep.md). **Do NOT Load** on first-pass wiring — use bundled `scripts/` first.
+
+## Architecture Overview
+
+### 1. Vehicle Controller
+Handling the physics of movement.
+
+```gdscript
+
+## Godot-Specific Tips
+
+*   **VehicleBody3D**: Godot's built-in node for vehicle physics. It's decent for arcade, but for sims, you might want a custom RayCast suspension.
+*   **Path3D / PathFollow3D**: Excellent for simple AI traffic or fixed-path racers (on-rails).
+*   **AudioBus**: Use the `Doppler` effect on the AudioListener for realistic passing sounds.
+*   **SubViewport**: Use for the rear-view mirror or minimap texture.
+
+## Common Pitfalls
+
+1.  **Floaty Physics**: Cars feel like they are on ice. **Fix**: Increase gravity scale (2x-3x) and adjust wheel friction. Realism < Fun.
+2.  **Bad Camera**: Camera is rigidly attached to the car. **Fix**: Use a `Marker3D` with a `lerp` script to follow the car smoothly with a slight delay.
+3.  **Tunnel Vision**: No sense of speed. **Fix**: Increase FOV as speed increases, add camera shake, wind lines, and motion blur.
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

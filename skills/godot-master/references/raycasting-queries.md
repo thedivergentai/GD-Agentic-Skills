@@ -101,62 +101,17 @@ func screen_point_to_ray():
 
 ---
 
-## Expert Raycasting & Query Architectures
+## Expert WHY (query timing & LOS)
 
-### 1. NavMesh-Ray-Constrain (Line-of-Sight via NavMesh)
-Standard physics raycasts check against collision shapes, but if using `NavigationObstacle3D` with `carve_navigation_mesh` enabled, the NavMesh dynamically adapts. To check LOS strictly against the NavMesh (avoiding carved holes), query an optimized path between points. If the result contains exactly 2 points, it's a direct, unobstructed line.
+- **Physics step only** — `direct_space_state` in `_physics_process`, not `_process`.
+- **Self-hit** — `query.exclude = [get_rid()]` on rays from character center.
+- **NavMesh LOS** — physics ray ≠ carved nav hole; `path.size() == 2` on `NavigationServer3D.map_get_path` for strict mesh LOS (see deep dive).
+- **Surface types** — `collider.get_meta(&"surface_type")` beats class/group checks for decals/footsteps.
+- **Compute GPU rays** — out of scope; not a drop-in for gameplay `intersect_ray`.
 
-```gdscript
-class_name NavMeshRayValidator extends Node
-## Validates line-of-sight using NavigationServer3D path optimization.
+## Deep dive (load on demand)
 
-@export var agent: NavigationAgent3D
-
-## Returns true if there is a direct, unobstructed line-of-sight on the NavMesh.
-func has_navmesh_line_of_sight(target_position: Vector3) -> bool:
-    if not is_instance_valid(agent): return false
-        
-    var map: RID = agent.get_navigation_map()
-    var start_position: Vector3 = agent.global_position
-    
-    # Query an optimized path using the funnel algorithm.
-    var path: PackedVector3Array = NavigationServer3D.map_get_path(
-        map, start_position, target_position, true, agent.navigation_layers
-    )
-    
-    # A direct line of sight will yield exactly two points: start and end.
-    return path.size() == 2
-```
-
-### 2. Collision-Object-Metadata (Decoupled Surface Types)
-Instead of checking groups or names on `intersect_ray()` results, utilize Godot's built-in `Object` metadata. Attach arbitrary `Variant` data (e.g., "Stone", "Metal") to `StaticBody3D` nodes. This decouples the physics query from specific class implementations and allows for highly extensible surface interaction logic.
-
-```gdscript
-class_name SurfaceRaycaster extends Node3D
-## Extracts surface metadata from raycast colliders for decoupled logic.
-
-func perform_surface_raycast() -> void:
-    var space_state := get_world_3d().direct_space_state
-    var query := PhysicsRayQueryParameters3D.create(global_position, target_pos)
-    var result: Dictionary = space_state.intersect_ray(query)
-    
-    if not result.is_empty():
-        var collider: Object = result.collider
-        var surface: StringName = &"default"
-        
-        # Check for explicitly assigned surface metadata.
-        if collider.has_meta(&"surface_type"):
-            surface = collider.get_meta(&"surface_type")
-            
-        print_rich("[color=cyan]Hit surface: %s[/color]" % surface)
-```
-
-### 3. Compute Path — Demoted (not a physics-query substitute)
-GPU compute raycasts are **out of scope** for this skill’s production recipes. Godot’s physics BVH lives on the CPU; there is **no** shipped `compute_raycast` shader or BVH→GPU serializer here.
-
-- **Default**: stay on DirectSpaceState / ShapeCast / masks / RID exclude (table above).
-- **If you truly need 10k+ custom rays**: treat it as a rendering research spike — you must own triangle buffers, acceleration structure rebuilds, and sync stalls yourself. Do **not** assume `RenderingDevice` replaces `intersect_ray` for gameplay hit detection.
-- Escalate extreme CPU query counts to `godot-performance-optimization` (batching, C++/GDExtension) before inventing a compute pipeline.
+NavMesh LOS validator, surface metadata, picking baseline, tunneling notes — [references/query-elite-patterns.md](raycasting-queries-query-elite-patterns.md).
 
 ## Reference
 

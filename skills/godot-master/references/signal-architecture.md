@@ -88,6 +88,15 @@ Prefer named methods or [disconnect_ghost_signals.gd](../scripts/signal_architec
 - Capturing lambdas: always manual `disconnect` (see above).
 - One-shot auto-remove after fire: `CONNECT_ONE_SHOT`.
 
+
+## Deep recipes (on demand)
+
+> LLM-ignorance rule: if a general agent would not know it before reading, it lives here or in `scripts/` — never delete, only move.
+
+| Topic | Reference |
+|-------|-----------|
+| Patterns 1–7 + gotchas | [implementation-patterns.md](signal-architecture-implementation-patterns.md) |
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

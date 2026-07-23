@@ -331,6 +331,18 @@ Use Alpha Scissor for performant dissolves (keeps shadows, avoids alpha sort). *
 
 Mesh LOD is automatic; material shading is not. **MANDATORY** [`material_batcher.gd`](../scripts/3d_materials_material_batcher.gd) `setup_lod_materials()` for visibility-range swaps, feature strip on distant materials, and Pixel Dither distance fade (not alpha blend).
 
+## Expert insights (WHY — keep in body)
+
+- **ORM packing** — WHY: three separate maps triple sampler slots and break batching. One RGB = AO/Roughness/Metallic ([pbr_orm_packer.gd](../scripts/3d_materials_pbr_orm_packer.gd)).
+- **Metallic 0.5** — WHY: PBR metals are 0 or 1; mid values are only for dirt/rust transitions, not default paint.
+- **Shared material mutation** — WHY: tweaking a shared `.tres` affects every instance. `duplicate(true)` or Local To Scene before runtime FX ([material_fx.gd](../scripts/3d_materials_material_fx.gd)).
+- **Pixel Dither LOD fade** — WHY: alpha-blend distance fade keeps fragments in the transparent pipeline; dither stays opaque ([material_batcher.gd](../scripts/3d_materials_material_batcher.gd)).
+
+## Deep recipes (on demand)
+
+| Topic | Reference / script |
+|-------|-------------------|
+| Metal/dielectric presets / SSS / clearcoat | [pbr-workflows.md](3d-materials-pbr-workflows.md) |
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API;

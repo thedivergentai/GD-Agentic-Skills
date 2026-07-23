@@ -58,6 +58,8 @@ Expert mixing, spatial, pooling, and interactive-music patterns for Godot's audi
 | Room reverb zones | [audio_environmental_reverb_zone.gd](../scripts/audio_systems_audio_environmental_reverb_zone.gd) |
 | Vertical intensity stems | **MANDATORY** [audio_interactive_music_manager.gd](../scripts/audio_systems_audio_interactive_music_manager.gd) |
 | Horizontal clip graph | [interactive_music_graph.gd](../scripts/audio_systems_interactive_music_graph.gd) + [references/interactive-music-deep-dive.md](audio-systems-interactive-music-deep-dive.md) |
+| Bus / pool WHY | [references/audio-pooling-and-buses.md](audio-systems-audio-pooling-and-buses.md) |
+| Crossfade / BPM / duck | [references/music-transitions.md](audio-systems-music-transitions.md) |
 | Adaptive music player wrapper | [audio_adaptive_music_player.gd](../scripts/audio_systems_audio_adaptive_music_player.gd) |
 | Autoload SFX entry | [audio_manager.gd](../scripts/audio_systems_audio_manager.gd) |
 | Footstep surface banks | [audio_footstep_surface_selector.gd](../scripts/audio_systems_audio_footstep_surface_selector.gd) |
@@ -115,19 +117,24 @@ Spectrum analyzer visualization helper.
 ### [subtitle_sync_system.gd](../scripts/audio_systems_subtitle_sync_system.gd)
 Playback-position-accurate subtitle sync (latency-compensated).
 
-## Expert Audio Patterns (pointers only)
+## Expert Audio Patterns
+
+### Pooling (WHY)
+Spawning `AudioStreamPlayer.new()` per footstep at 60 FPS ≈ **3600 nodes/minute** and frame spikes. **MANDATORY** [audio_voice_pool_manager.gd](../scripts/audio_systems_audio_voice_pool_manager.gd). Cap duplicate SFX with [audio_voice_limiter_manager.gd](../scripts/audio_systems_audio_voice_limiter_manager.gd) — 50 same-frame explosions clip the mix.
+
+Deep dive → [audio-pooling-and-buses.md](audio-systems-audio-pooling-and-buses.md).
 
 ### Bus architecture
-Master = final limiter only. Gameplay → Music / SFX / UI / Voice sub-buses. Set volumes with `linear_to_db()` / `db_to_linear()`.
+Master = final limiter only. Gameplay → Music / SFX / UI / Voice. `set_bus_volume_db(0.5)` is wrong — use `linear_to_db()` for sliders.
+
+### Music transitions
+Never hard-cut tracks — 0.5–2.0s Tween crossfade or BPM-aligned handoff. Vertical/horizontal adaptive scores → [interactive-music-deep-dive.md](audio-systems-interactive-music-deep-dive.md), [music-transitions.md](audio-systems-music-transitions.md).
 
 ### Occlusion muffling
-Ray source→listener; blocked → Tween `attenuation_filter_cutoff_hz` down. Prefer [audio_occlusion_raycast.gd](../scripts/audio_systems_audio_occlusion_raycast.gd).
+Ray source→listener; blocked → Tween `attenuation_filter_cutoff_hz` down — [audio_occlusion_raycast.gd](../scripts/audio_systems_audio_occlusion_raycast.gd).
 
-### Interactive music
-Horizontal (`AudioStreamInteractive`) vs vertical (`AudioStreamSynchronized`) — deep-dive in [references/interactive-music-deep-dive.md](audio-systems-interactive-music-deep-dive.md). Load scripts above; do not paste stem managers into scenes from memory.
-
-### Subtitle sync formula
-`pos = get_playback_position() + AudioServer.get_time_since_last_mix() - AudioServer.get_output_latency()` — implemented in [subtitle_sync_system.gd](../scripts/audio_systems_subtitle_sync_system.gd).
+### Subtitle sync (no timer drift)
+`pos = get_playback_position() + AudioServer.get_time_since_last_mix() - AudioServer.get_output_latency()` — [subtitle_sync_system.gd](../scripts/audio_systems_subtitle_sync_system.gd).
 
 ## Reference
 

@@ -112,9 +112,13 @@ window/handheld/orientation="landscape"
 
 ## Expert notes (script-first)
 
-- Android Back: disable `quit_on_go_back`, handle `NOTIFICATION_WM_GO_BACK_REQUEST` in a thin Autoload stack popper.
-- Haptics: `haptic_pattern_generator.gd` + export `VIBRATE` permission.
-- Shader hitch: pre-instance hidden effects on Mobile/Forward+; one visible Compatibility frame — prefer `godot-shaders-basics` for deep precompile recipes.
+- Android Back: disable `quit_on_go_back`, handle `NOTIFICATION_WM_GO_BACK_REQUEST` in [mobile_navigation_manager.gd](../scripts/platform_mobile_mobile_navigation_manager.gd).
+- Haptics: [haptic_pattern_generator.gd](../scripts/platform_mobile_haptic_pattern_generator.gd) / [mobile_haptics.gd](../scripts/platform_mobile_mobile_haptics.gd) + export `VIBRATE` permission.
+- Shader hitch: [mobile_shader_precompiler.gd](../scripts/platform_mobile_mobile_shader_precompiler.gd); prefer `godot-shaders-basics` for deep precompile recipes.
+
+## Deep dives (on demand)
+
+- Touch/joystick, safe area, Android back, haptics, shader precompile → [mobile-touch-and-expert.md](platform-mobile-mobile-touch-and-expert.md)
 
 ## Reference
 

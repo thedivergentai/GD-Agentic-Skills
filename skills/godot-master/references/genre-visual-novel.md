@@ -100,6 +100,16 @@ func make_choice(choice_id: StringName) -> void:
 3. **Missing QoL** — Auto / Skip / Backlog / Save are mandatory genre features.
 4. **Broken rollback** — Mutating flags before snapshot makes undo lie.
 
+
+## Deep recipes (on demand)
+
+| Topic | Reference / script |
+|-------|-------------------|
+| Story driver & typewriter UI | [architecture-overview.md](genre-visual-novel-architecture-overview.md) |
+| Branching / rollback / focus | [key-mechanics.md](genre-visual-novel-key-mechanics.md) |
+| RichText / async loads | [godot-tips.md](genre-visual-novel-godot-tips.md) |
+
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

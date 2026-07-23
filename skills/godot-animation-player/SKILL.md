@@ -28,7 +28,7 @@ Timeline-based keyframe animation: track choice, RESET, root motion, libraries �
 
 ## Available Scripts (MANDATORY triggers)
 
-> Open the matching script **before** implementing that pattern. Edge-case recipes live in [references/edge-cases.md](references/edge-cases.md) — keep this body lean.
+> Open the matching script **before** implementing that pattern. Deep recipes: [track-authoring.md](references/track-authoring.md), [root-motion-and-sequences.md](references/root-motion-and-sequences.md), [edge-cases.md](references/edge-cases.md).
 
 | Need | Script |
 |---|---|
@@ -46,6 +46,14 @@ Timeline-based keyframe animation: track choice, RESET, root motion, libraries �
 | Code-built Animation resources | [programmatic_anim.gd](scripts/programmatic_anim.gd) |
 | Alt audio-track setup notes | [audio_sync_tracks.gd](scripts/audio_sync_tracks.gd) |
 
+## Critical WHY (keep in body)
+
+- **`CALL_MODE_CONTINUOUS`** invokes the method **every frame** across the key span — one-shot hitboxes/VFX need **`CALL_MODE_DISCRETE`**.
+- Animating embedded **sub-resource** properties (e.g. `material.albedo_color`) duplicates resources into the scene — use instanced materials / `shader_parameter/*` tracks.
+- **`animation_finished`** does not fire on looping clips — use `animation_looped` or poll `current_animation`.
+- Mutating a playing **`AnimationLibrary`** crashes or leaves bad transforms — stop or await finished before swap.
+- **`speed_scale`** drifts for rhythm/multiplayer — shared-clock **`seek(t, true)`** for long sync.
+
 ## Track decision matrix
 
 | Track | Use when | Avoid when |
@@ -55,15 +63,20 @@ Timeline-based keyframe animation: track choice, RESET, root motion, libraries �
 | **Audio** | Footsteps / VO locked to frames | Loose `AudioStreamPlayer.play()` drift |
 | **Bezier** | Custom easing curves sampled at runtime | Simple linear fades |
 
+Track authoring samples → [track-authoring.md](references/track-authoring.md).
+
 ## Root motion (physics)
 
-`CharacterBody3D` + `Skeleton3D` + `AnimationPlayer`: extract with `get_root_motion_position()` / rotation on the physics tick — see [root_motion_physics_sync.gd](scripts/root_motion_physics_sync.gd). Do not leave walk displacement only on bones.
+`CharacterBody3D` + `Skeleton3D` + `AnimationPlayer`: extract with `get_root_motion_position()` / rotation on the **physics** tick — [root_motion_physics_sync.gd](scripts/root_motion_physics_sync.gd). Walk cycles that only move bones leave the body collider behind.
 
 ## Sequences, blends, RESET
 
 - Chain: `animation_set_next` / `queue` / [animation_sequencer.gd](scripts/animation_sequencer.gd).
-- Blend times for walk↔run polish; default blend on the player when shared.
+- Blend times for walk↔run polish; `play("run", -1, 1.0, 0.5)` or `set_default_blend_time`.
 - Always author a **RESET** clip with defaults; enable Reset on Save when editing.
+- Reverse playback: `play("clip", -1, -1.0)` for doors/cinematic rewind.
+
+Full recipes → [root-motion-and-sequences.md](references/root-motion-and-sequences.md).
 
 ## AnimationPlayer vs Tween
 
@@ -72,11 +85,14 @@ Timeline-based keyframe animation: track choice, RESET, root motion, libraries �
 | Timeline / many properties / reusable | **AnimationPlayer** |
 | One-shot runtime / interruptible | **Tween** ([godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md)) |
 
-## Expert pointers (scripts, not dumps)
+## Expert architecture (scripts)
 
-- Shared libraries: [runtime_anim_lib_swapper.gd](scripts/runtime_anim_lib_swapper.gd) — `add_animation_library` + `library/anim` play paths.
-- Decoupled timeline events: method track → small signaler node → gameplay listeners ([method_track_logic.gd](scripts/method_track_logic.gd)).
-- Budget: [active_animation_culler.gd](scripts/active_animation_culler.gd) or manual `advance()` when off-screen.
+| Pattern | Script | WHY |
+|---|---|---|
+| Shared humanoid libraries | [runtime_anim_lib_swapper.gd](scripts/runtime_anim_lib_swapper.gd) | One library, many models — play `lib/clip` |
+| Decoupled timeline events | [method_track_logic.gd](scripts/method_track_logic.gd) | Method track → signaler → gameplay listeners |
+| Off-screen CPU budget | [active_animation_culler.gd](scripts/active_animation_culler.gd) | `active = false` or manual `advance()` |
+| Code-built clips | [programmatic_anim.gd](scripts/programmatic_anim.gd) | Dynamic targets not in FBX |
 
 ## Reference
 

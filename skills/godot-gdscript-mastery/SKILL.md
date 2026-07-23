@@ -105,6 +105,12 @@ Expert guidance for writing performant, maintainable GDScript — Godot-landmine
 - Toggle **Access as Scene Unique Name** and read via `%Name` for critical UI/nodes.
 - Script layout order: `extends` → `class_name` → signals/enums/consts → exports/onready → lifecycle → public → `_private`.
 
+## Expert knowledge (on demand)
+
+> **LLM-ignorance rule:** If a general agent would not know it before reading, load the reference — never delete expert deltas.
+
+- [gdscript-core-directives.md](references/gdscript-core-directives.md) — restored baseline pedagogy (architecture, WHY, implementation depth)
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

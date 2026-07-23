@@ -99,6 +99,13 @@ UPNP port mapping for listen-server / P2P hosts.
 5. Add prediction / lag compensation scripts only for the genres that need them.
 6. Validate with **latency-testing** reference + `net_latency_simulator.gd` at ~150 ms RTT.
 
+## Expert insights (WHY — keep in body)
+
+- **Client prediction** — WHY: without local sim, RTT doubles perceived input lag. Replay buffered inputs after server correction ([net_prediction_reconciliation.gd](../scripts/adapt_single_to_multiplayer_net_prediction_reconciliation.gd)).
+- **Interpolation buffer** — WHY: raw sync packets jitter; lerp between snapshots with ~100 ms delay ([net_snapshot_interpolation.gd](../scripts/adapt_single_to_multiplayer_net_snapshot_interpolation.gd)).
+- **Hit rewind** — WHY: clients fire at past world state; server rewinds RIDs via `PhysicsServer3D` before raycast ([net_lag_compensation.gd](../scripts/adapt_single_to_multiplayer_net_lag_compensation.gd)).
+- **Input send rate** — WHY: 60 Hz input RPCs saturate uplink; batch at 20–30 Hz with significance checks ([net_delta_compression_sync.gd](../scripts/adapt_single_to_multiplayer_net_delta_compression_sync.gd)).
+
 ## Decision Tree: Which Architecture?
 
 | Factor | Authoritative Server | P2P Lockstep |
@@ -126,6 +133,12 @@ Visualizing the packet timeline is critical for debugging jitter. Propose an ove
 - **Buffer Health**: A visualization of the interpolation jitter buffer size.
 - **RTT (Round Trip Time)**: Real-time graph of latency spikes.
 
+## Deep recipes (on demand)
+
+| Topic | Reference / script |
+|-------|-------------------|
+| Prediction / recon / interpolation | [prediction-and-reconciliation.md](adapt-single-to-multiplayer-prediction-and-reconciliation.md) |
+| Authority / anti-cheat / bandwidth | [authority-and-security.md](adapt-single-to-multiplayer-authority-and-security.md) |
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API;

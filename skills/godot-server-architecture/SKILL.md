@@ -103,6 +103,15 @@ func _visibility_filter(for_peer: int, node: Node) -> bool:
 ### Health metrics
 Watch host FPS, static memory (RID leaks), and orphan counts via [server_health_exporter.gd](scripts/server_health_exporter.gd).
 
+
+## Deep recipes (on demand)
+
+> LLM-ignorance rule: if a general agent would not know it before reading, it lives here or in `scripts/` — never delete, only move.
+
+| Topic | Reference |
+|-------|-----------|
+| RID canvas/physics cookbook | [rendering-physics-server-cookbook.md](references/rendering-physics-server-cookbook.md) |
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

@@ -149,6 +149,15 @@ func _process_custom_fx(char_fx: CharFXTransform):
     return true
 ```
 
+
+## Deep recipes (on demand)
+
+> LLM-ignorance rule: if a general agent would not know it before reading, it lives here or in `scripts/` — never delete, only move.
+
+| Topic | Reference |
+|-------|-----------|
+| Tag catalog + 4.7 img units | [bbcode-tag-catalog.md](references/bbcode-tag-catalog.md) |
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

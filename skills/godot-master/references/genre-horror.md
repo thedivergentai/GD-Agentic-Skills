@@ -143,6 +143,12 @@ Bus LPF / volume from fear — **MANDATORY**: [sanity_manager.gd](../scripts/gen
 ### 5. Safe-Room Multithreaded Save
 Threaded checkpoint I/O — **MANDATORY**: peer [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) (Thread/Mutex / WorkerThreadPool). Never sync `FileAccess` on the main thread in a safe room.
 
+## Expert knowledge (on demand)
+
+> **LLM-ignorance rule:** If a general agent would not know it before reading, load the reference — never delete expert deltas.
+
+- [expert-horror-patterns.md](genre-horror-expert-horror-patterns.md) — restored baseline pedagogy (architecture, WHY, implementation depth)
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

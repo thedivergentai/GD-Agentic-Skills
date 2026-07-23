@@ -95,6 +95,20 @@ Do **not** re-inline TycoonEconomy / SimulationTime / Worker tutorials — load 
 | `_process` sim step | Physics accumulator tick manager |
 | UI every frame | Signal on resource_changed only |
 
+
+## Deep recipes (on demand)
+
+| Topic | Reference / script |
+|-------|-------------------|
+| Economy & wallets | [economy-design.md](references/economy-design.md) + [tycoon_economy.gd](scripts/tycoon_economy.gd) |
+| Sim clock / speed | [time-system.md](references/time-system.md) + [sim_tick_manager.gd](scripts/sim_tick_manager.gd) |
+| Workers & facilities | [entity-management.md](references/entity-management.md) + [npc_schedule_agent.gd](scripts/npc_schedule_agent.gd) |
+| Demand & customers | [customer-demand.md](references/customer-demand.md) |
+| Feedback & dashboards | [feedback-systems.md](references/feedback-systems.md) |
+| Unlock progression | [progression-unlocks.md](references/progression-unlocks.md) |
+| Production graphs / CSV bake | [elite-technical-patterns.md](references/elite-technical-patterns.md) + [simulation_patterns.gd](scripts/simulation_patterns.gd) |
+
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

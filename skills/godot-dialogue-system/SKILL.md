@@ -59,6 +59,9 @@ Data-driven dialogue routing — not beginner typewriter tutorials.
 ### Alternate engines (load only if decision tree says so)
 - [dialogue_engine.gd](scripts/dialogue_engine.gd) — JSON graphs + BBCode `[trigger:]` tags
 - [dialogue_manager.gd](scripts/dialogue_manager.gd) — alternate data-driven walker
+- [dialogue_graph_editor.gd](scripts/dialogue_graph_editor.gd) — `@tool` GraphEdit auditor (editor-only)
+- [dialogue_lipsync.gd](scripts/dialogue_lipsync.gd) — TTS boundary lipsync helper
+- [dialogue_stat_logger.gd](scripts/dialogue_stat_logger.gd) — choice analytics Logger
 
 ## Typewriter Contract (skip-safe)
 
@@ -66,9 +69,11 @@ Use [typebox_effect.gd](scripts/typebox_effect.gd): set full `text`, tween `visi
 
 ## Elite Deltas
 
-- **GraphEdit auditor:** `@tool` GraphEdit for dependency visualization; export to Resource/JSON for runtime.
-- **Audio-driven lines:** drive reveal from voice length / lipsync clocks; still allow skip.
-- **Analytics:** log node IDs + choice IDs for funnel tuning (no PII).
+- **GraphEdit auditor:** [dialogue_graph_editor.gd](scripts/dialogue_graph_editor.gd) (`@tool`) — export to Resource/JSON for runtime.
+- **Audio-driven lines:** [dialogue_lipsync.gd](scripts/dialogue_lipsync.gd) — TTS boundaries; still allow skip.
+- **Analytics:** [dialogue_stat_logger.gd](scripts/dialogue_stat_logger.gd) — `[CHOICE]` log prefix; no PII.
+
+> **MANDATORY** for GraphEdit tooling, TTS/lipsync, analytics, and moved inline manager/UI tutorials: [elite-dialogue-patterns.md](references/elite-dialogue-patterns.md). **Do NOT Load** for Resource Autoload golden path only.
 
 ## Reference
 

@@ -98,6 +98,11 @@ In-game ray hit/normal debug draw.
 - SoftBody total mass default is 1 kg under Jolt — retune stiffness/damping after upgrade.
 - Ragdoll/vehicle/soft samples live in scripts above — do not expand Create Physical Skeleton editor tutorials in this body.
 
+## Deep dives (on demand)
+
+- Hover ray constraints, Jolt suspension tuning, ragdoll influence blend → [expert-3d-constraints.md](physics-3d-expert-3d-constraints.md)
+- Scripts: [hover_constraint_3d.gd](../scripts/physics_3d_hover_constraint_3d.gd), [ragdoll_blender.gd](../scripts/physics_3d_ragdoll_blender.gd)
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API;

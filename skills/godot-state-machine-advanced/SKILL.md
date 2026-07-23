@@ -147,6 +147,15 @@ func _physics_process(_d: float) -> void:
         transition_to(best_state.name)
 ```
 
+
+## Deep recipes (on demand)
+
+> LLM-ignorance rule: if a general agent would not know it before reading, it lives here or in `scripts/` — never delete, only move.
+
+| Topic | Reference |
+|-------|-----------|
+| State contract + routing | [hsm-implementation-cookbook.md](references/hsm-implementation-cookbook.md) |
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

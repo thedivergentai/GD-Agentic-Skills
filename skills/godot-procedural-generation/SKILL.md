@@ -113,6 +113,10 @@ Don't generate your dungeon geometry first. Build a logical graph using `AStar2D
 - **Edges**: Represent "Hallways" or "Doors".
 - **Benefit**: You can easily run validation (is every room reachable?) before spawning a single mesh.
 
+## Deep dive (load on demand)
+
+Drunkard walk, noise biomes, BSP, loot tables, WFC loops — [references/algorithm-recipes.md](references/algorithm-recipes.md).
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

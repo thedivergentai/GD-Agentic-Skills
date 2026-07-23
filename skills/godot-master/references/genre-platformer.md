@@ -69,6 +69,9 @@ Expert blueprint for platformers emphasizing movement feel, level design, and pl
 - [fast_projectile_ccd.gd](../scripts/genre_platformer_fast_projectile_ccd.gd) — CCD to stop tunneling.
 - [platformer_animation_sync.gd](../scripts/genre_platformer_platformer_animation_sync.gd) — Boolean-safe AnimationTree sync.
 - [platformer_camera.gd](../scripts/genre_platformer_platformer_camera.gd) — Look-ahead / smoothing (pair with `godot-camera-systems`).
+- [game_feel_helper.gd](../scripts/genre_platformer_game_feel_helper.gd) — Tween squash/stretch on visual node (pivot at feet).
+- [speed_trail.gd](../scripts/genre_platformer_speed_trail.gd) — GPUParticles trail toggle for dash/run juice.
+- [checkpoint.gd](../scripts/genre_platformer_checkpoint.gd) — Area2D checkpoint id + SaveManager position hook.
 
 ---
 
@@ -144,6 +147,24 @@ Use [platformer_camera.gd](../scripts/genre_platformer_platformer_camera.gd) / p
 - [ ] SFX for jump/land/wall-slide
 - [ ] Checkpoint visual/audio feedback
 - [ ] Assist mode / remappable controls
+
+> **MANDATORY** for depth beyond decision trees and script catalog: [platformer-movement-deep.md](genre-platformer-platformer-movement-deep.md). **Do NOT Load** on first-pass wiring — use bundled `scripts/` first.
+
+## Godot-Specific Tips
+
+1. **CharacterBody2D vs RigidBody2D**: Always use `CharacterBody2D` for platformer characters - precise control is essential
+2. **Physics tick rate**: Consider 120Hz physics for smoother movement
+3. **One-way platforms**: Use `set_collision_mask_value()` or dedicated collision layers
+4. **Wall detection**: Use `is_on_wall()` and `get_wall_normal()` for wall jumps
+
+---
+
+## Example Games for Reference
+
+- **Celeste** - Perfect game feel, assist mode accessibility
+- **Hollow Knight** - Combat + platforming integration
+- **Super Mario Bros. Wonder** - Visual polish and surprises
+- **Shovel Knight** - Retro mechanics with modern feel
 
 ## Reference
 

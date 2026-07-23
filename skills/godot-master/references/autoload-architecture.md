@@ -113,6 +113,19 @@ Use for lightweight `RefCounted` services; unregister in `_exit_tree` to avoid d
 ### 5. Health checks
 > **MANDATORY** in debug/CI: [singleton_health_check_test.gd](../scripts/autoload_architecture_singleton_health_check_test.gd) / [autoload_reference_checker.gd](../scripts/autoload_architecture_autoload_reference_checker.gd) — `assert` presence + `Engine.has_singleton` for registered services.
 
+## Expert insights (WHY — keep in body)
+
+- **Boot order** — WHY: Autoloads init top→bottom in Project Settings. Upper singletons must not call lower ones in `_ready()` ([autoload_init_order_diag.gd](../scripts/autoload_architecture_autoload_init_order_diag.gd)).
+- **Service locator vs Node Autoload** — WHY: `RefCounted` services avoid SceneTree overhead; register via `Engine.register_singleton` and unregister in `_exit_tree` ([service_locator.gd](../scripts/autoload_architecture_service_locator.gd)).
+- **Event bus vs state** — WHY: buses emit past-tense events; mutable run state belongs in [persistent_data_holder.gd](../scripts/autoload_architecture_persistent_data_holder.gd), not on the bus.
+- **`current_scene` in `_ready()`** — WHY: active scene may still be mounting; use `get_tree().root.get_child(-1)` or defer until scene ready.
+
+## Deep recipes (on demand)
+
+| Topic | Reference / script |
+|-------|-------------------|
+| Service locator / boot diagram / health checks | [expert-patterns.md](autoload-architecture-expert-patterns.md) |
+| Beginner registration only | [autoload-patterns.md](autoload-architecture-autoload-patterns.md) |
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

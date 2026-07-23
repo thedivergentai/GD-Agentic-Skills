@@ -102,6 +102,16 @@ Do **not** re-inline BigNumber/Offline tutorials in the skill body — load the 
 | `Time.get_ticks_msec` offline | Use UNIX via offline calculator |
 | UI every frame | Signal-throttle via economy bus / performance setup |
 
+## Expert knowledge (on demand)
+
+> **LLM-ignorance rule:** If a general agent would not know it before reading, load the reference — never delete expert deltas.
+
+- [expert-idle-clicker-patterns.md](references/expert-idle-clicker-patterns.md) — restored baseline pedagogy (architecture, WHY, implementation depth)
+- [big_real.gd](scripts/big_real.gd)
+- [offline_progression_manager.gd](scripts/offline_progression_manager.gd)
+- [click_juice_manager.gd](scripts/click_juice_manager.gd)
+
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

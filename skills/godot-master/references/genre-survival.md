@@ -118,7 +118,17 @@ Re-roll spawn points outside bed/`player_beds` radius before enabling threat spa
 
 ## Elite Technical Implementations
 
-> **MANDATORY** when starting base-building snap or biome/noise work: read [survival-elite-implementations.md](genre-survival-survival-elite-implementations.md). **Do NOT Load** for first-pass needs/inventory/crafting — use the script catalog above.
+> **MANDATORY** when starting base-building snap or biome/noise work: read [elite-technical-patterns.md](genre-survival-elite-technical-patterns.md). **Do NOT Load** for first-pass needs/inventory/crafting — use the script catalog above.
+
+
+## Deep recipes (on demand)
+
+| Topic | Reference / script |
+|-------|-------------------|
+| Needs / crafting / tools | [key-mechanics.md](genre-survival-key-mechanics.md) + bundled survival scripts |
+| Base build grid snap | [elite-technical-patterns.md](genre-survival-elite-technical-patterns.md) + [base_builder.gd](../scripts/genre_survival_base_builder.gd) |
+| Biome / spawn safety | [elite-technical-patterns.md](genre-survival-elite-technical-patterns.md) + [biome_generator.gd](../scripts/genre_survival_biome_generator.gd) |
+
 
 ## Reference
 

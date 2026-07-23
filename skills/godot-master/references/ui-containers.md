@@ -144,6 +144,15 @@ func add_card(texture: Texture2D):
 
 > Size-flag recipes: **MANDATORY** [container_size_flags_pro.gd](../scripts/ui_containers_container_size_flags_pro.gd) — do not paste beginner `SIZE_EXPAND_FILL` tutorials inline.
 
+
+## Deep recipes (on demand)
+
+> LLM-ignorance rule: if a general agent would not know it before reading, it lives here or in `scripts/` — never delete, only move.
+
+| Topic | Reference |
+|-------|-----------|
+| Anchors, flags, separation | [container-layout-recipes.md](ui-containers-container-layout-recipes.md) |
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

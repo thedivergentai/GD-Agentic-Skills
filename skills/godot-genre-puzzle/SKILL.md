@@ -105,6 +105,24 @@ Expert blueprint for puzzle games emphasizing clarity, experimentation, and "Aha
 | Win check in `_process` | Validate on move commit via state validator |
 | Float grid coords | `Vector2i` only |
 
+> **MANDATORY** for depth beyond decision trees and script catalog: [puzzle-elite-implementations.md](references/puzzle-elite-implementations.md). **Do NOT Load** on first-pass wiring — use bundled `scripts/` first.
+
+## Architecture Overview
+
+### 1. Command Pattern (Undo System)
+Essential for puzzle games. Never punish testing.
+
+```gdscript
+
+## Godot-Specific Tips
+
+*   **Tweens**: Use `create_tween()` for all grid movements. It feels much better than instant snapping.
+*   **Custom Resources**: Store level data (layout, starting positions) in `.tres` files for easy editing in the Inspector.
+*   **Signals**: Use signals like `state_changed` to update UI/Visuals decoupled from the logic.
+
+
+---
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API;

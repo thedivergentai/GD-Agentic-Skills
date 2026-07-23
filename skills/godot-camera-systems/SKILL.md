@@ -54,17 +54,22 @@ Smooth, stable 2D/3D cameras — scripts first; no Basics/Best-Practices tutoria
 - [split_screen_setup.gd](scripts/split_screen_setup.gd) — Local multi camera viewports.
 - [first_person_sway.gd](scripts/first_person_sway.gd) — FPS bob/sway on offset.
 - [juice_camera.gd](scripts/juice_camera.gd) — Combined juice helpers.
+- [framing_box_camera_2d.gd](scripts/framing_box_camera_2d.gd) — Multi-target AABB framing + zoom fit.
+- [occlusion_aware_camera_3d.gd](scripts/occlusion_aware_camera_3d.gd) — Raycast occlusion when SpringArm is insufficient.
+- [trauma_debugger.gd](scripts/trauma_debugger.gd) — On-screen trauma decay curve (debug builds).
 
 ## Expert Camera Architectures
 
 ### 1. Multi-target framing
-Compute AABB of targets → lerp camera to center → zoom/distance to fit with margin. Keep juice shake on `offset` only.
+Compute AABB of targets → lerp camera to center → zoom/distance to fit with margin. Keep juice shake on `offset` only. **MANDATORY:** [framing_box_camera_2d.gd](scripts/framing_box_camera_2d.gd).
 
 ### 2. Occlusion (3D)
-Prefer `SpringArm3D` with world collision mask; custom rigs use `intersect_ray` between ideal camera pos and target (see peer `godot-raycasting-queries`).
+Prefer `SpringArm3D` with world collision mask; custom rigs use `intersect_ray` between ideal camera pos and target — [occlusion_aware_camera_3d.gd](scripts/occlusion_aware_camera_3d.gd) (peer `godot-raycasting-queries`).
 
 ### 3. Trauma audit
-Plot trauma decay (debug draw) while tuning [camera_shake_trauma_pro.gd](scripts/camera_shake_trauma_pro.gd) — never validate feel with raw `randf` offset demos.
+Plot trauma decay (debug draw) while tuning [camera_shake_trauma_pro.gd](scripts/camera_shake_trauma_pro.gd) — wire [trauma_debugger.gd](scripts/trauma_debugger.gd) to `get_trauma()`. Never validate feel with raw `randf` offset demos.
+
+> **MANDATORY** for multi-target framing, custom occlusion rigs, 2D/3D follow recipes, and cinematic transitions: [camera-expert-patterns.md](references/camera-expert-patterns.md). **Do NOT Load** when golden-path scripts already cover your rig.
 
 ## Reference
 

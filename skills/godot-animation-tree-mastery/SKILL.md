@@ -71,6 +71,12 @@ Hierarchical StateMachine / nested parameter path architecture.
 ### [runtime_tree_debugging.gd](scripts/runtime_tree_debugging.gd)
 Visualize current states, travel paths, and blend values at runtime.
 
+### [animation_event_dispatcher.gd](scripts/animation_event_dispatcher.gd)
+Method-track → `dispatch_event(name, metadata)` signal bridge; decouple VFX/audio from graph code.
+
+### [animation_complexity_manager.gd](scripts/animation_complexity_manager.gd)
+Swap `tree_root` hero vs crowd graph when `VisibleOnScreenNotifier3D` culls off-screen actors.
+
 ---
 
 ## Decision Tree (replace inline tutorials)
@@ -100,14 +106,19 @@ Do not paste full StateMachine/BlendSpace editor walkthroughs — author graphs 
 
 ---
 
-## Expert Pattern: Animation-Event-Dispatcher
+## Expert insights (WHY — keep in body)
 
-Decouple Method Track keys from gameplay via a signal dispatcher (`dispatch_event(name, metadata)`). Audio/VFX listen; the tree keeps playing.
+- **Advance conditions vs travel** — WHY: bool conditions auto-fire transitions; `travel()` is explicit pathing. Use conditions for damage/death events; travel for locomotion intent.
+- **BlendSpace2D cost** — WHY: 8-way blending samples multiple clips. Use BlendSpace1D for speed-only; Blend2 for two-state crossfades.
+- **Parameter guard** — WHY: redundant `set()` invalidates tree cache every frame. Route writes through [sync_parameter_manager.gd](scripts/sync_parameter_manager.gd).
+- **Method tracks** — WHY: gameplay should listen to dispatcher signals, not parse animation names. See [animation_event_dispatcher.gd](scripts/animation_event_dispatcher.gd).
 
-## Expert Pattern: Tree-Complexity-Culler
+## Deep recipes (on demand)
 
-Swap `AnimationTree.tree_root` between a complex hero graph and a simple crowd loop using `VisibleOnScreenNotifier3D` to cut off-screen CPU.
-
+| Topic | Reference / script |
+|-------|-------------------|
+| StateMachine / BlendSpace editor recipes | [statemachine-and-blendspace.md](references/statemachine-and-blendspace.md) |
+| Nested combat / IK / root motion | [advanced-graph-recipes.md](references/advanced-graph-recipes.md) |
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API;

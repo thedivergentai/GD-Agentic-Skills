@@ -57,6 +57,9 @@ Shared component lifecycle + dependency validation for app workers.
 ### [comp_dependency_injector.gd](../scripts/composition_apps_comp_dependency_injector.gd)
 Typed export / registry injection so Orchestrators avoid brittle `$` paths.
 
+### [clipboard_copier.gd](../scripts/composition_apps_clipboard_copier.gd)
+Context-agnostic clipboard worker — pairs with orchestrator toast pattern (see references).
+
 ### [comp_data_driven_config.gd](../scripts/composition_apps_comp_data_driven_config.gd)
 Resource-backed config for tool settings and form defaults.
 
@@ -152,6 +155,8 @@ Prefer `Engine.register_singleton()` for lightweight non-Node services (Auth, Co
 
 ### 3. O(1) Component Registry
 Orchestrator Dictionary registry for dashboard modules — still no sideways calls; registry is Orchestrator-private lookup.
+
+> **MANDATORY** for clipboard/share orchestrator examples and service-locator depth: [app-orchestrator-examples.md](composition-apps-app-orchestrator-examples.md). **Do NOT Load** when [comp_orchestrator_base.gd](../scripts/composition_apps_comp_orchestrator_base.gd) covers your screen.
 
 ## Reference
 

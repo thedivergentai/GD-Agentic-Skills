@@ -37,7 +37,7 @@ Before the analysis begins, reflect on these principles of excellence:
 - **[GDScript Mastery Rubric](gdscript-mastery.md)**: The pinnacle of performance and type-safe laws.
 - **[Composition Rubric](composition.md)**: The modular mindset and atomic node-logic.
 - **[Composition Apps Rubric](composition-apps.md)**: Macro-scale architecture and systemic isolation.
-- **[Testing Patterns Rubric](testing-patterns.md)**: Proof of existence and automated verification.
+- **[Testing Patterns Rubric](testing-patterns-expert-testing-patterns.md)**: Proof of existence and automated verification.
 - **[RPG Stats Rubric](rpg-stats.md)**: The blueprint of the soul and attribute math.
 - **[Economy System Rubric](economy-system.md)**: Numerical perfection and value flow.
 - **[Loot System Rubric](economy-system.md)**: Balanced randomness and distribution logic.

@@ -100,10 +100,22 @@ Virtual keyboard occlusion → tween UI up. **Use for LineEdit/TextEdit focus** 
 
 ## Edge Cases (checklist)
 
-- Multi-touch index conflicts on dual sticks
-- OSK covering LineEdit (on_screen_keyboard_handler)
-- Background kill without save (offline_save_sync)
-- Notch clipping (ui_safe_area_margins)
+- Multi-touch index conflicts on dual sticks — track `event.index` per stick
+- OSK covering LineEdit → [on_screen_keyboard_handler.gd](scripts/on_screen_keyboard_handler.gd)
+- Background kill without save → [offline_save_sync.gd](scripts/offline_save_sync.gd) (WM_CLOSE unreliable on mobile)
+- Notch clipping → [ui_safe_area_margins.gd](scripts/ui_safe_area_margins.gd)
+- Palm touches screen edge — ignore ~50px border taps
+- Desktop test builds: handle both `InputEventMouseButton` and `InputEventScreenTouch`
+
+## Device testing (before ship)
+
+- [ ] 44–48dp touch targets on real hardware
+- [ ] HUD above fingers (50–100px occlusion)
+- [ ] Pause drops FPS + saves on background
+- [ ] Stable FPS after [resolution_scaler.gd](scripts/resolution_scaler.gd) + [mobile_shader_fallback.gd](scripts/mobile_shader_fallback.gd)
+- [ ] Portrait + landscape safe areas
+
+Full port recipes → [mobile-port-deep.md](references/mobile-port-deep.md).
 
 ## Deep Recipes
 

@@ -18,7 +18,7 @@ Resource-based quests + Autoload manager. **Single source of truth:** [quest_res
 1. [quest_resource.gd](../scripts/quest_system_quest_resource.gd) — `StringName` ids, status, objectives/rewards  
 2. [quest_manager_singleton.gd](../scripts/quest_system_quest_manager_singleton.gd) — accept / progress / complete / chain  
 
-Supporting: [kill_objective_trigger.gd](../scripts/quest_system_kill_objective_trigger.gd), [quest_ui_tracker.gd](../scripts/quest_system_quest_ui_tracker.gd), [branching_quest_data.gd](../scripts/quest_system_branching_quest_data.gd), [quest_giver_dialogue_hook.gd](../scripts/quest_system_quest_giver_dialogue_hook.gd), [quest_persistence_loader.gd](../scripts/quest_system_quest_persistence_loader.gd), [timed_quest_challenge.gd](../scripts/quest_system_timed_quest_challenge.gd), [hidden_objective_logic.gd](../scripts/quest_system_hidden_objective_logic.gd), [localized_quest_description.gd](../scripts/quest_system_localized_quest_description.gd), [quest_graph_manager.gd](../scripts/quest_system_quest_graph_manager.gd), [quest_manager.gd](../scripts/quest_system_quest_manager.gd) (alt helper — prefer singleton).
+Supporting: [kill_objective_trigger.gd](../scripts/quest_system_kill_objective_trigger.gd), [quest_ui_tracker.gd](../scripts/quest_system_quest_ui_tracker.gd), [branching_quest_data.gd](../scripts/quest_system_branching_quest_data.gd), [quest_giver_dialogue_hook.gd](../scripts/quest_system_quest_giver_dialogue_hook.gd), [quest_persistence_loader.gd](../scripts/quest_system_quest_persistence_loader.gd), [timed_quest_challenge.gd](../scripts/quest_system_timed_quest_challenge.gd), [hidden_objective_logic.gd](../scripts/quest_system_hidden_objective_logic.gd), [localized_quest_description.gd](../scripts/quest_system_localized_quest_description.gd), [quest_graph_manager.gd](../scripts/quest_system_quest_graph_manager.gd), [quest_waypoint_helper.gd](../scripts/quest_system_quest_waypoint_helper.gd), [quest_conflict_resolver.gd](../scripts/quest_system_quest_conflict_resolver.gd), [quest_manager.gd](../scripts/quest_system_quest_manager.gd) (alt helper — prefer singleton).
 
 ## Golden path
 
@@ -54,6 +54,18 @@ Across body + scripts use:
 - `objective_id: StringName`
 - Manager dictionaries keyed by `StringName`
 - Dialogue/quest-giver hooks compare `StringName`, not free strings
+
+## Expert WHY (critical)
+
+> **CAUTION:** `objectives.all(...)` on arrays with null entries crashes — null-check in `is_complete()` (see [quest_resource.gd](../scripts/quest_system_quest_resource.gd)).
+
+- **NavMesh waypoints** — update `NavigationAgent3D.target_position` on objective change only ([quest_waypoint_helper.gd](../scripts/quest_system_quest_waypoint_helper.gd)).
+- **Concurrent progress** — Mutex + deferred signals for network/parallel combat ([quest_conflict_resolver.gd](../scripts/quest_system_quest_conflict_resolver.gd)).
+- **Prerequisites** — Resource-linked quest chains in Inspector ([branching_quest_data.gd](../scripts/quest_system_branching_quest_data.gd)).
+
+## Deep dive (load on demand)
+
+Quest/Objective/Manager/UI walkthroughs and elite patterns — [references/quest-patterns-deep.md](quest-system-quest-patterns-deep.md).
 
 ## Reference
 

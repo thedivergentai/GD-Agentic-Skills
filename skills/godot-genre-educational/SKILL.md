@@ -102,6 +102,14 @@ Learning is hard — reward effort: satisfying SFX, particles on correct, Tweene
 2. **Punishing Failure** — Try Again / hint, never Game Over for wrong answers.
 3. **Wall of Text** — show/interact first; use `text_reveal_effect` / rich-text meta.
 
+## Expert knowledge (on demand)
+
+> **LLM-ignorance rule:** If a general agent would not know it before reading, load the reference — never delete expert deltas.
+
+- [expert-educational-patterns.md](references/expert-educational-patterns.md) — restored baseline pedagogy (architecture, WHY, implementation depth)
+- [student_profile.gd](scripts/student_profile.gd)
+
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

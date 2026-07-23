@@ -105,6 +105,7 @@ When `desktop_input_adapter` emits `mouse_look_bridge_requested`, attach or enab
 
 - Optional lightweight launcher via `OS.create_process` + `user://settings.cfg` before main pack.
 - Short FPS benchmark → write `user://override.cfg` quality suggestions.
+- Graphics quality ladder (MSAA, shadow atlas, post-FX) and UI density tables live in [desktop-port-deep.md](references/desktop-port-deep.md) — open when port procedure rows are insufficient.
 
 ## Reference
 

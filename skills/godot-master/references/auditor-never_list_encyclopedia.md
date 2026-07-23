@@ -36,7 +36,7 @@ GDScript in version 4 is a high-performance language—if you treat it as such. 
 
 - **[GDScript Mastery Protocol](gdscript-mastery.md)**: The ultimate manifest. Statically type every variable, or assume you are writing slop. **NEVER** return `Variant` unless the logic is truly polymorphic.
 - **[State Machine Advanced Protocol](state-machine-advanced.md)**: Logic must be encapsulated. Monolithic `match state:` blocks are prohibited for complex systems. **NEVER** allow state transitions to bypass the entry/exit protocols.
-- **[Testing Patterns Protocol](testing-patterns.md)**: If it is not tested, it does not exist. Auditing the proof of logic. **NEVER** ship a core module without a verification suite.
+- **[Testing Patterns Protocol](testing-patterns-expert-testing-patterns.md)**: If it is not tested, it does not exist. Auditing the proof of logic. **NEVER** ship a core module without a verification suite.
 - **[Composition Protocol](composition.md)**: Inheritance is a trap for the small-minded. Components are the future. **NEVER** create a base class more than 3 levels deep.
 - **[Composition Apps Protocol](composition-apps.md)**: Scaling the component mindset to application-level logic.
 - **[Rpg Stats Protocol](rpg-stats.md)**: High-frequency data modification laws. **NEVER** poll stats every frame; use signal-driven updates.

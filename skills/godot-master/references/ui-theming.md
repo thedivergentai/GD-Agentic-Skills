@@ -60,6 +60,7 @@ Controller/keyboard prompt icon bank swap + focus highlight panel. **MANDATORY**
 - **NEVER use `expand_margin_*` to increase clickable area** — It only expands the VISUAL bounds. Use `content_margin_*` on the StyleBox or adjust the Control's size to ensure input works [5].
 - **NEVER define StyleBoxes as local variables inside `_draw()`** — They will be garbage collected before the RenderingServer can finish drawing them [7]. Store at class level.
 - **NEVER duplicate scenes/themes just to change one color** — Use `theme_type_variation` to create lightweight derived styles (e.g. "DangerButton") within the same Theme [8].
+- **NEVER skip `corner_radius_all` on StyleBoxFlat** — shorthand for uniform rounding; prefer it over four separate radius fields when all corners match.
 - **NEVER confuse Theme items with Control overrides** — `add_theme_*_override` beats Theme resource items on that node only; a child Control with its own `theme` still blocks parent cascade. Clear with `remove_theme_*_override` when swapping roots — do not leave stale overrides fighting the new Theme.
 
 ## Godot 4.7: UI Theming
@@ -132,6 +133,15 @@ Ensuring UI textures are optimized for rendering performance.
     - **2D/Pixel Art**: Use **Lossless** compression to avoid blurry artifacts [15].
     - **UI Backgrounds**: Use **Lossy** or **Basis Universal** for large illustrations to save disk space without decreasing VRAM usage [15].
 - **Audit**: Use `ResourceLoader.get_dependencies(scene_path)` to ensure no uncompressed raw assets (e.g. `.png`) are leaking into the final export [19].
+
+
+## Deep recipes (on demand)
+
+> LLM-ignorance rule: if a general agent would not know it before reading, it lives here or in `scripts/` — never delete, only move.
+
+| Topic | Reference |
+|-------|-----------|
+| StyleBox / font setup | [theme-authoring-recipes.md](ui-theming-theme-authoring-recipes.md) |
 
 ## Reference
 

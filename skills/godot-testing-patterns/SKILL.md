@@ -96,6 +96,16 @@ Schema-compliant fixture builders.
 - **Network**: mock peer before real ENet (`mock_network_provider.gd`).
 - **Perf**: `Performance` monitors / draw-call caps in benchmark runner.
 
+
+## Deep recipes (on demand)
+
+> LLM-ignorance rule: if a general agent would not know it before reading, it lives here or in `scripts/` — never delete, only move.
+
+| Topic | Reference |
+|-------|-----------|
+| Snapshot / CI / fuzz / perf | [expert-testing-patterns.md](references/expert-testing-patterns.md) |
+| Release smoke checklist | [manual-testing-checklist.md](references/manual-testing-checklist.md) |
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

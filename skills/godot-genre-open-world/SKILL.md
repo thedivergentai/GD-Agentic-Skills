@@ -66,6 +66,7 @@ Expert blueprint for open worlds balancing scale, performance, and player engage
 - [dynamic_lod_adjuster.gd](scripts/dynamic_lod_adjuster.gd) - Real-time adaptive performance scaling for global mesh LOD.
 - [group_weather_broadcaster.gd](scripts/group_weather_broadcaster.gd) - Efficient decoupled environmental updates using SceneTree grouping.
 - [landscape_height_query.gd](scripts/landscape_height_query.gd) - Nodeless physics floor-height queries for large-scale landscapes.
+- [global_state.gd](scripts/global_state.gd) - Chunk-keyed delta persistence (`set_entity_dead` pattern).
 
 ---
 
@@ -101,6 +102,14 @@ Traverse → Discover POIs → Quest/travel → Persist deltas → Weather/day c
 2. Save bloat — delta-only persistence
 3. Far physics — [lod_logic_enabler.gd](scripts/lod_logic_enabler.gd)
 4. Phantom `hlod_configurator.gd` — does not exist; use [hlod_visibility_config.gd](scripts/hlod_visibility_config.gd)
+
+> **MANDATORY** for depth beyond decision trees and script catalog: [open-world-elite-implementations.md](references/open-world-elite-implementations.md). **Do NOT Load** on first-pass wiring — use bundled `scripts/` first.
+
+## Godot-Specific Tips
+
+- **VisibilityRange**: Use `visibility_range_begin` / `end` on MeshInstance3D for HLOD without a dedicated LOD node.
+- **Threading**: Prefer `ResourceLoader.load_threaded_request()` for chunks; custom `Thread` only when not loading Resources.
+- **OcclusionCulling**: Bake occlusion for cities; open fields often need distance culling only.
 
 ## Reference
 

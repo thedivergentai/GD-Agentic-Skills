@@ -51,7 +51,7 @@ Headless / CI / platform release plumbing — not Editor → Export click-path t
 | Custom engine strip | [export_custom_build_stripper.py](scripts/export_custom_build_stripper.py) | — unless custom builds |
 | Post-export zip/manifest | [export_post_process_hook.gd](scripts/export_post_process_hook.gd) | — |
 
-**Editor Export UI / template download prose:** use Official Documentation links in Reference — do not restate "Manage Export Templates → Download" here.
+**Editor Export UI / template download prose:** use Official Documentation links in Reference — or [export-setup-guide.md](references/export-setup-guide.md) for INI/CLI/platform checklists.
 
 ## Available Scripts
 

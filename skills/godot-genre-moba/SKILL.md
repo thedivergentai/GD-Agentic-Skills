@@ -72,6 +72,9 @@ Expert blueprint for MOBAs emphasizing competitive balance and strategic depth.
 - [async_arena_baker.gd](scripts/async_arena_baker.gd) - Background thread-safe navigation mesh updates for dynamic arenas.
 - [ability_ui_binder.gd](scripts/ability_ui_binder.gd) - Signal-based UI decoupling for ability cooldown tracking.
 - [minion_flow_calculator.gd](scripts/minion_flow_calculator.gd) - Parallelized pathing and intelligence using WorkerThreadPool.
+- [replay_manager.gd](scripts/replay_manager.gd) - Binary `var_to_bytes` match replay frames (not JSON).
+- [hero_net_sync.gd](scripts/hero_net_sync.gd) - Physics interpolation + MultiplayerSynchronizer hero sync at low tick.
+- [jungle_creep.gd](scripts/jungle_creep.gd) - Camp leash FSM — invulnerable return home beyond `leash_radius`.
 
 ---
 
@@ -226,6 +229,7 @@ func _physics_process(_delta: float) -> void:
 
 **Expert Tip**: Always use `NavigationServer3D.map_get_iteration_id()` to ensure the navigation map is fully synced before allowing AI to pathfind after spawning.
 
+> **MANDATORY** for depth beyond decision trees and script catalog: [moba-meta-systems-deep.md](references/moba-meta-systems-deep.md). **Do NOT Load** on first-pass wiring — use bundled `scripts/` first.
 
 ## Reference
 

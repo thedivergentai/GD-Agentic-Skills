@@ -131,6 +131,15 @@ Parallel block → `chain()` → interval/callback → exit. Prefer [nested_subt
 ### Bezier-Path-Tween
 Tween `PathFollow2D.progress_ratio` instead of hand-rolled Bezier math.
 
+
+## Deep recipes (on demand)
+
+> LLM-ignorance rule: if a general agent would not know it before reading, it lives here or in `scripts/` — never delete, only move.
+
+| Topic | Reference |
+|-------|-----------|
+| Chains, kill, gotchas | [tween-recipes-and-gotchas.md](tweening-tween-recipes-and-gotchas.md) |
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

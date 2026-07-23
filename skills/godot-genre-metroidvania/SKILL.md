@@ -151,6 +151,16 @@ func _swap_room(packed: PackedScene, spawn_id: StringName) -> void:
 3. Empty dead ends — every remote path needs a reward
 4. Sync room loads — violates NEVER; use threaded request + deferred swap
 
+## Expert knowledge (on demand)
+
+> **LLM-ignorance rule:** If a general agent would not know it before reading, load the reference — never delete expert deltas.
+
+- [expert-metroidvania-patterns.md](references/expert-metroidvania-patterns.md) — restored baseline pedagogy (architecture, WHY, implementation depth)
+- [room_metadata.gd](scripts/room_metadata.gd)
+- [progression_manager.gd](scripts/progression_manager.gd)
+- [fast_travel_system.gd](scripts/fast_travel_system.gd)
+
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

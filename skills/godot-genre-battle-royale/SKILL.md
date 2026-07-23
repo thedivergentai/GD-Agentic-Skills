@@ -75,6 +75,10 @@ Drawing dense foliage and environment assets (100k+ instances) via `MultiMeshIns
 ### [threaded_ai_manager.gd](scripts/threaded_ai_manager.gd)
 Offloading server-side bot behavior and pathfinding logic to the `WorkerThreadPool` to prevent main-thread stalling.
 
+### Restored from baseline
+- [lag_compensator.gd](scripts/lag_compensator.gd) - Server transform history + hit timestamp rewind validation.
+- [monster_synchronizer.gd](scripts/monster_synchronizer.gd) - `MultiplayerSynchronizer` delta/on-change replication setup.
+
 ## NEVER Do in Battle Royale
 
 - **NEVER export mobile clients without the INTERNET permission** — Communication will silently fail on Android/iOS if the manifest is missing the networking permission.
@@ -149,6 +153,15 @@ Unshaded, `cull_disabled` spatial shader on inverted sphere scaled by [storm_sys
 1. Too much loot → pool + RID spawner
 2. Camping → storm forces movement ([storm_system.gd](scripts/storm_system.gd))
 3. Client hit authority → server validate with history
+
+## Expert knowledge (on demand)
+
+> **LLM-ignorance rule:** If a general agent would not know it before reading, load the reference — never delete expert deltas.
+
+- [expert-battle-royale-patterns.md](references/expert-battle-royale-patterns.md) — restored baseline pedagogy (architecture, WHY, implementation depth)
+- [lag_compensator.gd](scripts/lag_compensator.gd)
+- [monster_synchronizer.gd](scripts/monster_synchronizer.gd)
+
 
 ## Reference
 

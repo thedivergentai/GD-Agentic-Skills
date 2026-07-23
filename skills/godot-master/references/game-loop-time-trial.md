@@ -101,6 +101,12 @@ Store a keyframe only when position/rotation changes beyond a threshold. Persist
 ### 2. The Leaderboard Bridge
 Store records as `int` usec/msec. Format with `%02d:%02d.%03d` for stable UI (e.g. `01:24.450`).
 
+## Expert knowledge (on demand)
+
+> **LLM-ignorance rule:** If a general agent would not know it before reading, load the reference — never delete expert deltas.
+
+- [time-trial-expert-patterns.md](game-loop-time-trial-time-trial-expert-patterns.md) — restored baseline pedagogy (architecture, WHY, implementation depth)
+
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

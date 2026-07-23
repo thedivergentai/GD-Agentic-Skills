@@ -171,6 +171,8 @@ func _ready() -> void:
     assert(input_component != null, "Missing InputComponent export!")
 ```
 
+> **MANDATORY** for Input/Movement/Health orchestrator recipes and registry depth: [orchestrator-recipes.md](references/orchestrator-recipes.md). **Do NOT Load** when [composition_root_init.gd](scripts/composition_root_init.gd) + one component script suffice.
+
 ## Performance Note
 Nodes are lightweight. Do not fear adding 10-20 nodes per entity. The organizational benefit of Composition vastly outweighs the negligible memory cost of `Node` instances.
 

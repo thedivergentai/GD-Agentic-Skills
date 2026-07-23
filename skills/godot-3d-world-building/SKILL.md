@@ -49,6 +49,12 @@ Level-of-detail switching based on camera distance. Manages mesh swapping and vi
 ### [occlusion_setup.gd](scripts/occlusion_setup.gd)
 OccluderInstance3D configuration for manual occlusion culling. Use for indoor levels with many rooms.
 
+### [grid_map_logic_manager.gd](scripts/grid_map_logic_manager.gd)
+Proxy-tile pattern: replace invisible MeshLibrary markers with spawn/trigger scenes at `_ready`, then clear proxy cells.
+
+### [world_streamer.gd](scripts/world_streamer.gd)
+`ResourceLoader.load_threaded_request` queue — stutter-free chunk instantiation after background load completes.
+
 ---
 
 ## Golden Path (GridMap / CSG / Occlusion)
@@ -121,6 +127,14 @@ For city-scale fake interiors, use a spatial shader on window planes — peer [g
 - **No collision**: empty `get_item_shapes` → fix MeshLibrary source.
 - **CSG z-fight**: tiny offset on subtraction brushes before bake.
 
+## Deep recipes (on demand)
+
+| Topic | Reference / script |
+|-------|-------------------|
+| GridMap / CSG bake walkthrough | [gridmap-and-csg.md](references/gridmap-and-csg.md) |
+| Chunk streaming / procgen rooms | [streaming-and-procgen.md](references/streaming-and-procgen.md) |
+| Proxy spawn tiles | [grid_map_logic_manager.gd](scripts/grid_map_logic_manager.gd) |
+| Threaded chunk load | [world_streamer.gd](scripts/world_streamer.gd) |
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.

@@ -41,6 +41,8 @@ Resource-first slots, stacking, weight, equipment, and loot — **scripts are so
 - **NEVER hardcode item references** — String/StringName ids + database.
 - **NEVER `queue_free` + recreate all slots every refresh** — reuse slot widgets (see UI controller).
 - **NEVER allocate new Resources inside `_process`**.
+- **NEVER mutate a shared item blueprint at runtime** — use `duplicate(true)` on stack/slot instances so one pickup cannot corrupt every copy of that `.tres`.
+- **NEVER access `.icon` on a null slot item** — guard with `is_instance_valid()` before drawing UI.
 
 ## Decision trees
 
@@ -56,6 +58,18 @@ Resource-first slots, stacking, weight, equipment, and loot — **scripts are so
 
 ### Save
 - Serialize `item_id` / `resource_path` + `amount` only — [inventory_persistence.gd](../scripts/inventory_system_inventory_persistence.gd)
+
+
+## Deep recipes (on demand)
+
+| Topic | Reference / script |
+|-------|-------------------|
+| Resource item model | [core-architecture.md](inventory-system-core-architecture.md) + [inventory_item_resource.gd](../scripts/inventory_system_inventory_item_resource.gd) |
+| Two-pass stack add | [inventory-manager.md](inventory-system-inventory-manager.md) + [inventory_data_resource.gd](../scripts/inventory_system_inventory_data_resource.gd) |
+| Tetris grid footprint | [elite-technical-patterns.md](inventory-system-elite-technical-patterns.md) + [grid_inventory_logic.gd](../scripts/inventory_system_grid_inventory_logic.gd) |
+| Equipment & crafting | [equipment-system.md](inventory-system-equipment-system.md) / [crafting-integration.md](inventory-system-crafting-integration.md) |
+| Reactive UI & save ids | [ui-integration.md](inventory-system-ui-integration.md) + [inventory_persistence.gd](../scripts/inventory_system_inventory_persistence.gd) |
+
 
 ## Reference
 

@@ -51,6 +51,11 @@ Resource abilities + scene-scoped managers — not AbilityManager / skill-tree n
 - [ability_manager.gd](../scripts/ability_system_ability_manager.gd) — **MANDATORY** Resource-driven cooldown registry (scene-scoped)
 - [ability_container.gd](../scripts/ability_system_ability_container.gd) — **MANDATORY** alternative: node/Timer composition per ability
 - [buff_stat.gd](../scripts/ability_system_buff_stat.gd) — modular buff stats (Do NOT Load if no buffs)
+- [combo_tracker.gd](../scripts/ability_system_combo_tracker.gd) — windowed combo chains → finisher abilities
+- [charge_ability.gd](../scripts/ability_system_charge_ability.gd) — multi-charge recharge (Flash-style)
+- [skill_node.gd](../scripts/ability_system_skill_node.gd) / [skill_tree_manager.gd](../scripts/ability_system_skill_tree_manager.gd) — prerequisite graphs + point spend (progression only)
+- [status_effect.gd](../scripts/ability_system_status_effect.gd) / [status_effect_manager.gd](../scripts/ability_system_status_effect_manager.gd) — ticking DoTs/buffs (`duplicate(true)` required)
+- [ability_caster_network.gd](../scripts/ability_system_ability_caster_network.gd) — predict locally, authority validates RPC shell
 
 ## Cooldown & Status Timing Contract
 
@@ -65,6 +70,17 @@ Resource abilities + scene-scoped managers — not AbilityManager / skill-tree n
 - **AoE:** `call_group` or space queries; do not scan the whole tree each cast.
 - **Networking:** predict locally, authority validates `can_use` + costs ([godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md)).
 - **Skill-tree visualizer:** `@tool` GraphEdit for design-time graphs; runtime still grants Resources to scene managers.
+
+## Status Effects & Combos (critical WHY)
+
+> **CAUTION:** Status/buff templates applied at runtime **must** use `duplicate(true)`. One poisoned `.tres` mutates every character sharing that asset — see [status_effect_manager.gd](../scripts/ability_system_status_effect_manager.gd).
+
+- **Combos:** [combo_tracker.gd](../scripts/ability_system_combo_tracker.gd) — sequence window + recipe table; finishers remain normal `AbilityResource` entries.
+- **Charges:** [charge_ability.gd](../scripts/ability_system_charge_ability.gd) — recharge ticks belong on `_physics_process`, not UI `_process`.
+- **Skill trees:** [skill_tree_manager.gd](../scripts/ability_system_skill_tree_manager.gd) grants abilities to the **caster's** scene manager — progression Autoloads hold ranks only.
+- **Save cooldowns:** persist **absolute end timestamps** (`Time.get_unix_time_from_system() + remaining`), not raw remaining floats — prevents clock/load exploits.
+
+> **MANDATORY** for combos/charges/skill-tree/status/network depth beyond bullets above: [elite-ability-patterns.md](ability-system-elite-ability-patterns.md). **Do NOT Load** for a first AbilityResource + AbilityManager pass.
 
 ## Reference
 

@@ -49,6 +49,8 @@ Expert guidance for collision detection, triggers, and raycasting in Godot 2D.
 | Custom CharacterBody forces | `custom_physics_2d.gd` | `custom_physics.gd` (that file is RigidBody `_integrate_forces`) |
 | Gravity zones | `custom_gravity_area.gd` (Area override) or `custom_gravity_override.gd` (character weight/zones) | Both unless you need Area + character paths |
 | Overlap signal spam | `collision_debouncer.gd` | Polling `get_overlapping_bodies` every frame |
+| Compound multi-shape RID | `compound_body_sync.gd` | Multiple nodes for one logical body |
+| Debug contact normals | `collision_visual_debugger.gd` | Visible collision menu insufficient |
 | High-refresh jitter | **Prefer** `jitter_interpolation_fix.gd` | `physics_interpolation_smoothing.gd` (legacy/manual; only if built-in interpolation is unavailable) |
 | Precision bounce / slide | `move_and_collide_precision.gd` | — |
 | Batch static movers | `performance_batch_mover.gd` | — |
@@ -70,6 +72,7 @@ Expert guidance for collision detection, triggers, and raycasting in Godot 2D.
 - [safe_rigidbody_state.gd](scripts/safe_rigidbody_state.gd) / [custom_physics.gd](scripts/custom_physics.gd) / [custom_physics_2d.gd](scripts/custom_physics_2d.gd)
 - [custom_gravity_area.gd](scripts/custom_gravity_area.gd) / [custom_gravity_override.gd](scripts/custom_gravity_override.gd)
 - [collision_debouncer.gd](scripts/collision_debouncer.gd) / [jitter_interpolation_fix.gd](scripts/jitter_interpolation_fix.gd)
+- [compound_body_sync.gd](scripts/compound_body_sync.gd) / [collision_visual_debugger.gd](scripts/collision_visual_debugger.gd)
 - [move_and_collide_precision.gd](scripts/move_and_collide_precision.gd) / [performance_batch_mover.gd](scripts/performance_batch_mover.gd)
 - [physics_interpolation_smoothing.gd](scripts/physics_interpolation_smoothing.gd) — legacy; prefer jitter fix script
 
@@ -92,10 +95,21 @@ Expert guidance for collision detection, triggers, and raycasting in Godot 2D.
 
 ## Mental model (keep short)
 
-- **Layer** = who I am; **Mask** = who I detect. Helpers in `collision_bitmask_helper.gd` — do not hardcode undocumented bitmasks.
+- **Layer** = who I am; **Mask** = who I detect. Bitmask cookbook → [collision-layers-masks.md](references/collision-layers-masks.md).
+- **Area2D with multiple shapes** fires `body_entered` **once per shape** — dedupe with a Set/dict or [collision_debouncer.gd](scripts/collision_debouncer.gd).
 - Mid-frame ray/shape changes require `force_raycast_update()` / `force_shapecast_update()`.
 - `_ready` physics queries are false until after a physics frame (`await get_tree().physics_frame`).
+- `CharacterBody2D` ships with `collision_layer = 0` — Areas won't see it until you set a layer.
 - Free PhysicsServer RIDs yourself — they are not GC'd.
+
+## Deep recipes (on demand)
+
+| Topic | Reference / script |
+|-------|-------------------|
+| Layer/mask patterns | [collision-layers-masks.md](references/collision-layers-masks.md) |
+| Area2D, raycast, shape queries | [area2d-and-queries.md](references/area2d-and-queries.md) |
+| Compound RID bodies | [compound_body_sync.gd](scripts/compound_body_sync.gd) |
+| Contact normal debug draw | [collision_visual_debugger.gd](scripts/collision_visual_debugger.gd) |
 
 ## Reference
 

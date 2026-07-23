@@ -75,12 +75,16 @@ Wallet + transaction authority — not beginner "gold int" tutorials.
 - [economy_persistence_handler.gd](../scripts/economy_system_economy_persistence_handler.gd)
 - [currency_pickup_effect.gd](../scripts/economy_system_currency_pickup_effect.gd)
 - [trade_contract_resource.gd](../scripts/economy_system_trade_contract_resource.gd) — Do NOT Load unless barter exists
+- [economy_logger.gd](../scripts/economy_system_economy_logger.gd) — GPM / inflation telemetry Logger
+- [item_value_estimator.gd](../scripts/economy_system_item_value_estimator.gd) — rarity-based merchant valuation
 
 ## Elite Deltas
 
-- **Barter contracts:** multi-item quid-pro-quo via trade_contract_resource (not single-currency shops).
-- **GPM analytics:** log grants/sinks per minute for inflation detection.
-- **Value estimator:** derive sell price from rarity + demand modifiers, always below buy.
+- **Barter contracts:** multi-item quid-pro-quo via [trade_contract_resource.gd](../scripts/economy_system_trade_contract_resource.gd).
+- **GPM analytics:** [economy_logger.gd](../scripts/economy_system_economy_logger.gd) — gold-per-minute from `[ECON]` log lines.
+- **Value estimator:** [item_value_estimator.gd](../scripts/economy_system_item_value_estimator.gd) — rarity-driven sell curves; always below buy.
+
+> **MANDATORY** for GPM logging, dynamic valuation, and moved shop/loot tutorials: [economy-elite-patterns.md](economy-system-economy-elite-patterns.md). **Do NOT Load** for wallet + transaction golden path only.
 
 ## Reference
 

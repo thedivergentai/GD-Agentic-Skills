@@ -67,6 +67,8 @@ Expert blueprint for rhythm games emphasizing audio-visual synchronization and f
 
 ---
 
+> **Script map:** Baseline `MusicConductor` samples → [rhythm_conductor.gd](scripts/rhythm_conductor.gd); `JudgmentSystem` → [input_judge_logic.gd](scripts/input_judge_logic.gd); chart spawn → [note_orchestrator.gd](scripts/note_orchestrator.gd) + [note_object_pool.gd](scripts/note_object_pool.gd).
+
 ## Core Loop
 1. **Calibrate latency** → 2. **Conductor clock** → 3. **Spawn pooled notes** → 4. **`_input` judge** → 5. **Score/combo UI**
 
@@ -106,6 +108,20 @@ Do **not** re-inline MusicConductor / NoteHighway / JudgmentSystem / RhythmScori
 | `Time.get_ticks_*` conductor | Use playback + mix − latency |
 | Judge in `_process` | `_input` + song time |
 | Instantiate per note | [note_object_pool.gd](scripts/note_object_pool.gd) |
+
+> **MANDATORY** for depth beyond decision trees and script catalog: [rhythm-systems-deep.md](references/rhythm-systems-deep.md). **Do NOT Load** on first-pass wiring — use bundled `scripts/` first.
+
+## Godot-Specific Tips
+
+1. **Audio latency**: Calibrate with `AudioServer` and custom offset
+2. **Input polling**: Use `_input` not `_process` for precise timing
+3. **Shaders**: UV scrolling for note highways
+4. **Particles**: Use `GPUParticles2D` for hit effects
+
+### 3. Hardware-Synced Latency Calibration
+Calculate precise offsets by compensating for OS/Hardware latency.
+
+```gdscript
 
 ## Reference
 

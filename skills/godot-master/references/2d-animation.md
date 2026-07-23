@@ -52,6 +52,9 @@ Expert-level guidance for frame-based and skeletal 2D animation in Godot.
 - [shader_hook.gd](../scripts/2d_animation_shader_hook.gd) — AnimationPlayer → ShaderMaterial uniforms.
 - [gpu_mesh_optimizer.gd](../scripts/2d_animation_gpu_mesh_optimizer.gd) — Sprite → tight 2D mesh for fill-rate.
 - [multimesh_swarm_anim.gd](../scripts/2d_animation_multimesh_swarm_anim.gd) — GPU swarm motion only.
+- [animation_data_extractor.gd](../scripts/2d_animation_animation_data_extractor.gd) — Value/method tracks decouple hitbox/spawn metadata from SpriteFrames visuals.
+- [procedural_walker_2d.gd](../scripts/2d_animation_procedural_walker_2d.gd) — TwoBoneIK foot planting via raycast targets (pairs with `skeleton_2d_rig_helper.gd`).
+- [sprite_sheet_memory_manager.gd](../scripts/2d_animation_sprite_sheet_memory_manager.gd) — Threaded high-res frame inject + unload for VRAM spikes.
 
 ---
 
@@ -99,6 +102,23 @@ Related: `animation_looped` (loops) vs `animation_finished` (one-shots); use `se
 - **IK foot plant** → `skeleton_2d_rig_helper.gd` + SkeletonModification2DTwoBoneIK docs.
 - **Fill-rate / swarms** → `gpu_mesh_optimizer.gd` / `multimesh_swarm_anim.gd` per Do-NOT-Load table.
 - **Pixel filter / shared SpriteFrames** → Official Documentation (2D sprite animation, SpriteFrames); keep resources shared via preload.
+
+## Expert insights (WHY — keep in body)
+
+- **Hybrid cutout + cel** — Animate bones for body motion; keyframe `frame`/`texture` on child sprites for hand/face swaps. WHY: transform-only motion is cheap; cel swaps stay art-directable without re-rigging.
+- **GPU fill rate** — Large transparent sprites waste fill rate. WHY: tight `MeshInstance2D` polygons skip transparent texels; pair with [gpu_mesh_optimizer.gd](../scripts/2d_animation_gpu_mesh_optimizer.gd).
+- **Tween property fights** — WHY: the last Tween on a property wins silently. Always `kill()` the prior instance ([tween_lifecycle_manager.gd](../scripts/2d_animation_tween_lifecycle_manager.gd)).
+- **AnimationTree travel** — WHY: StateMachine uses internal A* between states; call `start()` before `travel()` ([animation_tree_step.gd](../scripts/2d_animation_animation_tree_step.gd)).
+
+## Deep recipes (on demand)
+
+| Topic | Reference / script |
+|-------|-------------------|
+| Signals / frame events / skin swap | [signals-and-frame-events.md](2d-animation-signals-and-frame-events.md) |
+| Cutout rigs / procedural IK feet | [cutout-and-skeletal.md](2d-animation-cutout-and-skeletal.md) |
+| GPU mesh / swarms / memory streaming | [expert-techniques.md](2d-animation-expert-techniques.md) |
+| Frame metadata / spawn offsets | [animation_data_extractor.gd](../scripts/2d_animation_animation_data_extractor.gd) |
+| Async SpriteFrames VRAM | [sprite_sheet_memory_manager.gd](../scripts/2d_animation_sprite_sheet_memory_manager.gd) |
 
 ## Reference
 

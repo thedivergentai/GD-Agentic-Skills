@@ -54,12 +54,18 @@ Resource-based design, typed arrays, and serialization — decision tree + scrip
 | Runtime `Resource.new()` loot | [dynamic_resource_generation.gd](scripts/dynamic_resource_generation.gd) |
 | Validate / pool / factory | [resource_validator.gd](scripts/resource_validator.gd) / [resource_pool.gd](scripts/resource_pool.gd) / [data_factory_resource.gd](scripts/data_factory_resource.gd) |
 
-## Expert Notes (no Pattern 1–5 dump)
+## Expert WHY (critical)
 
-- **`.res` vs `.tres`:** prefer binary `.res` in production for speed/size; keep `.tres` for design-time diffs. Nested sub-resources save with the parent via `ResourceSaver`.
-- **Cache:** `ResourceLoader.CACHE_MODE_REPLACE` when you must bypass stale cache after external edits.
-- **Local-to-scene / duplicate:** mandatory for Health/AI components that share a template but mutate at runtime — see [resource_local_to_scene.gd](scripts/resource_local_to_scene.gd).
-- **Broken WeaponData paste-ups:** do not reconstruct nested weapon tutorials here — implement from [nested_resource_serialization.gd](scripts/nested_resource_serialization.gd).
+> **CAUTION:** Runtime HP/mana on a shared `.tres` without `duplicate(true)` or `resource_local_to_scene` mutates the asset on disk — the **"damaging one damages all"** bug.
+
+- **`.res` vs `.tres`:** binary `.res` in production; `.tres` for design diffs; nested trees save with parent via `ResourceSaver`.
+- **Cache:** `ResourceLoader.CACHE_MODE_REPLACE` after external edits bypass stale cache.
+- **Local-to-scene / duplicate:** mandatory for per-instance components — [resource_local_to_scene.gd](scripts/resource_local_to_scene.gd).
+- **10k+ rows:** individualized `.tres` files lose to JSON/binary — see Official Docs binary serialization.
+
+## Deep dive (load on demand)
+
+Pattern 1–7 walkthroughs (ItemData, databases, RefCounted calcs, directory scan, O(1) cache) — [references/resource-patterns-deep.md](references/resource-patterns-deep.md). Implement nested weapons from [nested_resource_serialization.gd](scripts/nested_resource_serialization.gd), not memory.
 
 ## Reference
 
