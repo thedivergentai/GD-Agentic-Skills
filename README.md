@@ -550,9 +550,9 @@ If this project accelerates your Godot development or empowers your AI agents, c
 <div align="center">
   <a href="https://github.com/thedivergentai/gd-agentic-skills/stargazers">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://thedivergentai.github.io/gd-agentic-skills/star-history-dark.svg" />
-      <source media="(prefers-color-scheme: light)" srcset="https://thedivergentai.github.io/gd-agentic-skills/star-history-light.svg" />
-      <img alt="GD Agentic Skills Star History Chart" src="https://thedivergentai.github.io/gd-agentic-skills/star-history-dark.svg" width="100%" />
+      <source media="(prefers-color-scheme: dark)" srcset="https://thedivergentai.github.io/GD-Agentic-Skills/star-history-dark.svg" />
+      <source media="(prefers-color-scheme: light)" srcset="https://thedivergentai.github.io/GD-Agentic-Skills/star-history-light.svg" />
+      <img alt="GD Agentic Skills Star History Chart" src="https://thedivergentai.github.io/GD-Agentic-Skills/star-history-dark.svg" width="100%" />
     </picture>
   </a>
 </div>
