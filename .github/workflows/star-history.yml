@@ -32,15 +32,12 @@ jobs:
 
       - name: Generate star history
         env:
-          # Prefer a fine-grained PAT if configured; otherwise the job token.
-          STAR_HISTORY_TOKEN: ${{ secrets.STAR_HISTORY_TOKEN }}
+          # Prefer the Actions job token (works for public stargazer lists).
+          # Optional STAR_HISTORY_TOKEN is fallback only — do not override GITHUB_TOKEN.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          STAR_HISTORY_TOKEN: ${{ secrets.STAR_HISTORY_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-        run: |
-          if [ -n "${STAR_HISTORY_TOKEN}" ]; then
-            export GITHUB_TOKEN="${STAR_HISTORY_TOKEN}"
-          fi
-          python scripts/generate_star_history.py --out-dir site
+        run: python scripts/generate_star_history.py --out-dir site
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

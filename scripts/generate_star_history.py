@@ -42,11 +42,22 @@ def die(msg: str, code: int = 1) -> None:
     raise SystemExit(code)
 
 
-def token_from_env() -> str:
-    tok = (os.environ.get("STAR_HISTORY_TOKEN") or os.environ.get("GITHUB_TOKEN") or "").strip()
-    if not tok:
-        die("Set STAR_HISTORY_TOKEN or GITHUB_TOKEN")
-    return tok
+def tokens_from_env() -> list[str]:
+    """Prefer Actions GITHUB_TOKEN; optional STAR_HISTORY_TOKEN is fallback only.
+
+    Fine-grained PATs with Metadata-only cannot list stargazers
+    ("Resource not accessible by personal access token"). The default
+    Actions GITHUB_TOKEN can, for public repos.
+    """
+    primary = (os.environ.get("GITHUB_TOKEN") or "").strip()
+    alt = (os.environ.get("STAR_HISTORY_TOKEN") or "").strip()
+    ordered: list[str] = []
+    for tok in (primary, alt):
+        if tok and tok not in ordered:
+            ordered.append(tok)
+    if not ordered:
+        die("Set GITHUB_TOKEN (preferred) or STAR_HISTORY_TOKEN")
+    return ordered
 
 
 def resolve_repo(cli_repo: str | None) -> str:
@@ -56,6 +67,20 @@ def resolve_repo(cli_repo: str | None) -> str:
     if env:
         return env
     die("Pass --repo owner/name or set GITHUB_REPOSITORY")
+
+
+def _is_true_rate_limit(code: int, detail: str, remaining: str | None) -> bool:
+    if code == 429:
+        return True
+    lower = detail.lower()
+    if "rate limit" in lower or "secondary rate" in lower:
+        return True
+    if code == 403 and remaining is not None:
+        try:
+            return int(remaining) == 0
+        except ValueError:
+            return False
+    return False
 
 
 def api_get(url: str, token: str, accept: str = ACCEPT_STAR) -> tuple[Any, dict[str, str]]:
@@ -79,22 +104,31 @@ def api_get(url: str, token: str, accept: str = ACCEPT_STAR) -> tuple[Any, dict[
         except urllib.error.HTTPError as e:
             remaining = e.headers.get("X-RateLimit-Remaining") if e.headers else None
             reset = e.headers.get("X-RateLimit-Reset") if e.headers else None
-            if e.code in (403, 429) and retries < 8:
+            retry_after = e.headers.get("Retry-After") if e.headers else None
+            detail = e.read().decode("utf-8", errors="replace")[:800]
+            if _is_true_rate_limit(e.code, detail, remaining) and retries < 5:
                 wait = 30
-                if reset:
+                if retry_after:
+                    try:
+                        wait = max(5, int(retry_after))
+                    except ValueError:
+                        pass
+                elif remaining == "0" and reset:
                     try:
                         wait = max(5, int(reset) - int(time.time()) + 2)
                     except ValueError:
                         pass
+                wait = min(wait, 90)
                 print(
                     f"Rate limited (HTTP {e.code}, remaining={remaining}); sleeping {wait}s…",
                     file=sys.stderr,
                 )
-                time.sleep(min(wait, 120))
+                time.sleep(wait)
                 retries += 1
                 continue
-            detail = e.read().decode("utf-8", errors="replace")[:500]
-            die(f"GitHub API error {e.code} for {url}: {detail}")
+            # Permission / other errors: raise with body attached for callers.
+            err = urllib.error.HTTPError(e.url, e.code, detail or e.msg, e.hdrs, None)
+            raise err from None
         except urllib.error.URLError as e:
             if retries < 5:
                 retries += 1
@@ -103,13 +137,31 @@ def api_get(url: str, token: str, accept: str = ACCEPT_STAR) -> tuple[Any, dict[
             die(f"Network error: {e}")
 
 
-def fetch_starred_at(repo: str, token: str) -> list[str]:
+def api_get_with_fallback(url: str, tokens: list[str]) -> tuple[Any, dict[str, str]]:
+    last_detail = ""
+    for i, token in enumerate(tokens):
+        try:
+            return api_get(url, token)
+        except urllib.error.HTTPError as e:
+            last_detail = str(e.reason) if e.reason else ""
+            inaccessible = "not accessible by personal access token" in last_detail.lower()
+            if e.code == 403 and inaccessible and i + 1 < len(tokens):
+                print(
+                    f"Token {i + 1}/{len(tokens)} cannot access stargazers (403); trying next…",
+                    file=sys.stderr,
+                )
+                continue
+            die(f"GitHub API error {e.code} for {url}: {last_detail}")
+    die(f"All tokens failed for {url}: {last_detail}")
+
+
+def fetch_starred_at(repo: str, tokens: list[str]) -> list[str]:
     """Return list of ISO starred_at timestamps (oldest first)."""
     timestamps: list[str] = []
     for page in range(1, MAX_PAGES + 1):
         qs = urllib.parse.urlencode({"per_page": PER_PAGE, "page": page})
         url = f"{API_ROOT}/repos/{repo}/stargazers?{qs}"
-        rows, headers = api_get(url, token)
+        rows, headers = api_get_with_fallback(url, tokens)
         if not isinstance(rows, list):
             die(f"Unexpected stargazers payload: {type(rows)}")
         if not rows:
@@ -406,9 +458,9 @@ def main() -> None:
     )
     args = parser.parse_args()
     repo = resolve_repo(args.repo)
-    token = token_from_env()
-    print(f"Fetching stargazers for {repo}…", file=sys.stderr)
-    timestamps = fetch_starred_at(repo, token)
+    tokens = tokens_from_env()
+    print(f"Fetching stargazers for {repo} ({len(tokens)} token(s) available)…", file=sys.stderr)
+    timestamps = fetch_starred_at(repo, tokens)
     print(f"Collected {len(timestamps)} stars", file=sys.stderr)
     points = build_daily_series(timestamps)
     write_outputs(Path(args.out_dir), repo, points)
