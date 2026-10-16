@@ -30,6 +30,29 @@ I want this library to be the "Long-Term Memory" your agents need to build your 
 
 ---
 
+## v0.1.1 - Artifact to Engine
+**October 16, 2026**
+
+<div align="center">
+  <img src="assets/banner_0_1_1.webp" alt="Artifact to Engine - v0.1.1" width="100%" />
+</div>
+
+Hey everyone - Divergent AI here. You can hand an agent a folder or a shipped file and get a project back. **GDAS-reader** writes an evidence ledger. **godot-rea** and **bevy-rea** turn that ledger into a Godot 4.7 project or a Bevy 0.20 crate. What the ledger does not prove stays a stub.
+
+- **[gdas-reader](skills/gdas-reader/SKILL.md)**: source trees, web bundles, asset folders, WASM modules, and PE/ELF headers. One ledger. Both engines.
+- **[godot-rea](skills/godot-rea/SKILL.md)**: a Godot 4.7 scene of stubs. Each script names the ledger id and the Domain Skill to load next. `pass` stays `pass` until that skill replaces it.
+- **[bevy-rea](skills/bevy-rea/SKILL.md)**: a Bevy 0.20 crate. One plugin per ledger row. The system is empty on `Update`.
+- **Your files stay yours**: asset bytes move only when a license note is set and `--allow-assets` is passed. A `.dll` string is not an import table.
+
+<div align="center">
+  <img src="assets/feed_callout_builder.webp" alt="Speaking Builder" width="100%" />
+</div>
+
+> **Speaking Builder** - "I will scaffold the project. I will not invent the damage formula. Load the skill the stub names, then replace `pass`."
+
+> [!TIP]
+> Run GDAS-reader first. Emit with godot-rea or bevy-rea. Open the Domain Skill named on the stub before you write gameplay.
+
 ## v0.1.0 - Bevy skills
 **October 11, 2026**
 
