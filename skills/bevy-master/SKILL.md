@@ -29,7 +29,7 @@ The Quick Start ECS page defines entities, components (`Component`), systems as 
 | --- | --- |
 | New Bevy app, ECS boundaries, which skill to load | This hub, then the module directory below |
 | New crate, Cargo features, feature folders | [bevy-project-foundations](references/project-foundations.md) |
-| Artifact ledger into a Bevy crate | [bevy-rea](references/rea.md) |
+| Artifact ledger into a Bevy crate | [gdas-reader](references/gdas-reader.md) then [bevy-rea](references/rea.md) |
 | Entity composition, components, systems | [bevy-ecs-composition](references/ecs-composition.md) |
 | Messages, events, observers | [bevy-events-messaging](references/events-messaging.md) |
 | Components and resources as data | [bevy-data-resources](references/data-resources.md) |
@@ -221,6 +221,7 @@ Load [references/ecs-ownership.md](references/2d-animation-ecs-ownership.md) for
 Domain skills:
 
 - [bevy-project-foundations](references/project-foundations.md)
+- [gdas-reader](references/gdas-reader.md)
 - [bevy-rea](references/rea.md)
 - [bevy-ecs-composition](references/ecs-composition.md)
 - [bevy-events-messaging](references/events-messaging.md)

@@ -371,7 +371,7 @@ skills/godot-master/SKILL.md
 
 ### GDAS-reader
 
-**[gdas-reader](skills/gdas-reader/SKILL.md)** reads a source tree, web bundle, asset folder, WASM module, or PE/ELF header into an evidence ledger. It is shared by the Godot and Bevy reconstruction skills. It is not part of either hub mirror.
+**[gdas-reader](skills/gdas-reader/SKILL.md)** reads a source tree, web bundle, asset folder, WASM module, or PE/ELF header into an evidence ledger. It is shared by the Godot and Bevy reconstruction skills and mirrored inside both hubs.
 
 ### Godot Domain Skills
 

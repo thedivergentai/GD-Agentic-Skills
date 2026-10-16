@@ -94,7 +94,7 @@ Expert systems are defined not by their isolation, but by their **Payload Synthe
 | **Mobile Touch Controls** | Native Joystick | **READ**: [Platform Mobile](references/platform-mobile.md) → [Adapt Desk→Mobile](references/adapt-desktop-to-mobile.md). Use built-in virtual joystick (4.7+). | Less plugin dependency |
 | **Addon / Asset Discovery** | Asset Store | **READ**: [Project Foundations](references/project-foundations.md) → [Export Builds](references/export-builds.md). Asset Store replaces Asset Library. | Beta store UI — verify licensing per addon |
 | **Agent Eyes / Visual QA** | Capture → WebP → Rubric | **READ**: [Agent Vision](references/agent-vision.md). Screenshot assets, window/region/screen, or TEMP editor bridge — then structured review. **Do NOT load** genre refs. | Host-side only; never Autoload / never leave staged addon |
-| **Artifact → Godot project** | Ledger then stubs | **READ**: [REA](references/rea.md). Run GDAS-reader first. **Do NOT load** genre refs until a stub names one. | Stubs only; unknown behavior stays `pass` |
+| **Artifact → Godot project** | Ledger then stubs | **READ**: [GDAS-reader](references/gdas-reader.md) → [REA](references/rea.md). **Do NOT load** genre refs until a stub names one. | Stubs only; unknown behavior stays `pass` |
 
 ### The "When NOT to Use a Node" Decision
 One of the most impactful expert-only decisions. The Godot docs explicitly say "avoid using nodes for everything":
@@ -423,7 +423,7 @@ Expert implementations of common architectural and gameplay systems.
 > Load ONLY the modules needed for your current workflow. Use the Decision Matrix in Part 2 to determine which chain to follow.
 
 ### Architecture & Foundation
-[Foundations](references/project-foundations.md) | [Composition](references/composition.md) | [App Composition](references/composition-apps.md) | [Signals](references/signal-architecture.md) | [Autoloads](references/autoload-architecture.md) | [States](references/state-machine-advanced.md) | [Resources](references/resource-data-patterns.md) | [Templates](references/project-templates.md) | [Analyst](references/analyst.md) | [Auditor](references/auditor.md) | [Builder](references/builder.md) | [REA](references/rea.md)
+[Foundations](references/project-foundations.md) | [Composition](references/composition.md) | [App Composition](references/composition-apps.md) | [Signals](references/signal-architecture.md) | [Autoloads](references/autoload-architecture.md) | [States](references/state-machine-advanced.md) | [Resources](references/resource-data-patterns.md) | [Templates](references/project-templates.md) | [Analyst](references/analyst.md) | [Auditor](references/auditor.md) | [Builder](references/builder.md) | [GDAS-reader](references/gdas-reader.md) | [REA](references/rea.md)
 
 **Version upgrades (external hub):** [godot-version-migration](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-version-migration/SKILL.md) — full-history router (legacy eras, 3→4 bridge, 4.0→4.7 hops); not mirrored here.
 

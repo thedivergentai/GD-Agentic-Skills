@@ -5,7 +5,7 @@ description: "Emit a Godot 4.7 project from a GDAS-reader evidence ledger. Stubs
 
 # godot-rea
 
-Turn a [GDAS-reader](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/gdas-reader/SKILL.md) ledger into a Godot 4.7 project. The project is a scaffold of stubs. It is not a port of machine code.
+Turn a [GDAS-reader](gdas-reader.md) ledger into a Godot 4.7 project. The project is a scaffold of stubs. It is not a port of machine code.
 
 ## When to use
 
@@ -34,7 +34,7 @@ python skills/godot-rea/scripts/emit_project.py --self-test
 - A `confirmed` declaration means the name exists in the artifact. It does not mean the Godot function should reproduce that body. Load the suggested skill and re-implement the behavior you are allowed to write.
 - A `partial` string from a PE or ELF scan is a hint. The reader does not walk the import table, so a `.dll` string is not a confirmed import. Wiring it to `health` or a signal without a second source of truth fails the honesty rubric.
 - `unknown` entries still get a node so coverage stays visible. Leaving them out makes the project look finished.
-- Headless `ResourceSaver` does not write UIDs. The emitter omits `uid://` because `uid://rea_main` is illegal: `ResourceUID` text is `a-z` and `0-9` only, and an underscore returns `INVALID_ID`. After import, [godot-builder](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-builder/SKILL.md) runs `godot -e --headless --import`.
+- Headless `ResourceSaver` does not write UIDs. The emitter omits `uid://` because `uid://rea_main` is illegal: `ResourceUID` text is `a-z` and `0-9` only, and an underscore returns `INVALID_ID`. After import, [godot-builder](builder.md) runs `godot -e --headless --import`.
 - `config/features` must include both `4.7` and `Forward Plus`, and `renderer/rendering_method` must be `forward_plus`. A features array that is only `4.7` loses the renderer tag the next time the editor saves the project.
 - The text loader sets `owner` to the scene root when a node has `parent="."` and no owner field. `parent` is not that assignment. `Node.duplicate()` does not copy owner. A later `PackedScene.pack` drops children whose owner is unset, so that step must `set_owner` on the copy and each child.
 - Godot 4.7 new projects stretch with `canvas_items` and `expand` once the editor rewrites settings. The emitter does not pin stretch. See [references/migration-notes.md](rea-migration-notes.md) and [references/ledger-contract.md](rea-ledger-contract.md).
@@ -80,19 +80,19 @@ Field table and scene header: [references/ledger-contract.md](rea-ledger-contrac
 ## Related Skills
 
 #### Prerequisites
-- [gdas-reader](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/gdas-reader/SKILL.md) — Writes the ledger this skill emits.
-- [godot-project-foundations](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-project-foundations/SKILL.md) — Folder and project conventions for the scaffold.
-- [godot-builder](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-builder/SKILL.md) — Headless import after the files exist.
+- [gdas-reader](gdas-reader.md) — Writes the ledger this skill emits.
+- [godot-project-foundations](project-foundations.md) — Folder and project conventions for the scaffold.
+- [godot-builder](builder.md) — Headless import after the files exist.
 
 #### Complements
-- [godot-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-composition/SKILL.md) — Fill entity-shaped stubs.
-- [godot-combat-system](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-combat-system/SKILL.md) — Fill combat-shaped symbols.
-- [godot-input-handling](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-input-handling/SKILL.md) — Fill input entries.
-- [godot-ui-containers](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-ui-containers/SKILL.md) — Fill UI entries.
-- [godot-save-load-systems](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Fill save entries.
+- [godot-composition](composition.md) — Fill entity-shaped stubs.
+- [godot-combat-system](combat-system.md) — Fill combat-shaped symbols.
+- [godot-input-handling](input-handling.md) — Fill input entries.
+- [godot-ui-containers](ui-containers.md) — Fill UI entries.
+- [godot-save-load-systems](save-load-systems.md) — Fill save entries.
 
 #### Downstream / consumers
-- [godot-testing-patterns](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-testing-patterns/SKILL.md) — Tests for stubs once a skill replaces `pass`.
+- [godot-testing-patterns](testing-patterns.md) — Tests for stubs once a skill replaces `pass`.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-master/SKILL.md) — Router when a stub's suggested skill is the wrong chain.
+- [godot-master](../SKILL.md) — Router when a stub's suggested skill is the wrong chain.

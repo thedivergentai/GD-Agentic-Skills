@@ -16,6 +16,8 @@ python skills/gdas-reader/scripts/read_artifact.py P:\artifact --out P:\work\led
 python skills/gdas-reader/scripts/read_artifact.py --self-test
 ```
 
+A hub-only install uses the copy under Available Scripts: [read_artifact.py](scripts/read_artifact.py).
+
 Schema: [references/ledger.md](references/ledger.md).
 
 ## What the reader records
@@ -70,4 +72,4 @@ Classifies a file or directory and writes the ledger. `--self-test` checks fixtu
 - [bevy-project-foundations](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-project-foundations/SKILL.md) — Crate pin and plugin shape the Bevy emitter follows.
 
 #### Master
-- Neither hub mirrors this skill. Godot reconstruction continues at [godot-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-master/SKILL.md). Bevy reconstruction continues at [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md).
+- Mirrored inside [godot-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-master/SKILL.md) and [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md). A hub-only install still has this reader.

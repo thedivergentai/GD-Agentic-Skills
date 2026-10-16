@@ -5,7 +5,7 @@ description: "Emit a Bevy 0.20 crate from a GDAS-reader evidence ledger. Each co
 
 # bevy-rea
 
-Turn a [GDAS-reader](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/gdas-reader/SKILL.md) ledger into a Bevy 0.20 crate. Plugins are stubs. They do not reimplement the artifact.
+Turn a [GDAS-reader](gdas-reader.md) ledger into a Bevy 0.20 crate. Plugins are stubs. They do not reimplement the artifact.
 
 ## When to use
 
@@ -19,7 +19,7 @@ python skills/bevy-rea/scripts/emit_project.py --self-test
 
 ## ECS shape
 
-- **Crate:** `bevy = "0.20"` with the dev opt-level split from [bevy-project-foundations](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-project-foundations/SKILL.md).
+- **Crate:** `bevy = "0.20"` with the dev opt-level split from [bevy-project-foundations](project-foundations.md).
 - **App:** `App::new()`, `DefaultPlugins`, then one plugin per ledger entry.
 - **Components:** none until the suggested skill adds them. A stub system takes no `Query`.
 - **Resources:** none by default. A score or config from a `partial` string stays out of the crate.
@@ -79,20 +79,20 @@ Reads ledger JSON and writes the crate. `--self-test` checks the pin, the empty 
 ## Related Skills
 
 #### Prerequisites
-- [gdas-reader](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/gdas-reader/SKILL.md) — Writes the ledger.
-- [bevy-project-foundations](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-project-foundations/SKILL.md) — Crate pin and plugin boundary.
+- [gdas-reader](gdas-reader.md) — Writes the ledger.
+- [bevy-project-foundations](project-foundations.md) — Crate pin and plugin boundary.
 
 #### Complements
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) — Fill entity-shaped entries.
-- [bevy-combat-system](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-combat-system/SKILL.md) — Fill combat-shaped symbols.
-- [bevy-input-handling](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-input-handling/SKILL.md) — Fill input entries.
-- [bevy-state-machines](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) — Fill screen entries.
-- [bevy-ui-layout](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ui-layout/SKILL.md) — Fill UI entries.
-- [bevy-save-load](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-save-load/SKILL.md) — Fill save entries.
-- [bevy-asset-scenes](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-asset-scenes/SKILL.md) — Fill asset entries after the license check.
+- [bevy-ecs-composition](ecs-composition.md) — Fill entity-shaped entries.
+- [bevy-combat-system](combat-system.md) — Fill combat-shaped symbols.
+- [bevy-input-handling](input-handling.md) — Fill input entries.
+- [bevy-state-machines](state-machines.md) — Fill screen entries.
+- [bevy-ui-layout](ui-layout.md) — Fill UI entries.
+- [bevy-save-load](save-load.md) — Fill save entries.
+- [bevy-asset-scenes](asset-scenes.md) — Fill asset entries after the license check.
 
 #### Downstream / consumers
-- [bevy-testing-patterns](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-testing-patterns/SKILL.md) — `cargo test` once a stub gains real systems.
+- [bevy-testing-patterns](testing-patterns.md) — `cargo test` once a stub gains real systems.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) — Router when the suggested skill is the wrong chain.
+- [bevy-master](../SKILL.md) — Router when the suggested skill is the wrong chain.
