@@ -1,6 +1,0 @@
-*.safetensors
-*.bin
-*.pt
-*.ckpt
-!.gitkeep
-!README.md
